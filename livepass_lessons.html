@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LIVE PASS — Lessons & WS</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#000;--bg2:#0a0a0a;--bg3:#111;--fg:#fff;--muted:rgba(255,255,255,.3);--muted2:rgba(255,255,255,.1);--border:rgba(255,255,255,.07);--dim:rgba(255,255,255,.04);--lp:#A8E63D;--sp:#F5C842;--red:#FF3B30;--blue:#3DAAFF;--mint:#00E5A0;--green:#1D9E75;}
+html,body{height:100%;background:var(--bg);color:var(--fg);font-family:'Inter',sans-serif;overflow:hidden}
+#app{max-width:430px;margin:0 auto;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.view{flex:1;display:none;flex-direction:column;overflow:hidden;min-height:0}
+.view.active{display:flex}
+
+/* TOPBAR */
+#topbar{flex-shrink:0;padding:13px 18px 11px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:10px;font-weight:800;letter-spacing:4px}.logo span{color:var(--red)}
+.page-title{font-size:8px;letter-spacing:3px;color:var(--muted);font-weight:300;text-transform:uppercase;margin-top:2px}
+
+/* FILTER TABS */
+#ftabs{flex-shrink:0;display:flex;padding:0 18px;border-bottom:0.5px solid var(--border);overflow-x:auto;scrollbar-width:none}
+#ftabs::-webkit-scrollbar{display:none}
+.ftab{font-size:8px;letter-spacing:2px;padding:9px 12px;border:none;background:none;color:var(--muted);cursor:pointer;border-bottom:1px solid transparent;font-family:'Inter',sans-serif;font-weight:500;text-transform:uppercase;white-space:nowrap;flex-shrink:0;transition:all .2s}
+.ftab.active{color:var(--fg);border-bottom-color:var(--fg)}
+
+/* LIST */
+#list-scroll{flex:1;overflow-y:auto;scrollbar-width:none;padding:0 0 24px}
+#list-scroll::-webkit-scrollbar{display:none}
+
+/* CLASS CARD */
+.cls-card{border-bottom:0.5px solid var(--border);cursor:pointer;transition:background .15s}
+.cls-card:active{background:var(--dim)}
+.cls-flyer{width:100%;position:relative;overflow:hidden}
+.cls-flyer svg{display:block;width:100%}
+.cls-body{padding:12px 18px 14px}
+.cls-tags{display:flex;gap:5px;margin-bottom:7px;flex-wrap:wrap}
+.cls-tag{font-size:6px;letter-spacing:2px;padding:2px 8px;border-radius:1px;border:0.5px solid;font-weight:500;text-transform:uppercase}
+.cls-title{font-size:14px;font-weight:700;letter-spacing:-.4px;margin-bottom:3px}
+.cls-meta{font-size:8px;color:var(--muted);letter-spacing:.5px;margin-bottom:10px}
+.cls-foot{display:flex;align-items:flex-end;justify-content:space-between}
+.cls-bar-wrap{flex:1;margin-right:14px}
+.cls-bar-lbl{font-size:7px;color:var(--muted);margin-bottom:4px;letter-spacing:.5px}
+.cls-bar{height:2px;background:var(--border);border-radius:1px;overflow:hidden}
+.cls-bar-fill{height:100%;border-radius:1px;transition:width .4s}
+.cls-bar-remaining{font-size:7px;margin-top:3px}
+.cls-price-wrap{text-align:right;flex-shrink:0}
+.cls-price{font-size:14px;font-weight:700;letter-spacing:-.4px}
+.cls-pass-price{font-size:8px;margin-top:2px;letter-spacing:.5px}
+
+/* STUDIO SECTION */
+.studio-promo{margin:0 18px 16px;padding:14px;border:0.5px solid var(--border);border-radius:2px}
+.studio-lbl{font-size:6px;letter-spacing:3px;color:var(--muted2);font-weight:600;text-transform:uppercase;margin-bottom:10px}
+.studio-btns{display:flex;gap:7px}
+.studio-btn{flex:1;padding:10px;border:0.5px solid;border-radius:1px;background:none;cursor:pointer;text-align:left;transition:background .15s;font-family:'Inter',sans-serif}
+.studio-btn:active{background:var(--dim)}
+.studio-name{font-size:11px;font-weight:600;letter-spacing:-.2px;margin-bottom:2px}
+.studio-area{font-size:7px;letter-spacing:1px;font-weight:300}
+
+/* BOOKING DETAIL */
+#detail-view{overflow:hidden}
+#dv-scroll{flex:1;overflow-y:auto;scrollbar-width:none}
+#dv-scroll::-webkit-scrollbar{display:none}
+#dv-top{flex-shrink:0;padding:13px 18px 11px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:12px}
+.dv-back{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:0}
+.dv-top-title{font-size:12px;font-weight:600;letter-spacing:-.2px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dv-flyer{width:100%}
+.dv-body{padding:18px}
+.dv-meta-block{margin-bottom:16px}
+.dv-meta-lbl{font-size:6px;letter-spacing:4px;color:rgba(255,255,255,.18);text-transform:uppercase;font-weight:300;margin-bottom:10px}
+.dv-meta-line{display:flex;align-items:baseline;padding:7px 0;border-bottom:0.5px solid rgba(255,255,255,.04)}
+.dv-meta-line:last-child{border-bottom:none}
+.dv-mk{font-size:7px;letter-spacing:2px;color:rgba(255,255,255,.2);text-transform:uppercase;flex:0 0 90px}
+.dv-dots{flex:1;border-bottom:1px dotted rgba(255,255,255,.06);margin:0 10px;position:relative;top:-3px}
+.dv-mv{font-size:10px;font-weight:300;color:rgba(255,255,255,.65);letter-spacing:.3px}
+.dv-desc{font-size:11px;font-weight:300;color:rgba(255,255,255,.45);line-height:1.9;letter-spacing:.2px;margin-bottom:18px}
+.dv-pass-toggle{display:flex;gap:7px;margin-bottom:16px}
+.pass-opt{flex:1;padding:10px;border:0.5px solid var(--border);border-radius:1px;background:none;cursor:pointer;text-align:center;font-family:'Inter',sans-serif;transition:all .2s}
+.pass-opt.active{background:var(--dim)}
+.pass-opt-lbl{font-size:7px;letter-spacing:2px;text-transform:uppercase;font-weight:500;margin-bottom:3px}
+.pass-opt-price{font-size:14px;font-weight:700;letter-spacing:-.4px}
+.dv-name-inp{width:100%;background:var(--dim);border:0.5px solid var(--border);border-radius:1px;padding:12px 14px;font-size:13px;color:var(--fg);font-family:'Inter',sans-serif;font-weight:300;outline:none;letter-spacing:.3px;transition:border-color .2s;margin-bottom:14px}
+.dv-name-inp:focus{border-color:rgba(255,255,255,.2)}
+.dv-name-inp::placeholder{color:rgba(255,255,255,.18)}
+.dv-total-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border);margin-bottom:16px}
+.dv-total-key{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+.dv-total-val{font-size:20px;font-weight:700;letter-spacing:-.6px}
+#dv-footer{flex-shrink:0;padding:12px 18px;border-top:0.5px solid var(--border);background:rgba(0,0,0,.98)}
+.book-btn{width:100%;padding:14px;border-radius:1px;font-family:'Inter',sans-serif;font-size:8px;letter-spacing:3px;font-weight:500;text-transform:uppercase;cursor:pointer;transition:all .2s;border:0.5px solid rgba(255,255,255,.15);background:none;color:rgba(255,255,255,.4)}
+.book-btn.enabled{border-color:rgba(255,255,255,.3);color:var(--fg)}
+.book-btn.enabled:hover{background:var(--dim)}
+.book-btn:active{transform:scale(.98)}
+
+/* CONFIRMED */
+.confirmed-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;text-align:center;gap:12px}
+.confirmed-label{font-size:7px;letter-spacing:4px;color:var(--mint);font-weight:300}
+.confirmed-title{font-size:18px;font-weight:300;letter-spacing:-.3px}
+.confirmed-meta{font-size:9px;color:var(--muted);letter-spacing:.5px;font-weight:300;line-height:1.9}
+.confirmed-back{font-size:8px;letter-spacing:2px;color:var(--muted);background:none;border:0.5px solid var(--border);padding:7px 18px;cursor:pointer;font-family:'Inter',sans-serif;margin-top:8px;text-transform:uppercase;transition:all .2s}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- LIST VIEW -->
+  <div class="view active" id="list-view">
+    <div id="topbar">
+      <div><div class="logo">LIVE <span>PASS</span></div><div class="page-title">Lessons & WS</div></div>
+    </div>
+    <div id="ftabs">
+      <button class="ftab active" onclick="filterClasses('ALL',this)">All</button>
+      <button class="ftab" onclick="filterClasses('LESSON',this)">Lesson</button>
+      <button class="ftab" onclick="filterClasses('WORKSHOP',this)">Workshop</button>
+      <button class="ftab" onclick="showStudio()">Studio</button>
+    </div>
+    <div id="list-scroll">
+      <div id="cls-list"></div>
+      <div class="studio-promo">
+        <div class="studio-lbl">Partner Studios</div>
+        <div class="studio-btns" id="studio-btns"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETAIL VIEW -->
+  <div class="view" id="detail-view">
+    <div id="dv-top">
+      <button class="dv-back" onclick="closeDetail()">←</button>
+      <div class="dv-top-title" id="dv-top-title">—</div>
+    </div>
+    <div id="dv-scroll">
+      <div class="dv-flyer" id="dv-flyer"></div>
+      <div class="dv-body">
+        <div class="dv-desc" id="dv-desc"></div>
+        <div class="dv-meta-block">
+          <div class="dv-meta-lbl">Details</div>
+          <div id="dv-meta-lines"></div>
+        </div>
+        <div class="dv-meta-block">
+          <div class="dv-meta-lbl">Capacity</div>
+          <div id="dv-cap-bar"></div>
+        </div>
+        <div class="dv-pass-toggle" id="dv-pass-toggle"></div>
+        <input class="dv-name-inp" id="dv-name" placeholder="お名前 / Your name" oninput="checkBookBtn()">
+        <div class="dv-total-row">
+          <span class="dv-total-key">Total</span>
+          <span class="dv-total-val" id="dv-total">¥0</span>
+        </div>
+      </div>
+    </div>
+    <div id="dv-footer">
+      <button class="book-btn" id="book-btn" onclick="confirmBook()">予約を確定する →</button>
+    </div>
+  </div>
+
+  <!-- CONFIRMED VIEW -->
+  <div class="view" id="confirmed-view">
+    <div id="topbar" style="flex-shrink:0">
+      <div><div class="logo">LIVE <span>PASS</span></div><div class="page-title">Booked</div></div>
+    </div>
+    <div class="confirmed-wrap">
+      <div class="confirmed-label">CONFIRMED</div>
+      <div class="confirmed-title" id="conf-title">—</div>
+      <div class="confirmed-meta" id="conf-meta"></div>
+      <button class="confirmed-back" onclick="resetView()">一覧に戻る</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const CLASSES = [
+  {id:"house-basic", kind:"LESSON",   title:"House Dance — Basic",    artist:"KENZO",    style:"House",   level:"BEGINNER",     freq:"毎週火曜", time:"19:00 — 20:30", venue:"渋谷 Studio A", price:3000, pass_price:2400, cap:12, booked:9,  color:"#9FE1CB", music:"Classic House / Chicago",    desc:"ハウスダンスの基礎。フットワーク・ジャックから始める。"},
+  {id:"ws-waacking", kind:"WORKSHOP", title:"Waacking Intensive",     artist:"SACHI",    style:"Waacking",level:"ALL LEVELS",    date:"2026.05.18",  time:"13:00 — 17:00", venue:"代官山スタジオ",price:6000, pass_price:4800, cap:20, booked:14, color:"#F4C0D1", music:"Disco / Funk / Underground",desc:"ワッキングの歴史・音楽性・表現。4時間の集中WS。"},
+  {id:"ws-breaking", kind:"WORKSHOP", title:"Breaking — Cypher Lab",  artist:"CREW NRG", style:"Breaking",level:"INTERMEDIATE",  date:"2026.06.01",  time:"15:00 — 19:00", venue:"渋谷 WOMB 2F",  price:5000, pass_price:4000, cap:16, booked:6,  color:"#EF9F27", music:"Hip-Hop / Funk Breaks",     desc:"サイファーの中でどう動くか。即興と対話のラボ。"},
+  {id:"locking-mid", kind:"LESSON",   title:"Locking — Intermediate", artist:"TOMMY",    style:"Locking", level:"INTERMEDIATE",  freq:"毎週木曜", time:"20:00 — 21:30", venue:"新宿 Studio C", price:3000, pass_price:2400, cap:10, booked:7,  color:"#EF9F27", music:"Funk / Soul",               desc:"ロッキングの真髄。ファンクと体の対話。"},
+  {id:"ws-vogue",    kind:"WORKSHOP", title:"Vogue Femme Masterclass",artist:"DIANA",    style:"Vogue",   level:"ALL LEVELS",    date:"2026.06.15",  time:"14:00 — 18:00", venue:"渋谷 Studio B", price:7000, pass_price:5600, cap:15, booked:3,  color:"#BF5AF2", music:"Ballroom / NY Underground", desc:"ヴォーグフェムの根幹。カテゴリー別に徹底解説。"},
+];
+const STUDIOS = [
+  {name:"Studio Mission", area:"渋谷", color:"#9FE1CB"},
+  {name:"Studio Worcle",  area:"新宿", color:"#AFA9EC"},
+];
+
+let filteredClasses = [...CLASSES];
+let selectedClass   = null;
+let usePass         = true;
+let confirmedData   = null;
+
+function fmtPrice(n){ return '¥'+n.toLocaleString(); }
+function left(c){ return c.cap - c.booked; }
+
+function buildFlyer(c, height=160){
+  const h = height; const t = c.color;
+  const lines = Math.floor(h/14);
+  let svgLines = '';
+  for(let i=0;i<lines;i++) svgLines+=`<line x1="0" y1="${(h/lines)*i}" x2="430" y2="${(h/lines)*i}" stroke="${t}" stroke-width="0.3" opacity="0.1"/>`;
+  for(let i=0;i<8;i++) svgLines+=`<line x1="${(430/8)*i}" y1="0" x2="${(430/8)*i}" y2="${h}" stroke="${t}" stroke-width="0.3" opacity="0.07"/>`;
+  return `<svg width="100%" viewBox="0 0 430 ${h}" xmlns="http://www.w3.org/2000/svg">
+    <rect width="430" height="${h}" fill="${c.color+'14'}"/>
+    <rect width="430" height="${h}" fill="url(#grad-${c.id})"/>
+    <defs><linearGradient id="grad-${c.id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#000" stop-opacity="0.3"/><stop offset="100%" stop-color="#000" stop-opacity="0.7"/></linearGradient></defs>
+    ${svgLines}
+    <rect x="18" y="18" width="${430-36}" height="${h-36}" rx="1" fill="none" stroke="${t}" stroke-width="0.5" opacity="0.25"/>
+    <text x="28" y="42" font-size="7" fill="${t}" font-family="Inter,sans-serif" letter-spacing="3" opacity="0.7">LIVE PASS · ${c.kind}</text>
+    <text x="28" y="${h/2-8}" font-size="${c.title.length>22?16:20}" fill="#fff" font-family="Inter,sans-serif" font-weight="700" letter-spacing="-0.5">${c.title}</text>
+    <text x="28" y="${h/2+12}" font-size="9" fill="${t}" font-family="Inter,sans-serif" opacity="0.8">${c.style} · ${c.level}</text>
+    <line x1="28" y1="${h/2+22}" x2="${430-28}" y2="${h/2+22}" stroke="${t}" stroke-width="0.5" opacity="0.25"/>
+    <text x="28" y="${h-36}" font-size="8" fill="#fff" font-family="Inter,sans-serif" opacity="0.55">${c.date||c.freq} · ${c.time}</text>
+    <text x="28" y="${h-20}" font-size="8" fill="#fff" font-family="Inter,sans-serif" opacity="0.45">${c.venue} · ${c.music}</text>
+    <text x="${430-28}" y="${h-20}" font-size="11" fill="#fff" font-family="Inter,sans-serif" font-weight="700" text-anchor="end">${fmtPrice(c.price)}</text>
+  </svg>`;
+}
+
+function renderList(){
+  const list = document.getElementById('cls-list');
+  list.innerHTML = filteredClasses.map(c=>{
+    const rem = left(c);
+    const pct = Math.round((c.booked/c.cap)*100);
+    const remColor = rem===0?'var(--red)':rem<=2?'#EF9F27':'var(--muted)';
+    return `<div class="cls-card" onclick="openDetail('${c.id}')">
+      <div class="cls-flyer">${buildFlyer(c,130)}</div>
+      <div class="cls-body">
+        <div class="cls-tags">
+          <span class="cls-tag" style="color:${c.color};border-color:${c.color}44">${c.kind}</span>
+          <span class="cls-tag" style="color:${c.color};border-color:${c.color}44">${c.style}</span>
+          <span class="cls-tag" style="color:var(--muted);border-color:var(--border)">${c.level}</span>
+        </div>
+        <div class="cls-title">${c.title}</div>
+        <div class="cls-meta">${c.artist} · ${c.date||c.freq} · ${c.time}</div>
+        <div class="cls-foot">
+          <div class="cls-bar-wrap">
+            <div class="cls-bar"><div class="cls-bar-fill" style="width:${pct}%;background:${rem<=2?'var(--red)':c.color}"></div></div>
+            <div class="cls-bar-remaining" style="color:${remColor}">${rem===0?'満員':`残り ${rem} 枠`}</div>
+          </div>
+          <div class="cls-price-wrap">
+            <div class="cls-price">${fmtPrice(c.price)}</div>
+            <div class="cls-pass-price" style="color:${c.color}">PASS ${fmtPrice(c.pass_price)}</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const sb = document.getElementById('studio-btns');
+  sb.innerHTML = STUDIOS.map(s=>`<button class="studio-btn" style="border-color:${s.color}33" onclick="showStudio()">
+    <div class="studio-name" style="color:${s.color}">${s.name}</div>
+    <div class="studio-area" style="color:var(--muted)">${s.area}</div>
+  </button>`).join('');
+}
+
+function filterClasses(f, btn){
+  document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  filteredClasses = f==='ALL' ? [...CLASSES] : CLASSES.filter(c=>c.kind===f);
+  renderList();
+}
+
+function openDetail(id){
+  selectedClass = CLASSES.find(c=>c.id===id);
+  const c = selectedClass;
+  usePass = true;
+  document.getElementById('dv-top-title').textContent = c.title;
+  document.getElementById('dv-flyer').innerHTML = buildFlyer(c, 200);
+  document.getElementById('dv-desc').textContent = c.desc;
+  document.getElementById('dv-name').value = '';
+
+  document.getElementById('dv-meta-lines').innerHTML = [
+    ['Instructor', c.artist],
+    ['Style',      c.style+' · '+c.level],
+    ['Schedule',   (c.date||c.freq)+' · '+c.time],
+    ['Venue',      c.venue],
+    ['Music',      c.music],
+  ].map(([k,v])=>`<div class="dv-meta-line"><span class="dv-mk">${k}</span><span class="dv-dots"></span><span class="dv-mv">${v}</span></div>`).join('');
+
+  const rem = left(c);
+  const pct = Math.round((c.booked/c.cap)*100);
+  document.getElementById('dv-cap-bar').innerHTML = `
+    <div style="height:2px;background:var(--border);border-radius:1px;overflow:hidden;margin-bottom:5px"><div style="height:100%;width:${pct}%;background:${rem<=2?'var(--red)':c.color};border-radius:1px"></div></div>
+    <div style="font-size:8px;color:${rem===0?'var(--red)':rem<=2?'#EF9F27':'var(--muted)'};">${rem===0?'満員 — キャンセル待ち受付中':rem<=2?`残り ${rem} 枠 — 残りわずか`:`${c.cap - c.booked} / ${c.cap} available`}</div>`;
+
+  document.getElementById('dv-pass-toggle').innerHTML = [
+    {lbl:'LIVE PASS', price:c.pass_price, isPass:true, color:c.color},
+    {lbl:'通常価格',  price:c.price,      isPass:false,color:'rgba(255,255,255,.5)'},
+  ].map(o=>`<button class="pass-opt${o.isPass?' active':''}" id="po-${o.isPass?'pass':'normal'}" onclick="selectPass(${o.isPass})" style="border-color:${o.isPass?c.color+'55':'var(--border)'}">
+    <div class="pass-opt-lbl" style="color:${o.color}">${o.lbl}</div>
+    <div class="pass-opt-price" style="color:${o.isPass?c.color:'var(--fg)'}">${fmtPrice(o.price)}</div>
+  </button>`).join('');
+
+  updateTotal();
+  checkBookBtn();
+  switchView('detail-view');
+}
+
+function selectPass(isPass){
+  usePass = isPass;
+  document.getElementById('po-pass').className   = 'pass-opt'+(isPass?' active':'');
+  document.getElementById('po-normal').className = 'pass-opt'+(!isPass?' active':'');
+  const c = selectedClass;
+  document.getElementById('po-pass').style.borderColor   = isPass   ? c.color+'55':'var(--border)';
+  document.getElementById('po-normal').style.borderColor = !isPass  ? 'rgba(255,255,255,.3)':'var(--border)';
+  updateTotal();
+}
+
+function updateTotal(){
+  const c = selectedClass;
+  const price = usePass ? c.pass_price : c.price;
+  document.getElementById('dv-total').textContent = fmtPrice(price);
+  document.getElementById('dv-total').style.color = usePass ? c.color : 'var(--fg)';
+}
+
+function checkBookBtn(){
+  const name = document.getElementById('dv-name').value.trim();
+  const btn = document.getElementById('book-btn');
+  const rem = left(selectedClass||{cap:1,booked:0});
+  if(name && rem > 0){
+    btn.classList.add('enabled');
+    btn.textContent = '予約を確定する →';
+  } else if(rem === 0){
+    btn.classList.remove('enabled');
+    btn.textContent = 'キャンセル待ちに登録';
+  } else {
+    btn.classList.remove('enabled');
+    btn.textContent = '予約を確定する →';
+  }
+}
+
+function confirmBook(){
+  const c = selectedClass;
+  const name = document.getElementById('dv-name').value.trim();
+  if(!name || left(c)===0) return;
+  const price = usePass ? c.pass_price : c.price;
+  document.getElementById('conf-title').textContent = c.title;
+  document.getElementById('conf-meta').innerHTML = `${c.artist} · ${fmtPrice(price)}<br>${name}<br>${c.date||c.freq} · ${c.time}`;
+  switchView('confirmed-view');
+}
+
+function closeDetail(){ switchView('list-view'); }
+function resetView(){ switchView('list-view'); }
+function showStudio(){ window.location.href='livepass_studio.html'; }
+function switchView(id){ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+
+renderList();
+</script>
+</body>
+</html>

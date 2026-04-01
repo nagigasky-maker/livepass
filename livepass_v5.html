@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LIVE PASS</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --lp:#A8E63D;   /* LIVE PASS accent — lime */
+  --sp:#F5C842;   /* SUPER PASS accent — gold */
+  --red:#FF3B30;
+  --blue:#3DAAFF;
+  --purple:#BF5AF2;
+  --mint:#00E5A0;
+  --bg:#000;
+  --bg2:#0b0b0b;
+  --bg3:#141414;
+  --border:rgba(255,255,255,.07);
+  --muted:rgba(255,255,255,.3);
+  --muted2:rgba(255,255,255,.14);
+  --accent:var(--lp);
+  --dancer:#AF69EE; /* dancer mode purple */
+}
+
+/* ── DANCER MODE styles ── */
+.pill-dancer{background:rgba(175,105,238,.12);color:var(--dancer);border-color:rgba(175,105,238,.28)}
+
+/* dancer profile hero */
+#d-hero{flex:0 0 210px;position:relative;overflow:hidden;background:#06030d}
+.d-hero-glow{position:absolute;inset:0;background:radial-gradient(ellipse at 25% 60%,rgba(175,105,238,.14),transparent 52%),radial-gradient(ellipse at 80% 20%,rgba(63,170,255,.07),transparent 48%)}
+.d-hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(175,105,238,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(175,105,238,.022) 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(to bottom,transparent,rgba(0,0,0,.5) 30%,rgba(0,0,0,.5) 70%,transparent)}
+.d-hero-c{position:relative;z-index:1;padding:20px 22px;height:100%;display:flex;flex-direction:column;justify-content:flex-end}
+.d-tag{font-size:7px;letter-spacing:3px;color:var(--dancer);margin-bottom:5px;font-weight:700;text-transform:uppercase}
+.d-name{font-size:26px;font-weight:900;letter-spacing:-1.5px;line-height:.88}
+.d-genre{font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.4);margin-top:6px;text-transform:uppercase}
+.d-stats{display:flex;gap:0;margin-top:14px;padding-top:12px;border-top:0.5px solid rgba(175,105,238,.2)}
+.d-stat{flex:1;display:flex;flex-direction:column;gap:3px;padding-right:16px}
+.d-stat+.d-stat{border-left:0.5px solid rgba(175,105,238,.15);padding-left:16px;padding-right:0}
+.d-sn{font-size:18px;font-weight:900;letter-spacing:-1px;line-height:1}
+.d-sl{font-size:6px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+
+/* dancer tabs (bottom nav) */
+#d-bnav{position:absolute;bottom:0;left:0;right:0;height:66px;border-top:0.5px solid rgba(175,105,238,.15);background:rgba(6,3,13,.97);backdrop-filter:blur(24px);display:flex;z-index:50;padding-bottom:6px}
+.dbn{flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-family:'Inter',sans-serif;transition:transform .12s;padding:0}
+.dbn:active{transform:scale(.88)}
+.dbn .dbi{font-size:17px;line-height:1;transition:transform .15s}
+.dbn.active .dbi{transform:translateY(-1px)}
+.dbn .dbl{font-size:6px;letter-spacing:2px;text-transform:uppercase;font-weight:700}
+.dbn.active .dbi,.dbn.active .dbl{color:var(--dancer)}
+.dbn:not(.active) .dbi,.dbn:not(.active) .dbl{color:rgba(255,255,255,.18)}
+
+/* dancer panels */
+.dpanel{position:absolute;top:94px;left:0;right:0;bottom:66px;overflow:hidden;display:none}
+.dpanel.active{display:block}
+
+/* feed */
+#d-feed-scroll{height:100%;overflow-y:auto;scrollbar-width:none}
+#d-feed-scroll::-webkit-scrollbar{display:none}
+.d-feed-item{position:relative;width:100%;overflow:hidden;border-bottom:0.5px solid rgba(255,255,255,.04)}
+.d-feed-bg{width:100%;display:block}
+.d-feed-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(6,3,13,.97) 25%,transparent 60%)}
+.d-feed-info{position:absolute;bottom:0;left:0;right:0;padding:12px 16px}
+.d-feed-name{font-size:15px;font-weight:900;letter-spacing:-.5px;margin-bottom:2px}
+.d-feed-genre{font-size:7px;letter-spacing:2px;color:var(--dancer);font-weight:700;text-transform:uppercase;margin-bottom:3px}
+.d-feed-meta{font-size:7px;color:var(--muted);letter-spacing:1px}
+.d-feed-rank{position:absolute;top:10px;left:12px;background:rgba(6,3,13,.75);border:0.5px solid rgba(175,105,238,.3);font-size:10px;font-weight:900;letter-spacing:-.3px;padding:3px 9px;color:var(--dancer)}
+.d-feed-play{position:absolute;top:50%;right:16px;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;border:0.5px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:13px;background:rgba(0,0,0,.5)}
+
+/* community */
+#d-comm-scroll{height:100%;overflow-y:auto;scrollbar-width:none;padding:0 20px 20px}
+#d-comm-scroll::-webkit-scrollbar{display:none}
+.ch-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer;transition:border-color .15s}
+.ch-card:hover{border-color:rgba(175,105,238,.3)}
+.ch-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.ch-name{font-size:12px;font-weight:800;letter-spacing:-.3px}
+.ch-cnt{font-size:7px;letter-spacing:1px;color:var(--dancer);font-weight:700}
+.ch-desc{font-size:8px;color:var(--muted);letter-spacing:.5px;line-height:1.5;margin-bottom:10px}
+.ch-tags{display:flex;gap:5px;flex-wrap:wrap}
+.ch-tag{font-size:6px;letter-spacing:1.5px;padding:2px 8px;border-radius:100px;border:0.5px solid rgba(175,105,238,.25);color:rgba(175,105,238,.7);font-weight:700;text-transform:uppercase}
+.msg-bar{display:flex;gap:8px;align-items:center;padding:12px 20px;border-top:0.5px solid var(--border);flex-shrink:0}
+.msg-inp{flex:1;background:var(--bg2);border:0.5px solid var(--border);border-radius:100px;padding:8px 14px;font-size:11px;color:#fff;font-family:'Inter',sans-serif;outline:none}
+.msg-send{width:34px;height:34px;border-radius:50%;background:var(--dancer);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+
+/* booking */
+#d-book-scroll{height:100%;overflow-y:auto;scrollbar-width:none;padding:0 20px 20px}
+#d-book-scroll::-webkit-scrollbar{display:none}
+.bk-sec{font-size:6px;letter-spacing:3px;color:var(--muted2);padding:12px 0 8px;text-transform:uppercase;font-weight:700}
+.bk-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:10px}
+.bk-top{padding:14px;display:flex;justify-content:space-between;align-items:flex-start}
+.bk-title{font-size:13px;font-weight:800;letter-spacing:-.3px}
+.bk-venue{font-size:7px;letter-spacing:1px;color:var(--muted);margin-top:2px}
+.bk-price-tag{font-size:11px;font-weight:900;letter-spacing:-.4px;color:var(--dancer)}
+.bk-slots{display:flex;gap:6px;padding:0 14px 14px;overflow-x:auto;scrollbar-width:none}
+.bk-slots::-webkit-scrollbar{display:none}
+.bk-slot{flex-shrink:0;padding:8px 12px;border-radius:8px;border:0.5px solid var(--border);background:var(--bg3);cursor:pointer;transition:all .15s;text-align:center}
+.bk-slot.avail:hover,.bk-slot.sel{background:rgba(175,105,238,.15);border-color:rgba(175,105,238,.4)}
+.bk-slot.full{opacity:.3;cursor:default}
+.bk-time{font-size:10px;font-weight:800;letter-spacing:-.2px}
+.bk-avail{font-size:6px;letter-spacing:1px;color:var(--muted);margin-top:2px;text-transform:uppercase}
+.bk-btn{width:calc(100% - 28px);margin:0 14px 14px;padding:11px;background:var(--dancer);border:none;border-radius:10px;font-family:'Inter',sans-serif;font-size:8px;letter-spacing:2px;font-weight:800;color:#fff;cursor:pointer;text-transform:uppercase;transition:all .2s}
+.bk-btn:active{transform:scale(.97)}
+
+/* ranking card */
+/* artist list row (shared) */
+.rk-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:0.5px solid var(--border)}
+.rk-num{font-size:14px;font-weight:900;letter-spacing:-1px;width:24px;text-align:center;flex-shrink:0}
+.rk-av{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;border:1px solid}
+.rk-info{flex:1}
+.rk-name{font-size:11px;font-weight:700;letter-spacing:-.2px}
+.rk-genre{font-size:7px;letter-spacing:1px;color:var(--muted);margin-top:1px}
+.rk-right{text-align:right;flex-shrink:0}
+.rk-score{font-size:11px;font-weight:800;letter-spacing:-.3px;color:var(--dancer)}
+.rk-city{font-size:7px;color:var(--muted);letter-spacing:1px;margin-top:1px}
+/* dancer artist card */
+.d-artist-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:0.5px solid rgba(175,105,238,.1)}
+.d-av{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;border:1px solid}
+.d-ai-info{flex:1}
+.d-ai-name{font-size:11px;font-weight:800;letter-spacing:-.2px}
+.d-ai-role{font-size:7px;letter-spacing:1px;color:var(--muted);margin-top:2px}
+.d-ai-genre{font-size:8px;font-weight:700;letter-spacing:1px;flex-shrink:0}
+/* feed collab tag */
+.d-feed-collab{position:absolute;top:10px;left:12px;background:rgba(6,3,13,.75);border:0.5px solid rgba(175,105,238,.28);font-size:7px;font-weight:700;letter-spacing:1.5px;padding:3px 10px;color:var(--dancer);z-index:2;text-transform:uppercase}
+body{background:#0c0c0c;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:'Inter',sans-serif;gap:0}
+
+/* ── MODE SWITCHER ── */
+#mode-bar{display:flex;gap:0;background:#161616;border-radius:100px;padding:3px;margin-bottom:14px;border:0.5px solid rgba(255,255,255,.08)}
+.mode-btn{padding:7px 24px;border:none;background:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:9px;letter-spacing:2.5px;color:var(--muted);border-radius:100px;transition:all .25s;text-transform:uppercase;font-weight:600}
+.mode-btn.active{background:#fff;color:#000;font-weight:800}
+
+/* ── APP SHELL ── */
+#app{width:390px;height:740px;background:var(--bg);position:relative;overflow:hidden;color:#fff;border-radius:44px;box-shadow:0 60px 120px rgba(0,0,0,.95),inset 0 0 0 0.5px rgba(255,255,255,.07),0 0 0 6px #0c0c0c,0 0 0 7px rgba(255,255,255,.04)}
+
+/* ── TOPBAR ── */
+#topbar{position:absolute;top:0;left:0;right:0;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:50;background:linear-gradient(to bottom,rgba(0,0,0,.99) 55%,transparent)}
+.logo-wrap{display:flex;align-items:center;gap:9px}
+.logo{font-size:11px;font-weight:900;letter-spacing:5px;text-transform:uppercase}
+.logo-lp{color:#fff}
+.logo-div{color:rgba(255,255,255,.2);font-weight:300;letter-spacing:0}
+.logo-sp{color:var(--sp)}
+.plan-pill{font-size:7px;letter-spacing:1.5px;padding:2px 9px;border-radius:100px;font-weight:700;text-transform:uppercase;border:0.5px solid}
+.pill-lp{background:rgba(168,230,61,.12);color:var(--lp);border-color:rgba(168,230,61,.25)}
+.pill-sp{background:rgba(245,200,66,.12);color:var(--sp);border-color:rgba(245,200,66,.25)}
+.pill-artist{background:rgba(255,59,48,.12);color:var(--red);border-color:rgba(255,59,48,.25)}
+.topbar-r{display:flex;align-items:center;gap:10px}
+.t-notif{width:32px;height:32px;border-radius:50%;border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;background:rgba(255,255,255,.03)}
+.t-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--lp),#5a9900);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#000;cursor:pointer}
+
+/* ── FILTER ── */
+#filtertabs{position:absolute;top:58px;left:0;right:0;height:36px;display:flex;align-items:center;padding:0 22px;z-index:40;overflow-x:auto;scrollbar-width:none;transition:opacity .2s}
+#filtertabs::-webkit-scrollbar{display:none}
+.ftab{font-size:8px;letter-spacing:2.5px;padding:6px 13px;border:none;background:none;color:var(--muted);cursor:pointer;white-space:nowrap;border-bottom:1.5px solid transparent;transition:all .2s;font-family:'Inter',sans-serif;font-weight:600;text-transform:uppercase}
+.ftab.active{color:#fff;border-bottom-color:var(--lp)}
+.ftab:not(.active):hover{color:rgba(255,255,255,.5)}
+
+/* ── PANELS ── */
+.panel{position:absolute;top:94px;left:0;right:0;bottom:66px;overflow:hidden;display:none}
+.panel.active{display:block}
+
+/* ═══════════════════════════════
+   HOME
+═══════════════════════════════ */
+#home-wrap{height:100%;display:flex;flex-direction:column;overflow:hidden}
+#home-hero{flex:0 0 192px;position:relative;overflow:hidden;background:#030303}
+.hh-glow{position:absolute;inset:0;background:radial-gradient(ellipse at 15% 75%,rgba(168,230,61,.1),transparent 52%),radial-gradient(ellipse at 88% 10%,rgba(255,59,48,.07),transparent 48%)}
+.hh-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(to bottom,transparent,rgba(0,0,0,.6) 30%,rgba(0,0,0,.6) 70%,transparent)}
+.hh-c{position:relative;z-index:1;padding:20px 22px;height:100%;display:flex;flex-direction:column;justify-content:flex-end}
+.hh-greet{font-size:7px;letter-spacing:3px;color:var(--muted);margin-bottom:6px;text-transform:uppercase}
+.hh-title{font-size:25px;font-weight:900;letter-spacing:-1.5px;line-height:.88;text-transform:uppercase}
+.hh-title em{color:var(--lp);font-style:normal}
+.hh-stats{display:flex;gap:0;margin-top:14px;padding-top:12px;border-top:0.5px solid var(--border)}
+.hs{flex:1;display:flex;flex-direction:column;gap:3px;padding-right:20px}
+.hs+.hs{border-left:0.5px solid var(--border);padding-left:20px;padding-right:0}
+.hs-n{font-size:20px;font-weight:900;letter-spacing:-1.2px;line-height:1}
+.hs-l{font-size:6px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+.live-pulse{display:flex;align-items:center;gap:5px;font-size:7px;letter-spacing:1.5px;color:var(--red);font-weight:700;margin-bottom:1px}
+.ld{width:6px;height:6px;border-radius:50%;background:var(--red);animation:blink 1.4s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+#home-sec-label{padding:12px 22px 5px;font-size:6px;letter-spacing:3px;color:var(--muted2);text-transform:uppercase;flex-shrink:0;font-weight:600}
+#hpasses{flex:1;overflow:hidden;min-height:0}
+#hdrag{display:flex;height:100%;align-items:center;padding:2px 22px;gap:10px;cursor:grab;user-select:none}
+#hdrag:active{cursor:grabbing}
+.hcard{flex-shrink:0;width:176px;height:106px;position:relative;border-radius:14px;overflow:hidden;transition:transform .38s cubic-bezier(.25,.46,.45,.94),box-shadow .38s,opacity .38s}
+.hcard:not(.ha){opacity:.7;transform:scale(.96)}
+.hcard.ha{transform:scale(1.04) translateY(-5px);box-shadow:0 18px 48px rgba(0,0,0,.85),0 0 0 0.5px rgba(255,255,255,.1)}
+.hcbg{position:absolute;inset:0}
+.hcshine{position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.09) 0%,transparent 48%);z-index:2;border-radius:14px}
+.hcring{position:absolute;right:-12px;top:50%;transform:translateY(-50%);width:84px;height:84px;border-radius:50%;z-index:1;opacity:.16}
+.hchole{position:absolute;right:18px;top:50%;transform:translateY(-50%);width:13px;height:13px;border-radius:50%;background:#000;z-index:3}
+.hcstripe{position:absolute;top:0;left:0;right:0;height:2px;z-index:4}
+.hcinfo{position:absolute;inset:0;padding:10px 12px;display:flex;flex-direction:column;justify-content:flex-end;z-index:4}
+.hca{font-size:6px;letter-spacing:2px;color:rgba(255,255,255,.4);margin-bottom:2px;text-transform:uppercase}
+.hct{font-size:11px;font-weight:800;letter-spacing:-.3px;line-height:1.1}
+.hcp{font-size:6px;letter-spacing:1.5px;margin-top:4px;font-weight:700}
+.hcnum{position:absolute;top:10px;left:11px;font-size:6px;letter-spacing:.5px;color:rgba(255,255,255,.14);z-index:4;font-family:monospace}
+
+/* ═══════════════════════════════
+   SCREEN
+═══════════════════════════════ */
+#scr-outer{height:100%;overflow:hidden;cursor:grab;position:relative;background:#000}
+#scr-outer:active{cursor:grabbing}
+#scr-content{display:flex;flex-direction:column;will-change:transform}
+.si{position:relative;width:100%;flex-shrink:0;overflow:hidden}
+.si-bg{width:100%;display:block;position:relative}
+.si-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.97) 22%,rgba(0,0,0,.25) 55%,transparent 100%)}
+.si-info{position:absolute;bottom:0;left:0;right:0;padding:14px 18px}
+.si-tag{font-size:7px;letter-spacing:3px;color:var(--lp);margin-bottom:4px;font-weight:700;text-transform:uppercase}
+.si-tag.red{color:var(--red)}
+.si-title{font-size:17px;font-weight:900;letter-spacing:-.7px;line-height:.95;margin-bottom:4px}
+.si-meta{font-size:7px;color:var(--muted);letter-spacing:1px}
+.si-live{position:absolute;top:12px;left:12px;background:var(--red);font-size:7px;letter-spacing:1.5px;padding:3px 10px;font-weight:800;z-index:2;display:flex;align-items:center;gap:5px}
+.si-live::before{content:'';width:5px;height:5px;border-radius:50%;background:#fff;animation:blink 1.2s ease-in-out infinite}
+.si-dur{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.65);border:0.5px solid rgba(255,255,255,.12);font-size:7px;letter-spacing:1px;padding:3px 8px;font-weight:600}
+
+/* ═══════════════════════════════
+   DISCOVER
+═══════════════════════════════ */
+#disc-scroll{height:100%;overflow-y:auto;scrollbar-width:none;padding:0 22px 22px}
+#disc-scroll::-webkit-scrollbar{display:none}
+.sec-lbl{font-size:6px;letter-spacing:3px;color:var(--muted2);padding:12px 0 8px;text-transform:uppercase;font-weight:700}
+#dtwrap{overflow:hidden;margin:0 -22px;padding:0 22px}
+#dtrack{display:flex;gap:10px;cursor:grab;user-select:none;width:max-content;padding-bottom:4px}
+#dtrack:active{cursor:grabbing}
+.dcard{width:136px;height:180px;border-radius:8px;overflow:hidden;position:relative;flex-shrink:0;transition:transform .22s cubic-bezier(.25,.46,.45,.94)}
+.dcbg{position:absolute;inset:0}
+.dcring{position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);width:82px;height:82px;border-radius:50%;z-index:1;opacity:.14}
+.dchole{position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;background:#000;z-index:2}
+.dcstripe{position:absolute;top:0;left:0;right:0;height:2px;z-index:3}
+.dcshine{position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.07),transparent 50%);z-index:3}
+.dcinfo{position:absolute;bottom:0;left:0;right:0;padding:10px;background:linear-gradient(to top,rgba(0,0,0,.99) 50%,transparent);z-index:4}
+.dca{font-size:6px;letter-spacing:2px;color:rgba(255,255,255,.35);margin-bottom:2px;text-transform:uppercase}
+.dct{font-size:11px;font-weight:800;letter-spacing:-.3px;line-height:1.1}
+.dcp{font-size:7px;letter-spacing:1px;margin-top:3px;font-weight:700}
+.dli{display:flex;align-items:center;padding:10px 0;border-bottom:0.5px solid var(--border);gap:12px;cursor:pointer;transition:opacity .15s}
+.dli:active{opacity:.6}
+.dli-thumb{width:44px;height:44px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;border:0.5px solid var(--border)}
+.dli-body{flex:1;min-width:0}
+.dli-name{font-size:11px;font-weight:700;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dli-meta{font-size:7px;letter-spacing:1px;color:var(--muted);margin-top:2px}
+.dli-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}
+.dli-price{font-size:11px;font-weight:800;letter-spacing:-.4px}
+.dli-arr{font-size:10px;color:var(--muted2)}
+
+/* ═══════════════════════════════
+   ARTICLE
+═══════════════════════════════ */
+#art-scroll{height:100%;overflow-y:auto;scrollbar-width:none}
+#art-scroll::-webkit-scrollbar{display:none}
+.a-hero{position:relative;height:196px;overflow:hidden}
+.a-hbg{position:absolute;inset:0}
+.a-hlines{position:absolute;inset:0;opacity:.025;background:repeating-linear-gradient(0deg,transparent,transparent 36px,#fff 36px,#fff 37px)}
+.a-hgrad{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.98) 28%,rgba(0,0,0,.1) 100%)}
+.a-hbar{position:absolute;top:0;left:0;bottom:0;width:3px;z-index:2}
+.a-hc{position:absolute;inset:0;padding:20px 20px 20px 24px;display:flex;flex-direction:column;justify-content:flex-end;z-index:1}
+.a-cat{font-size:7px;letter-spacing:3px;color:var(--lp);margin-bottom:7px;font-weight:700;text-transform:uppercase}
+.a-head{font-size:22px;font-weight:900;letter-spacing:-1.2px;line-height:.9;margin-bottom:7px}
+.a-by{font-size:7px;color:var(--muted);letter-spacing:1px}
+.a-by span{color:rgba(255,255,255,.5)}
+.a-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-top:1px}
+.a-cell{position:relative;height:126px;overflow:hidden;cursor:pointer}
+.a-cbg{position:absolute;inset:0}
+.a-cgrad{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.94) 28%,transparent)}
+.a-cc{position:absolute;inset:0;padding:11px;display:flex;flex-direction:column;justify-content:flex-end;z-index:1}
+.a-ccat{font-size:6px;letter-spacing:3px;margin-bottom:4px;font-weight:700;text-transform:uppercase}
+.a-ctit{font-size:13px;font-weight:800;letter-spacing:-.4px;line-height:1}
+.a-csub{font-size:7px;color:var(--muted);letter-spacing:.5px;margin-top:3px}
+.a-wide{height:114px;position:relative;overflow:hidden;margin-top:1px;cursor:pointer}
+.a-wbg{position:absolute;inset:0}
+.a-wcol{position:absolute;inset:0;background:rgba(0,0,0,.58)}
+.a-wbar{position:absolute;top:0;bottom:0;left:0;width:3px;z-index:2}
+.a-wc{position:absolute;inset:0;padding:15px 15px 15px 22px;display:flex;flex-direction:column;justify-content:center;z-index:1}
+.a-wcat{font-size:7px;letter-spacing:3px;margin-bottom:5px;font-weight:700;text-transform:uppercase}
+.a-wtit{font-size:17px;font-weight:900;letter-spacing:-.8px;line-height:.94}
+.a-wsub{font-size:7px;color:var(--muted);letter-spacing:.5px;margin-top:5px}
+.a-srow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;margin-top:1px}
+.a-sq{aspect-ratio:1;position:relative;overflow:hidden;cursor:pointer}
+.a-sqbg{position:absolute;inset:0}
+.a-sqgrad{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.94) 32%,transparent)}
+.a-sqc{position:absolute;inset:0;padding:9px;display:flex;flex-direction:column;justify-content:flex-end;z-index:1}
+.a-sqcat{font-size:6px;letter-spacing:2px;margin-bottom:2px;font-weight:700;text-transform:uppercase}
+.a-sqtit{font-size:10px;font-weight:800;letter-spacing:-.2px;line-height:1}
+
+/* ═══════════════════════════════
+   MY PASS — NFT
+═══════════════════════════════ */
+#pscroll{height:100%;overflow-y:auto;scrollbar-width:none;padding:10px 20px 22px}
+#pscroll::-webkit-scrollbar{display:none}
+.nft{width:100%;aspect-ratio:1.62;border-radius:18px;position:relative;overflow:hidden;margin-bottom:14px;cursor:pointer;transition:transform .32s cubic-bezier(.25,.46,.45,.94)}
+.nft-bg{position:absolute;inset:0}
+/* rotating shimmer */
+.nft-spin{position:absolute;top:-55%;left:-55%;width:210%;height:210%;background:conic-gradient(from 0deg,transparent 0deg,rgba(255,255,255,.018) 55deg,transparent 110deg,rgba(168,230,61,.016) 170deg,transparent 230deg,rgba(255,255,255,.018) 290deg,transparent 360deg);animation:nspin 11s linear infinite;z-index:2;border-radius:50%}
+@keyframes nspin{to{transform:rotate(360deg)}}
+/* holographic sheen */
+.nft-holo{position:absolute;inset:0;background:linear-gradient(132deg,transparent 22%,rgba(255,255,255,.035) 38%,rgba(255,255,255,.07) 50%,rgba(255,255,255,.035) 62%,transparent 78%);z-index:3;transition:background .25s}
+/* scanline texture */
+.nft-scan{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.06) 3px,rgba(0,0,0,.06) 4px);z-index:2;pointer-events:none}
+/* inner frame */
+.nft-frame{position:absolute;inset:8px;border:0.5px solid rgba(255,255,255,.1);border-radius:13px;z-index:4}
+/* corner accents */
+.nc{position:absolute;z-index:5;width:12px;height:12px}
+.nc.tl{top:14px;left:14px;border-top:1px solid;border-left:1px solid}
+.nc.tr{top:14px;right:14px;border-top:1px solid;border-right:1px solid}
+.nc.bl{bottom:14px;left:14px;border-bottom:1px solid;border-left:1px solid}
+.nc.br{bottom:14px;right:14px;border-bottom:1px solid;border-right:1px solid}
+.nft-c{position:absolute;inset:0;padding:15px;display:flex;flex-direction:column;justify-content:space-between;z-index:6}
+.nft-top{display:flex;justify-content:space-between;align-items:flex-start}
+.nft-badge{font-size:6px;letter-spacing:2px;padding:3px 9px;border-radius:100px;font-weight:800;text-transform:uppercase;border:0.5px solid}
+.nft-ed{font-size:7px;letter-spacing:.5px;color:rgba(255,255,255,.22);font-family:'Courier New',monospace}
+.nft-mid{flex:1;display:flex;align-items:center;justify-content:center;position:relative}
+.nft-ico{font-size:38px;filter:drop-shadow(0 0 18px rgba(255,255,255,.22))}
+.nft-wm{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:76px;font-weight:900;color:rgba(255,255,255,.03);letter-spacing:-5px;text-transform:uppercase;overflow:hidden;pointer-events:none}
+.nft-bot{}
+.nft-artist{font-size:7px;letter-spacing:3px;margin-bottom:3px;opacity:.6;text-transform:uppercase;font-weight:600}
+.nft-title{font-size:18px;font-weight:900;letter-spacing:-.9px;line-height:.9;margin-bottom:7px}
+.nft-foot{display:flex;justify-content:space-between;align-items:flex-end}
+.nft-id{font-size:6px;letter-spacing:.5px;font-family:'Courier New',monospace;opacity:.28;line-height:1.5}
+.nft-val{font-size:13px;font-weight:900;letter-spacing:-.5px}
+.nft.locked{opacity:.28;filter:grayscale(1)}
+
+/* ═══════════════════════════════
+   ARTIST VIEW
+═══════════════════════════════ */
+#artist-wrap{height:100%;display:flex;flex-direction:column;overflow:hidden}
+.art-hdr{padding:14px 22px 12px;border-bottom:0.5px solid var(--border);flex-shrink:0}
+.art-role{font-size:6px;letter-spacing:3px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;font-weight:600}
+.art-name{font-size:20px;font-weight:900;letter-spacing:-1px}
+.art-tabs{display:flex;padding:0 22px;border-bottom:0.5px solid var(--border);flex-shrink:0}
+.art-tab{font-size:8px;letter-spacing:2px;padding:10px 14px;border:none;background:none;color:var(--muted);cursor:pointer;border-bottom:1.5px solid transparent;font-family:'Inter',sans-serif;font-weight:700;transition:all .2s;text-transform:uppercase;flex-shrink:0}
+.art-tab.active{color:#fff;border-bottom-color:var(--red)}
+.art-body{flex:1;overflow-y:auto;scrollbar-width:none;padding:14px 22px}
+.art-body::-webkit-scrollbar{display:none}
+.a-sec{font-size:6px;letter-spacing:3px;color:var(--muted2);margin-bottom:10px;text-transform:uppercase;font-weight:700}
+/* stats grid */
+.ast-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
+.ast{background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:4px}
+.ast-n{font-size:19px;font-weight:900;letter-spacing:-1px;line-height:1}
+.ast-l{font-size:6px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+/* revenue */
+.rev-list{display:flex;flex-direction:column;gap:9px;margin-bottom:18px}
+.rev-item{display:flex;align-items:center;gap:10px}
+.rev-lbl{font-size:8px;font-weight:600;letter-spacing:-.1px;width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rev-bar-bg{flex:1;height:3px;background:var(--bg3);border-radius:2px;overflow:hidden}
+.rev-bar{height:100%;border-radius:2px;transition:width .9s cubic-bezier(.25,.46,.45,.94)}
+.rev-val{font-size:9px;font-weight:800;letter-spacing:-.3px;width:48px;text-align:right}
+/* pass list in artist */
+.pa-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:0.5px solid var(--border)}
+.pa-thumb{width:42px;height:42px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px;border:0.5px solid var(--border)}
+.pa-info{flex:1}
+.pa-name{font-size:11px;font-weight:700;letter-spacing:-.2px}
+.pa-meta{font-size:7px;letter-spacing:1px;color:var(--muted);margin-top:2px}
+.pa-right{text-align:right;flex-shrink:0}
+.pa-price{font-size:11px;font-weight:800;letter-spacing:-.3px}
+.pa-prog{font-size:7px;color:var(--muted);margin-top:2px}
+/* QR */
+.qr-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+.qr-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.qr-ev{font-size:12px;font-weight:800;letter-spacing:-.3px}
+.qr-cnt{font-size:10px;font-weight:800;color:var(--lp)}
+.qr-box{width:88px;height:88px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;position:relative;overflow:hidden}
+.qr-pat{position:absolute;inset:6px;display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.qr-pat div{background:#000;border-radius:1px}
+.qr-btns{display:flex;gap:8px}
+.qr-btn{flex:1;padding:10px;border:0.5px solid var(--border);border-radius:10px;background:none;color:#fff;font-size:7px;letter-spacing:2px;cursor:pointer;font-family:'Inter',sans-serif;font-weight:800;text-transform:uppercase;transition:all .2s}
+.qr-btn.pri{background:var(--lp);color:#000;border-color:var(--lp)}
+.qr-btn:active{transform:scale(.96)}
+/* fans */
+.fan-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:0.5px solid var(--border)}
+.fan-av{width:36px;height:36px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900}
+.fan-name{font-size:11px;font-weight:700;letter-spacing:-.2px}
+.fan-meta{font-size:7px;letter-spacing:1px;color:var(--muted);margin-top:1px}
+.fan-pill{font-size:6px;letter-spacing:1.5px;padding:2px 8px;border-radius:100px;font-weight:700;text-transform:uppercase;border:0.5px solid}
+/* new pass form */
+.np-form{background:var(--bg2);border:0.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px}
+.np-row{display:flex;gap:8px;margin-bottom:10px}
+.np-field{flex:1;display:flex;flex-direction:column;gap:5px}
+.np-lbl{font-size:6px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;font-weight:700}
+.np-inp{background:var(--bg3);border:0.5px solid var(--border);border-radius:8px;padding:8px 10px;font-size:11px;color:#fff;font-family:'Inter',sans-serif;outline:none;font-weight:600;width:100%}
+.np-inp:focus{border-color:rgba(168,230,61,.4)}
+.np-submit{width:100%;padding:11px;background:var(--lp);border:none;border-radius:10px;font-family:'Inter',sans-serif;font-size:9px;letter-spacing:2px;font-weight:800;color:#000;cursor:pointer;text-transform:uppercase;transition:all .2s}
+.np-submit:active{transform:scale(.97)}
+
+/* ── BOTTOM NAV ── */
+#bnav{position:absolute;bottom:0;left:0;right:0;height:66px;border-top:0.5px solid var(--border);background:rgba(0,0,0,.96);backdrop-filter:blur(24px);display:flex;z-index:50;padding-bottom:6px}
+.bn{flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-family:'Inter',sans-serif;transition:transform .12s;padding:0}
+.bn:active{transform:scale(.87)}
+.bn .bi{font-size:18px;line-height:1;transition:transform .15s}
+.bn.active .bi{transform:translateY(-1px)}
+.bn .bl{font-size:6px;letter-spacing:2px;text-transform:uppercase;font-weight:700}
+.bn.active .bi,.bn.active .bl{color:var(--lp)}
+.bn:not(.active) .bi,.bn:not(.active) .bl{color:rgba(255,255,255,.18)}
+</style>
+</head>
+<body>
+
+<div id="mode-bar">
+  <button class="mode-btn active" onclick="setMode('fan')">Fan</button>
+  <button class="mode-btn" onclick="setMode('dancer')">Dancer</button>
+  <button class="mode-btn" onclick="setMode('artist')">Artist</button>
+</div>
+
+<div id="app">
+
+  <!-- TOPBAR -->
+  <div id="topbar">
+    <div class="logo-wrap">
+      <div class="logo">
+        <span class="logo-lp">LIVE</span><span class="logo-div"> / </span><span class="logo-sp">SUPER</span> PASS
+      </div>
+      <div class="plan-pill pill-sp" id="plan-label">SUPER PASS</div>
+    </div>
+    <div class="topbar-r">
+      <div class="t-notif">🔔</div>
+      <div class="t-av">N</div>
+    </div>
+  </div>
+
+  <!-- FILTER -->
+  <div id="filtertabs" style="opacity:0;pointer-events:none">
+    <button class="ftab active" data-filter="all">All</button>
+    <button class="ftab" data-filter="film">Film</button>
+    <button class="ftab" data-filter="series">Series</button>
+    <button class="ftab" data-filter="live">Live</button>
+    <button class="ftab" data-filter="article">Article</button>
+  </div>
+
+  <!-- ═══ HOME ═══ -->
+  <div class="panel active" id="panel-home">
+    <div id="home-wrap">
+      <div id="home-hero">
+        <div class="hh-glow"></div>
+        <div class="hh-grid"></div>
+        <div class="hh-c">
+          <div class="hh-greet">Welcome back, Nobby</div>
+          <div class="hh-title">YOUR <em>PASS</em><br/>COLLECTION</div>
+          <div class="hh-stats">
+            <div class="hs"><div class="hs-n" style="color:var(--lp)">3</div><div class="hs-l">Active</div></div>
+            <div class="hs"><div class="hs-n">14</div><div class="hs-l">Events</div></div>
+            <div class="hs"><div class="live-pulse"><div class="ld"></div>LIVE NOW</div><div class="hs-l">2,840 watching</div></div>
+          </div>
+        </div>
+      </div>
+      <div id="home-sec-label">Your Passes</div>
+      <div id="hpasses">
+        <div id="hdrag">
+          <!-- LIVE PASS card -->
+          <div class="hcard ha">
+            <div class="hcbg" style="background:linear-gradient(135deg,#0e1a00,#1c3000)"></div>
+            <div class="hcring" style="background:conic-gradient(#1a2800,#2c4400,#1a2800,#0a1200)"></div>
+            <div class="hchole"></div><div class="hcshine"></div>
+            <div class="hcstripe" style="background:var(--lp)"></div>
+            <div class="hcnum">01</div>
+            <div class="hcinfo"><div class="hca">All Must Dance™</div><div class="hct">Tokyo Sessions Vol.7</div><div class="hcp" style="color:var(--lp)">LIVE PASS · ¥3,000</div></div>
+          </div>
+          <!-- SUPER PASS card -->
+          <div class="hcard">
+            <div class="hcbg" style="background:linear-gradient(135deg,#1c1000,#2e1a00)"></div>
+            <div class="hcring" style="background:conic-gradient(#1c1400,#2e2200,#1c1400)"></div>
+            <div class="hchole"></div><div class="hcshine"></div>
+            <div class="hcstripe" style="background:var(--sp)"></div>
+            <div class="hcnum">02</div>
+            <div class="hcinfo"><div class="hca">Tribute Edition</div><div class="hct">Yabe Nao Memorial</div><div class="hcp" style="color:var(--sp)">SUPER PASS · ¥5,000</div></div>
+          </div>
+          <div class="hcard">
+            <div class="hcbg" style="background:linear-gradient(135deg,#001c0a,#002c12)"></div>
+            <div class="hcring" style="background:conic-gradient(#001a08,#002c10,#001a08)"></div>
+            <div class="hchole"></div><div class="hcshine"></div>
+            <div class="hcstripe" style="background:var(--mint)"></div>
+            <div class="hcnum">03</div>
+            <div class="hcinfo"><div class="hca">Waname® × AMD</div><div class="hct">Kimono Rave Night</div><div class="hcp" style="color:var(--mint)">LIVE PASS · ¥2,500</div></div>
+          </div>
+          <div class="hcard" style="opacity:.22;border:0.5px solid var(--border);border-radius:14px">
+            <div class="hcinfo" style="align-items:center;justify-content:center;text-align:center">
+              <div style="font-size:22px;opacity:.4;margin-bottom:6px">＋</div>
+              <div style="font-size:6px;letter-spacing:2px;color:var(--muted)">DISCOVER</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SCREEN ═══ -->
+  <div class="panel" id="panel-screen">
+    <div id="scr-outer">
+      <div id="scr-content">
+        <div class="si" data-type="live">
+          <div class="si-bg" style="height:284px;background:linear-gradient(135deg,#0d0000,#1a0000)">
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><div style="width:136px;height:136px;border-radius:50%;border:0.5px solid rgba(255,59,48,.13)"></div></div>
+          </div>
+          <div class="si-live">LIVE</div>
+          <div class="si-grad"></div>
+          <div class="si-info"><div class="si-tag red">Streaming Now</div><div class="si-title">All Must Dance Vol. 24</div><div class="si-meta">LIQUIDROOM TOKYO · 2,840 WATCHING</div></div>
+        </div>
+        <div class="si" data-type="film">
+          <div class="si-bg" style="height:242px;background:linear-gradient(160deg,#070714,#0a0a1c)">
+            <div style="position:absolute;top:16px;right:16px;width:42px;height:42px;border-radius:50%;border:0.5px solid rgba(168,230,61,.18);display:flex;align-items:center;justify-content:center;font-size:14px;opacity:.38">▶</div>
+          </div>
+          <div class="si-dur">28:00</div>
+          <div class="si-grad"></div>
+          <div class="si-info"><div class="si-tag">Film</div><div class="si-title">Europe Tour Documentary</div><div class="si-meta">BERLIN · PARIS · AMSTERDAM 2025</div></div>
+        </div>
+        <div class="si" data-type="series">
+          <div class="si-bg" style="height:228px;background:linear-gradient(120deg,#0e0614,#080010)"></div>
+          <div class="si-dur">EP 3 / 8</div>
+          <div class="si-grad"></div>
+          <div class="si-info"><div class="si-tag">Series</div><div class="si-title">Making of Waname® S/S 26</div><div class="si-meta">FASHION WEEK TOKYO · MEMBERS ONLY</div></div>
+        </div>
+        <div class="si" data-type="article">
+          <div class="si-bg" style="height:192px;background:#080808">
+            <div style="position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--lp)"></div>
+            <div style="position:absolute;inset:0;padding:20px 20px 20px 22px;display:flex;flex-direction:column;justify-content:center;gap:7px;opacity:.22">
+              <div style="height:5px;background:#fff;border-radius:3px;width:75%"></div>
+              <div style="height:5px;background:#fff;border-radius:3px;width:55%"></div>
+              <div style="height:5px;background:#fff;border-radius:3px;width:65%"></div>
+            </div>
+          </div>
+          <div class="si-grad"></div>
+          <div class="si-info"><div class="si-tag">Article</div><div class="si-title">Nobby on Space & Sound Design</div><div class="si-meta">8 MIN READ · SPACE COOKING™</div></div>
+        </div>
+        <div class="si" data-type="film">
+          <div class="si-bg" style="height:242px;background:linear-gradient(160deg,#100808,#1c0a0a)"></div>
+          <div class="si-dur">45:00</div>
+          <div class="si-grad"></div>
+          <div class="si-info"><div class="si-tag">Film</div><div class="si-title">Idomi Tokyo 2025 Recap</div><div class="si-meta">DANCE BATTLE · FULL DOCUMENTARY</div></div>
+        </div>
+        <div class="si" data-type="series">
+          <div class="si-bg" style="height:228px;background:linear-gradient(145deg,#001010,#001c1c)"></div>
+          <div class="si-dur">EP 1 / 5</div>
+          <div class="si-grad"></div>
+          <div class="si-info"><div class="si-tag">Series</div><div class="si-title">Dubla® Origin Story</div><div class="si-meta">EXCLUSIVE · MEMBERS ONLY</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ DISCOVER ═══ -->
+  <div class="panel" id="panel-discover">
+    <div id="disc-scroll">
+      <div class="sec-lbl">New Releases</div>
+      <div id="dtwrap">
+        <div id="dtrack">
+          <div class="dcard"><div class="dcbg" style="background:linear-gradient(135deg,#0e1a00,#1c3000)"></div><div class="dcring" style="background:conic-gradient(#1a2800,#2a4000,#1a2800)"></div><div class="dchole"></div><div class="dcstripe" style="background:var(--lp)"></div><div class="dcshine"></div><div class="dcinfo"><div class="dca">All Must Dance™</div><div class="dct">Tokyo Sessions V7</div><div class="dcp" style="color:var(--lp)">LIVE · ¥3,000</div></div></div>
+          <div class="dcard"><div class="dcbg" style="background:linear-gradient(135deg,#1c1000,#2e1a00)"></div><div class="dcring" style="background:conic-gradient(#1c1400,#2e2200,#1c1400)"></div><div class="dchole"></div><div class="dcstripe" style="background:var(--sp)"></div><div class="dcshine"></div><div class="dcinfo"><div class="dca">Tribute</div><div class="dct">Yabe Nao Memorial</div><div class="dcp" style="color:var(--sp)">SUPER · ¥5,000</div></div></div>
+          <div class="dcard"><div class="dcbg" style="background:linear-gradient(135deg,#1a0000,#2c0000)"></div><div class="dcring" style="background:conic-gradient(#1a0000,#2c0000,#1a0000)"></div><div class="dchole"></div><div class="dcstripe" style="background:var(--red)"></div><div class="dcshine"></div><div class="dcinfo"><div class="dca">Strada Studio</div><div class="dct">Battle Season 3</div><div class="dcp" style="color:var(--red)">LIVE · ¥1,800</div></div></div>
+          <div class="dcard"><div class="dcbg" style="background:linear-gradient(135deg,#0a001c,#140030)"></div><div class="dcring" style="background:conic-gradient(#0a001c,#14002e,#0a001c)"></div><div class="dchole"></div><div class="dcstripe" style="background:var(--purple)"></div><div class="dcshine"></div><div class="dcinfo"><div class="dca">Dubla®</div><div class="dct">Brand Drop 001</div><div class="dcp" style="color:var(--purple)">SUPER · ¥4,000</div></div></div>
+          <div class="dcard"><div class="dcbg" style="background:linear-gradient(135deg,#001018,#001a28)"></div><div class="dcring" style="background:conic-gradient(#001018,#001c28,#001018)"></div><div class="dchole"></div><div class="dcstripe" style="background:var(--blue)"></div><div class="dcshine"></div><div class="dcinfo"><div class="dca">Waname® × AMD</div><div class="dct">Kimono Rave Night</div><div class="dcp" style="color:var(--blue)">LIVE · ¥2,500</div></div></div>
+        </div>
+      </div>
+      <div class="sec-lbl" style="margin-top:4px">Browse All</div>
+      <div class="dli"><div class="dli-thumb" style="background:#0e1a00">🎵</div><div class="dli-body"><div class="dli-name">AMD Official Archive</div><div class="dli-meta">ALL MUST DANCE™ · 24 CONTENTS</div></div><div class="dli-right"><div class="dli-price" style="color:var(--lp)">¥9,800</div><div class="dli-arr">›</div></div></div>
+      <div class="dli"><div class="dli-thumb" style="background:#001018">🌍</div><div class="dli-body"><div class="dli-name">Europe Tour 2025</div><div class="dli-meta">FILM + PHOTO · 8 CONTENTS</div></div><div class="dli-right"><div class="dli-price" style="color:var(--blue)">¥2,500</div><div class="dli-arr">›</div></div></div>
+      <div class="dli"><div class="dli-thumb" style="background:#1a0010">💃</div><div class="dli-body"><div class="dli-name">Strada Battle S3</div><div class="dli-meta">DANCE BATTLE · 16 CONTENTS</div></div><div class="dli-right"><div class="dli-price" style="color:var(--red)">¥1,800</div><div class="dli-arr">›</div></div></div>
+      <div class="dli"><div class="dli-thumb" style="background:#100008">👗</div><div class="dli-body"><div class="dli-name">Waname® S/S 26</div><div class="dli-meta">FASHION · BEHIND THE SCENES</div></div><div class="dli-right"><div class="dli-price" style="color:var(--mint)">¥3,200</div><div class="dli-arr">›</div></div></div>
+      <div class="dli" style="opacity:.3"><div class="dli-thumb" style="background:#0a0a0a">🔒</div><div class="dli-body"><div class="dli-name">SC All Access Annual</div><div class="dli-meta">ANNUAL SUPER PASS · COMING SOON</div></div><div class="dli-right"><div class="dli-price" style="color:var(--muted)">¥9,800</div><div class="dli-arr">›</div></div></div>
+    </div>
+  </div>
+
+  <!-- ═══ ARTICLE ═══ -->
+  <div class="panel" id="panel-article">
+    <div id="art-scroll">
+      <div class="a-hero">
+        <div class="a-hbg" style="background:linear-gradient(160deg,#070710,#050508)"></div>
+        <div class="a-hlines"></div><div class="a-hgrad"></div>
+        <div class="a-hbar" style="background:var(--lp)"></div>
+        <div class="a-hc">
+          <div class="a-cat">Interview · Featured</div>
+          <div class="a-head">Nobby on Space<br/>& Sound Design</div>
+          <div class="a-by"><span>Space Cooking™ Journal</span> · 8 min · 2026.03</div>
+        </div>
+      </div>
+      <div class="a-grid">
+        <div class="a-cell"><div class="a-cbg" style="background:linear-gradient(135deg,#0d0000,#1a0000)"></div><div class="a-cgrad"></div><div class="a-cc"><div class="a-ccat" style="color:var(--red)">Culture</div><div class="a-ctit">Tokyo Club Scene 2026</div><div class="a-csub">5 min read</div></div></div>
+        <div class="a-cell"><div class="a-cbg" style="background:linear-gradient(135deg,#100800,#1c0e00)"></div><div class="a-cgrad"></div><div class="a-cc"><div class="a-ccat" style="color:var(--sp)">Tribute</div><div class="a-ctit">Yabe Nao Legacy</div><div class="a-csub">12 min read</div></div></div>
+      </div>
+      <div class="a-wide">
+        <div class="a-wbg" style="background:linear-gradient(90deg,#060614,#0a0a1c)"></div>
+        <div class="a-wcol"></div>
+        <div class="a-wbar" style="background:var(--purple)"></div>
+        <div class="a-wc"><div class="a-wcat" style="color:var(--purple)">Fashion</div><div class="a-wtit">Dubla® — The Birth of a Brand</div><div class="a-wsub">Behind the scenes · Exclusive · 2026</div></div>
+      </div>
+      <div class="a-srow">
+        <div class="a-sq"><div class="a-sqbg" style="background:linear-gradient(135deg,#001c08,#000e04)"></div><div class="a-sqgrad"></div><div class="a-sqc"><div class="a-sqcat" style="color:var(--mint)">Design</div><div class="a-sqtit">Waname® S/S 26</div></div></div>
+        <div class="a-sq"><div class="a-sqbg" style="background:linear-gradient(135deg,#100000,#0c0000)"></div><div class="a-sqgrad"></div><div class="a-sqc"><div class="a-sqcat" style="color:var(--red)">Dance</div><div class="a-sqtit">Idomi 2025</div></div></div>
+        <div class="a-sq"><div class="a-sqbg" style="background:linear-gradient(135deg,#001018,#000c10)"></div><div class="a-sqgrad"></div><div class="a-sqc"><div class="a-sqcat" style="color:var(--blue)">Space</div><div class="a-sqtit">AMD Europe</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ MY PASS — NFT ═══ -->
+  <div class="panel" id="panel-pass">
+    <div id="pscroll">
+      <!-- LIVE PASS #1 -->
+      <div class="nft">
+        <div class="nft-bg" style="background:linear-gradient(135deg,#0c1a00,#1a3000,#0c1a00)"></div>
+        <div class="nft-spin"></div><div class="nft-holo"></div><div class="nft-scan"></div>
+        <div class="nft-frame"></div>
+        <div class="nc tl" style="border-color:rgba(168,230,61,.35)"></div><div class="nc tr" style="border-color:rgba(168,230,61,.35)"></div>
+        <div class="nc bl" style="border-color:rgba(168,230,61,.35)"></div><div class="nc br" style="border-color:rgba(168,230,61,.35)"></div>
+        <div class="nft-c">
+          <div class="nft-top"><div class="nft-badge" style="background:rgba(168,230,61,.12);color:var(--lp);border-color:rgba(168,230,61,.28)">Live Pass</div><div class="nft-ed">#001 / 300</div></div>
+          <div class="nft-mid"><div class="nft-wm">AMD</div><div class="nft-ico">🎴</div></div>
+          <div class="nft-bot"><div class="nft-artist" style="color:rgba(168,230,61,.55)">All Must Dance™</div><div class="nft-title">Tokyo Sessions Vol.7</div><div class="nft-foot"><div class="nft-id">SC-AMD-001-2026<br/>LIQUIDROOM 2026.01</div><div class="nft-val" style="color:var(--lp)">¥3,000</div></div></div>
+        </div>
+      </div>
+      <!-- SUPER PASS #2 -->
+      <div class="nft">
+        <div class="nft-bg" style="background:linear-gradient(135deg,#1c1000,#2e1c00,#1c1000)"></div>
+        <div class="nft-spin" style="animation-delay:-4s"></div><div class="nft-holo"></div><div class="nft-scan"></div>
+        <div class="nft-frame" style="border-color:rgba(245,200,66,.14)"></div>
+        <div class="nc tl" style="border-color:rgba(245,200,66,.4)"></div><div class="nc tr" style="border-color:rgba(245,200,66,.4)"></div>
+        <div class="nc bl" style="border-color:rgba(245,200,66,.4)"></div><div class="nc br" style="border-color:rgba(245,200,66,.4)"></div>
+        <div class="nft-c">
+          <div class="nft-top"><div class="nft-badge" style="background:rgba(245,200,66,.12);color:var(--sp);border-color:rgba(245,200,66,.3)">Super Pass</div><div class="nft-ed">#007 / 50</div></div>
+          <div class="nft-mid"><div class="nft-wm">YNT</div><div class="nft-ico">🏆</div></div>
+          <div class="nft-bot"><div class="nft-artist" style="color:rgba(245,200,66,.55)">In Memory Of</div><div class="nft-title">Yabe Nao Tribute</div><div class="nft-foot"><div class="nft-id">SC-YNT-007-2025<br/>MEMORIAL EDITION</div><div class="nft-val" style="color:var(--sp)">¥5,000</div></div></div>
+        </div>
+      </div>
+      <!-- LIVE PASS #3 -->
+      <div class="nft">
+        <div class="nft-bg" style="background:linear-gradient(135deg,#001c0a,#002e10,#001c0a)"></div>
+        <div class="nft-spin" style="animation-delay:-8s"></div><div class="nft-holo"></div><div class="nft-scan"></div>
+        <div class="nft-frame" style="border-color:rgba(0,229,160,.12)"></div>
+        <div class="nc tl" style="border-color:rgba(0,229,160,.35)"></div><div class="nc tr" style="border-color:rgba(0,229,160,.35)"></div>
+        <div class="nc bl" style="border-color:rgba(0,229,160,.35)"></div><div class="nc br" style="border-color:rgba(0,229,160,.35)"></div>
+        <div class="nft-c">
+          <div class="nft-top"><div class="nft-badge" style="background:rgba(0,229,160,.1);color:var(--mint);border-color:rgba(0,229,160,.28)">Live Pass</div><div class="nft-ed">#042 / 200</div></div>
+          <div class="nft-mid"><div class="nft-wm">KRN</div><div class="nft-ico">🎌</div></div>
+          <div class="nft-bot"><div class="nft-artist" style="color:rgba(0,229,160,.55)">Waname® × AMD</div><div class="nft-title">Kimono Rave Night</div><div class="nft-foot"><div class="nft-id">SC-KRN-042-2025<br/>SHIBUYA 2025</div><div class="nft-val" style="color:var(--mint)">¥2,500</div></div></div>
+        </div>
+      </div>
+      <!-- LOCKED -->
+      <div class="nft locked">
+        <div class="nft-bg" style="background:#080808"></div>
+        <div class="nft-frame" style="border-color:rgba(255,255,255,.04);border-style:dashed"></div>
+        <div class="nc tl" style="border-color:rgba(255,255,255,.1)"></div><div class="nc tr" style="border-color:rgba(255,255,255,.1)"></div>
+        <div class="nc bl" style="border-color:rgba(255,255,255,.1)"></div><div class="nc br" style="border-color:rgba(255,255,255,.1)"></div>
+        <div class="nft-c">
+          <div class="nft-top"><div class="nft-badge" style="background:rgba(255,255,255,.04);color:rgba(255,255,255,.2);border-color:rgba(255,255,255,.08)">Coming Soon</div><div class="nft-ed" style="opacity:.12">TBA</div></div>
+          <div class="nft-mid"><div class="nft-ico" style="filter:none;opacity:.1">🔒</div></div>
+          <div class="nft-bot"><div class="nft-artist" style="opacity:.14">Dubla®</div><div class="nft-title" style="opacity:.14">Brand Drop 001</div><div class="nft-foot"><div class="nft-id" style="opacity:.1">AVAILABLE 2026.05</div><div class="nft-val" style="opacity:.14">¥4,000</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══ DANCER VIEW ═══ -->
+  <div class="dpanel" id="dpanel-home">
+    <div style="height:100%;display:flex;flex-direction:column;overflow:hidden">
+      <div id="d-hero">
+        <div class="d-hero-glow"></div>
+        <div class="d-hero-grid"></div>
+        <div class="d-hero-c">
+          <div class="d-tag">Artist</div>
+          <div class="d-name">NOBBY</div>
+          <div class="d-genre">House · Waacking · Freestyle</div>
+          <div class="d-stats">
+            <div class="d-stat"><div class="d-sn" style="color:var(--dancer)">1,240</div><div class="d-sl">Followers</div></div>
+            <div class="d-stat"><div class="d-sn">48</div><div class="d-sl">Works</div></div>
+            <div class="d-stat"><div class="d-sn" style="color:var(--lp)">12</div><div class="d-sl">Collabs</div></div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:10px 22px 5px;font-size:6px;letter-spacing:3px;color:var(--muted2);text-transform:uppercase;font-weight:700;flex-shrink:0">Artists on Live Pass</div>
+      <div style="flex:1;overflow-y:auto;scrollbar-width:none;padding:0 22px 8px">
+
+        <div class="d-artist-item">
+          <div class="d-av" style="background:rgba(175,105,238,.16);color:var(--dancer);border-color:rgba(175,105,238,.3)">N</div>
+          <div class="d-ai-info">
+            <div class="d-ai-name">NOBBY</div>
+            <div class="d-ai-role">Dancer · Choreographer</div>
+          </div>
+          <div class="d-ai-genre" style="color:var(--dancer)">House</div>
+        </div>
+
+        <div class="d-artist-item">
+          <div class="d-av" style="background:rgba(245,200,66,.14);color:var(--sp);border-color:rgba(245,200,66,.28)">Y</div>
+          <div class="d-ai-info">
+            <div class="d-ai-name">DJ YABE NAO</div>
+            <div class="d-ai-role">DJ · Producer</div>
+          </div>
+          <div class="d-ai-genre" style="color:var(--sp)">House</div>
+        </div>
+
+        <div class="d-artist-item">
+          <div class="d-av" style="background:rgba(61,170,255,.14);color:var(--blue);border-color:rgba(61,170,255,.28)">K</div>
+          <div class="d-ai-info">
+            <div class="d-ai-name">KEITA</div>
+            <div class="d-ai-role">Dancer · Visual Artist</div>
+          </div>
+          <div class="d-ai-genre" style="color:var(--blue)">Popping</div>
+        </div>
+
+        <div class="d-artist-item">
+          <div class="d-av" style="background:rgba(0,229,160,.12);color:var(--mint);border-color:rgba(0,229,160,.25)">S</div>
+          <div class="d-ai-info">
+            <div class="d-ai-name">SAYA</div>
+            <div class="d-ai-role">Dancer · Photographer</div>
+          </div>
+          <div class="d-ai-genre" style="color:var(--mint)">Waacking</div>
+        </div>
+
+        <div class="d-artist-item">
+          <div class="d-av" style="background:rgba(255,59,48,.12);color:var(--red);border-color:rgba(255,59,48,.22)">R</div>
+          <div class="d-ai-info">
+            <div class="d-ai-name">RYO</div>
+            <div class="d-ai-role">Dancer · Filmmaker</div>
+          </div>
+          <div class="d-ai-genre" style="color:var(--red)">Locking</div>
+        </div>
+
+        <div class="d-artist-item">
+          <div class="d-av" style="background:rgba(191,90,242,.12);color:var(--purple);border-color:rgba(191,90,242,.22)">M</div>
+          <div class="d-ai-info">
+            <div class="d-ai-name">MIKA</div>
+            <div class="d-ai-role">Dancer · Fashion Designer</div>
+          </div>
+          <div class="d-ai-genre" style="color:var(--purple)">Vogue</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="dpanel" id="dpanel-feed">
+    <div id="d-feed-scroll">
+
+      <div class="d-feed-item">
+        <div class="d-feed-bg" style="height:270px;background:linear-gradient(160deg,#06030d,#0e061a)">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.06;font-size:100px">◎</div>
+        </div>
+        <div class="d-feed-collab">DJ YABE NAO × NOBBY</div>
+        <div class="d-feed-play">▶</div>
+        <div class="d-feed-grad"></div>
+        <div class="d-feed-info">
+          <div class="d-feed-genre">Dance Film</div>
+          <div class="d-feed-name">ECHO — A Visual Piece</div>
+          <div class="d-feed-meta">ALL MUST DANCE™ · 2,840 VIEWS · 2026.01</div>
+        </div>
+      </div>
+
+      <div class="d-feed-item">
+        <div class="d-feed-bg" style="height:240px;background:linear-gradient(160deg,#001018,#001a28)">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.06;font-size:80px">△</div>
+        </div>
+        <div class="d-feed-collab">WANAME® × SAYA</div>
+        <div class="d-feed-play">▶</div>
+        <div class="d-feed-grad"></div>
+        <div class="d-feed-info">
+          <div class="d-feed-genre">Fashion Film</div>
+          <div class="d-feed-name">KIMONO IN MOTION</div>
+          <div class="d-feed-meta">KIMONO RAVE NIGHT · 1,520 VIEWS</div>
+        </div>
+      </div>
+
+      <div class="d-feed-item">
+        <div class="d-feed-bg" style="height:240px;background:linear-gradient(160deg,#0a001a,#14002e)">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.06;font-size:80px">◇</div>
+        </div>
+        <div class="d-feed-collab">DUBLA® × RYO</div>
+        <div class="d-feed-play">▶</div>
+        <div class="d-feed-grad"></div>
+        <div class="d-feed-info">
+          <div class="d-feed-genre">Brand Film</div>
+          <div class="d-feed-name">STREET LAYER 001</div>
+          <div class="d-feed-meta">DUBLA® LAUNCH · 980 VIEWS</div>
+        </div>
+      </div>
+
+      <div class="d-feed-item">
+        <div class="d-feed-bg" style="height:240px;background:linear-gradient(160deg,#0d0000,#1a0000)">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.06;font-size:80px">○</div>
+        </div>
+        <div class="d-feed-collab">KEITA Solo Work</div>
+        <div class="d-feed-play">▶</div>
+        <div class="d-feed-grad"></div>
+        <div class="d-feed-info">
+          <div class="d-feed-genre">Short Film</div>
+          <div class="d-feed-name">CONCRETE GARDEN</div>
+          <div class="d-feed-meta">SPACE COOKING™ · 760 VIEWS</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="dpanel" id="dpanel-community">
+    <div style="height:100%;display:flex;flex-direction:column">
+      <div id="d-comm-scroll" style="flex:1">
+
+        <div class="bk-sec">Scene Channels</div>
+
+        <div class="ch-card">
+          <div class="ch-head"><div class="ch-name">House &amp; Music</div><div class="ch-cnt">342 online</div></div>
+          <div class="ch-desc">音楽とダンスの交差点。DJとダンサーが同じ場所で語り合うチャンネル</div>
+          <div class="ch-tags"><div class="ch-tag">House</div><div class="ch-tag">DJ</div><div class="ch-tag">Live Music</div></div>
+        </div>
+
+        <div class="ch-card">
+          <div class="ch-head"><div class="ch-name">Movement &amp; Fashion</div><div class="ch-cnt">128 online</div></div>
+          <div class="ch-desc">身体表現とファッションの融合。アーティストとデザイナーの共創スペース</div>
+          <div class="ch-tags"><div class="ch-tag">Fashion</div><div class="ch-tag">Collab</div><div class="ch-tag">Waacking</div></div>
+        </div>
+
+        <div class="ch-card">
+          <div class="ch-head"><div class="ch-name">Film &amp; Dance</div><div class="ch-cnt">89 online</div></div>
+          <div class="ch-desc">映像作家とダンサーのコラボ。作品制作の過程もシェア</div>
+          <div class="ch-tags"><div class="ch-tag">Film</div><div class="ch-tag">Visual</div><div class="ch-tag">Direction</div></div>
+        </div>
+
+        <div class="ch-card">
+          <div class="ch-head"><div class="ch-name">Global Connect</div><div class="ch-cnt">56 online</div></div>
+          <div class="ch-desc">世界中のアーティストと繋がる。AI多言語翻訳で言語の壁をなくす</div>
+          <div class="ch-tags"><div class="ch-tag">Global</div><div class="ch-tag">AI翻訳</div><div class="ch-tag">EN · JP · KR</div></div>
+        </div>
+
+        <div class="bk-sec">Messages</div>
+
+        <div class="rk-item">
+          <div class="rk-av" style="background:rgba(245,200,66,.14);color:var(--sp);border-color:rgba(245,200,66,.28);font-size:12px">Y</div>
+          <div class="rk-info"><div class="rk-name">DJ YABE NAO</div><div class="rk-genre">次のセッション一緒にやろう</div></div>
+          <div style="font-size:7px;color:var(--muted)">2m ago</div>
+        </div>
+
+        <div class="rk-item">
+          <div class="rk-av" style="background:rgba(0,229,160,.12);color:var(--mint);border-color:rgba(0,229,160,.25);font-size:12px">S</div>
+          <div class="rk-info"><div class="rk-name">SAYA</div><div class="rk-genre">WANAME® のコラボどうかな？</div></div>
+          <div style="font-size:7px;color:var(--muted)">14m ago</div>
+        </div>
+
+        <div class="rk-item">
+          <div class="rk-av" style="background:rgba(61,170,255,.12);color:var(--blue);border-color:rgba(61,170,255,.25);font-size:12px">K</div>
+          <div class="rk-info"><div class="rk-name">KEITA</div><div class="rk-genre">映像作品、一緒に作りたい</div></div>
+          <div style="font-size:7px;color:var(--muted)">1h ago</div>
+        </div>
+
+        <div class="rk-item">
+          <div class="rk-av" style="background:rgba(191,90,242,.12);color:var(--purple);border-color:rgba(191,90,242,.22);font-size:12px">M</div>
+          <div class="rk-info"><div class="rk-name">MIKA</div><div class="rk-genre">DUBLA® の撮影に出てほしい</div></div>
+          <div style="font-size:7px;color:var(--muted)">3h ago</div>
+        </div>
+
+      </div>
+      <div class="msg-bar">
+        <input class="msg-inp" placeholder="Message..." />
+        <button class="msg-send">↑</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="dpanel" id="dpanel-book">
+    <div id="d-book-scroll">
+
+      <div class="bk-sec">Lessons &amp; Workshops</div>
+
+      <div class="bk-card">
+        <div class="bk-top">
+          <div><div class="bk-title">House Fundamentals</div><div class="bk-venue">STRADA STUDIO · 練馬光が丘</div></div>
+          <div class="bk-price-tag">¥2,500</div>
+        </div>
+        <div class="bk-slots">
+          <div class="bk-slot avail sel"><div class="bk-time">10:00</div><div class="bk-avail">残3</div></div>
+          <div class="bk-slot avail"><div class="bk-time">13:00</div><div class="bk-avail">残6</div></div>
+          <div class="bk-slot full"><div class="bk-time">16:00</div><div class="bk-avail">満員</div></div>
+          <div class="bk-slot avail"><div class="bk-time">19:00</div><div class="bk-avail">残2</div></div>
+        </div>
+        <button class="bk-btn" onclick="this.textContent='✓ Booked!';setTimeout(()=>this.textContent='Book This Slot',2000)">Book This Slot</button>
+      </div>
+
+      <div class="bk-card">
+        <div class="bk-top">
+          <div><div class="bk-title">Expression &amp; Composition WS</div><div class="bk-venue">AMD Studio · 渋谷</div></div>
+          <div class="bk-price-tag">¥5,000</div>
+        </div>
+        <div class="bk-slots">
+          <div class="bk-slot avail"><div class="bk-time">11:00</div><div class="bk-avail">残8</div></div>
+          <div class="bk-slot avail"><div class="bk-time">15:00</div><div class="bk-avail">残4</div></div>
+          <div class="bk-slot avail"><div class="bk-time">18:00</div><div class="bk-avail">残1</div></div>
+        </div>
+        <button class="bk-btn" onclick="this.textContent='✓ Booked!';setTimeout(()=>this.textContent='Book This Slot',2000)">Book This Slot</button>
+      </div>
+
+      <div class="bk-sec">Studio Space</div>
+
+      <div class="bk-card">
+        <div class="bk-top">
+          <div><div class="bk-title">STRADA Studio A</div><div class="bk-venue">70㎡ · 鏡張り · 音響完備</div></div>
+          <div class="bk-price-tag">¥3,000/h</div>
+        </div>
+        <div class="bk-slots">
+          <div class="bk-slot avail"><div class="bk-time">09:00</div><div class="bk-avail">空き</div></div>
+          <div class="bk-slot full"><div class="bk-time">11:00</div><div class="bk-avail">満</div></div>
+          <div class="bk-slot full"><div class="bk-time">13:00</div><div class="bk-avail">満</div></div>
+          <div class="bk-slot avail"><div class="bk-time">15:00</div><div class="bk-avail">空き</div></div>
+          <div class="bk-slot avail"><div class="bk-time">17:00</div><div class="bk-avail">空き</div></div>
+          <div class="bk-slot avail"><div class="bk-time">19:00</div><div class="bk-avail">空き</div></div>
+        </div>
+        <button class="bk-btn" onclick="this.textContent='✓ Reserved!';setTimeout(()=>this.textContent='Reserve Studio',2000)">Reserve Studio</button>
+      </div>
+
+      <div class="bk-card">
+        <div class="bk-top">
+          <div><div class="bk-title">AMD Studio Main</div><div class="bk-venue">120㎡ · 渋谷 · LIVE配信設備</div></div>
+          <div class="bk-price-tag">¥6,000/h</div>
+        </div>
+        <div class="bk-slots">
+          <div class="bk-slot full"><div class="bk-time">10:00</div><div class="bk-avail">満</div></div>
+          <div class="bk-slot avail"><div class="bk-time">14:00</div><div class="bk-avail">空き</div></div>
+          <div class="bk-slot avail"><div class="bk-time">18:00</div><div class="bk-avail">空き</div></div>
+        </div>
+        <button class="bk-btn" onclick="this.textContent='✓ Reserved!';setTimeout(()=>this.textContent='Reserve Studio',2000)">Reserve Studio</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Dancer Bottom Nav -->
+  <div id="d-bnav" style="display:none">
+    <button class="dbn active" data-dtab="home"><div class="dbi">◉</div><div class="dbl">Artists</div></button>
+    <button class="dbn" data-dtab="feed"><div class="dbi">▶</div><div class="dbl">Works</div></button>
+    <button class="dbn" data-dtab="community"><div class="dbi">◎</div><div class="dbl">Connect</div></button>
+    <button class="dbn" data-dtab="book"><div class="dbi">✦</div><div class="dbl">Studio</div></button>
+  </div>
+
+
+  <!-- ═══ ARTIST VIEW ═══ -->
+  <div class="panel" id="panel-artist">
+    <div id="artist-wrap">
+      <div class="art-hdr">
+        <div class="art-role">Artist Dashboard</div>
+        <div class="art-name">NOBBY / Space Cooking™</div>
+      </div>
+      <div class="art-tabs">
+        <button class="art-tab active" onclick="switchATab('overview')">Overview</button>
+        <button class="art-tab" onclick="switchATab('passes')">Passes</button>
+        <button class="art-tab" onclick="switchATab('fans')">Fans</button>
+        <button class="art-tab" onclick="switchATab('new')">+ New Pass</button>
+      </div>
+      <div class="art-body" id="artist-body"></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV (fan) -->
+  <div id="bnav">
+    <button class="bn active" data-tab="home"><div class="bi">⌂</div><div class="bl">Home</div></button>
+    <button class="bn" data-tab="screen"><div class="bi">▶</div><div class="bl">Screen</div></button>
+    <button class="bn" data-tab="discover"><div class="bi">◎</div><div class="bl">Discover</div></button>
+    <button class="bn" data-tab="article"><div class="bi">≡</div><div class="bl">Article</div></button>
+    <button class="bn" data-tab="pass"><div class="bi">◈</div><div class="bl">My Pass</div></button>
+  </div>
+</div>
+
+<script>
+// ── ARTIST CONTENT ──
+const ATABS = {
+  overview: () => `
+    <div class="a-sec">Revenue Overview</div>
+    <div class="ast-grid">
+      <div class="ast"><div class="ast-n" style="color:var(--lp)">¥234K</div><div class="ast-l">Revenue</div></div>
+      <div class="ast"><div class="ast-n">1,240</div><div class="ast-l">Pass Holders</div></div>
+      <div class="ast"><div class="ast-n" style="color:var(--red)">● 3</div><div class="ast-l">Live / Active</div></div>
+    </div>
+    <div class="a-sec">Revenue by Pass</div>
+    <div class="rev-list">
+      <div class="rev-item"><div class="rev-lbl">Tokyo Sessions V7</div><div class="rev-bar-bg"><div class="rev-bar" style="width:82%;background:var(--lp)"></div></div><div class="rev-val" style="color:var(--lp)">¥90K</div></div>
+      <div class="rev-item"><div class="rev-lbl">Yabe Nao Tribute</div><div class="rev-bar-bg"><div class="rev-bar" style="width:58%;background:var(--sp)"></div></div><div class="rev-val" style="color:var(--sp)">¥63K</div></div>
+      <div class="rev-item"><div class="rev-lbl">Kimono Rave Night</div><div class="rev-bar-bg"><div class="rev-bar" style="width:42%;background:var(--mint)"></div></div><div class="rev-val" style="color:var(--mint)">¥47K</div></div>
+      <div class="rev-item"><div class="rev-lbl">AMD Archive</div><div class="rev-bar-bg"><div class="rev-bar" style="width:30%;background:var(--blue)"></div></div><div class="rev-val" style="color:var(--blue)">¥34K</div></div>
+    </div>
+    <div class="a-sec">This Month</div>
+    <div class="rev-item" style="margin-bottom:6px"><div class="rev-lbl">New Passes Sold</div><div class="rev-bar-bg"><div class="rev-bar" style="width:65%;background:var(--red)"></div></div><div class="rev-val" style="color:var(--red)">+142</div></div>
+  `,
+  passes: () => `
+    <div class="a-sec">Issue QR Pass</div>
+    <div class="qr-card">
+      <div class="qr-top"><div class="qr-ev">All Must Dance Vol.24</div><div class="qr-cnt">847 issued</div></div>
+      <div class="qr-box">
+        <div class="qr-pat">${Array(49).fill(0).map((_,i)=>`<div style="opacity:${Math.random()>.4?1:0}"></div>`).join('')}</div>
+      </div>
+      <div class="qr-btns">
+        <button class="qr-btn" onclick="this.textContent='✓ Copied';setTimeout(()=>this.textContent='Copy Code',1800)">Copy Code</button>
+        <button class="qr-btn pri" onclick="this.textContent='✓ Done!';setTimeout(()=>this.textContent='New QR',1800)">New QR</button>
+      </div>
+    </div>
+    <div class="a-sec">Active Passes</div>
+    <div class="pa-item"><div class="pa-thumb" style="background:#0e1a00">🎴</div><div class="pa-info"><div class="pa-name">Tokyo Sessions V7</div><div class="pa-meta">LIVE PASS · 300 TOTAL</div></div><div class="pa-right"><div class="pa-price" style="color:var(--lp)">¥3,000</div><div class="pa-prog">247 / 300 claimed</div></div></div>
+    <div class="pa-item"><div class="pa-thumb" style="background:#1c1000">🏆</div><div class="pa-info"><div class="pa-name">Yabe Nao Tribute</div><div class="pa-meta">SUPER PASS · 50 TOTAL</div></div><div class="pa-right"><div class="pa-price" style="color:var(--sp)">¥5,000</div><div class="pa-prog">50 / 50 SOLD OUT</div></div></div>
+    <div class="pa-item"><div class="pa-thumb" style="background:#001c0a">🎌</div><div class="pa-info"><div class="pa-name">Kimono Rave Night</div><div class="pa-meta">LIVE PASS · 200 TOTAL</div></div><div class="pa-right"><div class="pa-price" style="color:var(--mint)">¥2,500</div><div class="pa-prog">42 / 200 claimed</div></div></div>
+  `,
+  fans: () => `
+    <div class="a-sec">Top Fans</div>
+    ${[['K','Keita Nakamura','TOKYO · 3 PASSES · ¥11,500','rgba(168,230,61,.18)','var(--lp)','SUPER','var(--sp)','rgba(245,200,66,.15)','rgba(245,200,66,.3)'],
+       ['S','Saya Tanaka','OSAKA · 2 PASSES · ¥8,000','rgba(61,170,255,.18)','var(--blue)','LIVE','var(--lp)','rgba(168,230,61,.15)','rgba(168,230,61,.3)'],
+       ['R','Ryo Yamamoto','TOKYO · 2 PASSES · ¥6,800','rgba(191,90,242,.18)','var(--purple)','LIVE','var(--lp)','rgba(168,230,61,.15)','rgba(168,230,61,.3)'],
+       ['M','Mika Sato','NAGOYA · 1 PASS · ¥3,000','rgba(0,229,160,.18)','var(--mint)','LIVE','var(--lp)','rgba(168,230,61,.15)','rgba(168,230,61,.3)'],
+       ['T','Taro Ishida','FUKUOKA · 1 PASS · ¥2,500','rgba(255,59,48,.18)','var(--red)','LIVE','var(--lp)','rgba(168,230,61,.15)','rgba(168,230,61,.3)']
+    ].map(([i,n,m,ab,ac,pt,pc,pb,pbc])=>`
+      <div class="fan-item">
+        <div class="fan-av" style="background:${ab};color:${ac}">${i}</div>
+        <div style="flex:1"><div class="fan-name">${n}</div><div class="fan-meta">${m}</div></div>
+        <div class="fan-pill" style="background:${pb};color:${pc};border-color:${pbc}">${pt}</div>
+      </div>`).join('')}
+  `,
+  new: () => `
+    <div class="a-sec">Create New Pass</div>
+    <div class="np-form">
+      <div class="np-row">
+        <div class="np-field" style="flex:2"><div class="np-lbl">Pass Name</div><input class="np-inp" placeholder="e.g. AMD Vol.25" /></div>
+        <div class="np-field"><div class="np-lbl">Price (¥)</div><input class="np-inp" placeholder="3000" type="number" /></div>
+      </div>
+      <div class="np-row">
+        <div class="np-field"><div class="np-lbl">Pass Type</div>
+          <select class="np-inp" style="appearance:none">
+            <option>LIVE PASS</option>
+            <option>SUPER PASS</option>
+          </select>
+        </div>
+        <div class="np-field"><div class="np-lbl">Quantity</div><input class="np-inp" placeholder="300" type="number" /></div>
+      </div>
+      <div class="np-row">
+        <div class="np-field" style="flex:1"><div class="np-lbl">Event Date</div><input class="np-inp" placeholder="2026.06.01" /></div>
+        <div class="np-field" style="flex:1"><div class="np-lbl">Venue</div><input class="np-inp" placeholder="LIQUIDROOM" /></div>
+      </div>
+      <button class="np-submit" onclick="this.textContent='✓ Pass Created!';setTimeout(()=>this.textContent='Create & Issue QR Pass',2000)">Create & Issue QR Pass</button>
+    </div>
+    <div class="a-sec">Pass Tiers</div>
+    <div class="pa-item"><div class="pa-thumb" style="background:rgba(168,230,61,.08)">🎫</div><div class="pa-info"><div class="pa-name">Live Pass</div><div class="pa-meta">STANDARD · CONTENT ACCESS + EVENT ENTRY</div></div><div class="pa-right"><div class="pa-price" style="color:var(--lp)">¥1,800〜</div></div></div>
+    <div class="pa-item"><div class="pa-thumb" style="background:rgba(245,200,66,.08)">⭐</div><div class="pa-info"><div class="pa-name">Super Pass</div><div class="pa-meta">PREMIUM · ALL ACCESS + NFT + MERCH</div></div><div class="pa-right"><div class="pa-price" style="color:var(--sp)">¥4,000〜</div></div></div>
+  `
+};
+
+function switchATab(tab) {
+  document.querySelectorAll('.art-tab').forEach(t => t.classList.toggle('active', t.textContent.toLowerCase().startsWith(tab)));
+  document.getElementById('artist-body').innerHTML = ATABS[tab]?.() || '';
+}
+
+// ── MODE ──
+let currentMode = 'fan';
+function clearAll() {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.dpanel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.bn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.dbn').forEach(b => b.classList.remove('active'));
+}
+function setMode(m) {
+  currentMode = m;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase() === m));
+  const bnav = document.getElementById('bnav');
+  const dbnav = document.getElementById('d-bnav');
+  const ft = document.getElementById('filtertabs');
+  const pl = document.getElementById('plan-label');
+  clearAll();
+  ft.style.opacity = '0'; ft.style.pointerEvents = 'none';
+  bnav.style.display = 'none';
+  dbnav.style.display = 'none';
+  if (m === 'artist') {
+    document.getElementById('panel-artist').classList.add('active');
+    pl.textContent = 'ARTIST';
+    pl.className = 'plan-pill pill-artist';
+    switchATab('overview');
+  } else if (m === 'dancer') {
+    document.getElementById('dpanel-home').classList.add('active');
+    document.querySelector('.dbn[data-dtab="home"]').classList.add('active');
+    dbnav.style.display = 'flex';
+    pl.textContent = 'DANCER';
+    pl.className = 'plan-pill pill-dancer';
+  } else {
+    bnav.style.display = 'flex';
+    pl.textContent = 'SUPER PASS';
+    pl.className = 'plan-pill pill-sp';
+    switchTab('home');
+  }
+}
+// dancer tab switcher
+function switchDTab(t) {
+  document.querySelectorAll('.dpanel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.dbn').forEach(b => b.classList.remove('active'));
+  document.getElementById('dpanel-' + t).classList.add('active');
+  const btn = document.querySelector(`.dbn[data-dtab="${t}"]`);
+  if (btn) btn.classList.add('active');
+}
+document.querySelectorAll('.dbn').forEach(b => b.addEventListener('click', () => switchDTab(b.dataset.dtab)));
+
+// slot selection for booking
+document.addEventListener('click', e => {
+  if (e.target.closest('.bk-slot.avail')) {
+    const parent = e.target.closest('.bk-slots');
+    parent.querySelectorAll('.bk-slot').forEach(s => s.classList.remove('sel'));
+    e.target.closest('.bk-slot').classList.add('sel');
+  }
+});
+
+// ── TAB (fan) ──
+function switchTab(t) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.bn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + t).classList.add('active');
+  const btn = document.querySelector(`.bn[data-tab="${t}"]`);
+  if (btn) btn.classList.add('active');
+  const ft = document.getElementById('filtertabs');
+  ft.style.opacity = t === 'screen' ? '1' : '0';
+  ft.style.pointerEvents = t === 'screen' ? 'auto' : 'none';
+}
+document.querySelectorAll('.bn').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+
+// FILTER
+document.querySelectorAll('.ftab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.ftab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    const f = t.dataset.filter;
+    document.querySelectorAll('.si').forEach(s => s.style.display = (f === 'all' || s.dataset.type === f) ? 'block' : 'none');
+    sy = 0;
+  });
+});
+
+// ── HOME drag ──
+const hd = document.getElementById('hdrag');
+let hD=false,hTX=0,hVX=0,hPX=0,hLT=0,hMom;
+function apH(){const mn=-(hd.scrollWidth-hd.parentElement.clientWidth);hTX=Math.max(mn,Math.min(0,hTX));hd.style.transform=`translateX(${hTX}px)`;updHA()}
+function updHA(){const cs=document.querySelectorAll('.hcard');const cx=hd.parentElement.getBoundingClientRect().left+hd.parentElement.clientWidth/2;let md=Infinity,ai=0;cs.forEach((c,i)=>{const r=c.getBoundingClientRect();const d=Math.abs(r.left+r.width/2-cx);if(d<md){md=d;ai=i}});cs.forEach((c,i)=>i===ai?c.classList.add('ha'):c.classList.remove('ha'))}
+function stHM(){cancelAnimationFrame(hMom);(function s(){hVX*=0.92;hTX+=hVX;apH();if(Math.abs(hVX)>0.3)hMom=requestAnimationFrame(s)})()}
+hd.addEventListener('mousedown',e=>{hD=true;hPX=e.clientX;hLT=Date.now();cancelAnimationFrame(hMom)});
+window.addEventListener('mousemove',e=>{if(!hD)return;const n=Date.now();hVX=(e.clientX-hPX)/(n-hLT||1)*16;hPX=e.clientX;hLT=n;hTX+=e.movementX;apH()});
+window.addEventListener('mouseup',()=>{if(hD){hD=false;stHM()}});
+hd.addEventListener('touchstart',e=>{hPX=e.touches[0].clientX;hLT=Date.now();hVX=0;cancelAnimationFrame(hMom)},{passive:true});
+hd.addEventListener('touchmove',e=>{const n=Date.now();hVX=(e.touches[0].clientX-hPX)/(n-hLT||1)*16;hTX+=e.touches[0].clientX-hPX;hPX=e.touches[0].clientX;hLT=n;apH()},{passive:true});
+hd.addEventListener('touchend',()=>stHM());
+
+// ── SCREEN infinite scroll + drag ──
+const sc=document.getElementById('scr-content'),so=document.getElementById('scr-outer');
+let sy=0,sD=false,sPY=0,sVY=0,sLT=0,sSM;
+function initSC(){sc.innerHTML+=sc.innerHTML;scrLoop()}
+function scrLoop(){
+  if(!sD){sy-=0.65;const h=sc.scrollHeight/2;if(sy<-h)sy+=h;if(sy>0)sy-=h}
+  sc.style.transform=`translateY(${sy}px)`;
+  requestAnimationFrame(scrLoop);
+}
+so.addEventListener('mousedown',e=>{sD=true;sPY=e.clientY;sLT=Date.now();cancelAnimationFrame(sSM)});
+window.addEventListener('mousemove',e=>{if(!sD)return;const n=Date.now();sVY=(e.clientY-sPY)/(n-sLT||1)*16;sPY=e.clientY;sLT=n;sy+=e.movementY;const h=sc.scrollHeight/2;if(sy<-h)sy+=h;if(sy>0)sy-=h});
+window.addEventListener('mouseup',()=>{if(sD){sD=false;(function s(){sVY*=0.93;sy+=sVY;if(Math.abs(sVY)>0.3)sSM=requestAnimationFrame(s)})()}});
+so.addEventListener('touchstart',e=>{sD=true;sPY=e.touches[0].clientY;sVY=0;sLT=Date.now()},{passive:true});
+so.addEventListener('touchmove',e=>{const n=Date.now();sVY=(e.touches[0].clientY-sPY)/(n-sLT||1)*16;sy+=e.touches[0].clientY-sPY;sPY=e.touches[0].clientY;sLT=n;const h=sc.scrollHeight/2;if(sy<-h)sy+=h;if(sy>0)sy-=h},{passive:true});
+so.addEventListener('touchend',()=>{sD=false;(function s(){sVY*=0.93;sy+=sVY;if(Math.abs(sVY)>0.3)sSM=requestAnimationFrame(s)})()});
+
+// ── DISCOVER drag ──
+const dt=document.getElementById('dtrack');
+let dD=false,dTX=0,dVX=0,dPX=0,dLT=0,dM;
+function apD(){const mn=-(dt.scrollWidth-dt.parentElement.clientWidth+44);dTX=Math.max(mn,Math.min(0,dTX));dt.style.transform=`translateX(${dTX}px)`;const rot=Math.max(-11,Math.min(11,-(dVX/9)));document.querySelectorAll('.dcard').forEach(c=>c.style.transform=`rotate(${rot}deg)`)}
+function stDM(){cancelAnimationFrame(dM);(function s(){dVX*=0.92;dTX+=dVX;apD();if(Math.abs(dVX)>0.3)dM=requestAnimationFrame(s);else document.querySelectorAll('.dcard').forEach(c=>c.style.transform='')})()}
+dt.addEventListener('mousedown',e=>{dD=true;dPX=e.clientX;dLT=Date.now();cancelAnimationFrame(dM)});
+window.addEventListener('mousemove',e=>{if(!dD)return;const n=Date.now();dVX=(e.clientX-dPX)/(n-dLT||1)*16;dPX=e.clientX;dLT=n;dTX+=e.movementX;apD()});
+window.addEventListener('mouseup',()=>{if(dD){dD=false;stDM()}});
+dt.addEventListener('touchstart',e=>{dPX=e.touches[0].clientX;dLT=Date.now();dVX=0;cancelAnimationFrame(dM)},{passive:true});
+dt.addEventListener('touchmove',e=>{const n=Date.now();dVX=(e.touches[0].clientX-dPX)/(n-dLT||1)*16;dTX+=e.touches[0].clientX-dPX;dPX=e.touches[0].clientX;dLT=n;apD()},{passive:true});
+dt.addEventListener('touchend',()=>stDM());
+
+// ── NFT 3D tilt ──
+function initNFT(){
+  document.querySelectorAll('.nft:not(.locked)').forEach(card=>{
+    card.addEventListener('mousemove',e=>{
+      const r=card.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5;const y=(e.clientY-r.top)/r.height-.5;
+      card.style.transform=`perspective(800px) rotateY(${x*16}deg) rotateX(${-y*10}deg) scale(1.02)`;
+      const h=card.querySelector('.nft-holo');
+      if(h)h.style.background=`linear-gradient(${130+x*42}deg,transparent 20%,rgba(255,255,255,.04) 38%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.04) 62%,transparent 80%)`;
+    });
+    card.addEventListener('mouseleave',()=>{card.style.transform='';const h=card.querySelector('.nft-holo');if(h)h.style.background=''});
+    card.addEventListener('touchmove',e=>{
+      const r=card.getBoundingClientRect();const x=(e.touches[0].clientX-r.left)/r.width-.5;const y=(e.touches[0].clientY-r.top)/r.height-.5;
+      card.style.transform=`perspective(800px) rotateY(${x*14}deg) rotateX(${-y*9}deg) scale(1.02)`;
+    },{passive:true});
+    card.addEventListener('touchend',()=>{card.style.transform=''});
+  });
+}
+
+setTimeout(()=>{initSC();initNFT();switchATab('overview')},80);
+</script>
+</body>
+</html>
