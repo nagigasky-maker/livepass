@@ -245,14 +245,12 @@ body{background:var(--bg);color:var(--fg);font-family:'Inter',sans-serif;overflo
 
   <!-- FILTER TABS -->
   <div id="ftabs">
-    <button class="ftab active" onclick="showFilter('all',this)">ALL</button>
-    <button class="ftab" onclick="showFilter('film',this)">FILM</button>
-    <button class="ftab" onclick="showFilter('series',this)">SERIES</button>
+    <button class="ftab active" onclick="showFilter('series',this)">SERIES</button>
     <button class="ftab" onclick="showFilter('live',this)">LIVE</button>
   </div>
 
-  <!-- ═══ ALL (019 infinite) ═══ -->
-  <div class="panel active" id="panel-all">
+  <!-- ═══ ALL (019 infinite) — HIDDEN ═══ -->
+  <div class="panel" id="panel-all" style="display:none!important">
     <div id="all-outer">
       <div id="all-content">
 
@@ -354,8 +352,8 @@ body{background:var(--bg);color:var(--fg);font-family:'Inter',sans-serif;overflo
     </div>
   </div>
 
-  <!-- ═══ FILM (cinematic list) ═══ -->
-  <div class="panel" id="panel-film">
+  <!-- ═══ FILM (cinematic list) — HIDDEN ═══ -->
+  <div class="panel" id="panel-film" style="display:none!important"
     <div id="film-scroll">
       <div class="film-section-lbl">Works — 6 Films</div>
 
@@ -481,7 +479,7 @@ body{background:var(--bg);color:var(--fg);font-family:'Inter',sans-serif;overflo
   </div>
 
   <!-- ═══ SERIES (Netflix-style) ═══ -->
-  <div class="panel" id="panel-series">
+  <div class="panel active" id="panel-series">
     <div id="series-scroll">
 
       <!-- Series 1 -->
@@ -727,11 +725,11 @@ body{background:var(--bg);color:var(--fg);font-family:'Inter',sans-serif;overflo
 <script>
 // ── FILTER ──
 function showFilter(f, btn) {
+  if(f==='all'||f==='film') return; // ALL/FILM removed
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active'));
   document.getElementById('panel-'+f).classList.add('active');
   btn.classList.add('active');
-  if(f==='all' && !scrRunning){ initAll(); }
 }
 
 // ── ALL: 019 infinite auto-scroll + drag ──
