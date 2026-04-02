@@ -156,7 +156,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
 .t-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--lp),#5a9900);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#000;cursor:pointer}
 
 /* ── FILTER ── */
-#filtertabs{position:absolute;top:58px;left:0;right:0;height:36px;display:flex;align-items:center;padding:0 22px;z-index:40;overflow-x:auto;scrollbar-width:none;transition:opacity .2s}
+#filtertabs{position:absolute;top:calc(64px + env(safe-area-inset-top,0px));left:0;right:0;height:36px;display:flex;align-items:center;padding:0 22px;z-index:45;overflow-x:auto;scrollbar-width:none;transition:opacity .2s;background:linear-gradient(to bottom,rgba(0,0,0,.9) 60%,transparent)}
 #filtertabs::-webkit-scrollbar{display:none}
 .ftab{font-size:13px;letter-spacing:2.5px;padding:6px 13px;border:none;background:none;color:var(--muted);cursor:pointer;white-space:nowrap;border-bottom:1.5px solid transparent;transition:all .2s;font-family:'Inter',sans-serif;font-weight:600;text-transform:uppercase}
 .ftab.active{color:#fff;border-bottom-color:var(--lp)}
@@ -254,25 +254,26 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
 /* ═══════════════════════════════
    SCHEDULE
 ═══════════════════════════════ */
+#sched-scroll{overflow-x:hidden}
 #sched-scroll::-webkit-scrollbar{display:none}
-.sched-tab{font-size:14px;letter-spacing:2px;padding:14px 16px;border:none;background:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;font-family:'Inter',sans-serif;font-weight:600;text-transform:uppercase;transition:all .2s;white-space:nowrap;flex-shrink:0}
+.sched-tab{font-size:11px;letter-spacing:2px;padding:10px 12px;border:none;background:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;font-family:'Inter',sans-serif;font-weight:600;text-transform:uppercase;transition:all .2s;white-space:nowrap;flex-shrink:0}
 .sched-tab.active{color:var(--fg);border-bottom-color:var(--lp)}
 /* EVENT CARD */
 .sched-card{border-bottom:0.5px solid var(--border);cursor:pointer;transition:background .15s;position:relative}
 .sched-card:active{background:var(--dim)}
-.sched-card-inner{padding:20px 18px;display:flex;gap:16px;align-items:flex-start}
-.sched-date-block{flex-shrink:0;width:54px;text-align:center;padding-top:2px}
+.sched-card-inner{padding:14px 14px;display:flex;gap:12px;align-items:flex-start}
+.sched-date-block{flex-shrink:0;width:44px;text-align:center;padding-top:2px}
 .sdb-month{font-size:13px;letter-spacing:2px;text-transform:uppercase;font-weight:600;margin-bottom:3px}
 .sdb-day{font-size:32px;font-weight:800;letter-spacing:-1px;line-height:1}
 .sched-info{flex:1;min-width:0}
 .sched-type-tag{font-size:13px;letter-spacing:2px;font-weight:700;text-transform:uppercase;margin-bottom:7px}
-.sched-title{font-size:20px;font-weight:700;letter-spacing:-.5px;line-height:1.1;margin-bottom:6px}
-.sched-meta{font-size:14px;color:var(--muted);letter-spacing:.3px;margin-bottom:10px}
+.sched-title{font-size:15px;font-weight:700;letter-spacing:-.5px;line-height:1.1;margin-bottom:6px}
+.sched-meta{font-size:11px;color:var(--muted);letter-spacing:.3px;margin-bottom:10px}
 .sched-tags{display:flex;gap:5px;flex-wrap:wrap}
-.sched-pill{font-size:12px;letter-spacing:1.5px;padding:5px 12px;border-radius:100px;border:0.5px solid;font-weight:500;text-transform:uppercase}
+.sched-pill{font-size:9px;letter-spacing:1.5px;padding:3px 8px;border-radius:100px;border:0.5px solid;font-weight:500;text-transform:uppercase}
 .sched-right{flex-shrink:0;text-align:right}
-.sched-price{font-size:18px;font-weight:700;letter-spacing:-.4px}
-.sched-pass-price{font-size:14px;margin-top:4px;letter-spacing:.5px}
+.sched-price{font-size:14px;font-weight:700;letter-spacing:-.4px}
+.sched-pass-price{font-size:11px;margin-top:4px;letter-spacing:.5px}
 /* LEFT ACCENT BAR */
 .sched-card .sched-bar{position:absolute;left:0;top:0;bottom:0;width:4px}
 #art-scroll{height:100%;overflow-y:auto;scrollbar-width:none}
@@ -655,6 +656,61 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
   transition:transform .28s cubic-bezier(.4,0,.2,1);
 }
 #bnav.open{transform:translateY(0)}
+
+/* ── SCHEDULE DETAIL MODAL ── */
+#sched-modal{position:absolute;inset:0;z-index:200;background:rgba(0,0,0,.97);display:none;flex-direction:column}
+#sched-modal.open{display:flex}
+.sm-header{flex-shrink:0;padding:14px 18px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.sm-title{font-size:13px;font-weight:700;letter-spacing:-.3px}
+.sm-close{background:none;border:0.5px solid rgba(255,255,255,.12);color:rgba(255,255,255,.4);cursor:pointer;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.sm-scroll{flex:1;overflow-y:auto;scrollbar-width:none;padding:0}
+.sm-scroll::-webkit-scrollbar{display:none}
+.sm-flyer{width:100%;border-bottom:0.5px solid var(--border)}
+.sm-section{padding:16px 18px;border-bottom:0.5px solid rgba(255,255,255,.05)}
+.sm-lbl{font-size:7px;letter-spacing:3px;color:rgba(255,255,255,.2);text-transform:uppercase;font-weight:300;margin-bottom:10px}
+.sm-line{display:flex;align-items:baseline;padding:6px 0;border-bottom:0.5px solid rgba(255,255,255,.04)}
+.sm-line:last-child{border-bottom:none}
+.sm-key{font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.25);text-transform:uppercase;flex:0 0 90px;font-weight:300}
+.sm-dots{flex:1;border-bottom:1px dotted rgba(255,255,255,.06);margin:0 8px;position:relative;top:-3px}
+.sm-val{font-size:11px;font-weight:400;color:rgba(255,255,255,.7);letter-spacing:.3px}
+.sm-tags-wrap{display:flex;gap:5px;flex-wrap:wrap;padding:6px 0}
+.sm-desc{font-size:12px;color:rgba(255,255,255,.5);line-height:1.7;letter-spacing:.3px;font-weight:300}
+.sm-footer{flex-shrink:0;padding:12px 18px;border-top:0.5px solid var(--border);background:rgba(0,0,0,.98)}
+.sm-book-btn{width:100%;padding:14px;border:0.5px solid rgba(168,230,61,.3);border-radius:2px;background:none;font-family:'Inter',sans-serif;font-size:10px;letter-spacing:3px;color:var(--lp);cursor:pointer;text-transform:uppercase;font-weight:600;transition:all .2s}
+.sm-book-btn:active{transform:scale(.98)}
+
+/* ── CREATE EVENT MODAL ── */
+#create-event-modal{position:absolute;inset:0;z-index:200;background:rgba(0,0,0,.97);display:none;flex-direction:column}
+#create-event-modal.open{display:flex}
+.cem-header{flex-shrink:0;padding:14px 18px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.cem-title{font-size:13px;font-weight:700;letter-spacing:-.3px}
+.cem-close{background:none;border:0.5px solid rgba(255,255,255,.12);color:rgba(255,255,255,.4);cursor:pointer;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.cem-scroll{flex:1;overflow-y:auto;scrollbar-width:none;padding:18px}
+.cem-scroll::-webkit-scrollbar{display:none}
+.cem-label{font-size:7px;letter-spacing:3px;color:rgba(255,255,255,.2);text-transform:uppercase;font-weight:300;margin-bottom:8px}
+.cem-inp{width:100%;background:rgba(255,255,255,.03);border:0.5px solid var(--border);border-radius:2px;padding:11px 13px;font-size:13px;color:#fff;font-family:'Inter',sans-serif;font-weight:300;outline:none;letter-spacing:.3px;transition:border-color .2s;margin-bottom:16px}
+.cem-inp:focus{border-color:rgba(255,255,255,.2)}
+.cem-inp::placeholder{color:rgba(255,255,255,.18)}
+.cem-type-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:18px}
+.cem-type-btn{padding:12px 8px;border:0.5px solid var(--border);border-radius:2px;background:none;cursor:pointer;text-align:center;font-family:'Inter',sans-serif;transition:all .2s}
+.cem-type-btn.active{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.2)}
+.cem-type-icon{font-size:18px;margin-bottom:5px;display:block}
+.cem-type-lbl{font-size:9px;font-weight:600;letter-spacing:1px;display:block;color:#fff;text-transform:uppercase}
+.cem-row{display:flex;gap:8px;margin-bottom:16px}
+.cem-row .cem-inp{margin-bottom:0;flex:1}
+.cem-photo-btn{width:100%;padding:14px;border:0.5px dashed rgba(255,255,255,.15);border-radius:2px;background:none;font-family:'Inter',sans-serif;font-size:10px;letter-spacing:2px;color:rgba(255,255,255,.3);cursor:pointer;text-transform:uppercase;transition:all .2s;margin-bottom:16px;text-align:center}
+.cem-photo-btn:hover{border-color:rgba(255,255,255,.3);color:rgba(255,255,255,.5)}
+.cem-photo-btn.has-photo{border-color:rgba(168,230,61,.3);color:var(--lp);border-style:solid}
+.cem-flyer-btn{width:100%;padding:12px;border:0.5px solid rgba(61,170,255,.3);border-radius:2px;background:none;font-family:'Inter',sans-serif;font-size:9px;letter-spacing:2px;color:var(--blue);cursor:pointer;text-transform:uppercase;font-weight:600;transition:all .2s;margin-bottom:16px}
+.cem-flyer-btn:active{transform:scale(.98)}
+.cem-preview{width:100%;margin-bottom:16px;border:0.5px solid var(--border);border-radius:2px;overflow:hidden}
+.cem-footer{flex-shrink:0;padding:12px 18px;border-top:0.5px solid var(--border);background:rgba(0,0,0,.98)}
+.cem-submit{width:100%;padding:14px;border:0.5px solid rgba(168,230,61,.3);border-radius:2px;background:none;font-family:'Inter',sans-serif;font-size:10px;letter-spacing:3px;color:var(--lp);cursor:pointer;text-transform:uppercase;font-weight:600;transition:all .2s}
+.cem-submit:active{transform:scale(.98)}
+
+/* ── TOPBAR + BUTTON ── */
+.t-plus{width:32px;height:32px;border-radius:50%;border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;background:rgba(255,255,255,.03);color:var(--lp);transition:all .15s}
+.t-plus:active{transform:scale(.9)}
 </style>
 </head>
 <body>
@@ -673,6 +729,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
         <div class="plan-pill pill-sp" id="plan-label" style="font-size:11px;padding:2px 8px;letter-spacing:1px">SUPER PASS</div>
         <div style="font-size:10px;letter-spacing:1.5px;color:rgba(255,255,255,.3);text-transform:uppercase">DJ · Dancer</div>
       </div>
+      <div class="t-plus" onclick="openCreateEvent()" title="イベント作成">＋</div>
       <div class="t-notif" style="font-size:18px">🔔</div>
       <div class="t-av">N</div>
     </div>
@@ -689,19 +746,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
   <!-- ═══ HOME ═══ -->
   <div class="panel active" id="panel-home">
     <div id="home-wrap">
-      <!-- LIVE TV BG + FOLLOWING STRIP -->
       <div id="home-hero" style="flex:0 0 auto">
-        <!-- LIVE SCREEN -->
-        <div style="position:relative;height:180px;overflow:hidden;background:#030303">
-          <div style="position:absolute;inset:0;background-image:url('data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'n\'><feTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\'/><feColorMatrix type=\'saturate\' values=\'0\'/></filter><rect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\' opacity=\'0.35\'/></svg>');background-size:cover;opacity:.7;animation:noiseAnim .1s steps(1) infinite"></div>
-          <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.15) 2px,rgba(0,0,0,.15) 4px)"></div>
-          <div style="position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 30%,rgba(0,0,0,.6) 100%)"></div>
-          <div style="position:absolute;top:10px;left:14px;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.25);text-transform:uppercase;border:0.5px solid rgba(255,255,255,.12);padding:3px 8px">CH 01 · LIVE PASS</div>
-          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px">
-            <div style="font-size:11px;letter-spacing:3px;color:rgba(255,255,255,.2);text-transform:uppercase">OFF AIR</div>
-            <div style="font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.12);font-family:monospace">次回: ALL MUST DANCE Vol.25</div>
-          </div>
-        </div>
 
         <!-- FOLLOWING CARDS -->
         <div style="border-bottom:0.5px solid var(--border)">
@@ -775,8 +820,11 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
       <!-- ④ NFT CARD COLLECTION — Effect 001 忠実再現 -->
       <div id="nft-collection" style="flex:0 0 auto;overflow:hidden;position:relative;background:#080808;border-bottom:0.5px solid var(--border)">
         <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 18px 8px">
-          <div style="font-size:11px;letter-spacing:3px;color:rgba(255,255,255,.18);text-transform:uppercase;font-weight:600">My Pass Collection</div>
-          <div style="font-size:12px;color:rgba(255,255,255,.18);letter-spacing:1px">3 cards</div>
+          <div>
+            <div style="font-size:11px;letter-spacing:3px;color:rgba(255,255,255,.18);text-transform:uppercase;font-weight:600">Passes Collection</div>
+            <div style="font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.12);text-transform:uppercase;margin-top:2px">You Were There</div>
+          </div>
+          <div style="font-size:12px;color:rgba(255,255,255,.18);letter-spacing:1px">3 Passes</div>
         </div>
         <!-- 001: overflow hidden container, cards absolutely placed, drag=x translate -->
         <div id="nft-viewport" style="overflow:hidden;position:relative;height:320px;cursor:grab">
@@ -1059,7 +1107,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
   <!-- ═══ DISCOVER ═══ -->
   <!-- ═══ SCHEDULE — EVENT / WORKSHOP / EXHIBITION ═══ -->
   <div class="panel" id="panel-discover">
-    <div id="sched-scroll" style="height:100%;overflow-y:auto;scrollbar-width:none">
+    <div id="sched-scroll" style="height:100%;overflow-y:auto;overflow-x:hidden;scrollbar-width:none">
 
       <!-- FILTER TABS -->
       <div style="display:flex;padding:0 18px;border-bottom:0.5px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:10">
@@ -1529,28 +1577,6 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
       <div class="bl">Schedule</div>
     </button>
 
-    <!-- STORE — waname bag icon -->
-    <button class="bn" data-tab="store">
-      <svg class="icon-store" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M35 40 C35 22 65 22 65 40" stroke="white" stroke-width="7" stroke-linecap="round" fill="none"/>
-        <rect x="13" y="38" width="74" height="54" rx="10" fill="white" stroke="none"/>
-        <ellipse cx="37" cy="54" rx="7.5" ry="4.5" fill="#000" stroke="none"/>
-        <ellipse cx="63" cy="54" rx="7.5" ry="4.5" fill="#000" stroke="none"/>
-      </svg>
-      <div class="bl">Store</div>
-    </button>
-
-    <button class="bn" data-tab="pass">
-      <svg class="icon-pass" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="8" y="24" width="84" height="52" rx="9" stroke="white" stroke-width="6.5"/>
-        <line x1="8" y1="44" x2="92" y2="44" stroke="white" stroke-width="5.5"/>
-        <rect class="fill-rect" x="20" y="56" width="20" height="9" rx="3" fill="white" stroke="none"/>
-        <rect class="fill-rect" x="48" y="56" width="14" height="9" rx="3" fill="white" stroke="none" opacity="0.45"/>
-        <rect class="fill-rect" x="66" y="56" width="14" height="9" rx="3" fill="white" stroke="none" opacity="0.45"/>
-      </svg>
-      <div class="bl">My Pass</div>
-    </button>
-
     <!-- MORE -->
     <button class="bn" data-tab="more" onclick="if(window.parent&&window.parent.nav)window.parent.nav('more')">
       <svg viewBox="0 0 100 100" fill="none" style="width:22px;height:22px">
@@ -1567,6 +1593,68 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
   <div id="menu-toggle" onclick="toggleNav()">
     <div class="menu-line"></div>
   </div>
+
+  <!-- SCHEDULE DETAIL MODAL -->
+  <div id="sched-modal">
+    <div class="sm-header">
+      <div class="sm-title" id="sm-title">Event Detail</div>
+      <button class="sm-close" onclick="closeSchedDetail()">✕</button>
+    </div>
+    <div class="sm-scroll" id="sm-scroll"></div>
+    <div class="sm-footer">
+      <button class="sm-book-btn" onclick="closeSchedDetail()">予約する →</button>
+    </div>
+  </div>
+
+  <!-- CREATE EVENT MODAL -->
+  <div id="create-event-modal">
+    <div class="cem-header">
+      <div class="cem-title">イベント作成</div>
+      <button class="cem-close" onclick="closeCreateEvent()">✕</button>
+    </div>
+    <div class="cem-scroll">
+      <div class="cem-label">種別</div>
+      <div class="cem-type-grid" id="cem-type-grid">
+        <button class="cem-type-btn active" data-cem-type="event" onclick="setCemType(this)">
+          <span class="cem-type-icon">🎵</span>
+          <span class="cem-type-lbl">Event</span>
+        </button>
+        <button class="cem-type-btn" data-cem-type="workshop" onclick="setCemType(this)">
+          <span class="cem-type-icon">🎓</span>
+          <span class="cem-type-lbl">Workshop</span>
+        </button>
+        <button class="cem-type-btn" data-cem-type="exhibition" onclick="setCemType(this)">
+          <span class="cem-type-icon">🖼</span>
+          <span class="cem-type-lbl">Exhibition</span>
+        </button>
+      </div>
+      <div class="cem-label">タイトル</div>
+      <input class="cem-inp" id="cem-title" placeholder="例：House Dance Intensive">
+      <div class="cem-label">日程 / 時間</div>
+      <div class="cem-row">
+        <input class="cem-inp" id="cem-date" type="date">
+        <input class="cem-inp" id="cem-time" placeholder="21:00 —">
+      </div>
+      <div class="cem-label">会場</div>
+      <input class="cem-inp" id="cem-venue" placeholder="例：渋谷 LIQUIDROOM">
+      <div class="cem-label">定員 / 参加費</div>
+      <div class="cem-row">
+        <input class="cem-inp" id="cem-cap" placeholder="定員: 100" type="number">
+        <input class="cem-inp" id="cem-price" placeholder="¥3,000" type="number">
+      </div>
+      <div class="cem-label">説明</div>
+      <textarea class="cem-inp" id="cem-desc" placeholder="イベントの詳細..." rows="3" style="resize:none;height:72px"></textarea>
+      <div class="cem-label">写真</div>
+      <input type="file" id="cem-photo-file" accept="image/*" style="display:none" onchange="onCemPhoto(this)">
+      <button class="cem-photo-btn" id="cem-photo-btn" onclick="document.getElementById('cem-photo-file').click()">📷 写真をアップロード</button>
+      <button class="cem-flyer-btn" onclick="generateFlyer()">✦ フライヤーを自動生成する</button>
+      <div class="cem-preview" id="cem-preview" style="display:none"></div>
+    </div>
+    <div class="cem-footer">
+      <button class="cem-submit" onclick="submitEvent()">投稿する →</button>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -1929,9 +2017,9 @@ function renderSched() {
   const items = schedFilter === 'all' ? SCHED_DATA : SCHED_DATA.filter(d => d.type === schedFilter);
   const typeLabel = {event:'Event', workshop:'Workshop', exhibition:'Exhibition'};
   const displayColor = c => c;
-  list.innerHTML = items.map(d => {
+  list.innerHTML = items.map((d, idx) => {
     const isFree = d.price === 0;
-    return `<div class="sched-card">
+    return `<div class="sched-card" onclick="openSchedDetail(${idx})">
       <div class="sched-bar" style="background:${d.color}"></div>
       <div class="sched-card-inner">
         <div class="sched-date-block">
@@ -2171,6 +2259,211 @@ function initNFT(){
 }
 
 setTimeout(()=>{initSC();initNFT();switchATab('overview')},80);
+
+// ── SCHEDULE DETAIL MODAL ──
+function openSchedDetail(i) {
+  const items = schedFilter === 'all' ? SCHED_DATA : SCHED_DATA.filter(d => d.type === schedFilter);
+  const d = items[i];
+  if (!d) return;
+
+  const typeLabel = {event:'Event', workshop:'Workshop', exhibition:'Exhibition'};
+  const isFree = d.price === 0;
+
+  // resolve CSS var colors to hex for SVG
+  const colorMap = {
+    'var(--red)':'#FF3B30','var(--lp)':'#A8E63D','var(--sp)':'#F5C842',
+    'var(--purple)':'#BF5AF2','var(--teal)':'#5DCAA5','var(--pink)':'#F4C0D1',
+    'var(--amber)':'#EF9F27','var(--mint)':'#00E5A0','var(--blue)':'#3DAAFF'
+  };
+  const dc = colorMap[d.color] || d.color || '#A8E63D';
+
+  document.getElementById('sm-title').textContent = typeLabel[d.type] || 'Event';
+
+  const flyerSvg = buildSchedFlyer(d, dc, 180);
+
+  let html = '';
+  // Flyer
+  html += '<div class="sm-flyer">' + flyerSvg + '</div>';
+  // Details
+  html += '<div class="sm-section">';
+  html += '<div class="sm-lbl">Details</div>';
+  html += '<div class="sm-line"><span class="sm-key">Title</span><span class="sm-dots"></span><span class="sm-val">' + d.title + '</span></div>';
+  html += '<div class="sm-line"><span class="sm-key">Artist</span><span class="sm-dots"></span><span class="sm-val">' + d.artist + '</span></div>';
+  html += '<div class="sm-line"><span class="sm-key">Date</span><span class="sm-dots"></span><span class="sm-val">' + d.date + '</span></div>';
+  html += '<div class="sm-line"><span class="sm-key">Time</span><span class="sm-dots"></span><span class="sm-val">' + d.time + '</span></div>';
+  html += '<div class="sm-line"><span class="sm-key">Venue</span><span class="sm-dots"></span><span class="sm-val">' + d.venue + '</span></div>';
+  html += '<div class="sm-line"><span class="sm-key">Price</span><span class="sm-dots"></span><span class="sm-val">' + (isFree ? 'FREE' : '¥' + d.price.toLocaleString()) + '</span></div>';
+  if (!isFree) {
+    html += '<div class="sm-line"><span class="sm-key">Pass Price</span><span class="sm-dots"></span><span class="sm-val" style="color:' + dc + '">¥' + d.passPrice.toLocaleString() + '</span></div>';
+  }
+  html += '</div>';
+  // Tags
+  html += '<div class="sm-section">';
+  html += '<div class="sm-lbl">Tags</div>';
+  html += '<div class="sm-tags-wrap">';
+  d.tags.forEach(function(t) {
+    html += '<span class="sched-pill" style="color:' + dc + ';border-color:' + dc + '44">' + t + '</span>';
+  });
+  html += '</div></div>';
+  // Description
+  html += '<div class="sm-section">';
+  html += '<div class="sm-lbl">Description</div>';
+  html += '<div class="sm-desc">' + d.title + ' by ' + d.artist + ' at ' + d.venue + '. ' + d.date + ' ' + d.time + '.</div>';
+  html += '</div>';
+
+  document.getElementById('sm-scroll').innerHTML = html;
+  document.getElementById('sched-modal').classList.add('open');
+}
+
+function closeSchedDetail() {
+  document.getElementById('sched-modal').classList.remove('open');
+}
+
+function buildSchedFlyer(d, dc, h) {
+  h = h || 180;
+  var lines = Math.floor(h / 14);
+  var gl = '';
+  for (var i = 0; i < lines; i++) gl += '<line x1="0" y1="' + ((h / lines) * i) + '" x2="430" y2="' + ((h / lines) * i) + '" stroke="' + dc + '" stroke-width="0.3" opacity="0.09"/>';
+  for (var j = 0; j < 8; j++) gl += '<line x1="' + ((430 / 8) * j) + '" y1="0" x2="' + ((430 / 8) * j) + '" y2="' + h + '" stroke="' + dc + '" stroke-width="0.3" opacity="0.06"/>';
+
+  var typeLabel = {event:'EVENT', workshop:'WORKSHOP', exhibition:'EXHIBITION'};
+  var tl = typeLabel[d.type] || 'EVENT';
+  var priceStr = d.price ? '¥' + d.price.toLocaleString() : '';
+  var fs = d.title.length > 24 ? 15 : 19;
+
+  return '<svg width="100%" viewBox="0 0 430 ' + h + '" xmlns="http://www.w3.org/2000/svg">' +
+    '<defs><linearGradient id="sfg-' + d.day + '" x1="0" y1="0" x2="0" y2="1">' +
+    '<stop offset="0%" stop-color="' + dc + '" stop-opacity="0.14"/>' +
+    '<stop offset="100%" stop-color="#000" stop-opacity="0.85"/>' +
+    '</linearGradient></defs>' +
+    '<rect width="430" height="' + h + '" fill="url(#sfg-' + d.day + ')"/>' +
+    gl +
+    '<rect x="16" y="16" width="398" height="' + (h - 32) + '" rx="1" fill="none" stroke="' + dc + '" stroke-width="0.5" opacity="0.22"/>' +
+    '<text x="26" y="40" font-size="7" fill="' + dc + '" font-family="Inter,sans-serif" letter-spacing="3" opacity="0.65">LIVE PASS · ' + tl + '</text>' +
+    '<text x="26" y="' + (h / 2) + '" font-size="' + fs + '" fill="#fff" font-family="Inter,sans-serif" font-weight="700" letter-spacing="-0.5">' + d.title + '</text>' +
+    '<text x="26" y="' + (h / 2 + 18) + '" font-size="9" fill="' + dc + '" font-family="Inter,sans-serif" opacity="0.75">' + d.artist + '</text>' +
+    '<line x1="26" y1="' + (h / 2 + 26) + '" x2="404" y2="' + (h / 2 + 26) + '" stroke="' + dc + '" stroke-width="0.5" opacity="0.2"/>' +
+    '<text x="26" y="' + (h - 28) + '" font-size="8" fill="#fff" font-family="Inter,sans-serif" opacity="0.5">' + (d.date || '') + ' · ' + (d.time || '') + '</text>' +
+    '<text x="26" y="' + (h - 14) + '" font-size="8" fill="#fff" font-family="Inter,sans-serif" opacity="0.4">' + (d.venue || '') + '</text>' +
+    (priceStr ? '<text x="404" y="' + (h - 14) + '" font-size="11" fill="#fff" font-family="Inter,sans-serif" font-weight="700" text-anchor="end">' + priceStr + '</text>' : '') +
+    '</svg>';
+}
+
+// ── CREATE EVENT MODAL ──
+var cemType = 'event';
+var cemPhotoData = null;
+
+function setCemType(btn) {
+  document.querySelectorAll('.cem-type-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  cemType = btn.getAttribute('data-cem-type');
+}
+
+function openCreateEvent() {
+  document.getElementById('create-event-modal').classList.add('open');
+}
+
+function closeCreateEvent() {
+  document.getElementById('create-event-modal').classList.remove('open');
+  cemPhotoData = null;
+  document.getElementById('cem-photo-btn').classList.remove('has-photo');
+  document.getElementById('cem-photo-btn').textContent = '\uD83D\uDCF7 \u5199\u771F\u3092\u30A2\u30C3\u30D7\u30ED\u30FC\u30C9';
+  document.getElementById('cem-preview').style.display = 'none';
+  document.getElementById('cem-preview').innerHTML = '';
+}
+
+function onCemPhoto(input) {
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      cemPhotoData = e.target.result;
+      document.getElementById('cem-photo-btn').classList.add('has-photo');
+      document.getElementById('cem-photo-btn').textContent = '\u2713 \u5199\u771F\u9078\u629E\u6E08\u307F';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+function generateFlyer() {
+  var title = document.getElementById('cem-title').value || 'Untitled Event';
+  var date = document.getElementById('cem-date').value || '';
+  var time = document.getElementById('cem-time').value || '';
+  var venue = document.getElementById('cem-venue').value || '';
+  var price = document.getElementById('cem-price').value || '';
+
+  var typeColors = {event:'#FF3B30', workshop:'#F4C0D1', exhibition:'#3DAAFF'};
+  var dc = typeColors[cemType] || '#A8E63D';
+  var h = 200;
+
+  var lines = Math.floor(h / 14);
+  var gl = '';
+  for (var i = 0; i < lines; i++) gl += '<line x1="0" y1="' + ((h / lines) * i) + '" x2="430" y2="' + ((h / lines) * i) + '" stroke="' + dc + '" stroke-width="0.3" opacity="0.09"/>';
+  for (var j = 0; j < 8; j++) gl += '<line x1="' + ((430 / 8) * j) + '" y1="0" x2="' + ((430 / 8) * j) + '" y2="' + h + '" stroke="' + dc + '" stroke-width="0.3" opacity="0.06"/>';
+
+  var typeLabel = cemType.toUpperCase();
+  var priceStr = price ? '¥' + Number(price).toLocaleString() : '';
+  var fs = title.length > 24 ? 15 : 19;
+
+  var photoBg = '';
+  if (cemPhotoData) {
+    photoBg = '<image href="' + cemPhotoData + '" x="0" y="0" width="430" height="' + h + '" preserveAspectRatio="xMidYMid slice" opacity="0.3"/>';
+  }
+
+  var svg = '<svg width="100%" viewBox="0 0 430 ' + h + '" xmlns="http://www.w3.org/2000/svg">' +
+    '<defs><linearGradient id="cfg" x1="0" y1="0" x2="0" y2="1">' +
+    '<stop offset="0%" stop-color="' + dc + '" stop-opacity="0.14"/>' +
+    '<stop offset="100%" stop-color="#000" stop-opacity="0.85"/>' +
+    '</linearGradient></defs>' +
+    '<rect width="430" height="' + h + '" fill="url(#cfg)"/>' +
+    photoBg +
+    gl +
+    '<rect x="16" y="16" width="398" height="' + (h - 32) + '" rx="1" fill="none" stroke="' + dc + '" stroke-width="0.5" opacity="0.22"/>' +
+    '<text x="26" y="40" font-size="7" fill="' + dc + '" font-family="Inter,sans-serif" letter-spacing="3" opacity="0.65">LIVE PASS · ' + typeLabel + '</text>' +
+    '<text x="26" y="' + (h / 2) + '" font-size="' + fs + '" fill="#fff" font-family="Inter,sans-serif" font-weight="700" letter-spacing="-0.5">' + title + '</text>' +
+    '<line x1="26" y1="' + (h / 2 + 14) + '" x2="404" y2="' + (h / 2 + 14) + '" stroke="' + dc + '" stroke-width="0.5" opacity="0.2"/>' +
+    '<text x="26" y="' + (h - 42) + '" font-size="8" fill="#fff" font-family="Inter,sans-serif" opacity="0.5">' + date + ' · ' + time + '</text>' +
+    '<text x="26" y="' + (h - 28) + '" font-size="8" fill="#fff" font-family="Inter,sans-serif" opacity="0.4">' + venue + '</text>' +
+    (priceStr ? '<text x="404" y="' + (h - 28) + '" font-size="11" fill="#fff" font-family="Inter,sans-serif" font-weight="700" text-anchor="end">' + priceStr + '</text>' : '') +
+    '</svg>';
+
+  var preview = document.getElementById('cem-preview');
+  preview.innerHTML = svg;
+  preview.style.display = 'block';
+}
+
+function submitEvent() {
+  var title = document.getElementById('cem-title').value || 'Untitled Event';
+  var date = document.getElementById('cem-date').value || '2026.07.01';
+  var time = document.getElementById('cem-time').value || 'TBD';
+  var venue = document.getElementById('cem-venue').value || 'TBD';
+  var price = Number(document.getElementById('cem-price').value) || 0;
+  var cap = Number(document.getElementById('cem-cap').value) || 50;
+
+  var months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  var parts = date.split('-');
+  var m = parts[1] ? months[parseInt(parts[1], 10) - 1] : 'TBD';
+  var dy = parts[2] || '01';
+
+  var typeColors = {event:'var(--red)', workshop:'var(--pink)', exhibition:'var(--blue)'};
+
+  SCHED_DATA.push({
+    type: cemType,
+    title: title,
+    artist: 'NOBBY',
+    date: date.replace(/-/g, '.'),
+    month: m,
+    day: dy,
+    time: time,
+    venue: venue,
+    price: price,
+    passPrice: Math.round(price * 0.8),
+    color: typeColors[cemType] || 'var(--lp)',
+    tags: [cemType.charAt(0).toUpperCase() + cemType.slice(1), 'New']
+  });
+
+  renderSched();
+  closeCreateEvent();
+}
 </script>
 </body>
 </html>
