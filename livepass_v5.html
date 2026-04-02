@@ -731,23 +731,15 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
   filter:blur(30px) brightness(.4);
   transform:scale(1.1);
 }
-#pm-layers{
-  position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;
+#pm-050-container{
+  position:absolute;inset:0;z-index:5;
 }
-.pm-layer{
-  position:absolute;
-  width:70%;max-width:280px;
-  aspect-ratio:0.75;
-  border-radius:12px;
-  overflow:hidden;
-  opacity:0;
-  will-change:transform,opacity;
-}
-.pm-layer-inner{
-  position:absolute;inset:0;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,.1);
+.pm-050-img{
+  position:absolute;top:0;left:0;
+  width:100%;height:100%;
+  transform:scale(0,0);
+  object-fit:cover;
+  will-change:transform;
 }
 #pm-text-overlay{
   position:absolute;inset:0;
@@ -932,6 +924,8 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
   font-size:16px;color:rgba(255,255,255,.3);
 }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Observer.min.js"></script>
 </head>
 <body>
 
@@ -1814,7 +1808,16 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
     <!-- Phase B: Transition layer -->
     <div id="pm-transition">
       <div id="pm-blur-bg"></div>
-      <div id="pm-layers"></div>
+      <div id="pm-050-container">
+        <img src="" class="pm-050-img" />
+        <img src="" class="pm-050-img" />
+        <img src="" class="pm-050-img" />
+        <img src="" class="pm-050-img" />
+        <img src="" class="pm-050-img" />
+        <img src="" class="pm-050-img" />
+        <img src="" class="pm-050-img" />
+        <img src="" class="pm-050-img" />
+      </div>
       <div id="pm-text-overlay">
         <div id="pm-ywt">YOU WERE THERE</div>
         <div id="pm-title"></div>
@@ -2828,23 +2831,26 @@ document.querySelectorAll('.nft001').forEach((card, i) => {
 });
 
 function activateMemory(index) {
-  const data = PASS_DATA[index];
+  var data = PASS_DATA[index];
   if (!data) return;
 
-  const overlay = document.getElementById('pass-memory');
-  const transition = document.getElementById('pm-transition');
-  const landed = document.getElementById('pm-landed');
-  const blurBg = document.getElementById('pm-blur-bg');
-  const layers = document.getElementById('pm-layers');
-  const textOverlay = document.getElementById('pm-text-overlay');
+  var overlay = document.getElementById('pass-memory');
+  var transition = document.getElementById('pm-transition');
+  var landed = document.getElementById('pm-landed');
+  var blurBg = document.getElementById('pm-blur-bg');
+  var textOverlay = document.getElementById('pm-text-overlay');
+  var container050 = document.getElementById('pm-050-container');
 
+  // Reset states
   overlay.style.display = 'block';
   transition.style.display = 'flex';
+  transition.style.opacity = '1';
   landed.style.display = 'none';
   landed.classList.remove('visible');
   textOverlay.style.opacity = '0';
-
   activeMemoryData = data;
+
+  // Set blur background
   if (data.flyer) {
     blurBg.style.backgroundImage = 'url(' + data.flyer + ')';
     blurBg.style.background = '';
@@ -2855,50 +2861,86 @@ function activateMemory(index) {
     blurBg.style.background = 'linear-gradient(135deg, ' + data.heroColor + ', #000)';
   }
 
+  // Set text
   document.getElementById('pm-title').textContent = data.title;
   document.getElementById('pm-title').style.color = data.accentColor;
   document.getElementById('pm-date').textContent = data.date;
 
-  layers.innerHTML = '';
-  var layerCount = 5;
-  for (var li = 0; li < layerCount; li++) {
-    var layer = document.createElement('div');
-    layer.className = 'pm-layer';
-    var inner = document.createElement('div');
-    inner.className = 'pm-layer-inner';
-    if (data.flyer && li % 2 === 0) {
-      inner.style.backgroundImage = 'url(' + (data.memoryImages && data.memoryImages[li] ? data.memoryImages[li] : data.flyer) + ')';
-      inner.style.backgroundSize = 'cover';
-      inner.style.backgroundPosition = 'center';
-      inner.style.opacity = '0.6';
-    } else {
-      inner.style.background = 'linear-gradient(' + (135 + li * 30) + 'deg, ' + data.heroColor + ', rgba(0,0,0,.8))';
+  // Build media pool from card data
+  var mediaPool = [];
+  if (data.flyer) mediaPool.push(data.flyer);
+  if (data.heroImage) mediaPool.push(data.heroImage);
+  if (data.memoryImages) {
+    for (var mi = 0; mi < data.memoryImages.length; mi++) {
+      mediaPool.push(data.memoryImages[mi]);
     }
-    inner.style.borderColor = data.accentColor + '22';
-    layer.appendChild(inner);
-    layers.appendChild(layer);
   }
+  // Ensure at least 3 images by repeating
+  while (mediaPool.length < 3) mediaPool.push(mediaPool[0] || '');
 
-  var allLayers = layers.querySelectorAll('.pm-layer');
-  allLayers.forEach(function(layer, i) {
-    var delay = i * 150;
-    var rotStart = (Math.random() - 0.5) * 20;
-    var xStart = (Math.random() - 0.5) * 40;
-    var yStart = (Math.random() - 0.5) * 30;
-
-    layer.style.transform = 'rotate(' + rotStart + 'deg) translate(' + xStart + '%, ' + yStart + '%) scale(0.7)';
-    layer.style.opacity = '0';
-
-    setTimeout(function() {
-      layer.style.transition = 'all 0.8s cubic-bezier(.25,.46,.45,.94)';
-      layer.style.opacity = String(0.15 + (i / layerCount) * 0.5);
-      layer.style.transform = 'rotate(' + (rotStart * 0.3) + 'deg) translate(' + (xStart * 0.2) + '%, ' + (yStart * 0.2) + '%) scale(' + (0.85 + i * 0.04) + ')';
-    }, delay);
+  // Setup 050 images
+  var imgs050 = container050.querySelectorAll('.pm-050-img');
+  var zIdx050 = 0;
+  imgs050.forEach(function(img) {
+    img.style.zIndex = zIdx050;
+    img.setAttribute('data-index', zIdx050);
+    img.src = mediaPool[zIdx050 % mediaPool.length];
+    img.style.transform = 'scale(0,0)';
+    zIdx050++;
   });
 
+  // Kill any previous GSAP animations on these elements
+  gsap.killTweensOf(imgs050);
+
+  // Create effect050 GSAP timeline — auto-advancing (not scroll-driven)
+  var incr050 = 800000;
+  var localZ = zIdx050;
+
+  var tl050 = gsap.timeline({ paused: true });
+
+  tl050.to(imgs050, {
+    scale: 1.005,
+    ease: 'expo.inOut',
+    duration: 8,
+    stagger: {
+      each: 1,
+      repeat: -1,
+      onRepeat: function() {
+        var el = this.targets()[0];
+        localZ += 1;
+        el.style.zIndex = localZ;
+        var refEl = el.previousElementSibling || imgs050[imgs050.length - 1];
+        var refIdx = parseInt(refEl.getAttribute('data-index') || '0');
+        var newIdx = ((refIdx + 1) % mediaPool.length + mediaPool.length) % mediaPool.length;
+        el.setAttribute('data-index', newIdx);
+        el.src = mediaPool[newIdx];
+      }
+    }
+  });
+
+  tl050.time(incr050);
+
+  // Auto-advance the timeline for ~3 seconds
+  var startTime = performance.now();
+  var speed = 0.012; // Controls how fast the effect runs
+
+  function animate050(now) {
+    var elapsed = now - startTime;
+    if (elapsed > 3000) {
+      // Stop animation, proceed to Phase D
+      return;
+    }
+    incr050 += speed;
+    tl050.time(incr050);
+    requestAnimationFrame(animate050);
+  }
+  requestAnimationFrame(animate050);
+
+  // Phase C: Show memory text at 1.2s
   setTimeout(function() {
     textOverlay.style.opacity = '1';
 
+    // Subtle ambient sound cue
     try {
       var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       var osc = audioCtx.createOscillator();
@@ -2914,7 +2956,12 @@ function activateMemory(index) {
     } catch(e) {}
   }, 1200);
 
+  // Phase D: Transition to landed state at 3.2s
   setTimeout(function() {
+    // Kill GSAP timeline
+    tl050.kill();
+    gsap.killTweensOf(imgs050);
+
     transition.style.transition = 'opacity 0.5s';
     transition.style.opacity = '0';
 
@@ -2926,6 +2973,8 @@ function activateMemory(index) {
       transition.style.display = 'none';
       transition.style.opacity = '1';
       transition.style.transition = '';
+      // Reset 050 images
+      imgs050.forEach(function(img) { img.style.transform = 'scale(0,0)'; });
     }, 50);
   }, 3200);
 }
