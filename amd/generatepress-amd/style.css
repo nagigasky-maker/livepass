@@ -1,0 +1,43 @@
+/*
+ Theme Name:   ALL MUST DANCE™
+ Theme URI:    https://allmustdance.com
+ Description:  GeneratePress Child Theme for ALL MUST DANCE™
+ Author:       SPACE COOKING™
+ Author URI:   https://spacecooking.studio
+ Template:     generatepress
+ Version:      1.0.0
+ Text Domain:  generatepress-amd
+*/
+
+/* ── AMD Word Animation (Effect 005) ── */
+.amd-word {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+/* ── Artist Detail Navigation ── */
+.art-detail-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(237,235,230,0.1);
+}
+
+.ad-nav-btn {
+  background: none;
+  border: none;
+  color: var(--white);
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  cursor: pointer;
+  opacity: 0.55;
+  padding: 8px 0;
+  transition: opacity 0.2s;
+}
+
+.ad-nav-btn:hover {
+  opacity: 1;
+}
