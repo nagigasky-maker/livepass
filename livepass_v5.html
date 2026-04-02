@@ -3007,13 +3007,9 @@ function activateMemory(index) {
 
   // Set blur background
   if (data.flyer) {
-    blurBg.style.backgroundImage = 'url(' + data.flyer + ')';
-    blurBg.style.background = '';
-    blurBg.style.backgroundSize = 'cover';
-    blurBg.style.backgroundPosition = 'center';
+    blurBg.style.cssText = 'position:absolute;inset:-20px;filter:blur(30px) brightness(.4);transform:scale(1.1);background:url(' + data.flyer + ') center/cover no-repeat';
   } else {
-    blurBg.style.backgroundImage = '';
-    blurBg.style.background = 'linear-gradient(135deg, ' + data.heroColor + ', #000)';
+    blurBg.style.cssText = 'position:absolute;inset:-20px;filter:blur(30px) brightness(.4);transform:scale(1.1);background:linear-gradient(135deg,' + data.heroColor + ',#000)';
   }
 
   // Set text
@@ -3041,55 +3037,67 @@ function activateMemory(index) {
     img.setAttribute('data-index', zIdx050);
     img.src = mediaPool[zIdx050 % mediaPool.length];
     img.style.transform = 'scale(0,0)';
+    img.style.transition = '';
     zIdx050++;
   });
 
-  // Kill any previous GSAP animations on these elements
-  gsap.killTweensOf(imgs050);
+  // Try GSAP first, fallback to CSS animation
+  var useGsap = typeof gsap !== 'undefined';
 
-  // Create effect050 GSAP timeline — auto-advancing (not scroll-driven)
-  var incr050 = 800000;
-  var localZ = zIdx050;
-
-  var tl050 = gsap.timeline({ paused: true });
-
-  tl050.to(imgs050, {
-    scale: 1.005,
-    ease: 'expo.inOut',
-    duration: 8,
-    stagger: {
-      each: 1,
-      repeat: -1,
-      onRepeat: function() {
-        var el = this.targets()[0];
-        localZ += 1;
-        el.style.zIndex = localZ;
-        var refEl = el.previousElementSibling || imgs050[imgs050.length - 1];
-        var refIdx = parseInt(refEl.getAttribute('data-index') || '0');
-        var newIdx = ((refIdx + 1) % mediaPool.length + mediaPool.length) % mediaPool.length;
-        el.setAttribute('data-index', newIdx);
-        el.src = mediaPool[newIdx];
+  if (useGsap) {
+    try {
+      gsap.killTweensOf(imgs050);
+      var incr050 = 800000;
+      var localZ = zIdx050;
+      var tl050 = gsap.timeline({ paused: true });
+      tl050.to(imgs050, {
+        scale: 1.005,
+        ease: 'expo.inOut',
+        duration: 8,
+        stagger: {
+          each: 1,
+          repeat: -1,
+          onRepeat: function() {
+            var el = this.targets()[0];
+            localZ += 1;
+            el.style.zIndex = localZ;
+            var refEl = el.previousElementSibling || imgs050[imgs050.length - 1];
+            var refIdx = parseInt(refEl.getAttribute('data-index') || '0');
+            var newIdx = ((refIdx + 1) % mediaPool.length + mediaPool.length) % mediaPool.length;
+            el.setAttribute('data-index', newIdx);
+            el.src = mediaPool[newIdx];
+          }
+        }
+      });
+      tl050.time(incr050);
+      var startTime = performance.now();
+      var speed = 0.012;
+      function animate050(now) {
+        var elapsed = now - startTime;
+        if (elapsed > 3000) return;
+        incr050 += speed;
+        tl050.time(incr050);
+        requestAnimationFrame(animate050);
       }
+      requestAnimationFrame(animate050);
+      // Clean up GSAP on phase D
+      setTimeout(function() { try { tl050.kill(); gsap.killTweensOf(imgs050); } catch(e){} }, 3200);
+    } catch(e) {
+      useGsap = false;
     }
-  });
-
-  tl050.time(incr050);
-
-  // Auto-advance the timeline for ~3 seconds
-  var startTime = performance.now();
-  var speed = 0.012; // Controls how fast the effect runs
-
-  function animate050(now) {
-    var elapsed = now - startTime;
-    if (elapsed > 3000) {
-      // Stop animation, proceed to Phase D
-      return;
-    }
-    incr050 += speed;
-    tl050.time(incr050);
-    requestAnimationFrame(animate050);
   }
-  requestAnimationFrame(animate050);
+
+  if (!useGsap) {
+    // CSS fallback: staggered scale-in animation
+    imgs050.forEach(function(img, idx) {
+      img.style.transition = 'transform 0.6s cubic-bezier(.16,1,.3,1), opacity 0.6s';
+      img.style.opacity = '0';
+      setTimeout(function() {
+        img.style.transform = 'scale(1)';
+        img.style.opacity = String(0.2 + (idx / imgs050.length) * 0.6);
+      }, idx * 200);
+    });
+  }
 
   // Phase C: Show memory text at 1.2s
   setTimeout(function() {
@@ -3113,10 +3121,6 @@ function activateMemory(index) {
 
   // Phase D: Transition to landed state at 3.2s
   setTimeout(function() {
-    // Kill GSAP timeline
-    tl050.kill();
-    gsap.killTweensOf(imgs050);
-
     transition.style.transition = 'opacity 0.5s';
     transition.style.opacity = '0';
 
