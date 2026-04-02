@@ -156,7 +156,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
 .t-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--lp),#5a9900);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#000;cursor:pointer}
 
 /* ── FILTER ── */
-#filtertabs{position:absolute;top:58px;left:0;right:0;height:36px;display:flex;align-items:center;padding:0 22px;z-index:40;overflow-x:auto;scrollbar-width:none;transition:opacity .2s}
+#filtertabs{position:absolute;top:calc(64px + env(safe-area-inset-top,0px));left:0;right:0;height:36px;display:flex;align-items:center;padding:0 22px;z-index:45;overflow-x:auto;scrollbar-width:none;transition:opacity .2s;background:linear-gradient(to bottom,rgba(0,0,0,.9) 60%,transparent)}
 #filtertabs::-webkit-scrollbar{display:none}
 .ftab{font-size:13px;letter-spacing:2.5px;padding:6px 13px;border:none;background:none;color:var(--muted);cursor:pointer;white-space:nowrap;border-bottom:1.5px solid transparent;transition:all .2s;font-family:'Inter',sans-serif;font-weight:600;text-transform:uppercase}
 .ftab.active{color:#fff;border-bottom-color:var(--lp)}
@@ -255,24 +255,24 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
    SCHEDULE
 ═══════════════════════════════ */
 #sched-scroll::-webkit-scrollbar{display:none}
-.sched-tab{font-size:14px;letter-spacing:2px;padding:14px 16px;border:none;background:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;font-family:'Inter',sans-serif;font-weight:600;text-transform:uppercase;transition:all .2s;white-space:nowrap;flex-shrink:0}
+.sched-tab{font-size:11px;letter-spacing:2px;padding:10px 12px;border:none;background:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;font-family:'Inter',sans-serif;font-weight:600;text-transform:uppercase;transition:all .2s;white-space:nowrap;flex-shrink:0}
 .sched-tab.active{color:var(--fg);border-bottom-color:var(--lp)}
 /* EVENT CARD */
 .sched-card{border-bottom:0.5px solid var(--border);cursor:pointer;transition:background .15s;position:relative}
 .sched-card:active{background:var(--dim)}
-.sched-card-inner{padding:20px 18px;display:flex;gap:16px;align-items:flex-start}
-.sched-date-block{flex-shrink:0;width:54px;text-align:center;padding-top:2px}
+.sched-card-inner{padding:14px 14px;display:flex;gap:12px;align-items:flex-start}
+.sched-date-block{flex-shrink:0;width:44px;text-align:center;padding-top:2px}
 .sdb-month{font-size:13px;letter-spacing:2px;text-transform:uppercase;font-weight:600;margin-bottom:3px}
 .sdb-day{font-size:32px;font-weight:800;letter-spacing:-1px;line-height:1}
 .sched-info{flex:1;min-width:0}
 .sched-type-tag{font-size:13px;letter-spacing:2px;font-weight:700;text-transform:uppercase;margin-bottom:7px}
-.sched-title{font-size:20px;font-weight:700;letter-spacing:-.5px;line-height:1.1;margin-bottom:6px}
-.sched-meta{font-size:14px;color:var(--muted);letter-spacing:.3px;margin-bottom:10px}
+.sched-title{font-size:15px;font-weight:700;letter-spacing:-.5px;line-height:1.1;margin-bottom:6px}
+.sched-meta{font-size:11px;color:var(--muted);letter-spacing:.3px;margin-bottom:10px}
 .sched-tags{display:flex;gap:5px;flex-wrap:wrap}
-.sched-pill{font-size:12px;letter-spacing:1.5px;padding:5px 12px;border-radius:100px;border:0.5px solid;font-weight:500;text-transform:uppercase}
+.sched-pill{font-size:9px;letter-spacing:1.5px;padding:3px 8px;border-radius:100px;border:0.5px solid;font-weight:500;text-transform:uppercase}
 .sched-right{flex-shrink:0;text-align:right}
-.sched-price{font-size:18px;font-weight:700;letter-spacing:-.4px}
-.sched-pass-price{font-size:14px;margin-top:4px;letter-spacing:.5px}
+.sched-price{font-size:14px;font-weight:700;letter-spacing:-.4px}
+.sched-pass-price{font-size:11px;margin-top:4px;letter-spacing:.5px}
 /* LEFT ACCENT BAR */
 .sched-card .sched-bar{position:absolute;left:0;top:0;bottom:0;width:4px}
 #art-scroll{height:100%;overflow-y:auto;scrollbar-width:none}
@@ -689,19 +689,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
   <!-- ═══ HOME ═══ -->
   <div class="panel active" id="panel-home">
     <div id="home-wrap">
-      <!-- LIVE TV BG + FOLLOWING STRIP -->
       <div id="home-hero" style="flex:0 0 auto">
-        <!-- LIVE SCREEN -->
-        <div style="position:relative;height:180px;overflow:hidden;background:#030303">
-          <div style="position:absolute;inset:0;background-image:url('data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'n\'><feTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\'/><feColorMatrix type=\'saturate\' values=\'0\'/></filter><rect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\' opacity=\'0.35\'/></svg>');background-size:cover;opacity:.7;animation:noiseAnim .1s steps(1) infinite"></div>
-          <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.15) 2px,rgba(0,0,0,.15) 4px)"></div>
-          <div style="position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 30%,rgba(0,0,0,.6) 100%)"></div>
-          <div style="position:absolute;top:10px;left:14px;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.25);text-transform:uppercase;border:0.5px solid rgba(255,255,255,.12);padding:3px 8px">CH 01 · LIVE PASS</div>
-          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px">
-            <div style="font-size:11px;letter-spacing:3px;color:rgba(255,255,255,.2);text-transform:uppercase">OFF AIR</div>
-            <div style="font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.12);font-family:monospace">次回: ALL MUST DANCE Vol.25</div>
-          </div>
-        </div>
 
         <!-- FOLLOWING CARDS -->
         <div style="border-bottom:0.5px solid var(--border)">
@@ -775,8 +763,11 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
       <!-- ④ NFT CARD COLLECTION — Effect 001 忠実再現 -->
       <div id="nft-collection" style="flex:0 0 auto;overflow:hidden;position:relative;background:#080808;border-bottom:0.5px solid var(--border)">
         <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 18px 8px">
-          <div style="font-size:11px;letter-spacing:3px;color:rgba(255,255,255,.18);text-transform:uppercase;font-weight:600">My Pass Collection</div>
-          <div style="font-size:12px;color:rgba(255,255,255,.18);letter-spacing:1px">3 cards</div>
+          <div>
+            <div style="font-size:11px;letter-spacing:3px;color:rgba(255,255,255,.18);text-transform:uppercase;font-weight:600">Passes Collection</div>
+            <div style="font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.12);text-transform:uppercase;margin-top:2px">You Were There</div>
+          </div>
+          <div style="font-size:12px;color:rgba(255,255,255,.18);letter-spacing:1px">3 Passes</div>
         </div>
         <!-- 001: overflow hidden container, cards absolutely placed, drag=x translate -->
         <div id="nft-viewport" style="overflow:hidden;position:relative;height:320px;cursor:grab">
@@ -1059,7 +1050,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
   <!-- ═══ DISCOVER ═══ -->
   <!-- ═══ SCHEDULE — EVENT / WORKSHOP / EXHIBITION ═══ -->
   <div class="panel" id="panel-discover">
-    <div id="sched-scroll" style="height:100%;overflow-y:auto;scrollbar-width:none">
+    <div id="sched-scroll" style="height:100%;overflow-y:auto;overflow-x:hidden;scrollbar-width:none">
 
       <!-- FILTER TABS -->
       <div style="display:flex;padding:0 18px;border-bottom:0.5px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:10">
@@ -1527,28 +1518,6 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
         <circle cx="50" cy="74" r="5" fill="white" stroke="none"/>
       </svg>
       <div class="bl">Schedule</div>
-    </button>
-
-    <!-- STORE — waname bag icon -->
-    <button class="bn" data-tab="store">
-      <svg class="icon-store" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M35 40 C35 22 65 22 65 40" stroke="white" stroke-width="7" stroke-linecap="round" fill="none"/>
-        <rect x="13" y="38" width="74" height="54" rx="10" fill="white" stroke="none"/>
-        <ellipse cx="37" cy="54" rx="7.5" ry="4.5" fill="#000" stroke="none"/>
-        <ellipse cx="63" cy="54" rx="7.5" ry="4.5" fill="#000" stroke="none"/>
-      </svg>
-      <div class="bl">Store</div>
-    </button>
-
-    <button class="bn" data-tab="pass">
-      <svg class="icon-pass" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="8" y="24" width="84" height="52" rx="9" stroke="white" stroke-width="6.5"/>
-        <line x1="8" y1="44" x2="92" y2="44" stroke="white" stroke-width="5.5"/>
-        <rect class="fill-rect" x="20" y="56" width="20" height="9" rx="3" fill="white" stroke="none"/>
-        <rect class="fill-rect" x="48" y="56" width="14" height="9" rx="3" fill="white" stroke="none" opacity="0.45"/>
-        <rect class="fill-rect" x="66" y="56" width="14" height="9" rx="3" fill="white" stroke="none" opacity="0.45"/>
-      </svg>
-      <div class="bl">My Pass</div>
     </button>
 
     <!-- MORE -->
