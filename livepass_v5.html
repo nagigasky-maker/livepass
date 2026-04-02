@@ -163,7 +163,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
 .ftab:not(.active):hover{color:rgba(255,255,255,.5)}
 
 /* ── PANELS ── */
-.panel{position:absolute;top:calc(100px + env(safe-area-inset-top,0px));left:0;right:0;bottom:82px;overflow:hidden;display:none}
+.panel{position:absolute;top:calc(100px + env(safe-area-inset-top,0px));left:0;right:0;bottom:32px;overflow:hidden;display:none}
 .panel.active{display:block}
 
 /* ═══════════════════════════════
@@ -506,6 +506,79 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
 #nft-viewport{touch-action:pan-y}
 #nft-track{touch-action:none}
 
+/* ═══════════════════════════════
+   SCREEN — Series / Live / Article sub-panels
+═══════════════════════════════ */
+.scr-sub{display:none;height:100%;overflow:hidden}
+.scr-sub.active{display:block}
+
+/* SERIES — Netflix-style */
+.series-scroll{height:100%;overflow-y:auto;scrollbar-width:none}
+.series-scroll::-webkit-scrollbar{display:none}
+.series-item{margin-bottom:1px}
+.series-hero{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;cursor:pointer}
+.series-hero-bg{position:absolute;inset:0}
+.series-hero-grad{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,.95) 100%)}
+.series-hero-info{position:absolute;bottom:0;left:0;right:0;padding:14px 16px}
+.series-badge{display:inline-block;font-size:7px;letter-spacing:2px;padding:2px 8px;border-radius:2px;font-weight:800;text-transform:uppercase;margin-bottom:5px}
+.series-title{font-size:19px;font-weight:900;letter-spacing:-.8px;line-height:.92;margin-bottom:4px}
+.series-creator{font-size:8px;color:rgba(255,255,255,.5);letter-spacing:1px}
+.series-episodes{background:var(--bg2);border-bottom:0.5px solid var(--border)}
+.ep-toggle{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;border-bottom:0.5px solid var(--border)}
+.ep-toggle-lbl{font-size:8px;letter-spacing:2px;color:var(--muted);font-weight:700;text-transform:uppercase}
+.ep-toggle-info{display:flex;align-items:center;gap:8px}
+.ep-count{font-size:9px;color:var(--muted);letter-spacing:1px}
+.ep-chevron{font-size:10px;color:var(--muted);transition:transform .2s}
+.ep-chevron.open{transform:rotate(180deg)}
+.ep-list{display:none}
+.ep-list.open{display:block}
+.ep-item{display:flex;gap:12px;padding:12px 16px;border-bottom:0.5px solid rgba(255,255,255,.04);cursor:pointer;transition:background .15s}
+.ep-item:active{background:rgba(255,255,255,.04)}
+.ep-item.locked{opacity:.45}
+.ep-thumb{width:80px;height:45px;border-radius:4px;flex-shrink:0;overflow:hidden;position:relative;background:var(--bg3)}
+.ep-thumb-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.ep-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;background:rgba(0,0,0,.35)}
+.ep-lock{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6);font-size:14px}
+.ep-info{flex:1;min-width:0}
+.ep-num{font-size:7px;letter-spacing:2px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-bottom:3px}
+.ep-title{font-size:12px;font-weight:700;letter-spacing:-.3px;line-height:1.1;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ep-desc{font-size:8px;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ep-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.ep-dur{font-size:8px;color:var(--muted);font-family:monospace;letter-spacing:.5px}
+.ep-access{font-size:6px;letter-spacing:1.5px;padding:2px 6px;border-radius:100px;border:0.5px solid;font-weight:700;text-transform:uppercase}
+.ep-progress{width:80px;height:2px;background:var(--border);border-radius:1px;overflow:hidden;margin-top:4px}
+.ep-progress-fill{height:100%;background:var(--lp);border-radius:1px}
+
+/* LIVE — Big screen + archive */
+.live-main{flex:0 0 auto;position:relative}
+.live-screen{width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#0d0000,#1a0000);position:relative;overflow:hidden}
+.live-screen-glow{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(255,59,48,.06),transparent 65%)}
+.live-ring{position:absolute;border-radius:50%;border:0.5px solid rgba(255,59,48,.1)}
+.live-label{position:absolute;top:10px;left:10px;background:var(--red);font-size:7px;letter-spacing:1.5px;padding:3px 10px;font-weight:800;display:flex;align-items:center;gap:5px}
+.live-label::before{content:'';width:5px;height:5px;border-radius:50%;background:#fff;animation:blink 1.2s ease-in-out infinite}
+.live-viewers{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.65);border:0.5px solid var(--border);font-size:7px;padding:3px 8px;letter-spacing:1px}
+.live-screen-info{padding:12px 18px 10px;background:var(--bg2);border-bottom:0.5px solid var(--border)}
+.live-event-name{font-size:16px;font-weight:900;letter-spacing:-.6px;margin-bottom:3px}
+.live-event-meta{font-size:8px;color:var(--muted);letter-spacing:1px;margin-bottom:8px}
+.live-access-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.live-pass-pill{font-size:7px;letter-spacing:1.5px;padding:3px 10px;border-radius:100px;font-weight:700;text-transform:uppercase;border:0.5px solid;cursor:pointer}
+.live-archive-label{font-size:7px;letter-spacing:3px;color:var(--muted2);padding:10px 18px 5px;font-weight:700;text-transform:uppercase}
+.archive-scroll{flex:1;overflow-y:auto;scrollbar-width:none}
+.archive-scroll::-webkit-scrollbar{display:none}
+.arc-item{display:flex;align-items:center;gap:12px;padding:10px 18px;border-bottom:0.5px solid rgba(255,255,255,.04);cursor:pointer;transition:background .15s}
+.arc-item:active{background:rgba(255,255,255,.04)}
+.arc-item.locked{opacity:.4}
+.arc-thumb{width:72px;height:40px;border-radius:4px;flex-shrink:0;background:var(--bg3);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.arc-thumb-bg{position:absolute;inset:0;opacity:.4}
+.arc-play{font-size:12px;position:relative;z-index:1}
+.arc-lock-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);font-size:13px}
+.arc-info{flex:1;min-width:0}
+.arc-title{font-size:11px;font-weight:700;letter-spacing:-.2px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arc-meta{font-size:7px;color:var(--muted);letter-spacing:.5px}
+.arc-right{text-align:right;flex-shrink:0}
+.arc-access{font-size:6px;letter-spacing:1.5px;padding:2px 6px;border-radius:100px;border:0.5px solid;font-weight:700;text-transform:uppercase}
+.arc-date{font-size:7px;color:var(--muted);margin-top:3px;letter-spacing:.5px}
+
 /* フォロー中カード */
 .fcard{flex-shrink:0;width:140px;border:0.5px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s}
 .fcard:active{transform:scale(.95)}
@@ -549,16 +622,39 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
 .bn.active .icon-article rect,.bn.active .icon-article polyline,.bn.active .icon-article line{stroke:var(--lp)}
 .bn:not(.active) .icon-article rect,.bn:not(.active) .icon-article polyline,.bn:not(.active) .icon-article line{stroke:rgba(255,255,255,.22)}
 
-/* ── BOTTOM NAV ── */
+/* ── MENU TOGGLE BUTTON ── */
+#menu-toggle{
+  position:absolute;bottom:0;left:0;right:0;
+  height:32px;
+  display:flex;align-items:center;justify-content:center;
+  z-index:60;
+  cursor:pointer;
+  background:linear-gradient(to top,rgba(0,0,0,.95),rgba(0,0,0,.6));
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  transition:opacity .2s;
+}
+#menu-toggle .menu-line{
+  width:28px;height:2px;border-radius:1px;
+  background:rgba(255,255,255,.18);
+  transition:background .2s;
+}
+#menu-toggle:active .menu-line{background:var(--lp)}
+#menu-toggle.hidden{opacity:0;pointer-events:none}
+
+/* ── BOTTOM NAV (collapsible) ── */
 #bnav{position:absolute;bottom:0;left:0;right:0;
   height:82px;
   border-top:0.5px solid var(--border);
   background:rgba(0,0,0,.96);
   backdrop-filter:blur(24px);
   display:flex;
-  z-index:50;
+  z-index:55;
   padding-bottom:env(safe-area-inset-bottom,8px);
-  padding-top:4px}
+  padding-top:4px;
+  transform:translateY(100%);
+  transition:transform .28s cubic-bezier(.4,0,.2,1);
+}
+#bnav.open{transform:translateY(0)}
 </style>
 </head>
 <body>
@@ -585,7 +681,6 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
   <!-- FILTER -->
   <div id="filtertabs" style="opacity:0;pointer-events:none">
     <button class="ftab active" data-filter="all">All</button>
-    <button class="ftab" data-filter="film">Film</button>
     <button class="ftab" data-filter="series">Series</button>
     <button class="ftab" data-filter="live">Live</button>
     <button class="ftab" data-filter="article">Article</button>
@@ -753,95 +848,212 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
     </div>
   </div>
 
-  <!-- ═══ SCREEN ═══ -->
+  <!-- ═══ SCREEN (series / live / article sub-panels) ═══ -->
   <div class="panel" id="panel-screen">
-    <div id="scr-outer">
-      <div id="scr-content">
 
-        <!-- ── YouTube: FnKMDNS ── -->
-        <div class="si" data-type="film" id="yt-block">
-          <!-- サムネイル表示 → タップで動画再生 -->
-          <div id="yt-thumb" style="position:relative;width:100%;height:260px;background:#000;cursor:pointer;overflow:hidden" onclick="loadYT()">
-            <!-- YouTube サムネイル -->
-            <img src="https://img.youtube.com/vi/ILsQ3kBr_xs/maxresdefault.jpg"
-                 onerror="this.src='https://img.youtube.com/vi/ILsQ3kBr_xs/hqdefault.jpg'"
-                 style="width:100%;height:100%;object-fit:cover;display:block">
-            <!-- グラデーション -->
-            <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.1) 60%,transparent 100%)"></div>
-            <!-- 再生ボタン -->
-            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
-              <div style="width:56px;height:56px;border-radius:50%;background:rgba(255,59,48,.9);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(255,59,48,.4)">
-                <div style="width:0;height:0;border-top:11px solid transparent;border-bottom:11px solid transparent;border-left:18px solid #fff;margin-left:3px"></div>
+    <!-- SUB: SERIES (Netflix-style) — default -->
+    <div class="scr-sub active" id="scr-series">
+      <div class="series-scroll">
+
+        <!-- Series 1 -->
+        <div class="series-item">
+          <div class="series-hero">
+            <div class="series-hero-bg" style="background:linear-gradient(135deg,#0e0620,#14002e)">
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.06;font-size:100px">✂️</div>
+            </div>
+            <div class="series-hero-grad"></div>
+            <div class="series-hero-info">
+              <span class="series-badge" style="background:rgba(191,90,242,.2);color:var(--purple);border:0.5px solid rgba(191,90,242,.35)">SERIES · 8 EPS</span>
+              <div class="series-title">Making of Waname® S/S 26</div>
+              <div class="series-creator">Creator: NOBBY · WANAME® × AMD</div>
+            </div>
+          </div>
+          <div class="series-episodes">
+            <div class="ep-toggle" onclick="toggleEpList(this)">
+              <span class="ep-toggle-lbl">Episodes</span>
+              <div class="ep-toggle-info">
+                <span class="ep-count">8 episodes · EP3 available</span>
+                <span class="ep-chevron open">▼</span>
               </div>
             </div>
-            <!-- ラベル -->
-            <div style="position:absolute;top:10px;left:12px;background:rgba(0,0,0,.6);font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.7);padding:3px 9px;text-transform:uppercase">YouTube</div>
-          </div>
-          <!-- iframeプレイヤー（非表示→タップで表示） -->
-          <div id="yt-player" style="display:none;width:100%;height:260px;background:#000">
-            <iframe id="yt-iframe"
-              src=""
-              style="width:100%;height:100%;border:none;display:block"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen>
-            </iframe>
-          </div>
-          <div class="si-grad" style="pointer-events:none"></div>
-          <div class="si-info">
-            <div class="si-tag" style="color:var(--red)">Film · YouTube</div>
-            <div class="si-title">FnKMDNS — Visual Works</div>
-            <div class="si-meta">SPACE COOKING™ · PLAYLIST</div>
-          </div>
-        </div>
-          <div class="si-bg" style="height:284px;background:linear-gradient(135deg,#0d0000,#1a0000)">
-            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><div style="width:136px;height:136px;border-radius:50%;border:0.5px solid rgba(255,59,48,.13)"></div></div>
-          </div>
-          <div class="si-live">LIVE</div>
-          <div class="si-grad"></div>
-          <div style="position:absolute;top:10px;right:12px;z-index:3;width:44px;height:44px;overflow:hidden;border-radius:4px;opacity:.85"><img src="IMG_AMD_SRC" style="width:100%;height:100%;object-fit:cover"></div>
-          <div class="si-info"><div class="si-tag red">Streaming Now</div><div class="si-title">All Must Dance Vol. 24</div><div class="si-meta">LIQUIDROOM TOKYO · 2,840 WATCHING</div></div>
-        </div>
-        <div class="si" data-type="film">
-          <div class="si-bg" style="height:242px;background:linear-gradient(160deg,#070714,#0a0a1c)">
-            <div style="position:absolute;top:16px;right:16px;width:42px;height:42px;border-radius:50%;border:0.5px solid rgba(168,230,61,.18);display:flex;align-items:center;justify-content:center;font-size:14px;opacity:.38">▶</div>
-          </div>
-          <div class="si-dur">28:00</div>
-          <div class="si-grad"></div>
-          <div class="si-info"><div class="si-tag">Film</div><div class="si-title">Europe Tour Documentary</div><div class="si-meta">BERLIN · PARIS · AMSTERDAM 2025</div></div>
-        </div>
-        <div class="si" data-type="series">
-          <div class="si-bg" style="height:228px;background:linear-gradient(120deg,#0e0614,#080010)"></div>
-          <div class="si-dur">EP 3 / 8</div>
-          <div class="si-grad"></div>
-          <div class="si-info"><div class="si-tag">Series</div><div class="si-title">Making of Waname® S/S 26</div><div class="si-meta">FASHION WEEK TOKYO · MEMBERS ONLY</div></div>
-        </div>
-        <div class="si" data-type="article">
-          <div class="si-bg" style="height:192px;background:#080808">
-            <div style="position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--lp)"></div>
-            <div style="position:absolute;inset:0;padding:20px 20px 20px 22px;display:flex;flex-direction:column;justify-content:center;gap:7px;opacity:.22">
-              <div style="height:5px;background:#fff;border-radius:3px;width:75%"></div>
-              <div style="height:5px;background:#fff;border-radius:3px;width:55%"></div>
-              <div style="height:5px;background:#fff;border-radius:3px;width:65%"></div>
+            <div class="ep-list open">
+              <div class="ep-item">
+                <div class="ep-thumb"><div class="ep-thumb-bg" style="background:linear-gradient(135deg,#1a0a30,#0a0018)"></div><div class="ep-play">▶</div><div class="ep-progress" style="position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--border)"><div class="ep-progress-fill" style="width:65%"></div></div></div>
+                <div class="ep-info"><div class="ep-num">EP 01</div><div class="ep-title">VISION — なぜ作るのか</div><div class="ep-desc">シーズンのコンセプトと制作の出発点。NOBBYとデザイナーの最初のミーティング。</div></div>
+                <div class="ep-right"><span class="ep-dur">12:30</span><span class="ep-access" style="color:var(--lp);border-color:rgba(168,230,61,.3)">LP</span></div>
+              </div>
+              <div class="ep-item">
+                <div class="ep-thumb"><div class="ep-thumb-bg" style="background:linear-gradient(135deg,#2a0a40,#140020)"></div><div class="ep-play">▶</div></div>
+                <div class="ep-info"><div class="ep-num">EP 02</div><div class="ep-title">素材選び — 生地と色</div><div class="ep-desc">着物の生地を選ぶプロセス。京都の職人との対話。</div></div>
+                <div class="ep-right"><span class="ep-dur">15:44</span><span class="ep-access" style="color:var(--lp);border-color:rgba(168,230,61,.3)">LP</span></div>
+              </div>
+              <div class="ep-item">
+                <div class="ep-thumb"><div class="ep-thumb-bg" style="background:linear-gradient(135deg,#3a1050,#200030)"></div><div class="ep-play">▶</div></div>
+                <div class="ep-info"><div class="ep-num">EP 03 <span style="color:var(--lp);font-size:6px;margin-left:4px">NEW</span></div><div class="ep-title">縫製 — 職人の手</div><div class="ep-desc">岐阜の縫製工場に密着。伝統技術とモダンデザインの融合。</div></div>
+                <div class="ep-right"><span class="ep-dur">18:20</span><span class="ep-access" style="color:var(--lp);border-color:rgba(168,230,61,.3)">LP</span></div>
+              </div>
+              <div class="ep-item locked">
+                <div class="ep-thumb"><div class="ep-thumb-bg" style="background:#1a1a1a"></div><div class="ep-lock">🔒</div></div>
+                <div class="ep-info"><div class="ep-num">EP 04</div><div class="ep-title">フィッティング</div><div class="ep-desc">Coming soon — 2026.04.15</div></div>
+                <div class="ep-right"><span class="ep-dur">—</span><span class="ep-access" style="color:var(--sp);border-color:rgba(245,200,66,.3)">SP</span></div>
+              </div>
+              <div class="ep-item locked">
+                <div class="ep-thumb"><div class="ep-thumb-bg" style="background:#1a1a1a"></div><div class="ep-lock">🔒</div></div>
+                <div class="ep-info"><div class="ep-num">EP 05 〜 08</div><div class="ep-title">Coming Soon</div><div class="ep-desc">SUPER PASS で先行視聴可能</div></div>
+                <div class="ep-right"><span class="ep-dur">—</span><span class="ep-access" style="color:var(--sp);border-color:rgba(245,200,66,.3)">SP</span></div>
+              </div>
             </div>
           </div>
-          <div class="si-grad"></div>
-          <div class="si-info"><div class="si-tag">Article</div><div class="si-title">Nobby on Space & Sound Design</div><div class="si-meta">8 MIN READ · SPACE COOKING™</div></div>
         </div>
-        <div class="si" data-type="film">
-          <div class="si-bg" style="height:242px;background:linear-gradient(160deg,#100808,#1c0a0a)"></div>
-          <div class="si-dur">45:00</div>
-          <div class="si-grad"></div>
-          <div class="si-info"><div class="si-tag">Film</div><div class="si-title">Idomi Tokyo 2025 Recap</div><div class="si-meta">DANCE BATTLE · FULL DOCUMENTARY</div></div>
+
+        <!-- Series 2 -->
+        <div class="series-item" style="margin-top:8px">
+          <div class="series-hero">
+            <div class="series-hero-bg" style="background:linear-gradient(135deg,#001418,#001e24)">
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.07;font-size:100px">👗</div>
+            </div>
+            <div class="series-hero-grad"></div>
+            <div class="series-hero-info">
+              <span class="series-badge" style="background:rgba(0,229,160,.15);color:var(--mint);border:0.5px solid rgba(0,229,160,.35)">NEW SERIES · 5 EPS</span>
+              <div class="series-title">Dubla® Origin Story</div>
+              <div class="series-creator">Creator: NOBBY · DUBLA® Studio</div>
+            </div>
+          </div>
+          <div class="series-episodes">
+            <div class="ep-toggle" onclick="toggleEpList(this)">
+              <span class="ep-toggle-lbl">Episodes</span>
+              <div class="ep-toggle-info">
+                <span class="ep-count">5 episodes · EP1 available</span>
+                <span class="ep-chevron">▼</span>
+              </div>
+            </div>
+            <div class="ep-list">
+              <div class="ep-item">
+                <div class="ep-thumb"><div class="ep-thumb-bg" style="background:linear-gradient(135deg,#001a0e,#002814)"></div><div class="ep-play">▶</div></div>
+                <div class="ep-info"><div class="ep-num">EP 01 <span style="color:var(--lp);font-size:6px;margin-left:4px">NEW</span></div><div class="ep-title">BIRTH — ブランドの始まり</div><div class="ep-desc">DUBLAが生まれた理由とNOBBYのビジョン。初回公開。</div></div>
+                <div class="ep-right"><span class="ep-dur">14:00</span><span class="ep-access" style="color:var(--sp);border-color:rgba(245,200,66,.3)">SP</span></div>
+              </div>
+              <div class="ep-item locked">
+                <div class="ep-thumb"><div class="ep-thumb-bg" style="background:#1a1a1a"></div><div class="ep-lock">🔒</div></div>
+                <div class="ep-info"><div class="ep-num">EP 02 〜 05</div><div class="ep-title">Coming Soon</div><div class="ep-desc">2026.05〜リリース予定</div></div>
+                <div class="ep-right"><span class="ep-dur">—</span><span class="ep-access" style="color:var(--sp);border-color:rgba(245,200,66,.3)">SP</span></div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="si" data-type="series">
-          <div class="si-bg" style="height:228px;background:linear-gradient(145deg,#001010,#001c1c)"></div>
-          <div class="si-dur">EP 1 / 5</div>
-          <div class="si-grad"></div>
-          <div style="position:absolute;top:10px;right:12px;z-index:3;width:52px;height:44px;overflow:hidden;border-radius:4px;opacity:.9"><img src="IMG_DUBLA_SRC" style="width:100%;height:100%;object-fit:cover"></div>
-          <div class="si-info"><div class="si-tag">Series</div><div class="si-title">Dubla® Origin Story</div><div class="si-meta">EXCLUSIVE · MEMBERS ONLY</div></div>
+
+      </div>
+    </div>
+
+    <!-- SUB: LIVE — Big screen + archive -->
+    <div class="scr-sub" id="scr-live">
+      <div style="height:100%;display:flex;flex-direction:column;overflow:hidden">
+        <!-- Big Screen -->
+        <div class="live-main">
+          <div class="live-screen">
+            <div class="live-screen-glow"></div>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+              <div class="live-ring" style="width:200px;height:200px;position:absolute"></div>
+              <div class="live-ring" style="width:120px;height:120px;position:absolute"></div>
+              <div class="live-ring" style="width:60px;height:60px;position:absolute"></div>
+              <div style="font-size:36px;opacity:.15">▶</div>
+            </div>
+          </div>
+          <div class="live-label">LIVE</div>
+          <div class="live-viewers">2,840 watching</div>
+        </div>
+        <div class="live-screen-info">
+          <div class="live-event-name">All Must Dance Vol.24</div>
+          <div class="live-event-meta">NOBBY · LIQUIDROOM TOKYO · 2026.04.01 · 22:00〜</div>
+          <div class="live-access-row">
+            <span class="live-pass-pill" style="color:var(--lp);border-color:rgba(168,230,61,.35);background:rgba(168,230,61,.08)">✓ LIVE PASS</span>
+            <span class="live-pass-pill" style="color:var(--sp);border-color:rgba(245,200,66,.35);background:rgba(245,200,66,.08)">✓ SUPER PASS</span>
+            <span class="live-pass-pill" style="color:var(--muted);border-color:var(--border)">FREE Preview</span>
+          </div>
+        </div>
+
+        <!-- Archive -->
+        <div class="live-archive-label">Archive · Past Lives</div>
+        <div class="archive-scroll">
+          <div class="arc-item">
+            <div class="arc-thumb"><div class="arc-thumb-bg" style="background:linear-gradient(135deg,#0d1a00,#1a2e00)"></div><div class="arc-play">▶</div></div>
+            <div class="arc-info"><div class="arc-title">All Must Dance Vol.23</div><div class="arc-meta">NOBBY · LIQUIDROOM · 1:38:22</div></div>
+            <div class="arc-right"><span class="arc-access" style="color:var(--lp);border-color:rgba(168,230,61,.3)">LIVE</span><div class="arc-date">2026.02.15</div></div>
+          </div>
+          <div class="arc-item">
+            <div class="arc-thumb"><div class="arc-thumb-bg" style="background:linear-gradient(135deg,#1c1000,#2e1800)"></div><div class="arc-play">▶</div></div>
+            <div class="arc-info"><div class="arc-title">All Must Dance Vol.22</div><div class="arc-meta">NOBBY + DJ KEITA · WOMB TOKYO · 1:52:44</div></div>
+            <div class="arc-right"><span class="arc-access" style="color:var(--sp);border-color:rgba(245,200,66,.3)">SUPER</span><div class="arc-date">2025.12.20</div></div>
+          </div>
+          <div class="arc-item locked">
+            <div class="arc-thumb"><div class="arc-thumb-bg" style="background:#111"></div><div class="arc-lock-icon">🔒</div></div>
+            <div class="arc-info"><div class="arc-title">Kimono Rave Night — Live Set</div><div class="arc-meta">NOBBY · Club Asia Shibuya · 2:04:10</div></div>
+            <div class="arc-right"><span class="arc-access" style="color:var(--sp);border-color:rgba(245,200,66,.3)">SUPER</span><div class="arc-date">2025.11.03</div></div>
+          </div>
+          <div class="arc-item locked">
+            <div class="arc-thumb"><div class="arc-thumb-bg" style="background:#111"></div><div class="arc-lock-icon">🔒</div></div>
+            <div class="arc-info"><div class="arc-title">All Must Dance Vol.21 — Special</div><div class="arc-meta">NOBBY b2b SAYA · Berghain · 3:12:00</div></div>
+            <div class="arc-right"><span class="arc-access" style="color:var(--sp);border-color:rgba(245,200,66,.3)">SUPER</span><div class="arc-date">2025.09.14</div></div>
+          </div>
+          <div class="arc-item">
+            <div class="arc-thumb"><div class="arc-thumb-bg" style="background:linear-gradient(135deg,#0a001a,#14002a)"></div><div class="arc-play">▶</div></div>
+            <div class="arc-info"><div class="arc-title">Idomi 2025 — DJ Set</div><div class="arc-meta">NOBBY · Battle Entrance · 0:52:30</div></div>
+            <div class="arc-right"><span class="arc-access" style="color:var(--lp);border-color:rgba(168,230,61,.3)">LIVE</span><div class="arc-date">2025.08.10</div></div>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- SUB: ARTICLE (moved from standalone tab) -->
+    <div class="scr-sub" id="scr-article">
+      <div id="art-scroll-scr" style="height:100%;overflow-y:auto;scrollbar-width:none">
+        <!-- HERO -->
+        <div class="a-hero">
+          <div class="a-hbg" style="background:linear-gradient(160deg,#070710,#050508)"></div>
+          <div style="position:absolute;right:0;top:0;bottom:0;width:45%;overflow:hidden;opacity:.35">
+            <img src="IMG_NOBBY_SRC" style="width:100%;height:100%;object-fit:cover;object-position:top">
+          </div>
+          <div class="a-hlines"></div><div class="a-hgrad"></div>
+          <div class="a-hbar" style="background:var(--lp)"></div>
+          <div class="a-hc">
+            <div class="a-cat">Interview · Featured</div>
+            <div class="a-head">Nobby on Space<br/>& Sound Design</div>
+            <div class="a-by"><span>Space Cooking™ Journal</span> · 8 min · 2026.03</div>
+          </div>
+        </div>
+        <!-- GRID -->
+        <div class="a-grid">
+          <div class="a-cell"><div class="a-cbg" style="background:linear-gradient(135deg,#0d0000,#1a0000)"></div><div class="a-cgrad"></div><div class="a-cc"><div class="a-ccat" style="color:var(--red)">Culture</div><div class="a-ctit">Tokyo Club Scene 2026</div><div class="a-csub">5 min read</div></div></div>
+          <div class="a-cell"><div class="a-cbg" style="background:linear-gradient(135deg,#100800,#1c0e00)"></div><div class="a-cgrad"></div><div class="a-cc"><div class="a-ccat" style="color:var(--sp)">Tribute</div><div class="a-ctit">Yabe Nao Legacy</div><div class="a-csub">12 min read</div></div></div>
+        </div>
+        <!-- LIST ROWS -->
+        <div class="a-list-row">
+          <div class="a-list-thumb"><div class="a-list-thumb-bg" style="background:linear-gradient(135deg,#0d0000,#1a0000)"></div></div>
+          <div class="a-list-info">
+            <div class="a-list-cat" style="color:var(--amber)">Setlist</div>
+            <div class="a-list-title">AMD Vol.24 — Full Setlist & Credits</div>
+            <div class="a-list-meta">NOBBY · 24 tracks · 2026.04.01</div>
+          </div>
+        </div>
+        <div class="a-list-row">
+          <div class="a-list-thumb"><div class="a-list-thumb-bg" style="background:linear-gradient(135deg,#001018,#001a28)"></div></div>
+          <div class="a-list-info">
+            <div class="a-list-cat" style="color:var(--blue)">Column</div>
+            <div class="a-list-title">振付のクレジットはなぜ消えるのか</div>
+            <div class="a-list-meta">Space Cooking™ · 6 min · 2026.03</div>
+          </div>
+        </div>
+        <div class="a-list-row">
+          <div class="a-list-thumb"><div class="a-list-thumb-bg" style="background:linear-gradient(135deg,#100000,#1a0000)"></div></div>
+          <div class="a-list-info">
+            <div class="a-list-cat" style="color:var(--red)">Report</div>
+            <div class="a-list-title">Berghain 2024 — 渡航記録</div>
+            <div class="a-list-meta">NOBBY · 10 min · 2024.12</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- ═══ DISCOVER ═══ -->
@@ -1328,19 +1540,6 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
       <div class="bl">Store</div>
     </button>
 
-    <!-- ARTICLE -->
-    <button class="bn" data-tab="article">
-      <svg class="icon-article" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- 写真フレーム上部 -->
-        <rect x="10" y="10" width="80" height="48" rx="7" stroke="white" stroke-width="6.5"/>
-        <!-- 山型（写真アイコン） -->
-        <polyline points="10,44 30,26 48,40 64,28 90,44" stroke="white" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <!-- テキスト行 -->
-        <line x1="10" y1="68" x2="70" y2="68" stroke="white" stroke-width="5.5" stroke-linecap="round"/>
-        <line x1="10" y1="82" x2="54" y2="82" stroke="white" stroke-width="5.5" stroke-linecap="round"/>
-      </svg>
-      <div class="bl">Article</div>
-    </button>
     <button class="bn" data-tab="pass">
       <svg class="icon-pass" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect x="8" y="24" width="84" height="52" rx="9" stroke="white" stroke-width="6.5"/>
@@ -1352,6 +1551,21 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
       <div class="bl">My Pass</div>
     </button>
 
+    <!-- MORE -->
+    <button class="bn" data-tab="more" onclick="if(window.parent&&window.parent.nav)window.parent.nav('more')">
+      <svg viewBox="0 0 100 100" fill="none" style="width:22px;height:22px">
+        <line x1="15" y1="30" x2="85" y2="30" stroke="white" stroke-width="7" stroke-linecap="round"/>
+        <line x1="15" y1="50" x2="85" y2="50" stroke="white" stroke-width="7" stroke-linecap="round"/>
+        <line x1="15" y1="70" x2="85" y2="70" stroke="white" stroke-width="7" stroke-linecap="round"/>
+      </svg>
+      <div class="bl">More</div>
+    </button>
+
+  </div>
+
+  <!-- MENU TOGGLE BUTTON -->
+  <div id="menu-toggle" onclick="toggleNav()">
+    <div class="menu-line"></div>
   </div>
 </div>
 
@@ -1555,37 +1769,7 @@ function clearAll() {
 }
 function setMode(m) {
   currentMode = m;
-  // match by onclick attribute value
-  document.querySelectorAll('.mode-btn').forEach(b => {
-    const fn = b.getAttribute('onclick') || '';
-    b.classList.toggle('active', fn.includes("'"+m+"'"));
-  });
-  const bnav = document.getElementById('bnav');
-  const dbnav = document.getElementById('d-bnav');
-  const ft = document.getElementById('filtertabs');
-  const pl = document.getElementById('plan-label');
-  clearAll();
-  ft.style.opacity = '0'; ft.style.pointerEvents = 'none';
-  bnav.style.display = 'none';
-  dbnav.style.display = 'none';
-  if (m === 'artist') {
-    document.getElementById('panel-artist').classList.add('active');
-    pl.textContent = 'ARTIST';
-    pl.className = 'plan-pill pill-artist';
-    switchATab('overview');
-  } else if (m === 'dancer') {
-    document.getElementById('dpanel-home').classList.add('active');
-    document.querySelector('.dbn[data-dtab="home"]').classList.add('active');
-    dbnav.style.display = 'flex';
-    pl.textContent = 'DANCER';
-    pl.className = 'plan-pill pill-dancer';
-  } else {
-    // supporter (default)
-    bnav.style.display = 'flex';
-    pl.textContent = 'SUPER PASS';
-    pl.className = 'plan-pill pill-sp';
-    switchTab('home');
-  }
+  switchTab('home');
 }
 // dancer tab switcher
 function switchDTab(t) {
@@ -1615,6 +1799,7 @@ function filterSched(f, btn) {
   document.querySelectorAll('.sched-tab').forEach(t => t.classList.remove('active'));
   if(btn) btn.classList.add('active');
   renderSched();
+}
 
 // ── NFT CARD — Effect 001 忠実再現 ──
 // GSAPのscrollTween → ドラッグ量でx移動
@@ -1738,8 +1923,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-}
-
 function renderSched() {
   const list = document.getElementById('sched-list');
   if(!list) return;
@@ -1832,6 +2015,7 @@ document.addEventListener('click', e => {
 
 // ── TAB (fan) ──
 function switchTab(t) {
+  if (t === 'more') return; // MORE handled by onclick
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.bn').forEach(b => b.classList.remove('active'));
   document.getElementById('panel-' + t).classList.add('active');
@@ -1840,19 +2024,47 @@ function switchTab(t) {
   const ft = document.getElementById('filtertabs');
   ft.style.opacity = t === 'screen' ? '1' : '0';
   ft.style.pointerEvents = t === 'screen' ? 'auto' : 'none';
+  // close nav after selection
+  closeNav();
 }
+
+// ── COLLAPSIBLE NAV ──
+function toggleNav() {
+  const bnav = document.getElementById('bnav');
+  const toggle = document.getElementById('menu-toggle');
+  bnav.classList.toggle('open');
+  toggle.classList.toggle('hidden', bnav.classList.contains('open'));
+}
+function closeNav() {
+  const bnav = document.getElementById('bnav');
+  const toggle = document.getElementById('menu-toggle');
+  bnav.classList.remove('open');
+  toggle.classList.remove('hidden');
+}
+
 document.querySelectorAll('.bn').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
 
-// FILTER
+// FILTER — SCREEN sub-panel switcher
 document.querySelectorAll('.ftab').forEach(t => {
   t.addEventListener('click', () => {
     document.querySelectorAll('.ftab').forEach(x => x.classList.remove('active'));
     t.classList.add('active');
     const f = t.dataset.filter;
-    document.querySelectorAll('.si').forEach(s => s.style.display = (f === 'all' || s.dataset.type === f) ? 'block' : 'none');
-    sy = 0;
+    // Switch SCREEN sub-panels
+    document.querySelectorAll('.scr-sub').forEach(s => s.classList.remove('active'));
+    const map = {all:'scr-series', series:'scr-series', live:'scr-live', article:'scr-article'};
+    const target = document.getElementById(map[f] || 'scr-series');
+    if (target) target.classList.add('active');
   });
 });
+
+// SERIES episode list toggle
+function toggleEpList(toggleEl) {
+  const list = toggleEl.nextElementSibling;
+  const chevron = toggleEl.querySelector('.ep-chevron');
+  list.classList.toggle('open');
+  chevron.classList.toggle('open');
+}
 
 // ── HOME drag ──
 const hd = document.getElementById('hdrag');

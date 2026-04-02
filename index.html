@@ -73,32 +73,7 @@ html,body{
 }
 #trans.show{opacity:1;pointer-events:auto}
 
-/* ── BOTTOM NAV ── */
-#nav{
-  flex-shrink:0;height:var(--nav-h);
-  border-top:0.5px solid var(--border);
-  background:rgba(0,0,0,.97);
-  backdrop-filter:blur(24px);
-  display:flex;
-  padding-bottom:env(safe-area-inset-bottom,0px);
-  z-index:200;
-}
-.nb{
-  flex:1;background:none;border:none;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;
-  justify-content:center;gap:3px;
-  font-family:'Inter',sans-serif;
-  transition:transform .1s;padding:0;
-  position:relative;
-}
-.nb:active{transform:scale(.85)}
-.nb .ni{font-size:20px;line-height:1;transition:transform .2s}
-.nb.active .ni{transform:translateY(-2px)}
-.nb .nl{font-size:6px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;transition:color .15s}
-.nb.active .ni,.nb.active .nl{color:var(--lp)}
-.nb:not(.active) .ni,.nb:not(.active) .nl{color:rgba(255,255,255,.2)}
-.nb-dot{position:absolute;top:8px;width:4px;height:4px;border-radius:50%;background:var(--red);opacity:0;transition:opacity .2s}
-.nb.has-notif .nb-dot{opacity:1}
+/* ── BOTTOM NAV (removed — nav is now inside iframe) ── */
 
 /* ── SUBNAV (appears above nav for deep pages) ── */
 #subnav{
@@ -119,23 +94,7 @@ html,body{
 .sn-btn.active{color:var(--fg)}
 .sn-divider{width:0.5px;height:16px;background:var(--border);flex-shrink:0}
 
-/* ── MODE SWITCHER (artist/fan/dancer) ── */
-#mode-switch{
-  position:absolute;top:0;right:0;
-  z-index:300;padding:12px 16px;
-  display:flex;gap:0;
-}
-.ms-btn{
-  padding:5px 10px;border:0.5px solid var(--border);
-  background:rgba(0,0,0,.8);backdrop-filter:blur(10px);
-  cursor:pointer;font-family:'Inter',sans-serif;
-  font-size:7px;letter-spacing:1.5px;color:var(--muted);
-  text-transform:uppercase;font-weight:500;
-  transition:all .2s;
-}
-.ms-btn:first-child{border-radius:2px 0 0 2px}
-.ms-btn:last-child{border-radius:0 2px 2px 0}
-.ms-btn.active{background:rgba(255,255,255,.08);color:var(--fg);border-color:rgba(255,255,255,.2)}
+/* ── MODE SWITCHER (removed) ── */
 
 /* ── BACK BUTTON (shows on sub-pages) ── */
 #back-btn{
@@ -171,13 +130,6 @@ html,body{
     <div class="splash-bar"><div class="splash-bar-fill" id="splash-progress"></div></div>
   </div>
 
-  <!-- MODE SWITCH -->
-  <div id="mode-switch">
-    <button class="ms-btn active" onclick="setMode('fan')">Fan</button>
-    <button class="ms-btn" onclick="setMode('dancer')">Dancer</button>
-    <button class="ms-btn" onclick="setMode('artist')">Artist</button>
-  </div>
-
   <!-- BACK BUTTON -->
   <button id="back-btn" onclick="goBack()">← Back</button>
 
@@ -192,34 +144,7 @@ html,body{
     <!-- filled dynamically -->
   </div>
 
-  <!-- BOTTOM NAV -->
-  <div id="nav">
-    <button class="nb active" data-page="home" onclick="nav('home')">
-      <div class="nb-dot"></div>
-      <div class="ni">⌂</div>
-      <div class="nl">Home</div>
-    </button>
-    <button class="nb" data-page="screen" onclick="nav('screen')">
-      <div class="nb-dot"></div>
-      <div class="ni">▶</div>
-      <div class="nl">Screen</div>
-    </button>
-    <button class="nb" data-page="schedule" onclick="nav('schedule')">
-      <div class="nb-dot"></div>
-      <div class="ni">◈</div>
-      <div class="nl">Schedule</div>
-    </button>
-    <button class="nb" data-page="store" onclick="nav('store')">
-      <div class="nb-dot"></div>
-      <div class="ni">◎</div>
-      <div class="nl">Store</div>
-    </button>
-    <button class="nb" data-page="more" onclick="nav('more')">
-      <div class="nb-dot"></div>
-      <div class="ni">≡</div>
-      <div class="nl">More</div>
-    </button>
-  </div>
+  <!-- BOTTOM NAV removed — nav is inside iframe -->
 
 </div>
 
@@ -339,7 +264,6 @@ body::-webkit-scrollbar{display:none}
 
 // ── STATE ──
 let currentPage = 'home';
-let currentMode = 'fan';
 let history_stack = [];
 let moreBlob = null;
 
@@ -367,7 +291,6 @@ function loadFrame(src, page, pushHistory=true) {
   const frame  = document.getElementById('frame');
   const trans  = document.getElementById('trans');
   const back   = document.getElementById('back-btn');
-  const modeEl = document.getElementById('mode-switch');
   const route  = ROUTES[page] || {};
 
   // transition
@@ -380,21 +303,12 @@ function loadFrame(src, page, pushHistory=true) {
       history_stack.push(page);
     }
 
-    // Update nav
-    document.querySelectorAll('.nb').forEach(b => {
-      b.classList.toggle('active', b.dataset.page === page ||
-        (page !== 'home' && page !== 'screen' && page !== 'schedule' && page !== 'store' && b.dataset.page === 'more'));
-    });
-
     // Back button
     if(route.showBack || route.parent) {
       back.classList.add('visible');
     } else {
       back.classList.remove('visible');
     }
-
-    // Mode switch visibility
-    modeEl.style.display = route.showMode ? 'flex' : 'none';
 
     setTimeout(() => { trans.classList.remove('show'); }, 100);
   }, 150);
@@ -404,21 +318,6 @@ function goBack() {
   history_stack.pop(); // remove current
   const prev = history_stack[history_stack.length-1] || 'home';
   nav(prev, false);
-}
-
-// ── MODE SWITCH ──
-function setMode(m) {
-  currentMode = m;
-  document.querySelectorAll('.ms-btn').forEach(b => {
-    b.classList.toggle('active', b.textContent.toLowerCase() === m);
-  });
-  // Tell v5 to switch mode via postMessage
-  const frame = document.getElementById('frame');
-  if(currentPage === 'home') {
-    try {
-      frame.contentWindow.postMessage({type:'setMode', mode:m}, '*');
-    } catch(e) {}
-  }
 }
 
 // ── SPLASH ──
@@ -449,14 +348,11 @@ function hideSplash() {
   document.getElementById('splash').classList.add('hide');
   setTimeout(() => {
     document.getElementById('splash').style.display = 'none';
-    document.getElementById('mode-switch').style.display = 'flex';
   }, 600);
 }
 
 // ── INIT ──
 window.addEventListener('load', () => {
-  // Hide mode switch until splash done
-  document.getElementById('mode-switch').style.display = 'none';
   runSplash();
 });
 
