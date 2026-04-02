@@ -750,38 +750,77 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
 }
 #pm-050-container{
   position:absolute;inset:0;z-index:5;
+  perspective:800px;
 }
 .pm-050-img{
   position:absolute;top:0;left:0;
   width:100%;height:100%;
   transform:scale(0,0);
   object-fit:cover;
-  will-change:transform;
+  will-change:transform,opacity;
+  opacity:0;
+}
+/* Flash overlay */
+#pm-flash{
+  position:absolute;inset:0;z-index:15;
+  background:#fff;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .08s;
+}
+#pm-flash.fire{opacity:0.7}
+/* Vignette */
+#pm-vignette{
+  position:absolute;inset:0;z-index:6;
+  background:radial-gradient(ellipse at center,transparent 30%,rgba(0,0,0,.85) 100%);
+  pointer-events:none;
+}
+/* Scan line effect */
+#pm-scanlines{
+  position:absolute;inset:0;z-index:7;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.08) 2px,rgba(0,0,0,.08) 4px);
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .3s;
 }
 #pm-text-overlay{
   position:absolute;inset:0;
   display:flex;flex-direction:column;
   align-items:center;justify-content:center;
-  gap:8px;z-index:10;
+  gap:8px;z-index:12;
   opacity:0;
-  transition:opacity .6s;
+  pointer-events:none;
 }
 #pm-ywt{
-  font-size:9px;letter-spacing:5px;
-  color:rgba(255,255,255,.35);
+  font-size:9px;letter-spacing:6px;
+  color:rgba(255,255,255,.4);
   text-transform:uppercase;
+  transform:translateY(10px);
+  transition:opacity .8s, transform .8s;
+  opacity:0;
 }
 #pm-title{
-  font-size:22px;font-weight:900;
+  font-size:24px;font-weight:900;
   letter-spacing:-1px;
   text-align:center;
-  line-height:1;
-  text-shadow:0 4px 24px rgba(0,0,0,.8);
+  line-height:.9;
+  text-shadow:0 4px 32px rgba(0,0,0,.9);
+  transform:scale(.9);
+  transition:opacity .6s .2s, transform .6s .2s;
+  opacity:0;
 }
 #pm-date{
-  font-size:10px;letter-spacing:3px;
+  font-size:10px;letter-spacing:4px;
   color:rgba(255,255,255,.3);
   font-family:monospace;
+  transform:translateY(-8px);
+  transition:opacity .6s .4s, transform .6s .4s;
+  opacity:0;
+}
+#pm-text-overlay.show #pm-ywt,
+#pm-text-overlay.show #pm-title,
+#pm-text-overlay.show #pm-date{
+  opacity:1;transform:none;
 }
 
 /* Phase D — Landed */
@@ -1963,6 +2002,8 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
     <!-- Phase B: Transition layer -->
     <div id="pm-transition">
       <div id="pm-blur-bg"></div>
+      <div id="pm-vignette"></div>
+      <div id="pm-scanlines"></div>
       <div id="pm-050-container">
         <img src="" class="pm-050-img" />
         <img src="" class="pm-050-img" />
@@ -1973,6 +2014,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
         <img src="" class="pm-050-img" />
         <img src="" class="pm-050-img" />
       </div>
+      <div id="pm-flash"></div>
       <div id="pm-text-overlay">
         <div id="pm-ywt">YOU WERE THERE</div>
         <div id="pm-title"></div>
@@ -3015,21 +3057,29 @@ function activateMemory(index) {
   var blurBg = document.getElementById('pm-blur-bg');
   var textOverlay = document.getElementById('pm-text-overlay');
   var container050 = document.getElementById('pm-050-container');
+  var flash = document.getElementById('pm-flash');
+  var scanlines = document.getElementById('pm-scanlines');
 
-  // Reset states
+  // Reset all states
   overlay.style.display = 'block';
+  overlay.style.opacity = '0';
   transition.style.display = 'flex';
   transition.style.opacity = '1';
   landed.style.display = 'none';
   landed.classList.remove('visible');
-  textOverlay.style.opacity = '0';
+  textOverlay.style.opacity = '1';
+  textOverlay.classList.remove('show');
+  flash.classList.remove('fire');
+  flash.style.opacity = '0';
+  scanlines.style.opacity = '0';
   activeMemoryData = data;
 
   // Set blur background
-  if (data.flyer) {
-    blurBg.style.cssText = 'position:absolute;inset:-20px;filter:blur(30px) brightness(.4);transform:scale(1.1);background:url(' + data.flyer + ') center/cover no-repeat';
+  var bgUrl = data.flyer || '';
+  if (bgUrl) {
+    blurBg.style.cssText = 'position:absolute;inset:-20px;filter:blur(40px) brightness(.3) saturate(1.4);transform:scale(1.2);background:url(' + bgUrl + ') center/cover no-repeat;opacity:0;transition:opacity .8s,transform 1.5s';
   } else {
-    blurBg.style.cssText = 'position:absolute;inset:-20px;filter:blur(30px) brightness(.4);transform:scale(1.1);background:linear-gradient(135deg,' + data.heroColor + ',#000)';
+    blurBg.style.cssText = 'position:absolute;inset:-20px;filter:blur(40px) brightness(.3);transform:scale(1.2);background:linear-gradient(135deg,' + data.heroColor + ',#000);opacity:0;transition:opacity .8s,transform 1.5s';
   }
 
   // Set text
@@ -3037,7 +3087,7 @@ function activateMemory(index) {
   document.getElementById('pm-title').style.color = data.accentColor;
   document.getElementById('pm-date').textContent = data.date;
 
-  // Build media pool from card data
+  // Build media pool
   var mediaPool = [];
   if (data.flyer) mediaPool.push(data.flyer);
   if (data.heroImage) mediaPool.push(data.heroImage);
@@ -3046,102 +3096,112 @@ function activateMemory(index) {
       mediaPool.push(data.memoryImages[mi]);
     }
   }
-  // Ensure at least 3 images by repeating
   while (mediaPool.length < 3) mediaPool.push(mediaPool[0] || '');
 
-  // Setup 050 images
+  // Setup layered images
   var imgs050 = container050.querySelectorAll('.pm-050-img');
-  var zIdx050 = 0;
-  imgs050.forEach(function(img) {
-    img.style.zIndex = zIdx050;
-    img.setAttribute('data-index', zIdx050);
-    img.src = mediaPool[zIdx050 % mediaPool.length];
-    img.style.transform = 'scale(0,0)';
-    img.style.transition = '';
-    zIdx050++;
+  imgs050.forEach(function(img, idx) {
+    img.style.zIndex = idx;
+    img.src = mediaPool[idx % mediaPool.length];
+    img.style.transform = 'scale(0) rotate(' + ((Math.random()-.5)*30) + 'deg)';
+    img.style.opacity = '0';
+    img.style.transition = 'none';
+    img.style.filter = 'brightness(.6)';
   });
 
-  // Try GSAP first, fallback to CSS animation
-  var useGsap = typeof gsap !== 'undefined';
+  // ═══ PHASE A: Initial flash + black fade-in (0-300ms) ═══
+  requestAnimationFrame(function() {
+    overlay.style.transition = 'opacity .15s';
+    overlay.style.opacity = '1';
+  });
 
-  if (useGsap) {
-    try {
-      gsap.killTweensOf(imgs050);
-      var incr050 = 800000;
-      var localZ = zIdx050;
-      var tl050 = gsap.timeline({ paused: true });
-      tl050.to(imgs050, {
-        scale: 1.005,
-        ease: 'expo.inOut',
-        duration: 8,
-        stagger: {
-          each: 1,
-          repeat: -1,
-          onRepeat: function() {
-            var el = this.targets()[0];
-            localZ += 1;
-            el.style.zIndex = localZ;
-            var refEl = el.previousElementSibling || imgs050[imgs050.length - 1];
-            var refIdx = parseInt(refEl.getAttribute('data-index') || '0');
-            var newIdx = ((refIdx + 1) % mediaPool.length + mediaPool.length) % mediaPool.length;
-            el.setAttribute('data-index', newIdx);
-            el.src = mediaPool[newIdx];
-          }
-        }
-      });
-      tl050.time(incr050);
-      var startTime = performance.now();
-      var speed = 0.012;
-      function animate050(now) {
-        var elapsed = now - startTime;
-        if (elapsed > 3000) return;
-        incr050 += speed;
-        tl050.time(incr050);
-        requestAnimationFrame(animate050);
-      }
-      requestAnimationFrame(animate050);
-      // Clean up GSAP on phase D
-      setTimeout(function() { try { tl050.kill(); gsap.killTweensOf(imgs050); } catch(e){} }, 3200);
-    } catch(e) {
-      useGsap = false;
-    }
-  }
-
-  if (!useGsap) {
-    // CSS fallback: staggered scale-in animation
-    imgs050.forEach(function(img, idx) {
-      img.style.transition = 'transform 0.6s cubic-bezier(.16,1,.3,1), opacity 0.6s';
-      img.style.opacity = '0';
-      setTimeout(function() {
-        img.style.transform = 'scale(1)';
-        img.style.opacity = String(0.2 + (idx / imgs050.length) * 0.6);
-      }, idx * 200);
-    });
-  }
-
-  // Phase C: Show memory text at 1.2s
+  // White flash burst at entry
   setTimeout(function() {
-    textOverlay.style.opacity = '1';
+    flash.style.transition = 'opacity .06s';
+    flash.style.opacity = '0.8';
+    setTimeout(function() {
+      flash.style.transition = 'opacity .3s';
+      flash.style.opacity = '0';
+    }, 60);
+  }, 100);
 
-    // Subtle ambient sound cue
+  // Ambient sound cue
+  setTimeout(function() {
     try {
-      var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      var osc = audioCtx.createOscillator();
-      var gain = audioCtx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(80, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.5);
-      gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
-      osc.connect(gain).connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.8);
+      var ac = new (window.AudioContext || window.webkitAudioContext)();
+      // Low rumble
+      var o1 = ac.createOscillator(); var g1 = ac.createGain();
+      o1.type = 'sine'; o1.frequency.value = 55;
+      g1.gain.setValueAtTime(0.08, ac.currentTime);
+      g1.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 1.2);
+      o1.connect(g1).connect(ac.destination); o1.start(); o1.stop(ac.currentTime + 1.2);
+      // High shimmer
+      var o2 = ac.createOscillator(); var g2 = ac.createGain();
+      o2.type = 'triangle'; o2.frequency.value = 2200;
+      g2.gain.setValueAtTime(0.015, ac.currentTime);
+      g2.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.6);
+      o2.connect(g2).connect(ac.destination); o2.start(); o2.stop(ac.currentTime + 0.6);
     } catch(e) {}
-  }, 1200);
+  }, 80);
 
-  // Phase D: Transition to landed state at 3.2s
+  // ═══ PHASE B: Blur bg fade in + layered images burst (300-2200ms) ═══
   setTimeout(function() {
-    transition.style.transition = 'opacity 0.5s';
+    blurBg.style.opacity = '1';
+    blurBg.style.transform = 'scale(1.1)';
+    scanlines.style.opacity = '1';
+  }, 250);
+
+  // Staggered image reveals — cinematic burst
+  var delays = [350, 550, 700, 900, 1100, 1350, 1600, 1900];
+  var rotations = [-12, 8, -5, 15, -8, 3, -18, 10];
+  var scales = [1.15, 1.08, 1.2, 1.05, 1.12, 1.18, 1.03, 1.1];
+  var xShifts = [-8, 12, -5, 15, -12, 8, -15, 5];
+  var yShifts = [5, -8, 12, -5, 8, -12, 5, -8];
+
+  imgs050.forEach(function(img, idx) {
+    // First appear: zoom in with rotation
+    setTimeout(function() {
+      img.style.transition = 'transform .5s cubic-bezier(.16,1,.3,1), opacity .3s';
+      img.style.transform = 'scale(' + scales[idx] + ') rotate(' + rotations[idx] + 'deg) translate(' + xShifts[idx] + '%, ' + yShifts[idx] + '%)';
+      img.style.opacity = String(0.4 + (idx / 8) * 0.5);
+      img.style.filter = 'brightness(' + (0.5 + idx * 0.07) + ')';
+    }, delays[idx]);
+
+    // Then settle to center
+    setTimeout(function() {
+      img.style.transition = 'transform .8s cubic-bezier(.25,.46,.45,.94), opacity .4s';
+      img.style.transform = 'scale(1.02) rotate(' + (rotations[idx] * 0.15) + 'deg)';
+      img.style.opacity = idx === imgs050.length - 1 ? '0.9' : String(0.1 + (idx / 8) * 0.3);
+    }, delays[idx] + 500);
+  });
+
+  // Mini flash hits during the burst
+  setTimeout(function() {
+    flash.style.transition = 'opacity .04s';
+    flash.style.opacity = '0.4';
+    setTimeout(function() { flash.style.transition = 'opacity .2s'; flash.style.opacity = '0'; }, 40);
+  }, 700);
+  setTimeout(function() {
+    flash.style.transition = 'opacity .04s';
+    flash.style.opacity = '0.3';
+    setTimeout(function() { flash.style.transition = 'opacity .15s'; flash.style.opacity = '0'; }, 40);
+  }, 1300);
+
+  // ═══ PHASE C: Memory text overlay (2000-3200ms) ═══
+  setTimeout(function() {
+    textOverlay.classList.add('show');
+  }, 2000);
+
+  // Final flash before landing
+  setTimeout(function() {
+    flash.style.transition = 'opacity .05s';
+    flash.style.opacity = '0.6';
+    setTimeout(function() { flash.style.transition = 'opacity .4s'; flash.style.opacity = '0'; }, 50);
+  }, 3000);
+
+  // ═══ PHASE D: Land on detail view (3500ms) ═══
+  setTimeout(function() {
+    transition.style.transition = 'opacity .6s';
     transition.style.opacity = '0';
 
     buildLandedContent(data);
@@ -3152,10 +3212,15 @@ function activateMemory(index) {
       transition.style.display = 'none';
       transition.style.opacity = '1';
       transition.style.transition = '';
-      // Reset 050 images
-      imgs050.forEach(function(img) { img.style.transform = 'scale(0,0)'; });
-    }, 50);
-  }, 3200);
+      textOverlay.classList.remove('show');
+      scanlines.style.opacity = '0';
+      imgs050.forEach(function(img) {
+        img.style.transform = 'scale(0)';
+        img.style.opacity = '0';
+        img.style.transition = 'none';
+      });
+    }, 100);
+  }, 3500);
 }
 
 function buildLandedContent(data) {
