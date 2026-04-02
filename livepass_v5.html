@@ -454,7 +454,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
 .nft001{
   flex-shrink:0;
   position:relative;
-  width:48vw; max-width:200px;
+  width:42vw; max-width:180px;
   aspect-ratio:0.75;
   border-radius:3vw; overflow:hidden;
   text-transform:uppercase;
@@ -1052,7 +1052,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
       </div><!-- end home-hero -->
 
       <!-- ④ NFT CARD COLLECTION — Effect 001 忠実再現 -->
-      <div id="nft-collection" style="flex:0 0 auto;overflow:hidden;position:relative;background:#080808;border-bottom:0.5px solid var(--border)">
+      <div id="nft-collection" style="flex:0 0 auto;overflow:hidden;position:relative;background:#000;border-bottom:0.5px solid var(--border)">
         <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 18px 8px">
           <div>
             <div style="font-size:11px;letter-spacing:3px;color:rgba(255,255,255,.18);text-transform:uppercase;font-weight:600">Passes Collection</div>
@@ -1061,7 +1061,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
           <div style="font-size:12px;color:rgba(255,255,255,.18);letter-spacing:1px">3 Passes</div>
         </div>
         <!-- 001: overflow hidden container, cards absolutely placed, drag=x translate -->
-        <div id="nft-viewport" style="overflow:hidden;position:relative;height:280px;cursor:grab">
+        <div id="nft-viewport" style="overflow:hidden;position:relative;height:260px;cursor:grab;display:flex;align-items:center">
           <div id="nft-track" style="display:flex;position:absolute;top:0;left:0;height:100%;gap:0;will-change:transform;padding:0 30vw">
 
             <!-- Card 1 — LIVE PASS · #A8E63D -->
@@ -2437,9 +2437,11 @@ function filterSched(f, btn) {
   function startTick() { if (!rafId) rafId = requestAnimationFrame(tick); }
 
   // ── touch / mouse drag ──
+  var dragStartX = 0;
   function onDragStart(clientX) {
     isDrag  = true;
     nftDragged = false;
+    dragStartX = clientX;
     startX  = clientX;
     lastX   = clientX;
     lastT   = Date.now();
@@ -2451,7 +2453,7 @@ function filterSched(f, btn) {
   }
   function onDragMove(clientX) {
     if (!isDrag) return;
-    if (Math.abs(clientX - startX) > 5) nftDragged = true;
+    if (Math.abs(clientX - dragStartX) > 8) nftDragged = true;
     const now = Date.now();
     velX = (clientX - lastX) / Math.max(1, now - lastT) * 16;
     lastX = clientX; lastT = now;
@@ -2468,12 +2470,12 @@ function filterSched(f, btn) {
   }
 
   // mouse
-  viewport.addEventListener('mousedown', e => { e.preventDefault(); onDragStart(e.clientX); });
+  viewport.addEventListener('mousedown', e => { onDragStart(e.clientX); });
   window.addEventListener('mousemove',   e => { onDragMove(e.clientX); });
   window.addEventListener('mouseup',     ()  => { onDragEnd(); });
   // touch
   viewport.addEventListener('touchstart', e => { onDragStart(e.touches[0].clientX); }, {passive:true});
-  viewport.addEventListener('touchmove',  e => { onDragMove(e.touches[0].clientX); e.preventDefault(); }, {passive:false});
+  viewport.addEventListener('touchmove',  e => { onDragMove(e.touches[0].clientX); }, {passive:true});
   viewport.addEventListener('touchend',   ()  => { onDragEnd(); });
 
   // init
