@@ -660,7 +660,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
 /* ── SCHEDULE DETAIL MODAL ── */
 #sched-modal{position:absolute;inset:0;z-index:200;background:rgba(0,0,0,.97);display:none;flex-direction:column}
 #sched-modal.open{display:flex}
-.sm-header{flex-shrink:0;padding:14px 18px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.sm-header{flex-shrink:0;padding:14px 18px;padding-top:calc(14px + env(safe-area-inset-top,0px));border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}
 .sm-title{font-size:13px;font-weight:700;letter-spacing:-.3px}
 .sm-close{background:none;border:0.5px solid rgba(255,255,255,.12);color:rgba(255,255,255,.4);cursor:pointer;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
 .sm-scroll{flex:1;overflow-y:auto;scrollbar-width:none;padding:0}
@@ -2005,9 +2005,9 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
   <!-- SCHEDULE DETAIL MODAL -->
   <div id="sched-modal">
     <div class="sm-header">
-      <button onclick="closeSchedDetail()" style="background:none;border:0.5px solid rgba(255,255,255,.12);color:rgba(255,255,255,.4);font-family:'Inter',sans-serif;font-size:9px;letter-spacing:1px;padding:5px 12px;border-radius:100px;cursor:pointer;flex-shrink:0">← Back</button>
+      <button onclick="closeSchedDetail()" style="background:none;border:0.5px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);font-family:'Inter',sans-serif;font-size:11px;letter-spacing:1px;padding:8px 16px;border-radius:100px;cursor:pointer;flex-shrink:0;min-height:36px">← Back</button>
       <div class="sm-title" id="sm-title" style="flex:1;text-align:center">Event Detail</div>
-      <button class="sm-close" onclick="closeSchedDetail()">✕</button>
+      <button class="sm-close" onclick="closeSchedDetail()" style="min-height:36px;min-width:36px">✕</button>
     </div>
     <div class="sm-scroll" id="sm-scroll"></div>
     <div class="sm-footer">
@@ -2960,7 +2960,24 @@ function submitEvent() {
 
 let activePassIndex = 0;
 
+// Tap detection for PASS cards (works on both mobile and desktop)
 document.querySelectorAll('.nft001').forEach((card, i) => {
+  let tapStartX = 0, tapStartY = 0, tapStartTime = 0;
+  card.addEventListener('touchstart', (e) => {
+    tapStartX = e.touches[0].clientX;
+    tapStartY = e.touches[0].clientY;
+    tapStartTime = Date.now();
+  }, {passive:true});
+  card.addEventListener('touchend', (e) => {
+    var dx = e.changedTouches[0].clientX - tapStartX;
+    var dy = e.changedTouches[0].clientY - tapStartY;
+    var dt = Date.now() - tapStartTime;
+    // Tap = small movement + short duration
+    if (Math.abs(dx) < 15 && Math.abs(dy) < 15 && dt < 400) {
+      e.preventDefault();
+      if (i < Object.keys(PASS_DATA).length) activateMemory(i);
+    }
+  });
   card.addEventListener('click', (e) => {
     if (nftDragged) return;
     if (i >= Object.keys(PASS_DATA).length) return;
