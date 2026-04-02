@@ -1052,7 +1052,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
       </div><!-- end home-hero -->
 
       <!-- ④ NFT CARD COLLECTION — Effect 001 忠実再現 -->
-      <div id="nft-collection" style="flex:0 0 auto;overflow:hidden;position:relative;background:#000;border-bottom:0.5px solid var(--border)">
+      <div id="nft-collection" style="flex:0 0 auto;overflow:visible;position:relative;background:#000;border-bottom:0.5px solid var(--border);z-index:100">
         <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 18px 8px">
           <div>
             <div style="font-size:11px;letter-spacing:3px;color:rgba(255,255,255,.18);text-transform:uppercase;font-weight:600">Passes Collection</div>
@@ -1061,7 +1061,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
           <div style="font-size:12px;color:rgba(255,255,255,.18);letter-spacing:1px">3 Passes</div>
         </div>
         <!-- 001: overflow hidden container, cards absolutely placed, drag=x translate -->
-        <div id="nft-viewport" style="overflow:hidden;position:relative;height:260px;cursor:grab;display:flex;align-items:center">
+        <div id="nft-viewport" style="overflow:visible;position:relative;height:260px;cursor:grab;display:flex;align-items:center">
           <div id="nft-track" style="display:flex;position:absolute;top:0;left:0;height:100%;gap:0;will-change:transform;padding:0 30vw">
 
             <!-- Card 1 — LIVE PASS · #A8E63D -->
