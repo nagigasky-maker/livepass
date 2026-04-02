@@ -454,9 +454,9 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
 .nft001{
   flex-shrink:0;
   position:relative;
-  width:62vw; max-width:240px;
+  width:48vw; max-width:200px;
   aspect-ratio:0.75;
-  border-radius:4vw; overflow:hidden;
+  border-radius:3vw; overflow:hidden;
   text-transform:uppercase;
   will-change:transform;
   cursor:pointer;
@@ -581,22 +581,22 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
 .arc-date{font-size:7px;color:var(--muted);margin-top:3px;letter-spacing:.5px}
 
 /* フォロー中カード */
-.fcard{flex-shrink:0;width:140px;border:0.5px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s}
+.fcard{flex-shrink:0;width:110px;border:0.5px solid rgba(255,255,255,.08);border-radius:10px;overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s}
 .fcard:active{transform:scale(.95)}
 .fcard:hover{border-color:rgba(255,255,255,.15)}
-.fcard-thumb{height:100px;position:relative;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:900;overflow:hidden}
+.fcard-thumb{height:75px;position:relative;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:900;overflow:hidden}
 .fcard-thumb-bg{position:absolute;inset:0}
 .fcard-av{position:relative;z-index:1;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;border:1.5px solid rgba(255,255,255,.2)}
 .fcard-live-dot{position:absolute;top:7px;right:7px;width:7px;height:7px;border-radius:50%;background:var(--red);border:1.5px solid var(--bg2);z-index:2}
 .fcard-live-dot::after{content:'';position:absolute;inset:-3px;border-radius:50%;background:rgba(255,59,48,.25);animation:blink 1.4s ease-in-out infinite}
-.fcard-body{padding:10px 12px 12px}
-.fcard-name{font-size:15px;font-weight:700;letter-spacing:-.2px;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fcard-genre{font-size:13px;letter-spacing:1px;color:var(--muted);font-weight:300}
+.fcard-body{padding:7px 9px 9px}
+.fcard-name{font-size:11px;font-weight:700;letter-spacing:-.2px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fcard-genre{font-size:10px;letter-spacing:1px;color:var(--muted);font-weight:300}
 .bn{flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-family:'Inter',sans-serif;transition:transform .12s;padding:4px 0}
 .bn:active{transform:scale(.87)}
-.bn svg{width:28px;height:28px;display:block;transition:transform .15s}
+.bn svg{width:20px;height:20px;display:block;transition:transform .15s}
 .bn.active svg{transform:translateY(-2px)}
-.bn .bl{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700}
+.bn .bl{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700}
 /* active — lp color */
 .bn.active .bl{color:var(--lp)}
 .bn.active .icon-home path{stroke:var(--lp)}
@@ -644,7 +644,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
 
 /* ── BOTTOM NAV (collapsible) ── */
 #bnav{position:absolute;bottom:0;left:0;right:0;
-  height:82px;
+  height:62px;
   border-top:0.5px solid var(--border);
   background:rgba(0,0,0,.96);
   backdrop-filter:blur(24px);
@@ -923,6 +923,24 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
   display:flex;align-items:center;justify-content:center;
   font-size:16px;color:rgba(255,255,255,.3);
 }
+.vid-cat-btn{font-size:10px;letter-spacing:1.5px;padding:5px 12px;border-radius:100px;border:0.5px solid rgba(255,255,255,.1);background:none;color:rgba(255,255,255,.35);cursor:pointer;font-family:'Inter',sans-serif;text-transform:uppercase;transition:all .15s}
+.vid-cat-btn.active{border-color:rgba(168,230,61,.35);color:var(--lp);background:rgba(168,230,61,.06)}
+/* SCREEN ALL — grid */
+.scr-all-card{position:relative;overflow:hidden;cursor:pointer}
+.scr-all-card:active{opacity:.85}
+.scr-all-bg{position:absolute;inset:0}
+.scr-all-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.85) 0%,transparent 60%)}
+.scr-all-info{position:absolute;bottom:0;left:0;right:0;padding:10px 12px}
+.scr-all-name{font-size:12px;font-weight:800;letter-spacing:-.2px;margin-bottom:2px}
+.scr-all-label{font-size:8px;color:rgba(255,255,255,.4);letter-spacing:1px}
+/* Discover cards */
+.scr-disc-card{flex-shrink:0;width:140px;height:180px;position:relative;overflow:hidden;border-radius:8px;cursor:pointer}
+.scr-disc-card:active{opacity:.85}
+.scr-disc-bg{position:absolute;inset:0}
+.scr-disc-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.85) 0%,transparent 50%)}
+.scr-disc-info{position:absolute;bottom:0;left:0;right:0;padding:10px 12px}
+.scr-disc-name{font-size:11px;font-weight:700;letter-spacing:-.1px;margin-bottom:2px}
+.scr-disc-genre{font-size:8px;color:rgba(255,255,255,.35);letter-spacing:1px}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Observer.min.js"></script>
@@ -943,7 +961,6 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
         <div class="plan-pill pill-sp" id="plan-label" style="font-size:11px;padding:2px 8px;letter-spacing:1px">SUPER PASS</div>
         <div style="font-size:10px;letter-spacing:1.5px;color:rgba(255,255,255,.3);text-transform:uppercase">DJ · Dancer</div>
       </div>
-      <div class="t-plus" onclick="openCreateEvent()" title="イベント作成">＋</div>
       <div class="t-notif" style="font-size:18px">🔔</div>
       <div class="t-av">N</div>
     </div>
@@ -955,6 +972,9 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
     <button class="ftab" data-filter="series">Series</button>
     <button class="ftab" data-filter="live">Live</button>
     <button class="ftab" data-filter="article">Article</button>
+    <div style="margin-left:auto;flex-shrink:0;padding:0 8px">
+      <div onclick="openVideoUpload()" style="width:26px;height:26px;border-radius:50%;border:0.5px solid rgba(168,230,61,.3);background:rgba(168,230,61,.06);color:var(--lp);font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer">+</div>
+    </div>
   </div>
 
   <!-- ═══ HOME ═══ -->
@@ -1041,7 +1061,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
           <div style="font-size:12px;color:rgba(255,255,255,.18);letter-spacing:1px">3 Passes</div>
         </div>
         <!-- 001: overflow hidden container, cards absolutely placed, drag=x translate -->
-        <div id="nft-viewport" style="overflow:hidden;position:relative;height:320px;cursor:grab">
+        <div id="nft-viewport" style="overflow:hidden;position:relative;height:280px;cursor:grab">
           <div id="nft-track" style="display:flex;position:absolute;top:0;left:0;height:100%;gap:0;will-change:transform;padding:0 30vw">
 
             <!-- Card 1 — LIVE PASS · #A8E63D -->
@@ -1113,8 +1133,71 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
   <!-- ═══ SCREEN (series / live / article sub-panels) ═══ -->
   <div class="panel" id="panel-screen">
 
-    <!-- SUB: SERIES (Netflix-style) — default -->
-    <div class="scr-sub active" id="scr-series">
+    <!-- SUB: ALL — 2-column followed + discover -->
+    <div class="scr-sub active" id="scr-all">
+      <div style="height:100%;overflow-y:auto;scrollbar-width:none">
+        <!-- Followed accounts — random 2-col grid -->
+        <div style="font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.15);padding:12px 14px 6px;text-transform:uppercase">Following</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:0 2px">
+          <!-- Row 1 -->
+          <div class="scr-all-card" style="grid-column:span 1">
+            <div class="scr-all-bg" style="background:linear-gradient(135deg,#0d0000,#1a0000);height:160px"></div>
+            <div class="scr-all-grad"></div>
+            <div class="scr-all-info"><div class="scr-all-name">NOBBY</div><div class="scr-all-label">Live Set · House</div></div>
+          </div>
+          <div class="scr-all-card" style="grid-column:span 1">
+            <div class="scr-all-bg" style="background:linear-gradient(135deg,#0e0620,#14002e);height:160px"></div>
+            <div class="scr-all-grad"></div>
+            <div class="scr-all-info"><div class="scr-all-name">ALL MUST DANCE™</div><div class="scr-all-label">Event · Series</div></div>
+          </div>
+          <!-- Row 2 — full width -->
+          <div class="scr-all-card" style="grid-column:span 2">
+            <div class="scr-all-bg" style="background:linear-gradient(135deg,#0a0a2a,#000018);height:180px"></div>
+            <div class="scr-all-grad"></div>
+            <div class="scr-all-info"><div class="scr-all-name">DUBLA®</div><div class="scr-all-label">Fashion · Brand Film</div></div>
+          </div>
+          <!-- Row 3 -->
+          <div class="scr-all-card" style="grid-column:span 1">
+            <div class="scr-all-bg" style="background:linear-gradient(135deg,#001a0a,#003020);height:140px"></div>
+            <div class="scr-all-grad"></div>
+            <div class="scr-all-info"><div class="scr-all-name">FnKMDNS</div><div class="scr-all-label">DJ · Visual</div></div>
+          </div>
+          <div class="scr-all-card" style="grid-column:span 1">
+            <div class="scr-all-bg" style="background:linear-gradient(135deg,#1c1000,#2e1c00);height:140px"></div>
+            <div class="scr-all-grad"></div>
+            <div class="scr-all-info"><div class="scr-all-name">SACHI</div><div class="scr-all-label">Waacking · Dance</div></div>
+          </div>
+        </div>
+
+        <!-- Discover — horizontal scroll of unfollowed accounts -->
+        <div style="font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.15);padding:18px 14px 8px;text-transform:uppercase">Discover</div>
+        <div style="display:flex;gap:10px;padding:0 14px 20px;overflow-x:auto;scrollbar-width:none">
+          <div class="scr-disc-card">
+            <div class="scr-disc-bg" style="background:linear-gradient(135deg,#100808,#1a0a0a)"></div>
+            <div class="scr-disc-grad"></div>
+            <div class="scr-disc-info"><div class="scr-disc-name">DJ KEITA</div><div class="scr-disc-genre">House · Techno</div></div>
+          </div>
+          <div class="scr-disc-card">
+            <div class="scr-disc-bg" style="background:linear-gradient(135deg,#001018,#00080e)"></div>
+            <div class="scr-disc-grad"></div>
+            <div class="scr-disc-info"><div class="scr-disc-name">CREW NRG</div><div class="scr-disc-genre">Breaking</div></div>
+          </div>
+          <div class="scr-disc-card">
+            <div class="scr-disc-bg" style="background:linear-gradient(135deg,#0e0014,#14001c)"></div>
+            <div class="scr-disc-grad"></div>
+            <div class="scr-disc-info"><div class="scr-disc-name">YUKA</div><div class="scr-disc-genre">Locking · Pop</div></div>
+          </div>
+          <div class="scr-disc-card">
+            <div class="scr-disc-bg" style="background:linear-gradient(135deg,#001c08,#000e04)"></div>
+            <div class="scr-disc-grad"></div>
+            <div class="scr-disc-info"><div class="scr-disc-name">TOMO</div><div class="scr-disc-genre">Hip Hop · Freestyle</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUB: SERIES (Netflix-style) -->
+    <div class="scr-sub" id="scr-series">
       <div class="series-scroll">
 
         <!-- Series 1 -->
@@ -1803,6 +1886,55 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
 
   </div>
 
+  <!-- VIDEO UPLOAD MODAL -->
+  <div id="video-upload-modal" style="display:none;position:absolute;inset:0;z-index:300;background:rgba(0,0,0,.97);backdrop-filter:blur(8px);flex-direction:column">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:0.5px solid rgba(255,255,255,.06)">
+      <button onclick="closeVideoUpload()" style="background:none;border:0.5px solid rgba(255,255,255,.12);color:rgba(255,255,255,.4);font-family:'Inter',sans-serif;font-size:9px;letter-spacing:1px;padding:5px 12px;border-radius:100px;cursor:pointer">← Back</button>
+      <div style="font-size:10px;letter-spacing:3px;color:rgba(255,255,255,.3);text-transform:uppercase">動画投稿</div>
+      <div style="width:60px"></div>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:20px 18px;scrollbar-width:none">
+      <div style="font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.2);margin-bottom:8px;text-transform:uppercase">動画ファイル</div>
+      <input type="file" id="vid-file" accept="video/*" style="display:none" onchange="onVidFileSelected(this)">
+      <div id="vid-file-btn" onclick="document.getElementById('vid-file').click()" style="aspect-ratio:16/9;border:1px dashed rgba(255,255,255,.1);border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;background:rgba(255,255,255,.02);margin-bottom:18px">
+        <div style="font-size:28px;color:rgba(255,255,255,.15)">▶</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.2);letter-spacing:1px">タップして動画を選択</div>
+      </div>
+      <div id="vid-preview" style="display:none;margin-bottom:18px">
+        <video id="vid-preview-el" style="width:100%;border-radius:4px;background:#000" controls></video>
+      </div>
+
+      <div style="font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.2);margin-bottom:8px;text-transform:uppercase">タイトル</div>
+      <input id="vid-title" placeholder="動画タイトル" style="width:100%;background:rgba(255,255,255,.04);border:0.5px solid rgba(255,255,255,.08);border-radius:2px;padding:10px 12px;font-size:13px;color:#fff;font-family:'Inter',sans-serif;outline:none;margin-bottom:14px">
+
+      <div style="font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.2);margin-bottom:8px;text-transform:uppercase">カテゴリ</div>
+      <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap" id="vid-cats">
+        <button class="vid-cat-btn active" onclick="selectVidCat(this)">Film</button>
+        <button class="vid-cat-btn" onclick="selectVidCat(this)">Live</button>
+        <button class="vid-cat-btn" onclick="selectVidCat(this)">Series</button>
+        <button class="vid-cat-btn" onclick="selectVidCat(this)">Short</button>
+      </div>
+
+      <div style="font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.2);margin-bottom:8px;text-transform:uppercase">説明</div>
+      <textarea id="vid-desc" placeholder="動画の説明..." rows="3" style="width:100%;background:rgba(255,255,255,.04);border:0.5px solid rgba(255,255,255,.08);border-radius:2px;padding:10px 12px;font-size:13px;color:#fff;font-family:'Inter',sans-serif;outline:none;resize:none;margin-bottom:14px"></textarea>
+
+      <div style="font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.2);margin-bottom:8px;text-transform:uppercase">サムネイル</div>
+      <input type="file" id="vid-thumb" accept="image/*" style="display:none" onchange="onVidThumbSelected(this)">
+      <div onclick="document.getElementById('vid-thumb').click()" style="width:120px;height:68px;border:1px dashed rgba(255,255,255,.1);border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:rgba(255,255,255,.02);margin-bottom:18px;overflow:hidden" id="vid-thumb-preview">
+        <div style="font-size:9px;color:rgba(255,255,255,.15)">📷 選択</div>
+      </div>
+
+      <div style="font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.2);margin-bottom:8px;text-transform:uppercase">アクセス</div>
+      <div style="display:flex;gap:6px;margin-bottom:20px">
+        <button class="vid-cat-btn active" id="vid-access-free" onclick="this.classList.add('active');document.getElementById('vid-access-pass').classList.remove('active')">Free</button>
+        <button class="vid-cat-btn" id="vid-access-pass" onclick="this.classList.add('active');document.getElementById('vid-access-free').classList.remove('active')">LIVE PASS</button>
+      </div>
+    </div>
+    <div style="padding:12px 18px;border-top:0.5px solid rgba(255,255,255,.06)">
+      <button onclick="submitVideo()" style="width:100%;padding:13px;background:var(--lp);border:none;border-radius:2px;font-family:'Inter',sans-serif;font-size:11px;letter-spacing:2px;font-weight:700;color:#000;cursor:pointer;text-transform:uppercase">投稿する →</button>
+    </div>
+  </div>
+
   <!-- PASS MEMORY ACTIVATION OVERLAY -->
   <div id="pass-memory" style="display:none">
     <!-- Phase B: Transition layer -->
@@ -1870,7 +2002,8 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
   <!-- SCHEDULE DETAIL MODAL -->
   <div id="sched-modal">
     <div class="sm-header">
-      <div class="sm-title" id="sm-title">Event Detail</div>
+      <button onclick="closeSchedDetail()" style="background:none;border:0.5px solid rgba(255,255,255,.12);color:rgba(255,255,255,.4);font-family:'Inter',sans-serif;font-size:9px;letter-spacing:1px;padding:5px 12px;border-radius:100px;cursor:pointer;flex-shrink:0">← Back</button>
+      <div class="sm-title" id="sm-title" style="flex:1;text-align:center">Event Detail</div>
       <button class="sm-close" onclick="closeSchedDetail()">✕</button>
     </div>
     <div class="sm-scroll" id="sm-scroll"></div>
@@ -2491,7 +2624,7 @@ document.querySelectorAll('.ftab').forEach(t => {
     const f = t.dataset.filter;
     // Switch SCREEN sub-panels
     document.querySelectorAll('.scr-sub').forEach(s => s.classList.remove('active'));
-    const map = {all:'scr-series', series:'scr-series', live:'scr-live', article:'scr-article'};
+    const map = {all:'scr-all', series:'scr-series', live:'scr-live', article:'scr-article'};
     const target = document.getElementById(map[f] || 'scr-series');
     if (target) target.classList.add('active');
   });
@@ -3065,6 +3198,38 @@ function openPassListen() {
   if (activeMemoryData && activeMemoryData.listenUrl) {
     window.open(activeMemoryData.listenUrl, '_blank');
   }
+}
+
+// ── VIDEO UPLOAD ──
+function openVideoUpload() {
+  document.getElementById('video-upload-modal').style.display = 'flex';
+}
+function closeVideoUpload() {
+  document.getElementById('video-upload-modal').style.display = 'none';
+}
+function onVidFileSelected(input) {
+  if (input.files && input.files[0]) {
+    var url = URL.createObjectURL(input.files[0]);
+    document.getElementById('vid-preview-el').src = url;
+    document.getElementById('vid-preview').style.display = 'block';
+    document.getElementById('vid-file-btn').style.display = 'none';
+  }
+}
+function onVidThumbSelected(input) {
+  if (input.files && input.files[0]) {
+    var url = URL.createObjectURL(input.files[0]);
+    document.getElementById('vid-thumb-preview').innerHTML = '<img src="'+url+'" style="width:100%;height:100%;object-fit:cover">';
+  }
+}
+function selectVidCat(btn) {
+  document.querySelectorAll('#vid-cats .vid-cat-btn').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+}
+function submitVideo() {
+  var title = document.getElementById('vid-title').value.trim();
+  if (!title) { alert('タイトルを入力してください'); return; }
+  closeVideoUpload();
+  alert('「' + title + '」を投稿しました');
 }
 </script>
 </body>
