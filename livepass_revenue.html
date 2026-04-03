@@ -12,7 +12,7 @@ html,body{height:100%;background:var(--bg);color:var(--fg);font-family:'Inter',s
 #app{max-width:430px;margin:0 auto;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
 
 /* TOPBAR */
-#topbar{flex-shrink:0;padding:13px 18px 11px;border-bottom:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+#topbar{flex-shrink:0;padding:calc(13px + env(safe-area-inset-top,44px)) 18px 11px;border-bottom:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:relative}
 .logo{font-size:10px;font-weight:800;letter-spacing:4px}.logo span{color:var(--red)}
 .page-title{font-size:8px;letter-spacing:3px;color:var(--muted);font-weight:300;text-transform:uppercase;margin-top:2px}
 .live-dot-wrap{display:flex;align-items:center;gap:5px}
@@ -93,7 +93,10 @@ html,body{height:100%;background:var(--bg);color:var(--fg);font-family:'Inter',s
 <div id="app">
   <div id="topbar">
     <div><div class="logo">LIVE <span>PASS</span></div><div class="page-title">Revenue Dashboard</div></div>
-    <div class="live-dot-wrap"><div class="live-dot-r"></div><span class="live-txt">LIVE</span></div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="live-dot-wrap"><div class="live-dot-r"></div><span class="live-txt">LIVE</span></div>
+      <button onclick="if(window.parent&&window.parent.goBack)window.parent.goBack();else window.history.back()" style="background:none;border:0.5px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);font-family:'Inter',sans-serif;font-size:10px;letter-spacing:1px;padding:6px 14px;border-radius:100px;cursor:pointer">← Back</button>
+    </div>
   </div>
 
   <div id="hero">

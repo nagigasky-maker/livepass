@@ -13,11 +13,11 @@
   --border:rgba(237,235,230,0.07);--dim:rgba(237,235,230,0.04);
   --red:#E8100A;--green:#1D9E75;--blue:#85B7EB;--teal:#5DCAA5;
 }
-html,body{height:100%;background:var(--bg);color:var(--fg);font-family:'Inter',sans-serif;overflow:hidden}
+html,body{height:100%;background:#000;color:var(--fg);font-family:'Inter',sans-serif;overflow:hidden}
 #app{max-width:430px;margin:0 auto;height:100dvh;position:relative;overflow:hidden;display:flex;flex-direction:column}
 
 /* TOPBAR */
-#topbar{flex-shrink:0;padding:14px 20px 12px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+#topbar{flex-shrink:0;padding:calc(14px + env(safe-area-inset-top,44px)) 20px 12px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .logo{font-size:10px;font-weight:700;letter-spacing:4px}.logo span{color:var(--red)}
 .globe-badge{font-size:8px;letter-spacing:2px;color:var(--blue);border:0.5px solid rgba(133,183,235,.3);padding:3px 10px;border-radius:1px;font-weight:300}
 
@@ -163,7 +163,10 @@ html,body{height:100%;background:var(--bg);color:var(--fg);font-family:'Inter',s
 
   <div id="topbar">
     <div class="logo">LIVE <span>PASS</span></div>
-    <div class="globe-badge">JAPAN → WORLD</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="globe-badge">JAPAN → WORLD</div>
+      <button onclick="if(window.parent&&window.parent.goBack)window.parent.goBack();else window.history.back()" style="background:none;border:0.5px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);font-family:'Inter',sans-serif;font-size:10px;letter-spacing:1px;padding:6px 14px;border-radius:100px;cursor:pointer">← Back</button>
+    </div>
   </div>
 
   <div id="tabs">

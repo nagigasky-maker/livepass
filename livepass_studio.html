@@ -14,7 +14,7 @@ html,body{height:100%;background:var(--bg);color:var(--fg);font-family:'Inter',s
 .view.active{display:flex}
 
 /* TOPBAR */
-#topbar{flex-shrink:0;padding:13px 18px 11px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+#topbar{flex-shrink:0;padding:calc(13px + env(safe-area-inset-top,44px)) 18px 11px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .logo{font-size:10px;font-weight:800;letter-spacing:4px}.logo span{color:var(--red)}
 .page-title{font-size:8px;letter-spacing:3px;color:var(--muted);font-weight:300;text-transform:uppercase;margin-top:2px}
 .ai-badge{font-size:7px;letter-spacing:2px;color:var(--lp);border:0.5px solid rgba(168,230,61,.3);padding:2px 9px;border-radius:1px;font-weight:400}
@@ -91,7 +91,10 @@ html,body{height:100%;background:var(--bg);color:var(--fg);font-family:'Inter',s
   <div class="view active" id="chat-view">
     <div id="topbar">
       <div><div class="logo">LIVE <span>PASS</span></div><div class="page-title">AI Studio Booking</div></div>
-      <div class="ai-badge">AI</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="ai-badge">AI</div>
+        <button onclick="if(window.parent&&window.parent.goBack)window.parent.goBack();else window.history.back()" style="background:none;border:0.5px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);font-family:'Inter',sans-serif;font-size:10px;letter-spacing:1px;padding:6px 14px;border-radius:100px;cursor:pointer">← Back</button>
+      </div>
     </div>
     <div id="chat-scroll"><div id="chat-messages"></div><div id="typing-indicator" style="display:none"><div class="typing-bubble"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div></div>
     <div id="chat-opts">

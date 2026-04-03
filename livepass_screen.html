@@ -18,19 +18,19 @@ body{background:var(--bg);color:var(--fg);font-family:'Inter',sans-serif;overflo
 #app{width:100%;max-width:430px;margin:0 auto;height:100dvh;position:relative;overflow:hidden}
 
 /* ── TOPBAR ── */
-#topbar{position:absolute;top:0;left:0;right:0;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;z-index:60;background:linear-gradient(to bottom,rgba(0,0,0,.95) 60%,transparent)}
+#topbar{position:absolute;top:0;left:0;right:0;height:calc(52px + env(safe-area-inset-top,44px));display:flex;align-items:center;justify-content:space-between;padding:env(safe-area-inset-top,44px) 18px 0;z-index:60;background:linear-gradient(to bottom,rgba(0,0,0,.95) 60%,transparent)}
 .logo{font-size:11px;font-weight:800;letter-spacing:4px}.logo-r{color:var(--red)}
 .topbar-r{display:flex;align-items:center;gap:8px}
 .t-btn{width:30px;height:30px;border-radius:50%;border:0.5px solid var(--border);background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer}
 
 /* ── FILTER TABS ── */
-#ftabs{position:absolute;top:52px;left:0;right:0;height:38px;display:flex;align-items:center;padding:0 18px;z-index:50;overflow-x:auto;scrollbar-width:none;background:linear-gradient(to bottom,rgba(0,0,0,.8),transparent)}
+#ftabs{position:absolute;top:calc(52px + env(safe-area-inset-top,44px));left:0;right:0;height:38px;display:flex;align-items:center;padding:0 18px;z-index:50;overflow-x:auto;scrollbar-width:none;background:linear-gradient(to bottom,rgba(0,0,0,.8),transparent)}
 #ftabs::-webkit-scrollbar{display:none}
 .ftab{font-size:8px;letter-spacing:2.5px;padding:6px 14px;border:none;background:none;color:var(--muted);cursor:pointer;white-space:nowrap;border-bottom:1.5px solid transparent;transition:all .2s;font-family:'Inter',sans-serif;font-weight:700;text-transform:uppercase;flex-shrink:0}
 .ftab.active{color:var(--fg);border-bottom-color:var(--lp)}
 
 /* ── PANELS ── */
-.panel{position:absolute;top:90px;left:0;right:0;bottom:62px;overflow:hidden;display:none}
+.panel{position:absolute;top:calc(90px + env(safe-area-inset-top,44px));left:0;right:0;bottom:62px;overflow:hidden;display:none}
 .panel.active{display:block}
 
 /* ══════════════════════════════
@@ -914,7 +914,7 @@ function closeModal(){
   document.getElementById('modal').classList.remove('open');
 }
 
-function goBack(){ window.history.back(); }
+function goBack(){ if(window.parent&&window.parent.goBack)window.parent.goBack();else window.history.back(); }
 
 // Init
 setTimeout(initAll, 80);

@@ -14,11 +14,11 @@
   --red:#E8100A;--green:#1D9E75;--blue:#85B7EB;
   --teal:#5DCAA5;--amber:#EF9F27;--purple:#AFA9EC;--pink:#F4C0D1;
 }
-body{background:var(--bg);color:var(--fg);font-family:'Inter',sans-serif;min-height:100vh}
+body{background:#000;color:var(--fg);font-family:'Inter',sans-serif;min-height:100vh}
 #app{max-width:430px;margin:0 auto;min-height:100vh;position:relative;padding-bottom:80px}
 
 /* TOPBAR */
-#topbar{position:sticky;top:0;z-index:50;background:rgba(12,15,26,.97);backdrop-filter:blur(20px);border-bottom:0.5px solid var(--border);padding:12px 18px}
+#topbar{position:sticky;top:0;z-index:50;background:rgba(12,15,26,.97);backdrop-filter:blur(20px);border-bottom:0.5px solid var(--border);padding:calc(12px + env(safe-area-inset-top,44px)) 18px 12px;position:relative}
 .logo{font-size:11px;font-weight:800;letter-spacing:4px;margin-bottom:2px}.logo span{color:var(--red)}
 .top-sub{font-size:8px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
 
@@ -40,7 +40,7 @@ body{background:var(--bg);color:var(--fg);font-family:'Inter',sans-serif;min-hei
 .bar-fill{height:100%;border-radius:2px;transition:width .4s cubic-bezier(.25,.46,.45,.94)}
 
 /* TABS */
-#tabs{display:flex;padding:0 18px;border-bottom:0.5px solid var(--border);overflow-x:auto;scrollbar-width:none;background:var(--bg);position:sticky;top:61px;z-index:40}
+#tabs{display:flex;padding:0 18px;border-bottom:0.5px solid var(--border);overflow-x:auto;scrollbar-width:none;background:var(--bg);position:sticky;top:calc(61px + env(safe-area-inset-top,44px));z-index:40}
 #tabs::-webkit-scrollbar{display:none}
 .tab{font-size:8px;letter-spacing:2px;padding:10px 12px;border:none;background:none;color:var(--muted);cursor:pointer;border-bottom:1.5px solid transparent;font-family:'Inter',sans-serif;font-weight:700;text-transform:uppercase;transition:all .2s;white-space:nowrap;flex-shrink:0}
 .tab.active{color:var(--fg);border-bottom-color:var(--teal)}
@@ -95,6 +95,7 @@ input[type=range]::-webkit-slider-thumb:active{transform:scale(1.3)}
   <div id="topbar">
     <div class="logo">LIVE <span>PASS</span></div>
     <div class="top-sub">収支シミュレーター — Artist Take Rate 80%</div>
+    <button onclick="if(window.parent&&window.parent.goBack)window.parent.goBack();else window.history.back()" style="background:none;border:0.5px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);font-family:'Inter',sans-serif;font-size:10px;letter-spacing:1px;padding:6px 14px;border-radius:100px;cursor:pointer;position:absolute;right:18px;top:calc(12px + env(safe-area-inset-top,44px))">← Back</button>
   </div>
 
   <!-- TOTAL -->
