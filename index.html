@@ -46,9 +46,7 @@ html,body{
 #splash.hide{opacity:0;pointer-events:none;transform:scale(1.04)}
 .splash-logo{font-size:13px;font-weight:800;letter-spacing:5px;color:#fff;margin-bottom:4px}
 .splash-logo span{color:var(--red)}
-.splash-sub{font-size:7px;letter-spacing:4px;color:rgba(255,255,255,.2);text-transform:uppercase;font-weight:300;margin-bottom:48px}
-.splash-tagline{font-size:18px;font-weight:300;letter-spacing:3px;color:rgba(255,255,255,.6);line-height:2.2;text-align:center}
-.splash-mission{font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.2);text-align:center;margin-top:24px;font-weight:300;line-height:1.9}
+.splash-tagline{font-size:22px;font-weight:300;letter-spacing:8px;color:rgba(255,255,255,.45);line-height:2;text-align:center;text-transform:uppercase;margin-top:32px}
 .splash-bar{width:40px;height:1px;background:rgba(255,255,255,.1);margin:24px auto 0;position:relative;overflow:hidden}
 .splash-bar-fill{position:absolute;left:0;top:0;height:100%;background:var(--lp);width:0;transition:width 2s linear}
 
@@ -117,15 +115,10 @@ html,body{
   <!-- SPLASH -->
   <div id="splash">
     <div class="splash-logo">LIVE <span>PASS</span></div>
-    <div class="splash-sub">by Space Cooking™</div>
     <div class="splash-tagline" id="splash-lines">
       <span id="sl1" style="opacity:0;transition:opacity .6s"></span><br>
       <span id="sl2" style="opacity:0;transition:opacity .6s"></span><br>
       <span id="sl3" style="opacity:0;transition:opacity .6s"></span>
-    </div>
-    <div class="splash-mission">
-      アーティストが100%表現できる環境<br>
-      本質的な文化を、世界へ
     </div>
     <div class="splash-bar"><div class="splash-bar-fill" id="splash-progress"></div></div>
   </div>
@@ -336,7 +329,7 @@ function goBack() {
 
 // ── SPLASH ──
 function runSplash() {
-  const lines = ['心を踊らせ。','文化を育て。','世界を和へ。'];
+  const lines = ['YOU','WERE','THERE'];
   const ids   = ['sl1','sl2','sl3'];
   let i = 0;
 
