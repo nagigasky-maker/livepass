@@ -613,7 +613,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
 .bn:active{transform:scale(.87)}
 .bn svg{width:20px;height:20px;display:block;transition:transform .15s}
 .bn.active svg{transform:translateY(-2px)}
-.bn .bl{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700}
+.bn .bl{display:none}
 /* active — lp color */
 .bn.active .bl{color:var(--lp)}
 .bn.active .icon-home path{stroke:var(--lp)}
@@ -661,7 +661,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
 
 /* ── BOTTOM NAV (collapsible) ── */
 #bnav{position:absolute;bottom:0;left:0;right:0;
-  height:62px;
+  height:48px;
   border-top:0.5px solid var(--border);
   background:rgba(0,0,0,.96);
   backdrop-filter:blur(24px);
@@ -3806,8 +3806,68 @@ function onArtCover(input) {
 function submitArticle() {
   var title = document.getElementById('art-c-title').value.trim();
   if (!title) { alert('タイトルを入力してください'); return; }
+
+  // Get selected layout
+  var layoutBtn = document.querySelector('.art-layout-btn.active');
+  var layout = layoutBtn ? layoutBtn.getAttribute('data-layout') : 'square';
+
+  // Get selected category
+  var catBtn = document.querySelector('#art-c-cats .vid-cat-btn.active');
+  var category = catBtn ? catBtn.textContent : 'Culture';
+
+  // Get cover image
+  var coverImg = document.querySelector('#art-c-cover-preview img');
+  var coverSrc = coverImg ? coverImg.src : '';
+
+  // Build article HTML based on layout
+  var colors = ['var(--lp)','var(--red)','var(--sp)','var(--purple)','var(--mint)','var(--blue)'];
+  var color = colors[Math.floor(Math.random() * colors.length)];
+  var newHtml = '';
+
+  if (layout === 'poster') {
+    newHtml = '<div class="mag-poster" style="margin:4px">' +
+      '<div class="mag-poster-bg" style="background:linear-gradient(160deg,#080810,#050508)">' +
+      (coverSrc ? '<img src="'+coverSrc+'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.4">' : '') +
+      '</div><div class="mag-poster-grad"></div>' +
+      '<div class="mag-poster-accent" style="background:'+color+'"></div>' +
+      '<div class="mag-poster-content">' +
+        '<div class="mag-tag" style="color:'+color+'">'+category+'</div>' +
+        '<div class="mag-poster-title">'+title.replace(/ /g,'<br>')+'</div>' +
+        '<div class="mag-poster-meta">NOBBY · Just now</div>' +
+      '</div></div>';
+  } else if (layout === 'wide') {
+    newHtml = '<div class="mag-wide" style="margin:0 4px 4px">' +
+      '<div class="mag-wide-bg" style="background:linear-gradient(90deg,#080810,#0a0a1c)">' +
+      (coverSrc ? '<img src="'+coverSrc+'" style="position:absolute;right:0;top:0;bottom:0;width:50%;object-fit:cover;opacity:.35">' : '') +
+      '</div><div class="mag-wide-grad"></div>' +
+      '<div class="mag-wide-accent" style="background:'+color+'"></div>' +
+      '<div class="mag-wide-content">' +
+        '<div class="mag-tag" style="color:'+color+'">'+category+'</div>' +
+        '<div class="mag-wide-title">'+title+'</div>' +
+        '<div class="mag-wide-meta">NOBBY · Just now</div>' +
+      '</div></div>';
+  } else {
+    newHtml = '<div style="display:grid;grid-template-columns:1fr;gap:4px;padding:0 4px;margin-bottom:4px">' +
+      '<div class="mag-square"><div class="mag-square-bg" style="background:linear-gradient(135deg,#080810,#0a0a1c)">' +
+      (coverSrc ? '<img src="'+coverSrc+'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.35">' : '') +
+      '</div><div class="mag-square-grad"></div>' +
+      '<div class="mag-square-content">' +
+        '<div class="mag-tag" style="color:'+color+'">'+category+'</div>' +
+        '<div class="mag-square-title">'+title+'</div>' +
+        '<div class="mag-square-meta">NOBBY · Just now</div>' +
+      '</div></div></div>';
+  }
+
+  // Insert at top of article list (after magazine header)
+  var scroll = document.getElementById('art-scroll-scr');
+  var header = scroll.querySelector('[style*="MAGAZINE HEADER"]') || scroll.children[0];
+  if (header && header.nextElementSibling) {
+    header.nextElementSibling.insertAdjacentHTML('beforebegin', newHtml);
+  } else {
+    scroll.insertAdjacentHTML('afterbegin', newHtml);
+  }
+
   closeArticleCreate();
-  alert('「' + title + '」を投稿しました');
 }
 </script>
 </body>
