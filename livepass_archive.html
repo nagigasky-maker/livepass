@@ -20,7 +20,7 @@ body{background:#000;color:var(--fg);font-family:'Inter',monospace;min-height:10
 /* TOPBAR */
 #topbar{position:sticky;top:0;z-index:50;background:rgba(12,15,26,.97);backdrop-filter:blur(20px);border-bottom:0.5px solid var(--border);padding:calc(12px + env(safe-area-inset-top,44px)) 18px 12px;display:flex;align-items:center;justify-content:space-between}
 .logo{font-size:11px;font-weight:800;letter-spacing:4px}.logo span{color:var(--red)}
-.back-btn{font-size:10px;letter-spacing:1.5px;color:var(--muted);background:none;border:0.5px solid var(--border);padding:4px 12px;border-radius:100px;cursor:pointer;font-family:'Inter',sans-serif}
+.back-btn{font-size:10px;letter-spacing:1.5px;color:var(--muted);background:none;border:0.5px solid var(--border);padding:4px 12px;border-radius:100px;cursor:pointer;font-family:'Inter',sans-serif;position:absolute;right:16px;top:calc(12px + env(safe-area-inset-top,44px));z-index:100}
 
 /* MIX HERO */
 .mix-hero{position:relative;height:220px;overflow:hidden;background:var(--bg2)}

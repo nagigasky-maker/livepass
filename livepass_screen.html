@@ -238,6 +238,7 @@ body{background:var(--bg);color:var(--fg);font-family:'Inter',sans-serif;overflo
   <div id="topbar">
     <div class="logo">LIVE <span class="logo-r">PASS</span> <span style="color:var(--muted);font-size:9px;letter-spacing:3px;font-weight:400">SCREEN</span></div>
     <div class="topbar-r">
+      <button onclick="if(window.parent&&window.parent.goBack)window.parent.goBack();else window.history.back()" style="background:none;border:0.5px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);font-family:'Inter',sans-serif;font-size:10px;letter-spacing:1px;padding:6px 14px;border-radius:100px;cursor:pointer;z-index:100">← Back</button>
       <div class="t-btn">🔍</div>
       <div class="t-btn">🔔</div>
     </div>
