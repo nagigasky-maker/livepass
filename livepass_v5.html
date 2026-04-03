@@ -1511,51 +1511,147 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
 
     <!-- SUB: ARTICLE (moved from standalone tab) -->
     <div class="scr-sub" id="scr-article">
-      <div id="art-scroll-scr" style="height:100%;overflow-y:auto;scrollbar-width:none">
-        <!-- HERO -->
-        <div class="a-hero">
-          <div class="a-hbg" style="background:linear-gradient(160deg,#070710,#050508)"></div>
-          <div style="position:absolute;right:0;top:0;bottom:0;width:45%;overflow:hidden;opacity:.35">
-            <img src="IMG_NOBBY_SRC" style="width:100%;height:100%;object-fit:cover;object-position:top">
+      <!-- Article create button -->
+      <div style="position:absolute;bottom:16px;right:16px;z-index:20">
+        <div onclick="openArticleCreate()" style="width:44px;height:44px;border-radius:50%;background:var(--lp);display:flex;align-items:center;justify-content:center;font-size:22px;color:#000;cursor:pointer;box-shadow:0 4px 20px rgba(168,230,61,.3);font-weight:300">+</div>
+      </div>
+      <div id="art-scroll-scr" style="height:100%;overflow-y:auto;scrollbar-width:none;padding-bottom:70px">
+
+        <!-- MAGAZINE HEADER -->
+        <div style="padding:14px 16px 8px;display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:16px;font-weight:900;letter-spacing:-0.5px">ARTICLE</div>
+            <div style="font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.2);text-transform:uppercase;margin-top:2px">LIVE PASS JOURNAL</div>
           </div>
-          <div class="a-hlines"></div><div class="a-hgrad"></div>
-          <div class="a-hbar" style="background:var(--lp)"></div>
-          <div class="a-hc">
-            <div class="a-cat">Interview · Featured</div>
-            <div class="a-head">Nobby on Space<br/>& Sound Design</div>
-            <div class="a-by"><span>Space Cooking™ Journal</span> · 8 min · 2026.03</div>
+          <div style="font-size:8px;color:rgba(255,255,255,.15);letter-spacing:1px">2026.04</div>
+        </div>
+
+        <!-- PATTERN 1: POSTER — 縦長 (portrait, full-bleed hero) -->
+        <div class="mag-poster" style="margin:4px">
+          <div class="mag-poster-bg" style="background:linear-gradient(160deg,#070710,#050508)">
+            <img src="IMG_NOBBY_SRC" style="position:absolute;right:0;top:0;bottom:0;width:55%;object-fit:cover;opacity:.4">
+          </div>
+          <div class="mag-poster-grad"></div>
+          <div class="mag-poster-accent" style="background:var(--lp)"></div>
+          <div class="mag-poster-content">
+            <div class="mag-tag" style="color:var(--lp)">Interview · Featured</div>
+            <div class="mag-poster-title">Nobby on<br>Space &<br>Sound Design</div>
+            <div class="mag-poster-meta">Space Cooking™ Journal · 8 min</div>
+          </div>
+          <div class="mag-issue" style="color:var(--lp)">001</div>
+        </div>
+
+        <!-- PATTERN 2: SQUARE — 2カラム grid -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:0 4px;margin-bottom:4px">
+          <div class="mag-square">
+            <div class="mag-square-bg" style="background:linear-gradient(135deg,#0d0000,#1a0000)"></div>
+            <div class="mag-square-grad"></div>
+            <div class="mag-square-content">
+              <div class="mag-tag" style="color:var(--red)">Culture</div>
+              <div class="mag-square-title">Tokyo Club<br>Scene 2026</div>
+              <div class="mag-square-meta">5 min read</div>
+            </div>
+          </div>
+          <div class="mag-square">
+            <div class="mag-square-bg" style="background:linear-gradient(135deg,#100800,#1c0e00)"></div>
+            <div class="mag-square-grad"></div>
+            <div class="mag-square-content">
+              <div class="mag-tag" style="color:var(--sp)">Tribute</div>
+              <div class="mag-square-title">Yabe Nao<br>Legacy</div>
+              <div class="mag-square-meta">12 min read</div>
+            </div>
           </div>
         </div>
-        <!-- GRID -->
-        <div class="a-grid">
-          <div class="a-cell"><div class="a-cbg" style="background:linear-gradient(135deg,#0d0000,#1a0000)"></div><div class="a-cgrad"></div><div class="a-cc"><div class="a-ccat" style="color:var(--red)">Culture</div><div class="a-ctit">Tokyo Club Scene 2026</div><div class="a-csub">5 min read</div></div></div>
-          <div class="a-cell"><div class="a-cbg" style="background:linear-gradient(135deg,#100800,#1c0e00)"></div><div class="a-cgrad"></div><div class="a-cc"><div class="a-ccat" style="color:var(--sp)">Tribute</div><div class="a-ctit">Yabe Nao Legacy</div><div class="a-csub">12 min read</div></div></div>
-        </div>
-        <!-- LIST ROWS -->
-        <div class="a-list-row">
-          <div class="a-list-thumb"><div class="a-list-thumb-bg" style="background:linear-gradient(135deg,#0d0000,#1a0000)"></div></div>
-          <div class="a-list-info">
-            <div class="a-list-cat" style="color:var(--amber)">Setlist</div>
-            <div class="a-list-title">AMD Vol.24 — Full Setlist & Credits</div>
-            <div class="a-list-meta">NOBBY · 24 tracks · 2026.04.01</div>
+
+        <!-- PATTERN 3: WIDE — 横長 (landscape, cinematic) -->
+        <div class="mag-wide" style="margin:0 4px 4px">
+          <div class="mag-wide-bg" style="background:linear-gradient(90deg,#060614,#0a0a1c)">
+            <img src="IMG_AMD_SRC" style="position:absolute;right:0;top:0;bottom:0;width:50%;object-fit:cover;opacity:.35">
+          </div>
+          <div class="mag-wide-grad"></div>
+          <div class="mag-wide-accent" style="background:var(--purple)"></div>
+          <div class="mag-wide-content">
+            <div class="mag-tag" style="color:var(--purple)">Fashion</div>
+            <div class="mag-wide-title">Dubla® — The Birth<br>of a Brand</div>
+            <div class="mag-wide-meta">Behind the scenes · Exclusive · 2026</div>
           </div>
         </div>
-        <div class="a-list-row">
-          <div class="a-list-thumb"><div class="a-list-thumb-bg" style="background:linear-gradient(135deg,#001018,#001a28)"></div></div>
-          <div class="a-list-info">
-            <div class="a-list-cat" style="color:var(--blue)">Column</div>
-            <div class="a-list-title">振付のクレジットはなぜ消えるのか</div>
-            <div class="a-list-meta">Space Cooking™ · 6 min · 2026.03</div>
+
+        <!-- POSTER 2 — with photo -->
+        <div class="mag-poster" style="margin:0 4px 4px">
+          <div class="mag-poster-bg" style="background:linear-gradient(160deg,#001a08,#000e04)">
+            <img src="IMG_FIGURE_SRC" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.3">
+          </div>
+          <div class="mag-poster-grad"></div>
+          <div class="mag-poster-accent" style="background:var(--purple)"></div>
+          <div class="mag-poster-content">
+            <div class="mag-tag" style="color:var(--purple)">Artwork · Figure</div>
+            <div class="mag-poster-title">FnKMDNS<br>Art Object<br>Series</div>
+            <div class="mag-poster-meta">Artist · DJ · Space Cooking™ · 2025</div>
+          </div>
+          <div class="mag-issue" style="color:var(--purple)">002</div>
+        </div>
+
+        <!-- WIDE 2 -->
+        <div class="mag-wide" style="margin:0 4px 4px">
+          <div class="mag-wide-bg" style="background:linear-gradient(90deg,#100808,#1a0a0a)"></div>
+          <div class="mag-wide-grad"></div>
+          <div class="mag-wide-accent" style="background:var(--mint)"></div>
+          <div class="mag-wide-content">
+            <div class="mag-tag" style="color:var(--mint)">Photography</div>
+            <div class="mag-wide-title">Europe Tour 2025<br>Photo Diary</div>
+            <div class="mag-wide-meta">Berlin · Paris · Amsterdam · 48 photos</div>
           </div>
         </div>
-        <div class="a-list-row">
-          <div class="a-list-thumb"><div class="a-list-thumb-bg" style="background:linear-gradient(135deg,#100000,#1a0000)"></div></div>
-          <div class="a-list-info">
-            <div class="a-list-cat" style="color:var(--red)">Report</div>
-            <div class="a-list-title">Berghain 2024 — 渡航記録</div>
-            <div class="a-list-meta">NOBBY · 10 min · 2024.12</div>
+
+        <!-- SQUARE ROW 2 -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:0 4px;margin-bottom:4px">
+          <div class="mag-square">
+            <div class="mag-square-bg" style="background:linear-gradient(135deg,#001c08,#000e04)"></div>
+            <div class="mag-square-grad"></div>
+            <div class="mag-square-content">
+              <div class="mag-tag" style="color:var(--mint)">Design</div>
+              <div class="mag-square-title">Waname®<br>S/S 26</div>
+              <div class="mag-square-meta">Fashion Week</div>
+            </div>
+          </div>
+          <div class="mag-square">
+            <div class="mag-square-bg" style="background:linear-gradient(135deg,#100000,#0c0000)"></div>
+            <div class="mag-square-grad"></div>
+            <div class="mag-square-content">
+              <div class="mag-tag" style="color:var(--red)">Dance</div>
+              <div class="mag-square-title">Idomi<br>2025</div>
+              <div class="mag-square-meta">Battle Recap</div>
+            </div>
           </div>
         </div>
+
+        <!-- TEXT-HEAVY LIST SECTION -->
+        <div style="padding:14px 16px 6px">
+          <div style="font-size:7px;letter-spacing:3px;color:rgba(255,255,255,.12);text-transform:uppercase;border-bottom:0.5px solid rgba(255,255,255,.05);padding-bottom:8px">Latest</div>
+        </div>
+        <div class="mag-list-item">
+          <div class="mag-list-num" style="color:var(--amber)">01</div>
+          <div class="mag-list-info">
+            <div class="mag-list-title">AMD Vol.24 — Full Setlist & Credits</div>
+            <div class="mag-list-meta">NOBBY · 24 tracks · 2026.04.01</div>
+          </div>
+        </div>
+        <div class="mag-list-item">
+          <div class="mag-list-num" style="color:var(--blue)">02</div>
+          <div class="mag-list-info">
+            <div class="mag-list-title">振付のクレジットはなぜ消えるのか</div>
+            <div class="mag-list-meta">Space Cooking™ · Column · 6 min</div>
+          </div>
+        </div>
+        <div class="mag-list-item">
+          <div class="mag-list-num" style="color:var(--red)">03</div>
+          <div class="mag-list-info">
+            <div class="mag-list-title">Berghain 2024 — 渡航記録</div>
+            <div class="mag-list-meta">NOBBY · Report · 10 min</div>
+          </div>
+        </div>
+
       </div>
     </div>
 
