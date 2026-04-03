@@ -997,6 +997,27 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
 .scr-disc-info{position:absolute;bottom:0;left:0;right:0;padding:10px 12px}
 .scr-disc-name{font-size:11px;font-weight:700;letter-spacing:-.1px;margin-bottom:2px}
 .scr-disc-genre{font-size:8px;color:rgba(255,255,255,.35);letter-spacing:1px}
+/* ═══ SETTINGS ═══ */
+.stg-sec-label{font-size:7px;letter-spacing:3px;color:rgba(255,255,255,.15);text-transform:uppercase;font-weight:300;padding:18px 18px 8px;border-bottom:0.5px solid rgba(255,255,255,.04)}
+.stg-item{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:0.5px solid rgba(255,255,255,.04);cursor:pointer;transition:background .15s}
+.stg-item:active{background:rgba(255,255,255,.03)}
+.stg-item-l{display:flex;align-items:center;gap:12px}
+.stg-item-icon{font-size:16px;width:32px;text-align:center;flex-shrink:0}
+.stg-item-title{font-size:13px;font-weight:500;letter-spacing:-.1px}
+.stg-item-val{font-size:10px;color:rgba(255,255,255,.3);letter-spacing:.3px;margin-top:2px}
+.stg-item-sub{font-size:9px;color:rgba(255,255,255,.25);margin-top:2px;letter-spacing:.3px}
+.stg-arrow{font-size:14px;color:rgba(255,255,255,.12)}
+.stg-toggle-item{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:0.5px solid rgba(255,255,255,.04)}
+.stg-switch{position:relative;width:40px;height:22px;flex-shrink:0}
+.stg-switch input{opacity:0;width:0;height:0}
+.stg-slider{position:absolute;inset:0;background:rgba(255,255,255,.1);border-radius:22px;cursor:pointer;transition:.2s}
+.stg-slider::before{content:'';position:absolute;height:16px;width:16px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s}
+.stg-switch input:checked + .stg-slider{background:var(--lp)}
+.stg-switch input:checked + .stg-slider::before{transform:translateX(18px)}
+.stg-plan-card{padding:18px;border-bottom:0.5px solid rgba(255,255,255,.04)}
+.stg-plan-btn{flex:1;padding:10px 8px;border:0.5px solid rgba(255,255,255,.1);border-radius:2px;background:none;font-family:'Inter',sans-serif;font-size:9px;letter-spacing:1px;color:rgba(255,255,255,.4);cursor:pointer;transition:all .15s}
+.stg-plan-btn:active{background:rgba(255,255,255,.05)}
+.stg-plan-current{border-color:rgba(245,200,66,.3);color:var(--sp);background:rgba(245,200,66,.06)}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Observer.min.js"></script>
@@ -1017,6 +1038,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
         <div class="plan-pill pill-sp" id="plan-label" style="font-size:11px;padding:2px 8px;letter-spacing:1px">SUPER PASS</div>
         <div style="font-size:10px;letter-spacing:1.5px;color:rgba(255,255,255,.3);text-transform:uppercase">DJ · Dancer</div>
       </div>
+      <div class="t-notif" style="font-size:16px" onclick="switchTab('settings')">⚙️</div>
       <div class="t-notif" style="font-size:18px">🔔</div>
       <div class="t-av">N</div>
     </div>
@@ -1188,6 +1210,147 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
 
     </div>
   </div>
+
+  <div class="panel" id="panel-settings">
+  <div style="height:100%;overflow-y:auto;scrollbar-width:none">
+
+    <!-- Header -->
+    <div style="padding:20px 18px 14px;border-bottom:0.5px solid rgba(255,255,255,.06)">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:8px;letter-spacing:3px;color:rgba(255,255,255,.15);text-transform:uppercase;margin-bottom:4px">Settings</div>
+          <div style="font-size:18px;font-weight:300;letter-spacing:-.3px;font-style:italic">管理画面</div>
+        </div>
+        <button onclick="switchTab('home')" style="background:none;border:0.5px solid rgba(255,255,255,.12);color:rgba(255,255,255,.4);font-family:'Inter',sans-serif;font-size:10px;letter-spacing:1px;padding:6px 14px;border-radius:100px;cursor:pointer">← Back</button>
+      </div>
+    </div>
+
+    <!-- Profile Card -->
+    <div style="padding:18px;border-bottom:0.5px solid rgba(255,255,255,.04)">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--lp),#5a9900);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#000;flex-shrink:0">N</div>
+        <div>
+          <div style="font-size:15px;font-weight:700;letter-spacing:-.2px" id="settings-name">NOBBY</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.3);letter-spacing:1px;margin-top:2px">DJ · Dancer · Space Cooking™</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: Account -->
+    <div class="stg-sec-label">Account</div>
+    <div class="stg-item" onclick="openSettingsEdit('name')">
+      <div class="stg-item-l"><div class="stg-item-icon">👤</div><div><div class="stg-item-title">アカウント名</div><div class="stg-item-val" id="stg-val-name">NOBBY</div></div></div>
+      <div class="stg-arrow">›</div>
+    </div>
+    <div class="stg-item" onclick="openSettingsEdit('email')">
+      <div class="stg-item-l"><div class="stg-item-icon">✉️</div><div><div class="stg-item-title">メールアドレス</div><div class="stg-item-val" id="stg-val-email">nobby@spacecooking.studio</div></div></div>
+      <div class="stg-arrow">›</div>
+    </div>
+    <div class="stg-item" onclick="openSettingsEdit('phone')">
+      <div class="stg-item-l"><div class="stg-item-icon">📱</div><div><div class="stg-item-title">電話番号</div><div class="stg-item-val" id="stg-val-phone">未設定</div></div></div>
+      <div class="stg-arrow">›</div>
+    </div>
+    <div class="stg-item" onclick="openSettingsEdit('password')">
+      <div class="stg-item-l"><div class="stg-item-icon">🔑</div><div><div class="stg-item-title">パスワード変更</div><div class="stg-item-val">••••••••</div></div></div>
+      <div class="stg-arrow">›</div>
+    </div>
+
+    <!-- SECTION: Subscription -->
+    <div class="stg-sec-label">Subscription</div>
+    <div class="stg-plan-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div style="font-size:11px;letter-spacing:2px;font-weight:700;color:var(--sp)">SUPER PASS</div>
+        <div style="font-size:9px;padding:3px 10px;border-radius:100px;background:rgba(245,200,66,.12);color:var(--sp);border:0.5px solid rgba(245,200,66,.25);letter-spacing:1px;font-weight:600">ACTIVE</div>
+      </div>
+      <div style="font-size:10px;color:rgba(255,255,255,.35);line-height:1.8;margin-bottom:14px">
+        全コンテンツアクセス · 収益ダッシュボード · 優先サポート<br>
+        次回請求: 2026.05.01 · ¥980/月
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="stg-plan-btn stg-plan-current">Super Pass ¥980/月</button>
+        <button class="stg-plan-btn" onclick="this.textContent='✓ 変更予約済';setTimeout(()=>this.textContent='Live Pass ¥480/月',2000)">Live Pass ¥480/月</button>
+      </div>
+      <div style="font-size:9px;color:rgba(255,255,255,.2);margin-top:10px;letter-spacing:.5px">Free プランに変更する場合は<span style="color:var(--lp);cursor:pointer" onclick="alert('Free プランに変更しました')">こちら</span></div>
+    </div>
+
+    <!-- SECTION: Privacy -->
+    <div class="stg-sec-label">Privacy</div>
+    <div class="stg-toggle-item">
+      <div><div class="stg-item-title">プロフィール公開</div><div class="stg-item-sub">他のユーザーにプロフィールを表示</div></div>
+      <label class="stg-switch"><input type="checkbox" checked onchange=""><span class="stg-slider"></span></label>
+    </div>
+    <div class="stg-toggle-item">
+      <div><div class="stg-item-title">アクティビティ表示</div><div class="stg-item-sub">視聴履歴・参加履歴を公開</div></div>
+      <label class="stg-switch"><input type="checkbox" onchange=""><span class="stg-slider"></span></label>
+    </div>
+    <div class="stg-toggle-item">
+      <div><div class="stg-item-title">通知</div><div class="stg-item-sub">プッシュ通知を受け取る</div></div>
+      <label class="stg-switch"><input type="checkbox" checked onchange=""><span class="stg-slider"></span></label>
+    </div>
+    <div class="stg-toggle-item">
+      <div><div class="stg-item-title">メール通知</div><div class="stg-item-sub">イベント・新着情報をメールで受信</div></div>
+      <label class="stg-switch"><input type="checkbox" checked onchange=""><span class="stg-slider"></span></label>
+    </div>
+    <div class="stg-toggle-item">
+      <div><div class="stg-item-title">データ分析への協力</div><div class="stg-item-sub">匿名の利用データを送信</div></div>
+      <label class="stg-switch"><input type="checkbox" onchange=""><span class="stg-slider"></span></label>
+    </div>
+
+    <!-- SECTION: App -->
+    <div class="stg-sec-label">App</div>
+    <div class="stg-item">
+      <div class="stg-item-l"><div class="stg-item-icon">🌐</div><div><div class="stg-item-title">言語</div><div class="stg-item-val">日本語</div></div></div>
+      <div class="stg-arrow">›</div>
+    </div>
+    <div class="stg-item">
+      <div class="stg-item-l"><div class="stg-item-icon">🎨</div><div><div class="stg-item-title">テーマ</div><div class="stg-item-val">Dark</div></div></div>
+      <div class="stg-arrow">›</div>
+    </div>
+    <div class="stg-item">
+      <div class="stg-item-l"><div class="stg-item-icon">💾</div><div><div class="stg-item-title">キャッシュクリア</div><div class="stg-item-val">12.4 MB</div></div></div>
+      <div class="stg-arrow">›</div>
+    </div>
+
+    <!-- SECTION: Legal -->
+    <div class="stg-sec-label">Legal</div>
+    <div class="stg-item">
+      <div class="stg-item-l"><div class="stg-item-icon">📄</div><div class="stg-item-title">利用規約</div></div>
+      <div class="stg-arrow">›</div>
+    </div>
+    <div class="stg-item">
+      <div class="stg-item-l"><div class="stg-item-icon">🔒</div><div class="stg-item-title">プライバシーポリシー</div></div>
+      <div class="stg-arrow">›</div>
+    </div>
+    <div class="stg-item">
+      <div class="stg-item-l"><div class="stg-item-icon">📋</div><div class="stg-item-title">特定商取引法に基づく表記</div></div>
+      <div class="stg-arrow">›</div>
+    </div>
+
+    <!-- Danger zone -->
+    <div class="stg-sec-label" style="color:rgba(255,59,48,.4)">Danger Zone</div>
+    <div class="stg-item" style="border-color:rgba(255,59,48,.08)" onclick="if(confirm('本当にログアウトしますか？'))alert('ログアウトしました')">
+      <div class="stg-item-l"><div class="stg-item-icon">🚪</div><div class="stg-item-title" style="color:var(--red)">ログアウト</div></div>
+    </div>
+    <div class="stg-item" style="border-color:rgba(255,59,48,.08)" onclick="if(confirm('アカウントを削除すると全てのデータが失われます。本当に削除しますか？'))alert('アカウント削除リクエストを送信しました')">
+      <div class="stg-item-l"><div class="stg-item-icon">⚠️</div><div class="stg-item-title" style="color:rgba(255,59,48,.5)">アカウント削除</div></div>
+    </div>
+
+    <!-- Version -->
+    <div style="text-align:center;padding:24px 20px 40px;font-size:7px;color:rgba(255,255,255,.12);letter-spacing:2px">LIVE PASS BETA v0.9.0 · SPACE COOKING™</div>
+  </div>
+</div>
+
+<!-- Settings Edit Modal -->
+<div id="settings-edit-modal" style="display:none;position:absolute;inset:0;z-index:250;background:rgba(0,0,0,.97);flex-direction:column">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;padding-top:calc(16px + env(safe-area-inset-top,0px));border-bottom:0.5px solid rgba(255,255,255,.06)">
+    <button onclick="closeSettingsEdit()" style="background:none;border:0.5px solid rgba(255,255,255,.12);color:rgba(255,255,255,.4);font-family:'Inter',sans-serif;font-size:10px;letter-spacing:1px;padding:6px 14px;border-radius:100px;cursor:pointer">← Back</button>
+    <div style="font-size:10px;letter-spacing:2px;color:rgba(255,255,255,.3);text-transform:uppercase" id="stg-edit-label">編集</div>
+    <button onclick="saveSettingsEdit()" style="background:var(--lp);border:none;color:#000;font-family:'Inter',sans-serif;font-size:10px;letter-spacing:1px;padding:6px 14px;border-radius:100px;cursor:pointer;font-weight:700">保存</button>
+  </div>
+  <div style="padding:24px 18px">
+    <input id="stg-edit-input" style="width:100%;background:rgba(255,255,255,.04);border:0.5px solid rgba(255,255,255,.1);border-radius:2px;padding:14px 16px;font-size:15px;color:#fff;font-family:'Inter',sans-serif;outline:none" placeholder="">
+  </div>
+</div>
 
   <!-- ═══ SCREEN (series / live / article sub-panels) ═══ -->
   <div class="panel" id="panel-screen">
@@ -3341,6 +3504,39 @@ function submitVideo() {
   if (!title) { alert('タイトルを入力してください'); return; }
   closeVideoUpload();
   alert('「' + title + '」を投稿しました');
+}
+
+// ── SETTINGS ──
+var stgEditField = '';
+function openSettingsEdit(field) {
+  stgEditField = field;
+  var labels = {name:'アカウント名',email:'メールアドレス',phone:'電話番号',password:'パスワード'};
+  document.getElementById('stg-edit-label').textContent = labels[field] || '編集';
+  var input = document.getElementById('stg-edit-input');
+  input.type = field === 'password' ? 'password' : (field === 'email' ? 'email' : 'text');
+  input.placeholder = labels[field] || '';
+  var valEl = document.getElementById('stg-val-' + field);
+  input.value = valEl ? (valEl.textContent === '未設定' ? '' : valEl.textContent) : '';
+  if (field === 'password') input.value = '';
+  document.getElementById('settings-edit-modal').style.display = 'flex';
+  setTimeout(function(){ input.focus(); }, 100);
+}
+function closeSettingsEdit() {
+  document.getElementById('settings-edit-modal').style.display = 'none';
+}
+function saveSettingsEdit() {
+  var val = document.getElementById('stg-edit-input').value.trim();
+  if (!val) { alert('値を入力してください'); return; }
+  if (stgEditField === 'password') {
+    alert('パスワードを変更しました');
+  } else {
+    var valEl = document.getElementById('stg-val-' + stgEditField);
+    if (valEl) valEl.textContent = val;
+    if (stgEditField === 'name') {
+      document.getElementById('settings-name').textContent = val;
+    }
+  }
+  closeSettingsEdit();
 }
 </script>
 </body>
