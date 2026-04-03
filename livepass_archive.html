@@ -14,11 +14,11 @@
   --red:#E8100A;--green:#1D9E75;--blue:#85B7EB;
   --teal:#5DCAA5;--amber:#EF9F27;--purple:#AFA9EC;--pink:#F4C0D1;
 }
-body{background:var(--bg);color:var(--fg);font-family:'Inter',monospace;min-height:100vh}
+body{background:#000;color:var(--fg);font-family:'Inter',monospace;min-height:100vh}
 #app{max-width:430px;margin:0 auto;min-height:100vh;position:relative}
 
 /* TOPBAR */
-#topbar{position:sticky;top:0;z-index:50;background:rgba(12,15,26,.97);backdrop-filter:blur(20px);border-bottom:0.5px solid var(--border);padding:12px 18px;display:flex;align-items:center;justify-content:space-between}
+#topbar{position:sticky;top:0;z-index:50;background:rgba(12,15,26,.97);backdrop-filter:blur(20px);border-bottom:0.5px solid var(--border);padding:calc(12px + env(safe-area-inset-top,44px)) 18px 12px;display:flex;align-items:center;justify-content:space-between}
 .logo{font-size:11px;font-weight:800;letter-spacing:4px}.logo span{color:var(--red)}
 .back-btn{font-size:10px;letter-spacing:1.5px;color:var(--muted);background:none;border:0.5px solid var(--border);padding:4px 12px;border-radius:100px;cursor:pointer;font-family:'Inter',sans-serif}
 
@@ -109,7 +109,7 @@ body{background:var(--bg);color:var(--fg);font-family:'Inter',monospace;min-heig
   <!-- TOPBAR -->
   <div id="topbar">
     <div class="logo">LIVE <span>PASS</span></div>
-    <button class="back-btn" onclick="history.back()">← SCREEN</button>
+    <button class="back-btn" onclick="if(window.parent&&window.parent.goBack)window.parent.goBack();else window.history.back()">← Back</button>
   </div>
 
   <!-- MIX HERO -->
