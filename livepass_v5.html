@@ -163,7 +163,8 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
 .ftab:not(.active):hover{color:rgba(255,255,255,.5)}
 
 /* ── PANELS ── */
-.panel{position:absolute;top:calc(100px + env(safe-area-inset-top,0px));left:0;right:0;bottom:76px;overflow:hidden;display:none}
+.panel{position:absolute;top:calc(100px + env(safe-area-inset-top,0px));left:0;right:0;bottom:76px;overflow:hidden;display:none;transition:bottom .3s cubic-bezier(.4,0,.2,1)}
+.panel.nav-away{bottom:0}
 .panel.active{display:block}
 
 /* ═══════════════════════════════
@@ -640,7 +641,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
 .bn.active .icon-article rect,.bn.active .icon-article polyline,.bn.active .icon-article line{stroke:var(--lp)}
 .bn:not(.active) .icon-article rect,.bn:not(.active) .icon-article polyline,.bn:not(.active) .icon-article line{stroke:rgba(255,255,255,.22)}
 
-/* ── BOTTOM NAV (always visible) ── */
+/* ── BOTTOM NAV (auto-hide on scroll) ── */
 #bnav{position:absolute;bottom:0;left:0;right:0;
   height:76px;
   border-top:0.5px solid var(--border);
@@ -650,7 +651,10 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
   z-index:55;
   padding-bottom:env(safe-area-inset-bottom,8px);
   padding-top:4px;
+  transform:translateY(0);
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
 }
+#bnav.nav-hidden{transform:translateY(100%)}
 
 /* ── SCHEDULE DETAIL MODAL ── */
 #sched-modal{position:absolute;inset:0;z-index:200;background:rgba(0,0,0,.97);display:none;flex-direction:column}
@@ -3744,6 +3748,41 @@ function saveSettingsEdit() {
 
 // Init settings
 setTimeout(function(){ renderSettingsContent(); }, 100);
+
+// ── NAV AUTO-HIDE ON SCROLL ──
+(function(){
+  var bnav = document.getElementById('bnav');
+  var lastScrollY = 0;
+  var navHidden = false;
+  // Listen on all scrollable containers inside panels
+  function onScroll(e) {
+    var el = e.target;
+    var sy = el.scrollTop || 0;
+    if (sy > lastScrollY + 4 && sy > 30) {
+      if (!navHidden) {
+        navHidden = true;
+        bnav.classList.add('nav-hidden');
+        document.querySelectorAll('.panel.active').forEach(function(p){p.classList.add('nav-away')});
+      }
+    } else if (sy < lastScrollY - 4) {
+      if (navHidden) {
+        navHidden = false;
+        bnav.classList.remove('nav-hidden');
+        document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('nav-away')});
+      }
+    }
+    lastScrollY = sy;
+  }
+  document.addEventListener('scroll', onScroll, true);
+  // Reset nav on tab switch
+  var origSwitch = window.switchTab;
+  window.switchTab = function(t) {
+    navHidden = false; lastScrollY = 0;
+    bnav.classList.remove('nav-hidden');
+    document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('nav-away')});
+    origSwitch(t);
+  };
+})();
 
 // ── ARTICLE CREATE ──
 function openArticleCreate() {
