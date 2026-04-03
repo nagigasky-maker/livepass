@@ -165,7 +165,7 @@ html,body{height:100%;background:#000;color:var(--fg);font-family:'Inter',sans-s
     <div class="logo">LIVE <span>PASS</span></div>
     <div style="display:flex;align-items:center;gap:10px">
       <div class="globe-badge">JAPAN → WORLD</div>
-      <button onclick="if(window.parent&&window.parent.goBack)window.parent.goBack();else window.history.back()" style="background:none;border:0.5px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);font-family:'Inter',sans-serif;font-size:10px;letter-spacing:1px;padding:6px 14px;border-radius:100px;cursor:pointer">← Back</button>
+      <button onclick="if(window.parent&&window.parent.goBack)window.parent.goBack();else window.history.back()" style="background:none;border:0.5px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);font-family:'Inter',sans-serif;font-size:10px;letter-spacing:1px;padding:6px 14px;border-radius:100px;cursor:pointer;position:absolute;right:16px;top:calc(12px + env(safe-area-inset-top,44px));z-index:100">← Back</button>
     </div>
   </div>
 
