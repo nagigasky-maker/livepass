@@ -163,7 +163,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
 .ftab:not(.active):hover{color:rgba(255,255,255,.5)}
 
 /* ── PANELS ── */
-.panel{position:absolute;top:calc(100px + env(safe-area-inset-top,0px));left:0;right:0;bottom:32px;overflow:hidden;display:none}
+.panel{position:absolute;top:calc(100px + env(safe-area-inset-top,0px));left:0;right:0;bottom:76px;overflow:hidden;display:none}
 .panel.active{display:block}
 
 /* ═══════════════════════════════
@@ -640,26 +640,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
 .bn.active .icon-article rect,.bn.active .icon-article polyline,.bn.active .icon-article line{stroke:var(--lp)}
 .bn:not(.active) .icon-article rect,.bn:not(.active) .icon-article polyline,.bn:not(.active) .icon-article line{stroke:rgba(255,255,255,.22)}
 
-/* ── MENU TOGGLE BUTTON ── */
-#menu-toggle{
-  position:absolute;bottom:0;left:0;right:0;
-  height:44px;
-  display:flex;align-items:center;justify-content:center;
-  z-index:60;
-  cursor:pointer;
-  background:linear-gradient(to top,rgba(0,0,0,.95),rgba(0,0,0,.6));
-  padding-bottom:env(safe-area-inset-bottom,0px);
-  transition:opacity .2s;
-}
-#menu-toggle .menu-line{
-  width:28px;height:2px;border-radius:1px;
-  background:rgba(255,255,255,.18);
-  transition:background .2s;
-}
-#menu-toggle:active .menu-line{background:var(--lp)}
-#menu-toggle.hidden{opacity:0;pointer-events:none}
-
-/* ── BOTTOM NAV (collapsible) ── */
+/* ── BOTTOM NAV (always visible) ── */
 #bnav{position:absolute;bottom:0;left:0;right:0;
   height:76px;
   border-top:0.5px solid var(--border);
@@ -669,10 +650,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
   z-index:55;
   padding-bottom:env(safe-area-inset-bottom,8px);
   padding-top:4px;
-  transform:translateY(100%);
-  transition:transform .28s cubic-bezier(.4,0,.2,1);
 }
-#bnav.open{transform:translateY(0)}
 
 /* ── SCHEDULE DETAIL MODAL ── */
 #sched-modal{position:absolute;inset:0;z-index:200;background:rgba(0,0,0,.97);display:none;flex-direction:column}
@@ -2351,10 +2329,6 @@ body{background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;heig
     </div>
   </div>
 
-  <!-- MENU TOGGLE BUTTON -->
-  <div id="menu-toggle" onclick="toggleNav()">
-    <div class="menu-line"></div>
-  </div>
 
   <!-- SCHEDULE DETAIL MODAL -->
   <div id="sched-modal">
@@ -2955,23 +2929,8 @@ function switchTab(t) {
   const ft = document.getElementById('filtertabs');
   ft.style.opacity = t === 'screen' ? '1' : '0';
   ft.style.pointerEvents = t === 'screen' ? 'auto' : 'none';
-  // close nav after selection
-  closeNav();
 }
 
-// ── COLLAPSIBLE NAV ──
-function toggleNav() {
-  const bnav = document.getElementById('bnav');
-  const toggle = document.getElementById('menu-toggle');
-  bnav.classList.toggle('open');
-  toggle.classList.toggle('hidden', bnav.classList.contains('open'));
-}
-function closeNav() {
-  const bnav = document.getElementById('bnav');
-  const toggle = document.getElementById('menu-toggle');
-  bnav.classList.remove('open');
-  toggle.classList.remove('hidden');
-}
 
 document.querySelectorAll('.bn').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
 
