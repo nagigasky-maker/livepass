@@ -219,7 +219,7 @@ body::-webkit-scrollbar{display:none}
   <div class="mi-info"><div class="mi-title">Revenue Simulator</div><div class="mi-sub">収支シミュレーション</div></div>
   <div class="mi-arrow">›</div>
 </div>
-<div class="menu-item" onclick="parent.nav('schedule')">
+<div class="menu-item" onclick="parent.nav('home');setTimeout(function(){try{parent.document.getElementById('frame').contentWindow.switchTab('discover')}catch(e){}},300)">
   <div class="mi-icon" style="background:rgba(191,90,242,.08);border-color:rgba(191,90,242,.2)">◈</div>
   <div class="mi-info"><div class="mi-title">Schedule</div><div class="mi-sub">レッスン · WS · イベント · コラボ</div></div>
   <div class="mi-arrow">›</div>
