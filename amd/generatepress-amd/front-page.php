@@ -75,16 +75,16 @@ echo '<link rel="icon" href="' . get_stylesheet_directory_uri() . '/logos/amdhea
 <style>
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 :root {
-  --amd-full-h: 100lvh;
+  --amd-full-h: 100dvh;
   --black: #0C0F1A;
   --white: #EDEBE6;
   --red:   #E8100A;
   --blue:  #1A2E6B;
   --line:  rgba(237,235,230,0.09);
 }
-html { height: 100%; overflow: hidden; }
+html { height: 100%; height: -webkit-fill-available; overflow: hidden; }
 body {
-  overflow-x: hidden; overflow-y: hidden;
+  overflow-x: hidden; overflow-y: hidden; min-height: 100vh; min-height: -webkit-fill-available;
   background: var(--black); color: var(--white);
   font-family: "Noto Sans JP","Montserrat",sans-serif;
   font-weight: 300; font-feature-settings: "palt";
@@ -94,7 +94,7 @@ body {
 #page,#content,.site-content,#primary,main,article,.entry-content,.content-area { margin:0 !important; padding:0 !important; max-width:100% !important; display:block !important; width:100% !important; }
 /* FIX 8: scroll-snap on #deck only */
 #deck {
-  width:100%; height: 100lvh; overflow-y: scroll;
+  width:100%; height: 100vh; height: 100dvh; overflow-y: scroll;
   scroll-snap-type: y mandatory;
   -webkit-overflow-scrolling: touch; overscroll-behavior-y: none;
 }
@@ -115,14 +115,14 @@ body {
 [data-lang="jp"] .lang-jp { color:var(--white); font-weight:700; }
 [data-lang="en"] .lang-en { color:var(--white); font-weight:700; }
 #chap-counter, #panel-counter { display:none; }
-.chapter { width: 100%; height: 100lvh; min-height: 100lvh; position: relative; scroll-snap-align: start; scroll-snap-stop: always; }
-#c0, #c1 { max-height: 100lvh; min-height: 100lvh; overflow: hidden; }
+.chapter { width: 100%; height: 100vh; height: 100dvh; min-height: 100vh; min-height: 100dvh; position: relative; scroll-snap-align: start; scroll-snap-stop: always; }
+#c0, #c1 { max-height: 100vh; max-height: 100dvh; min-height: 100vh; min-height: 100dvh; overflow: hidden; }
 #c2, #c3, #c4 { height: auto; }
 .chapter.chapter-auto { height: auto; }
-.panel-track { display: flex; width: 100%; height: 100lvh; flex-shrink: 0; overflow-x: scroll; overflow-y: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.panel-track { display: flex; width: 100%; height: 100vh; height: 100dvh; flex-shrink: 0; overflow-x: scroll; overflow-y: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
 .panel-track::-webkit-scrollbar { display:none; }
-.panel { flex: 0 0 100%; width:100%; height:100lvh; position: relative; display: flex; flex-direction:column; justify-content: flex-end; overflow: hidden; }
-.panel.solo { display: flex; flex-direction: column; height: 100lvh; }
+.panel { flex: 0 0 100%; width:100%; height:100vh; height:100dvh; position: relative; display: flex; flex-direction:column; justify-content: flex-end; overflow: hidden; }
+.panel.solo { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
 #c2 .panel.solo, #c3 .panel.solo, #c4 .panel.solo { height: auto; overflow: visible; min-height: 0; }
 #c3 .panel-content, #c4 .panel-content { position: relative; z-index: 2; height: auto; overflow: visible; min-height: 0; padding: 0 24px max(48px, calc(env(safe-area-inset-bottom) + 24px)) 24px; box-sizing: border-box; }
 .panel.content-panel { justify-content: flex-start; }
@@ -130,7 +130,7 @@ body {
 .vig { position:absolute; inset:0; z-index:1; pointer-events:none; background: linear-gradient(to top, rgba(12,15,26,0.97) 0%, rgba(12,15,26,0.55) 36%, rgba(12,15,26,0.15) 65%, transparent 100%); }
 .vig-heavy { position:absolute; inset:0; z-index:1; pointer-events:none; background:rgba(10,13,22,0.92); }
 .vig-artist { position:absolute; inset:0; z-index:1; pointer-events:none; background:linear-gradient(to top, rgba(12,15,26,0.97) 0%, rgba(12,15,26,0.78) 40%, rgba(12,15,26,0.5) 70%, rgba(12,15,26,0.25) 100%); }
-.panel-content { position:relative; z-index:2; padding: 0 56px 52px; width:100%; box-sizing:border-box; flex-shrink:0; }
+.panel-content { position:relative; z-index:2; padding: 0 56px max(52px, calc(env(safe-area-inset-bottom) + 52px)); width:100%; box-sizing:border-box; flex-shrink:0; }
 .content-panel .panel-content { position:relative; z-index:2; width:100%; height:100%; padding: 80px 56px 60px; overflow-y: hidden; overflow-x: hidden; box-sizing:border-box; }
 #p0-1 .panel-content, #p1-1 .panel-content { height: auto; margin-top: auto; padding-top: 0; }
 .panel-content p,.panel-content li,.zi-body,.zine-issue-body p,.connect-body,.body-txt { font-family: "Noto Sans JP","Montserrat",sans-serif; }
@@ -482,7 +482,7 @@ a.sc:hover { background: rgba(237,235,230,0.06); }
 /* MOBILE */
 @media (max-width: 860px) {
   #amd-header { padding:16px 20px; }
-  .panel-content { padding:0 20px 40px; }
+  .panel-content { padding:0 20px max(40px, calc(env(safe-area-inset-bottom) + 40px)); }
   .content-panel .panel-content { padding:64px 20px 52px; }
   .panel-dots { left:20px; bottom:32px; }
   .back-btn { bottom:32px; right:20px; font-size:12px; }
@@ -535,7 +535,7 @@ body.overlay-open #amd-header { background: rgba(12,15,26,0.98) !important; }
 <div id="ytPullBar"><div class="ptr-spinner" id="ptrSpinner"></div></div>
 
 <div id="amd-header">
-  <a class="logo" href="/">
+  <a class="logo" href="/" onclick="event.preventDefault();window.location.reload();">
     <img loading="eager" src="<?= get_stylesheet_directory_uri() ?>/logos/amdheaderlogo.png" alt="ALL MUST DANCE™" style="height:20px;width:auto;display:block;mix-blend-mode:screen;">
   </a>
   <div class="header-right">
@@ -618,7 +618,7 @@ body.overlay-open #amd-header { background: rgba(12,15,26,0.98) !important; }
 
   <!-- CHAPTER 0: PARTY HERO -->
   <div class="chapter active" id="c0">
-    <div class="panel-track" id="c0-track" style="height:100lvh;overflow-x:scroll;overflow-y:hidden;position:sticky;top:0;">
+    <div class="panel-track" id="c0-track" style="height:100dvh;overflow-x:scroll;overflow-y:hidden;position:sticky;top:0;">
       <div class="panel" id="p0-0" data-active>
         <div class="panel-bg parallax-bg" style="background:linear-gradient(160deg,#0f1428 0%,#0C0F1A 100%);">
           <img loading="eager" src="<?= get_stylesheet_directory_uri() ?>/logos/amd2026asia.jpg" alt="" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;opacity:0.85;">
@@ -651,7 +651,7 @@ body.overlay-open #amd-header { background: rgba(12,15,26,0.98) !important; }
       <div class="amd-ticket-overlay" id="p0-2">
         <button class="amd-ticket-close" onclick="closeTicketOverlay()">×</button>
         <div class="panel-bg"></div><div class="vig vig-heavy"></div>
-        <div class="panel-content" style="height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;padding:max(80px,calc(env(safe-area-inset-top)+64px)) 24px 100px;">
+        <div class="panel-content" style="height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;padding:max(80px,calc(env(safe-area-inset-top)+64px)) 32px 100px;">
           <div class="two-col">
             <div class="rv">
               <div class="eyebrow lang-switchable" data-jp="次のイベント — EP.07" data-en="Next Event — EP.07">Next Event — EP.07</div>
@@ -680,8 +680,8 @@ body.overlay-open #amd-header { background: rgba(12,15,26,0.98) !important; }
 
   <!-- CHAPTER 1: WORKSHOP -->
   <div class="chapter" id="c1">
-    <div class="panel-track" id="c1-track" style="height:100lvh;overflow-x:scroll;overflow-y:hidden;">
-      <div class="panel" id="p1-0" data-active style="height:100lvh;min-height:100lvh;justify-content:flex-end;">
+    <div class="panel-track" id="c1-track" style="height:100dvh;overflow-x:scroll;overflow-y:hidden;">
+      <div class="panel" id="p1-0" data-active style="height:100dvh;min-height:100dvh;justify-content:flex-end;">
         <div class="panel-bg" style="background:#000;">
           <?php $ws_bg_photo = null; if(!empty($ws_artists)){ $ws_bg_photo = get_field('photo', $ws_artists[0]->ID); } if($ws_bg_photo): ?>
           <img src="<?= esc_url($ws_bg_photo['url']) ?>" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;">
@@ -705,8 +705,8 @@ body.overlay-open #amd-header { background: rgba(12,15,26,0.98) !important; }
       </div>
 
       <!-- WS Artist Overlay -->
-      <div class="amd-ticket-overlay" id="p1-1" style="background:var(--black);padding-top:max(72px, calc(env(safe-area-inset-top) + 60px));">
-        <button class="amd-ticket-close" onclick="closeWsArtistOverlay()">×</button>
+      <div class="amd-ticket-overlay" id="p1-1" style="background:var(--black);padding-top:0;">
+        <button class="amd-ticket-close" onclick="closeWsArtistOverlay()" style="position:fixed;top:max(20px,calc(env(safe-area-inset-top)+12px));right:20px;bottom:auto;z-index:10;">×</button>
         <?php if(!empty($ws_artists)): $wa = $ws_artists[0]; $wa_photo = get_field('photo',$wa->ID); $wa_genre = get_field('genre',$wa->ID); $wa_bio = get_field('bio_ja',$wa->ID); $wa_bio_en = get_field('bio_en',$wa->ID); $wa_role = get_field('role',$wa->ID); ?>
         <div class="panel-bg" style="background:#000;"><video autoplay muted loop playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;"><source src="https://allmustdance.com/wp-content/uploads/2026/03/20260323_152503.mp4" type="video/mp4"><img src="https://allmustdance.com/wp-content/uploads/2026/03/20260323_152503.gif" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></video></div>
         <div class="vig-artist"></div>
@@ -732,7 +732,7 @@ body.overlay-open #amd-header { background: rgba(12,15,26,0.98) !important; }
       <div class="amd-ticket-overlay" id="p1-2">
         <button class="amd-ticket-close" onclick="closeWsTicketOverlay()">×</button>
         <div class="panel-bg"></div><div class="vig vig-heavy"></div>
-        <div class="panel-content" style="height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;padding:max(80px,calc(env(safe-area-inset-top)+64px)) 24px 100px;">
+        <div class="panel-content" style="height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;padding:max(80px,calc(env(safe-area-inset-top)+64px)) 32px 100px;">
           <div class="two-col">
             <div class="rv">
               <div class="eyebrow lang-switchable" data-jp="ワークショップ情報" data-en="Workshop Info">Workshop Info</div>
@@ -754,9 +754,9 @@ body.overlay-open #amd-header { background: rgba(12,15,26,0.98) !important; }
   </div>
 
   <!-- CHAPTER 2: YOUTUBE -->
-  <div class="chapter" id="c2" style="height:100lvh;">
-    <div class="panel-track" id="c2-track" style="height:100lvh;overflow:hidden;">
-      <div class="panel" id="p2-0" style="height:100lvh;position:relative;background:#000;">
+  <div class="chapter" id="c2" style="height:100dvh;">
+    <div class="panel-track" id="c2-track" style="height:100dvh;overflow:hidden;">
+      <div class="panel" id="p2-0" style="height:100dvh;position:relative;background:#000;">
         <div class="panel-bg"><video autoplay muted loop playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;" poster="https://allmustdance.com/wp-content/uploads/2026/03/theater.jpg"><source src="https://allmustdance.com/wp-content/uploads/2026/03/theater.mp4" type="video/mp4"><img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/03/theater.gif" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></video></div>
         <div class="vig"></div>
         <div class="panel-content">
@@ -772,9 +772,9 @@ body.overlay-open #amd-header { background: rgba(12,15,26,0.98) !important; }
   </div>
 
   <!-- CHAPTER 3: GOOD GOODS -->
-  <div class="chapter" id="c3" style="height:100lvh;">
-    <div class="panel-track" id="c3-track" style="height:100lvh;overflow:hidden;">
-      <div class="panel" id="p3-0" style="height:100lvh;position:relative;">
+  <div class="chapter" id="c3" style="height:100dvh;">
+    <div class="panel-track" id="c3-track" style="height:100dvh;overflow:hidden;">
+      <div class="panel" id="p3-0" style="height:100dvh;position:relative;">
         <div class="panel-bg"><video autoplay muted loop playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;"><source src="https://allmustdance.com/wp-content/uploads/2026/01/20260111_112352-1.mp4" type="video/mp4"><img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/20260111_112352-1.gif" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></video></div>
         <div class="panel-bg" style="background:none;"><img loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="<?= get_stylesheet_directory_uri() ?>/artwear/gg.png" class="lazy-img" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0.15;mix-blend-mode:screen;"></div>
         <div class="vig"></div>
@@ -791,15 +791,15 @@ body.overlay-open #amd-header { background: rgba(12,15,26,0.98) !important; }
   </div>
 
   <!-- CHAPTER 4: CONNECT -->
-  <div class="chapter" id="c4" style="height:100lvh;">
-    <div class="panel-track" id="c4-track" style="height:100lvh;">
-      <div class="panel content-panel solo" id="p4-0" style="height:100lvh;">
+  <div class="chapter" id="c4" style="height:100dvh;">
+    <div class="panel-track" id="c4-track" style="height:100dvh;">
+      <div class="panel content-panel solo" id="p4-0" style="height:100dvh;">
         <div class="panel-bg"><img loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="<?= get_stylesheet_directory_uri() ?>/logos/getin.png" class="lazy-img" alt="" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.18;mix-blend-mode:luminosity;"></div>
         <div class="vig vig-heavy"></div>
         <div class="panel-content" style="padding-top:max(80px,calc(env(safe-area-inset-top)+64px));overflow-y:auto;overscroll-behavior-y:contain;height:100%;box-sizing:border-box;">
           <div class="connect-grid">
             <div class="rv">
-              <img src="<?= get_stylesheet_directory_uri() ?>/logos/getin.png" alt="GET IN TOUCH" class="section-icon-heading anim-left" style="max-height:80px;margin-top:40px;transition-delay:0s;">
+              <img src="<?= get_stylesheet_directory_uri() ?>/logos/getin.png" alt="GET IN TOUCH" class="section-icon-heading anim-left" style="max-height:80px;margin-top:80px;transition-delay:0s;">
               <p class="connect-body anim-up" style="transition-delay:0.1s;">For collaborations, media inquiries, and sponsorships aligned with our cultural and social mission.</p>
               <a href="mailto:niko@allmustdance.com" class="connect-mail anim-up" style="transition-delay:0.2s;">niko@allmustdance.com</a>
             </div>
@@ -1203,11 +1203,28 @@ function closeMenu(){
 menuToggle.addEventListener('click',()=>menuOpen?closeMenu():openMenu());
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&menuOpen) closeMenu();});
 
+/* Fix 12: 1tap = show image, 2tap = navigate */
+let _menuLastTapped = null, _menuTapTimer = null;
 menuOverlay.addEventListener('click',e=>{
-  const item=e.target.closest('.menu-item[data-menu-close]');
-  const hrefItem=e.target.closest('.menu-item[data-href]');
-  if(item){ e.preventDefault(); const[mc,mp]=(item.dataset.goto||'0,0').split(',').map(Number); closeMenu(); setTimeout(()=>goChapter(mc,mp||0),300); }
-  else if(hrefItem){ e.preventDefault(); const href=hrefItem.dataset.href; closeMenu(); setTimeout(()=>{window.location.href=href;},300); }
+  const item=e.target.closest('.menu-item');
+  if(!item) return;
+  e.preventDefault();
+  /* First tap: activate (show image) */
+  if(_menuLastTapped !== item){
+    _menuLastTapped = item;
+    _m035Activate([...menuOverlay.querySelectorAll('.menu-item')].indexOf(item));
+    clearTimeout(_menuTapTimer);
+    _menuTapTimer = setTimeout(()=>{ _menuLastTapped=null; }, 3000);
+    return;
+  }
+  /* Second tap: navigate */
+  _menuLastTapped = null;
+  clearTimeout(_menuTapTimer);
+  if(item.hasAttribute('data-href')){
+    const href=item.dataset.href; closeMenu(); setTimeout(()=>{window.location.href=href;},300);
+  } else if(item.hasAttribute('data-goto')){
+    const[mc,mp]=(item.dataset.goto||'0,0').split(',').map(Number); closeMenu(); setTimeout(()=>goChapter(mc,mp||0),300);
+  }
 });
 
 /* HERO VIDEO */
@@ -1432,7 +1449,19 @@ function amdSetLang(lang){
 /* INIT */
 chapEls[0].classList.add('active'); updateUI();
 setTimeout(()=>showRv(0),300);
-(function(){const saved=localStorage.getItem('amd-lang')||'jp';amdSetLang(saved);})();
+(function(){
+  const saved=localStorage.getItem('amd-lang')||'jp';
+  /* Fix 5: JP=default, only apply lang-switchable transforms when EN */
+  const html=document.getElementById('amdHtml');
+  html.setAttribute('data-lang',saved);
+  html.lang=saved==='jp'?'ja':'en';
+  if(saved==='en'){
+    document.querySelectorAll('.lang-switchable').forEach(el=>{const val=el.getAttribute('data-en');if(val!==null) el.innerHTML=val;});
+  }
+  var jpEl=document.getElementById('langJp'), enEl=document.getElementById('langEn');
+  if(jpEl) jpEl.style.opacity=saved==='jp'?'1':'0.35';
+  if(enEl) enEl.style.opacity=saved==='en'?'1':'0.35';
+})();
 
 /* FLASH EFFECT */
 function amdRedFlash(onComplete){
@@ -1545,10 +1574,9 @@ function amdCardNav(dir){
 function setVH(){
   var h=window.innerHeight;
   document.documentElement.style.setProperty('--amd-full-h',h+'px');
-  var deck=document.getElementById('deck');
-  if(deck) deck.style.height=h+'px';
 }
 setVH();
+window.addEventListener('resize',function(){setTimeout(setVH,100);});
 window.addEventListener('orientationchange',function(){setTimeout(setVH,400);});
 
 /* Show chapters + lazy load */
