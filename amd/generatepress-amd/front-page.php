@@ -82,9 +82,9 @@ echo '<link rel="icon" href="' . get_stylesheet_directory_uri() . '/logos/amdhea
   --blue:  #1A2E6B;
   --line:  rgba(237,235,230,0.09);
 }
-html { height: 100%; height: -webkit-fill-available; overflow: hidden; }
+html { height: 100%; overflow: hidden; overflow: auto; }
 body {
-  overflow-x: hidden; overflow-y: hidden; min-height: 100vh; min-height: -webkit-fill-available;
+  overflow-x: hidden; overflow-y: auto; min-height: 100vh; min-height: -webkit-fill-available;
   background: var(--black); color: var(--white);
   font-family: "Noto Sans JP","Montserrat",sans-serif;
   font-weight: 300; font-feature-settings: "palt";
@@ -94,9 +94,13 @@ body {
 #page,#content,.site-content,#primary,main,article,.entry-content,.content-area { margin:0 !important; padding:0 !important; max-width:100% !important; display:block !important; width:100% !important; }
 /* FIX 8: scroll-snap on #deck only */
 #deck {
-  width:100%; height: 100vh; height: 100dvh; overflow-y: scroll;
+  width:100%;
+}
+/* Safari needs body-level scroll to hide address bar */
+html {
   scroll-snap-type: y mandatory;
-  -webkit-overflow-scrolling: touch; overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: none;
 }
 #vtrack { width:100%; }
 #amd-header {
@@ -210,10 +214,14 @@ body {
 .art-detail-overlay.open { transform:translateY(0); }
 #amd-chapter-line { position:fixed; top:0; left:0; right:0; height:2px; background:var(--red); z-index:9998; transform-origin:left center; transform:scaleX(0); pointer-events:none; }
 .amd-red-flash { position:fixed; inset:0; z-index:9997; background:var(--red); opacity:0; pointer-events:none; }
-.amd-ticket-overlay { position:fixed; inset:0; z-index:8900; touch-action:pan-y; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); overflow:hidden; background:var(--black); display:flex; flex-direction:column; padding-top:max(72px, calc(env(safe-area-inset-top) + 60px)); overscroll-behavior:contain; }
+.amd-ticket-overlay { position:fixed; inset:0; z-index:8900; touch-action:pan-y; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); overflow-x:hidden; overflow-y:auto; -webkit-overflow-scrolling:touch; background:var(--black); display:flex; flex-direction:column; padding-top:max(72px, calc(env(safe-area-inset-top) + 60px)); overscroll-behavior:contain; }
+.amd-ticket-overlay .panel-content { padding-left:32px; padding-right:32px; }
+.amd-ticket-overlay .two-col { gap:48px; }
+.amd-ticket-overlay .info-row { padding:16px 0; }
+@media (max-width:860px) { .amd-ticket-overlay .two-col { grid-template-columns:1fr; } }
 .amd-ticket-overlay.open { transform:translateY(0); }
 .amd-ticket-close { position:absolute; bottom:max(32px, calc(env(safe-area-inset-bottom) + 24px)); right:28px; z-index:5; background:none; border:1px solid rgba(237,235,230,0.2); color:rgba(237,235,230,0.6); font-size:18px; line-height:1; width:44px; height:44px; display:flex; align-items:center; justify-content:center; cursor:pointer; border-radius:50%; }
-.amd-artist-panel { position:fixed; inset:0; z-index:9000; touch-action:pan-y; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); display:flex; flex-direction:column; }
+.amd-artist-panel { position:fixed; inset:0; z-index:9000; touch-action:pan-y; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; }
 .amd-artist-panel.open { transform:translateY(0); }
 .amd-ap-bg { position:absolute; inset:0; background:rgba(12,15,26,0.97); }
 .amd-ap-inner { position:relative; z-index:2; height:100%; display:flex; flex-direction:column; padding:max(72px, calc(env(safe-area-inset-top) + 60px)) 0 0; overflow-y:auto; }
@@ -520,10 +528,12 @@ a.sc:hover { background: rgba(237,235,230,0.06); }
 .amd-card-stack .af-desc-en { display:none; color:var(--white); }
 [data-lang="en"] .amd-card-stack .af-desc { display:none; }
 [data-lang="en"] .amd-card-stack .af-desc-en { display:block; }
-body.overlay-open #amd-header { background: rgba(12,15,26,0.98) !important; }
+body.overlay-open #amd-header { background: transparent !important; }
 [data-lazy] { visibility: hidden; }
 .gsap-ready [data-lazy] { visibility: visible; }
 #c2-track, #c3-track, #c4-track { overflow: hidden !important; }
+#c2 .panel-content, #c3 .panel-content { padding-left:56px; }
+@media (max-width:860px) { #c2 .panel-content, #c3 .panel-content { padding-left:28px; } }
 #c0 .rv, #c0 .rv-left, #c0 .rv-right, #c0 .rv-up, #c0 .rv-scale,
 #c1 .rv, #c1 .rv-left, #c1 .rv-right, #c1 .rv-up, #c1 .rv-scale {
   opacity: 1 !important; transform: none !important; transition: none !important; transition-delay: 0s !important;
@@ -757,7 +767,7 @@ body.overlay-open #amd-header { background: rgba(12,15,26,0.98) !important; }
   <div class="chapter" id="c2" style="height:100dvh;">
     <div class="panel-track" id="c2-track" style="height:100dvh;overflow:hidden;">
       <div class="panel" id="p2-0" style="height:100dvh;position:relative;background:#000;">
-        <div class="panel-bg"><video autoplay muted loop playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;" poster="https://allmustdance.com/wp-content/uploads/2026/03/theater.jpg"><source src="https://allmustdance.com/wp-content/uploads/2026/03/theater.mp4" type="video/mp4"><img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/03/theater.gif" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></video></div>
+        <div class="panel-bg"><img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/03/theater.gif" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;"></div>
         <div class="vig"></div>
         <div class="panel-content">
           <div class="rv rv-left hero-icon-row"><img src="<?= get_stylesheet_directory_uri() ?>/logos/video.png" alt="VIDEO" class="hero-section-icon"></div>
@@ -775,7 +785,7 @@ body.overlay-open #amd-header { background: rgba(12,15,26,0.98) !important; }
   <div class="chapter" id="c3" style="height:100dvh;">
     <div class="panel-track" id="c3-track" style="height:100dvh;overflow:hidden;">
       <div class="panel" id="p3-0" style="height:100dvh;position:relative;">
-        <div class="panel-bg"><video autoplay muted loop playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;"><source src="https://allmustdance.com/wp-content/uploads/2026/01/20260111_112352-1.mp4" type="video/mp4"><img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/20260111_112352-1.gif" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></video></div>
+        <div class="panel-bg"><img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/DSC5571.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;"></div>
         <div class="panel-bg" style="background:none;"><img loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="<?= get_stylesheet_directory_uri() ?>/artwear/gg.png" class="lazy-img" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0.15;mix-blend-mode:screen;"></div>
         <div class="vig"></div>
         <div class="panel-content">
@@ -1072,8 +1082,7 @@ function goChapter(newC, newP = 0){
   if(_chapNavLock) return;
   _chapNavLock = true;
   cIdx = newC; pIdx = newP;
-  var deck = document.getElementById('deck');
-  if(deck) deck.scrollTo({ top: chapEls[cIdx].offsetTop, behavior: 'smooth' });
+  window.scrollTo({ top: chapEls[cIdx].offsetTop, behavior: 'smooth' });
   if(trackEls[cIdx]) trackEls[cIdx].scrollLeft = newP * W();
   updateUI();
   if(typeof gsap !== 'undefined'){
@@ -1120,8 +1129,8 @@ trackEls.forEach((tr, ci) => {
 
 /* BODY SCROLL LOCK */
 let _scrollLockCount = 0;
-function lockBodyScroll(){ _scrollLockCount++; if(_scrollLockCount===1){ var d=document.getElementById('deck'); if(d) d.style.overflowY='hidden'; } }
-function unlockBodyScroll(){ _scrollLockCount=Math.max(0,_scrollLockCount-1); if(_scrollLockCount===0){ var d=document.getElementById('deck'); if(d) d.style.overflowY='scroll'; } }
+function lockBodyScroll(){ _scrollLockCount++; if(_scrollLockCount===1){ document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden'; } }
+function unlockBodyScroll(){ _scrollLockCount=Math.max(0,_scrollLockCount-1); if(_scrollLockCount===0){ document.documentElement.style.overflow=''; document.body.style.overflow=''; } }
 
 /* SWIPE ENGINE */
 let swipeX0=0, swipeY0=0, swipeDir=null, swipeActive=false;
@@ -1592,7 +1601,6 @@ document.body.classList.add('gsap-ready');
 if(typeof gsap==='undefined') return;
 
 /* 3D exit animation on deck scroll */
-var deck=document.getElementById('deck');
 var defs=[{id:'c1',rz:-5},{id:'c2',rz:4},{id:'c3',rz:-4}];
 var targets={};
 defs.forEach(function(d){
@@ -1605,7 +1613,7 @@ function onDeckScroll(){
   if(_raf) return;
   _raf=requestAnimationFrame(function(){
     _raf=null; _vh=window.innerHeight;
-    var scrollTop=deck.scrollTop;
+    var scrollTop=window.scrollY||document.documentElement.scrollTop;
     defs.forEach(function(d){
       var ch=document.getElementById(d.id); var info=targets[d.id];
       if(!ch||!info) return;
@@ -1618,12 +1626,12 @@ function onDeckScroll(){
     });
   });
 }
-if(deck) deck.addEventListener('scroll',onDeckScroll,{passive:true});
+window.addEventListener('scroll',onDeckScroll,{passive:true});
 
 /* Text reveal on deck scroll */
 var _revealed={};
 function checkReveal(){
-  var scrollTop=deck?deck.scrollTop:0;
+  var scrollTop=window.scrollY||document.documentElement.scrollTop;
   defs.forEach(function(d){
     if(d.id==='c0') return; if(_revealed[d.id]) return;
     var ch=document.getElementById(d.id); if(!ch) return;
@@ -1640,7 +1648,7 @@ function checkReveal(){
     }
   }
 }
-if(deck) deck.addEventListener('scroll',checkReveal,{passive:true});
+window.addEventListener('scroll',checkReveal,{passive:true});
 
 setTimeout(function(){ _revealed['c0']=true; },300);
 })();
