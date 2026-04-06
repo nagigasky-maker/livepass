@@ -71,7 +71,7 @@ echo '<link rel="icon" href="' . get_stylesheet_directory_uri() . '/logos/amdhea
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet"></noscript>
 <!-- FIX 2: preload moved to head -->
-<link rel="preload" href="https://allmustdance.com/wp-content/uploads/2026/03/theater.gif" as="image">
+<!-- GIF preload removed: use video instead for performance -->
 <style>
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 :root {
@@ -708,7 +708,7 @@ body.overlay-open #amd-header { background: rgba(12,15,26,0.98) !important; }
       <div class="amd-ticket-overlay" id="p1-1" style="background:var(--black);padding-top:max(72px, calc(env(safe-area-inset-top) + 60px));">
         <button class="amd-ticket-close" onclick="closeWsArtistOverlay()">×</button>
         <?php if(!empty($ws_artists)): $wa = $ws_artists[0]; $wa_photo = get_field('photo',$wa->ID); $wa_genre = get_field('genre',$wa->ID); $wa_bio = get_field('bio_ja',$wa->ID); $wa_bio_en = get_field('bio_en',$wa->ID); $wa_role = get_field('role',$wa->ID); ?>
-        <div class="panel-bg" style="background:#000;"><img src="https://allmustdance.com/wp-content/uploads/2026/03/20260323_152503.gif" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;"></div>
+        <div class="panel-bg" style="background:#000;"><video autoplay muted loop playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;"><source src="https://allmustdance.com/wp-content/uploads/2026/03/20260323_152503.mp4" type="video/mp4"><img src="https://allmustdance.com/wp-content/uploads/2026/03/20260323_152503.gif" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></video></div>
         <div class="vig-artist"></div>
         <div class="panel-content" style="padding:24px 32px max(80px,calc(env(safe-area-inset-bottom)+60px));overflow-y:auto;overscroll-behavior-y:contain;position:relative;z-index:2;">
           <?php if($wa_photo): ?><div style="position:absolute;inset:0;z-index:0"><img loading="lazy" src="<?= esc_url($wa_photo['url']) ?>" alt="" style="width:100%;height:100%;object-fit:cover;opacity:0.3;"></div><?php endif; ?>
@@ -757,7 +757,7 @@ body.overlay-open #amd-header { background: rgba(12,15,26,0.98) !important; }
   <div class="chapter" id="c2" style="height:100lvh;">
     <div class="panel-track" id="c2-track" style="height:100lvh;overflow:hidden;">
       <div class="panel" id="p2-0" style="height:100lvh;position:relative;background:#000;">
-        <div class="panel-bg"><img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/03/theater.gif" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;"></div>
+        <div class="panel-bg"><video autoplay muted loop playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;" poster="https://allmustdance.com/wp-content/uploads/2026/03/theater.jpg"><source src="https://allmustdance.com/wp-content/uploads/2026/03/theater.mp4" type="video/mp4"><img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/03/theater.gif" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></video></div>
         <div class="vig"></div>
         <div class="panel-content">
           <div class="rv rv-left hero-icon-row"><img src="<?= get_stylesheet_directory_uri() ?>/logos/video.png" alt="VIDEO" class="hero-section-icon"></div>
@@ -775,7 +775,7 @@ body.overlay-open #amd-header { background: rgba(12,15,26,0.98) !important; }
   <div class="chapter" id="c3" style="height:100lvh;">
     <div class="panel-track" id="c3-track" style="height:100lvh;overflow:hidden;">
       <div class="panel" id="p3-0" style="height:100lvh;position:relative;">
-        <div class="panel-bg"><img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/20260111_112352-1.gif" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;"></div>
+        <div class="panel-bg"><video autoplay muted loop playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;"><source src="https://allmustdance.com/wp-content/uploads/2026/01/20260111_112352-1.mp4" type="video/mp4"><img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/20260111_112352-1.gif" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></video></div>
         <div class="panel-bg" style="background:none;"><img loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="<?= get_stylesheet_directory_uri() ?>/artwear/gg.png" class="lazy-img" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0.15;mix-blend-mode:screen;"></div>
         <div class="vig"></div>
         <div class="panel-content">
