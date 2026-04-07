@@ -561,25 +561,28 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 }
 /* PWA INSTALL BANNER */
 .pwa-banner{position:fixed;bottom:0;left:0;right:0;z-index:9500;transform:translateY(100%);transition:transform .5s cubic-bezier(.22,1,.36,1);pointer-events:none;}
-/* SOUNDCLOUD BOTTOM BAR PLAYER */
-.sc-player{position:fixed;bottom:0;left:0;right:0;z-index:9400;transform:translateY(100%);transition:transform .5s cubic-bezier(.22,1,.36,1);pointer-events:none;}
-.sc-player.show{transform:translateY(0);pointer-events:all;}
-.sc-player-bar{margin:0 10px max(10px,env(safe-area-inset-bottom));background:rgba(12,15,26,.94);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(237,235,230,.08);border-radius:14px;overflow:hidden;}
-.sc-player-header{display:flex;align-items:center;padding:10px 14px;gap:10px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
-.sc-player-icon{flex-shrink:0;width:32px;height:32px;border-radius:8px;background:rgba(232,16,10,.08);border:1px solid rgba(232,16,10,.25);display:flex;align-items:center;justify-content:center;}
-.sc-player-icon svg{width:16px;height:16px;fill:var(--red);}
-.sc-player-pulse{width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0;opacity:0;}
-.sc-player.playing .sc-player-pulse{opacity:1;animation:scPulse 1.5s ease-in-out infinite;}
+/* SOUNDCLOUD RIGHT-TAB PLAYER */
+.sc-player{position:fixed;bottom:max(80px,calc(env(safe-area-inset-bottom)+60px));right:0;z-index:9400;width:300px;transform:translateX(calc(100% + 10px));transition:transform .5s cubic-bezier(.22,1,.36,1);pointer-events:none;}
+.sc-player.show{transform:translateX(calc(100% - 44px));pointer-events:all;}
+.sc-player.show.open{transform:translateX(0);pointer-events:all;}
+.sc-player-bar{display:flex;flex-direction:row;align-items:stretch;}
+/* Tab strip on left edge */
+.sc-player-tab{flex-shrink:0;width:44px;background:rgba(12,15,26,.94);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(237,235,230,.08);border-right:none;border-radius:14px 0 0 14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;padding:12px 0;}
+.sc-player-tab-icon{width:20px;height:20px;}
+.sc-player-tab-icon svg{width:20px;height:20px;fill:var(--red);}
+.sc-player-tab-pulse{width:6px;height:6px;border-radius:50%;background:var(--red);opacity:0;}
+.sc-player.playing .sc-player-tab-pulse{opacity:1;animation:scPulse 1.5s ease-in-out infinite;}
 @keyframes scPulse{0%,100%{opacity:.4;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+.sc-player-tab-label{writing-mode:vertical-rl;font-size:7px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(237,235,230,.4);}
+/* Panel */
+.sc-player-panel{flex:1;background:rgba(12,15,26,.94);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(237,235,230,.08);border-left:none;border-radius:0;overflow:hidden;display:flex;flex-direction:column;}
+.sc-player-header{display:flex;align-items:center;padding:12px 14px;gap:10px;}
 .sc-player-text{min-width:0;flex:1;}
 .sc-player-title{font-family:Arial,"Arial Black",sans-serif;font-size:10px;font-weight:700;letter-spacing:.03em;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .sc-player-sub{font-size:7px;font-weight:300;letter-spacing:.18em;text-transform:uppercase;color:rgba(237,235,230,.4);margin-top:1px;}
-.sc-player-play{width:34px;height:34px;border-radius:8px;background:rgba(237,235,230,.1);border:1px solid rgba(237,235,230,.15);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s;flex-shrink:0;}
-.sc-player-play:active{transform:scale(.9);}
-.sc-player-play svg{width:18px;height:18px;fill:rgba(237,235,230,.6);}
 .sc-player-close{background:none;border:none;color:rgba(237,235,230,.3);font-size:14px;cursor:pointer;padding:4px;line-height:1;flex-shrink:0;}
-.sc-player-embed{height:0;overflow:hidden;transition:height .3s ease;}
-.sc-player.expanded .sc-player-embed{height:120px;}
+.sc-player-embed{flex:1;overflow:hidden;}
+.sc-player-embed iframe{display:block;width:100%;height:120px;}
 .pwa-banner.show{transform:translateY(0);pointer-events:all;}
 .pwa-banner-inner{margin:0 12px max(12px,env(safe-area-inset-bottom));background:rgba(12,15,26,.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(237,235,230,.08);padding:16px 20px;display:flex;align-items:center;gap:16px;}
 .pwa-icon-wrap{flex-shrink:0;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(232,16,10,.3);background:rgba(232,16,10,.06);}
@@ -2126,23 +2129,25 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 </script>
 
-<!-- SOUNDCLOUD BOTTOM BAR PLAYER -->
+<!-- SOUNDCLOUD RIGHT-TAB PLAYER -->
 <div class="sc-player" id="scPlayer">
   <div class="sc-player-bar">
-    <div class="sc-player-header" id="scHeader">
-      <div class="sc-player-icon"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div>
-      <div class="sc-player-pulse"></div>
-      <div class="sc-player-text">
-        <div class="sc-player-title">Somewhere_MST 2</div>
-        <div class="sc-player-sub">Elhast_experience · AMD™ EP.07</div>
-      </div>
-      <button class="sc-player-play" id="scPlayBtn">
-        <svg id="scPlayIcon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
-      </button>
-      <button class="sc-player-close" id="scCloseBtn">×</button>
+    <div class="sc-player-tab" id="scTab">
+      <div class="sc-player-tab-icon"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div>
+      <div class="sc-player-tab-pulse"></div>
+      <span class="sc-player-tab-label">DJ</span>
     </div>
-    <div class="sc-player-embed" id="scEmbed">
-      <iframe id="scIframe" width="100%" height="120" scrolling="no" frameborder="no" allow="autoplay" src="" style="display:block;"></iframe>
+    <div class="sc-player-panel">
+      <div class="sc-player-header">
+        <div class="sc-player-text">
+          <div class="sc-player-title">Somewhere_MST 2</div>
+          <div class="sc-player-sub">Elhast · AMD™ EP.07</div>
+        </div>
+        <button class="sc-player-close" id="scCloseBtn">×</button>
+      </div>
+      <div class="sc-player-embed" id="scEmbed">
+        <iframe id="scIframe" width="100%" height="120" scrolling="no" frameborder="no" allow="autoplay" src=""></iframe>
+      </div>
     </div>
   </div>
 </div>
@@ -2213,69 +2218,28 @@ function showScPlayer(){
   var el = document.getElementById('scPlayer');
   if(el) el.classList.add('show');
 }
-function toggleScExpand(){
+function toggleScTab(){
   var el = document.getElementById('scPlayer');
-  var icon = document.getElementById('scPlayIcon');
   if(!el) return;
-  var expanding = !el.classList.contains('expanded');
-  el.classList.toggle('expanded');
-  /* Load iframe on first expand */
-  if(expanding && !_scLoaded){
+  var opening = !el.classList.contains('open');
+  el.classList.toggle('open');
+  if(opening && !_scLoaded){
     _scLoaded = true;
     var iframe = document.getElementById('scIframe');
     if(iframe) iframe.src = _scSrc;
+    _scPlaying = true;
     el.classList.add('playing');
-  }
-  /* Toggle arrow direction */
-  if(icon){
-    icon.innerHTML = expanding
-      ? '<path d="M7 14l5-5 5 5z"/>'
-      : '<path d="M7 10l5 5 5-5z"/>';
   }
 }
 function dismissScPlayer(){
   _scDismissed = true;
   var el = document.getElementById('scPlayer');
-  if(el){ el.classList.remove('show','expanded','playing'); }
+  if(el){ el.classList.remove('show','open','playing'); }
   var iframe = document.getElementById('scIframe');
   if(iframe) iframe.src = '';
   _scPlaying = false;
-  updateScIcon();
 }
-function toggleScPlayer(){
-  var iframe = document.getElementById('scIframe');
-  var player = document.getElementById('scPlayer');
-  if(!_scLoaded){
-    _scLoaded = true;
-    iframe.src = _scSrc;
-    _scPlaying = true;
-    if(player) player.classList.add('playing');
-    updateScIcon();
-  } else if(_scPlaying){
-    iframe.src = '';
-    _scPlaying = false;
-    if(player) player.classList.remove('playing','expanded');
-    updateScIcon();
-  } else {
-    iframe.src = _scSrc;
-    _scPlaying = true;
-    if(player) player.classList.add('playing');
-    updateScIcon();
-  }
-}
-function updateScIcon(){
-  var icon = document.getElementById('scPlayIcon');
-  var btn = document.getElementById('scPlayBtn');
-  if(!icon||!btn) return;
-  if(_scPlaying){
-    icon.innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
-    btn.classList.add('playing');
-  } else {
-    icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-    btn.classList.remove('playing');
-  }
-}
-/* Register touch events for Safari */
+/* Touch events for Safari */
 (function(){
   function addTap(id, fn){
     var el = document.getElementById(id);
@@ -2286,12 +2250,10 @@ function updateScIcon(){
     el.addEventListener('touchend', function(e){ if(!moved){ e.preventDefault(); e.stopPropagation(); fn(); }}, {passive:false});
     el.addEventListener('click', function(e){ e.stopPropagation(); fn(); });
   }
-  addTap('scHeader', toggleScExpand);
-  addTap('scPlayBtn', toggleScExpand);
+  addTap('scTab', toggleScTab);
   addTap('scCloseBtn', dismissScPlayer);
 })();
-
-/* Show after 5 seconds */
+/* Show tab after 5 seconds */
 setTimeout(function(){ showScPlayer(); }, 5000);
 
 function openPwaGuide(){
