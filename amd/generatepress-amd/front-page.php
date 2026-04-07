@@ -1726,8 +1726,8 @@ function openWsArtistOverlay(){
     /* Word animation on bio text */
     panel.querySelectorAll('.af-desc,.af-desc-en').forEach(function(el){
       if(el.dataset.wrapped) return;
-      var html=el.innerHTML.replace(/<br\s*\/?>/gi,'[[BR]]').replace(/<[^>]+>/g,'');
-      el.innerHTML=html.split(' ').filter(Boolean).map(function(w){return w==='[[BR]]'?'<br>':'<span class="amd-word">'+w+'</span>';}).join(' ').replace(/ <br>/g,'<br>');
+      var html=el.innerHTML.replace(/<br\s*\/?>/gi,' [[BR]] ').replace(/<[^>]+>/g,'');
+      el.innerHTML=html.split(/\s+/).filter(Boolean).map(function(w){return w==='[[BR]]'?'<br>':'<span class="amd-word">'+w+'</span>';}).join(' ').replace(/ <br> /g,'<br>').replace(/ <br>/g,'<br>').replace(/<br> /g,'<br>');
       el.dataset.wrapped='1';
       var words=el.querySelectorAll('.amd-word');
       words.forEach(function(w,i){gsap.set(w,{y:40+(i%3)*15,opacity:0,rotationX:20});});
@@ -1763,7 +1763,8 @@ function closeCardStack(){document.body.classList.remove('overlay-open');documen
 
 function _amdWrapWords(el){
   if(!el||el.dataset.wrapped) return;
-  el.innerHTML=el.innerHTML.replace(/<br\s*\/?>/gi,'[[BR]]').replace(/<[^>]+>/g,'').split(' ').filter(Boolean).map(function(w){return w==='[[BR]]'?'<br>':'<span class="amd-word">'+w+'</span>';}).join(' ').replace(/ <br>/g,'<br>');
+  var h=el.innerHTML.replace(/<br\s*\/?>/gi,' [[BR]] ').replace(/<[^>]+>/g,'');
+  el.innerHTML=h.split(/\s+/).filter(Boolean).map(function(w){return w==='[[BR]]'?'<br>':'<span class="amd-word">'+w+'</span>';}).join(' ').replace(/ <br> /g,'<br>').replace(/ <br>/g,'<br>').replace(/<br> /g,'<br>');
   el.dataset.wrapped='1';
 }
 
