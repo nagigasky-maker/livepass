@@ -2022,17 +2022,19 @@ window.flipZineCard = function(book, e){
 
       /* Phase 1 (0–0.4): no effect */
       if(progress <= 0.4){
-        gsap.set(card, { rotationX:0, scale:1, opacity:1, transformPerspective:1200 });
+        gsap.set(card, { rotation:0, rotationX:0, scale:1, opacity:1, y:0, transformPerspective:1200 });
         return;
       }
 
-      /* Phase 2 (0.4–1.0): spin away */
+      /* Phase 2 (0.4–1.0): card spins and flies up */
       var p = (progress - 0.4) / 0.6;
       p = Math.min(1, Math.max(0, p));
       gsap.set(card, {
-        rotationX: p * 1080,
-        scale: 1 - (0.45 * p),
+        rotation: p * 720,
+        rotationX: p * 15,
+        scale: 1 - (0.5 * p),
         opacity: 1 - p,
+        y: -p * 120,
         transformPerspective: 1200
       });
     });
