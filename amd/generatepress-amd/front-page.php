@@ -1338,12 +1338,12 @@ function updateUI(){
 function showRv(ci){
   if(!chapEls[ci]) return;
   if(typeof gsap === 'undefined'){
-    const rvEls = chapEls[ci].querySelectorAll('.rv,.rv-left,.rv-right,.rv-up,.rv-scale');
+    const rvEls = chapEls[ci].querySelectorAll('.rv,.rv-up,.rv-scale');
     rvEls.forEach(el => el.classList.remove('visible'));
     rvEls.forEach((el,i) => setTimeout(()=>el.classList.add('visible'), 120+i*80));
     return;
   }
-  const rvEls = [...chapEls[ci].querySelectorAll('.rv,.rv-left,.rv-right,.rv-up,.rv-scale')];
+  const rvEls = [...chapEls[ci].querySelectorAll('.rv,.rv-up,.rv-scale')];
   if(!rvEls.length) return;
   gsap.set(rvEls, {opacity:0, y:20, clearProps:'none'});
   gsap.to(rvEls, { opacity:1, y:0, duration:0.65, stagger:0.07, ease:'power3.out', delay:0.1, onStart(){ rvEls.forEach(el=>el.classList.add('visible')); } });
@@ -1525,7 +1525,7 @@ document.querySelectorAll('.chapter[data-lazy]').forEach(ch=>lazyIO.observe(ch))
 
 /* SCROLL ANIMATIONS */
 const ioAnim=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');ioAnim.unobserve(e.target);}});},{threshold:0.12});
-document.querySelectorAll('.rv,.rv-left,.rv-right,.rv-up,.rv-scale').forEach((el,i)=>{
+document.querySelectorAll('.rv,.rv-up,.rv-scale').forEach((el,i)=>{
   if(el.closest('#c0')||el.closest('#c1')) return;
   const parent=el.parentElement;
   const siblings=parent?[...parent.querySelectorAll(':scope > .rv,:scope > .rv-left,:scope > .rv-right,:scope > .rv-up,:scope > .rv-scale')]:[];
@@ -1883,14 +1883,14 @@ function checkReveal(){
     var ch=document.getElementById(d.id); if(!ch) return;
     if(scrollTop>=ch.offsetTop-_vh*0.3){
       _revealed[d.id]=true;
-      gsap.to(ch.querySelectorAll('.rv,.rv-left,.rv-right,.rv-up,.rv-scale'),{opacity:1,y:0,duration:0.6,stagger:0.07,ease:'power2.out',delay:0.1});
+      gsap.to(ch.querySelectorAll('.rv,.rv-up,.rv-scale'),{opacity:1,y:0,duration:0.6,stagger:0.07,ease:'power2.out',delay:0.1});
     }
   });
   var c4=document.getElementById('c4');
   if(c4&&!_revealed['c4']){
     if(scrollTop>=c4.offsetTop-_vh*0.3){
       _revealed['c4']=true;
-      gsap.fromTo(c4.querySelectorAll('.rv,.rv-left,.rv-right,.rv-up,.rv-scale,.connect-body,.connect-mail,.cl'),{opacity:0,y:20},{opacity:1,y:0,duration:0.6,stagger:0.06,ease:'power2.out',delay:0.15});
+      gsap.fromTo(c4.querySelectorAll('.rv,.rv-up,.rv-scale,.connect-body,.connect-mail,.cl'),{opacity:0,y:20},{opacity:1,y:0,duration:0.6,stagger:0.06,ease:'power2.out',delay:0.15});
     }
   }
 }
@@ -1987,60 +1987,64 @@ window.flipZineCard = function(book, e){
 
 /* ================================================
    GSAP 031 — ZINE Card Stack Effect
-   Next card overlaps 40% before rear card starts spinning
-   Rear card: 3 rotations on X axis (vertical flip), no lateral
-   Cards stay pinned — they do NOT scroll upward
+   Scroll-based rotation without pin (CSS sticky handles positioning)
    ================================================ */
 (function initZineStack(){
   var feed = document.getElementById('zineFeed');
-  if(!feed) return;
+  if(!feed || typeof gsap === 'undefined') return;
   var cards = feed.querySelectorAll('[data-zine-card]');
-  if(!cards.length || typeof ScrollTrigger === 'undefined') return;
-  var scroller = _pwa2 ? document.getElementById('deck') : window;
+  if(!cards.length) return;
 
-  cards.forEach(function(card, i){
-    if(i >= cards.length - 1) return; /* last card doesn't exit */
+  /* Use scroll position directly — no ScrollTrigger pin */
+  function getScroll(){ return typeof getScrollTop==='function' ? getScrollTop() : (window.scrollY||0); }
+  var _zRaf = null;
 
-    card.style.transformOrigin = '50% 50%';
-    card.style.willChange = 'transform, opacity';
+  function updateZineCards(){
+    _zRaf = null;
+    var scrollTop = getScroll();
+    var vh = window.innerHeight;
 
-    /* Pin the card so it stays in place while next card scrolls over it */
-    ScrollTrigger.create({
-      trigger: card,
-      scroller: scroller,
-      start: 'top top',
-      /* Total scroll distance: card height (next card fully covers) */
-      end: function(){ return '+=' + card.offsetHeight; },
-      pin: true,
-      pinSpacing: false,
-      scrub: 0.3,
-      onUpdate: function(self){
-        var progress = self.progress; /* 0→1 over full card height */
+    cards.forEach(function(card, i){
+      if(i >= cards.length - 1) return;
+      var rect = card.getBoundingClientRect();
+      var top = rect.top;
 
-        /* Phase 1 (0–0.4): next card is approaching, no effect yet */
-        if(progress <= 0.4){
-          gsap.set(card, { rotationX:0, scale:1, opacity:1, transformPerspective:1200 });
-          return;
-        }
-
-        /* Phase 2 (0.4–1.0): next card has overlapped 40%+, start spinning */
-        var p = (progress - 0.4) / 0.6; /* normalize to 0→1 */
-        p = Math.min(1, Math.max(0, p));
-
-        /* 3 full rotations on X axis (1080°) — vertical flip only */
-        var rotX = p * 1080;
-        var sc   = 1 - (0.45 * p);
-        var op   = 1 - p;
-
-        gsap.set(card, {
-          rotationX: rotX,
-          scale: sc,
-          opacity: op,
-          transformPerspective: 1200
-        });
+      /* Card is below viewport — reset */
+      if(top > 0){
+        gsap.set(card, { rotationX:0, scale:1, opacity:1, transformPerspective:1200 });
+        return;
       }
+
+      /* How far the card has scrolled past top (0→cardHeight) */
+      var gone = Math.abs(top);
+      var h = card.offsetHeight || vh;
+      var progress = Math.min(1, gone / h);
+
+      /* Phase 1 (0–0.4): no effect */
+      if(progress <= 0.4){
+        gsap.set(card, { rotationX:0, scale:1, opacity:1, transformPerspective:1200 });
+        return;
+      }
+
+      /* Phase 2 (0.4–1.0): spin away */
+      var p = (progress - 0.4) / 0.6;
+      p = Math.min(1, Math.max(0, p));
+      gsap.set(card, {
+        rotationX: p * 1080,
+        scale: 1 - (0.45 * p),
+        opacity: 1 - p,
+        transformPerspective: 1200
+      });
     });
-  });
+  }
+
+  function onScroll(){
+    if(!_zRaf) _zRaf = requestAnimationFrame(updateZineCards);
+  }
+
+  var scroller = (typeof isPWA!=='undefined'&&isPWA) ? document.getElementById('deck') : window;
+  (scroller||window).addEventListener('scroll', onScroll, {passive:true});
+  cards.forEach(function(c){ c.style.transformOrigin='50% 50%'; c.style.willChange='transform,opacity'; });
 })();
 
 /* Hide site header + JP/EN switch when ZINE section is in view */
