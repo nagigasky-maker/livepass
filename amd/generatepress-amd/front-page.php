@@ -521,6 +521,34 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 #c1 .rv, #c1 .rv-left, #c1 .rv-right, #c1 .rv-up, #c1 .rv-scale {
   opacity: 1 !important; transform: none !important; transition: none !important; transition-delay: 0s !important;
 }
+/* PWA INSTALL BANNER */
+.pwa-banner{position:fixed;bottom:0;left:0;right:0;z-index:9500;transform:translateY(100%);transition:transform .5s cubic-bezier(.22,1,.36,1);pointer-events:none;}
+.pwa-banner.show{transform:translateY(0);pointer-events:all;}
+.pwa-banner-inner{margin:0 12px max(12px,env(safe-area-inset-bottom));background:rgba(12,15,26,.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(237,235,230,.08);padding:16px 20px;display:flex;align-items:center;gap:16px;}
+.pwa-icon-wrap{flex-shrink:0;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(232,16,10,.3);background:rgba(232,16,10,.06);}
+.pwa-icon-wrap img{width:24px;height:24px;object-fit:contain;}
+.pwa-text{flex:1;min-width:0;}
+.pwa-title{font-family:Arial,"Arial Black",sans-serif;font-size:12px;font-weight:900;letter-spacing:.06em;color:var(--white);margin-bottom:2px;}
+.pwa-sub{font-size:9px;font-weight:300;letter-spacing:.18em;color:rgba(237,235,230,.45);text-transform:uppercase;}
+.pwa-action{flex-shrink:0;display:flex;align-items:center;gap:10px;}
+.pwa-btn{padding:10px 18px;background:var(--red);border:none;font-family:Arial,"Arial Black",sans-serif;font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#EDEBE6;cursor:pointer;transition:transform .15s,box-shadow .2s;}
+.pwa-btn:active{transform:scale(.96);}
+.pwa-dismiss{background:none;border:none;color:rgba(237,235,230,.25);font-size:18px;cursor:pointer;padding:4px 2px;transition:color .2s;}
+.pwa-dismiss:hover{color:rgba(237,235,230,.6);}
+/* PWA GUIDE MODAL */
+.pwa-guide{position:fixed;inset:0;z-index:9600;background:rgba(12,15,26,.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
+.pwa-guide.open{opacity:1;pointer-events:all;}
+.pwa-guide-close{position:absolute;top:max(20px,calc(env(safe-area-inset-top)+12px));right:20px;background:none;border:1px solid rgba(237,235,230,.15);color:rgba(237,235,230,.5);font-size:16px;width:40px;height:40px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.pwa-guide-content{text-align:center;padding:0 32px;max-width:340px;}
+.pwa-guide-step{margin-bottom:36px;opacity:0;transform:translateY(16px);animation:pwaFadeIn .5s ease forwards;}
+.pwa-guide-step:nth-child(2){animation-delay:.15s;}
+.pwa-guide-step:nth-child(3){animation-delay:.3s;}
+@keyframes pwaFadeIn{to{opacity:1;transform:translateY(0);}}
+.pwa-step-num{font-family:Arial,"Arial Black",sans-serif;font-size:48px;font-weight:900;color:var(--red);opacity:.3;line-height:1;margin-bottom:8px;}
+.pwa-step-icon{font-size:28px;margin-bottom:8px;display:block;}
+.pwa-step-text{font-size:13px;font-weight:300;color:rgba(237,235,230,.8);letter-spacing:.04em;line-height:1.8;}
+.pwa-step-text strong{font-weight:500;color:var(--white);}
+.pwa-guide-footer{font-size:8px;letter-spacing:.4em;text-transform:uppercase;color:rgba(237,235,230,.2);margin-top:20px;}
 </style>
 <!-- FIX 1: GSAP removed from head, loaded only before </body> -->
 </head>
@@ -1523,6 +1551,74 @@ document.addEventListener('DOMContentLoaded', function(){
     }, {passive:false});
   });
 });
+</script>
+
+<!-- PWA INSTALL BANNER -->
+<div class="pwa-banner" id="pwaBanner">
+  <div class="pwa-banner-inner">
+    <div class="pwa-icon-wrap">
+      <img src="<?= get_stylesheet_directory_uri() ?>/logos/amdheaderlogo.png" alt="">
+    </div>
+    <div class="pwa-text">
+      <div class="pwa-title">FULLSCREEN MODE</div>
+      <div class="pwa-sub">Add to Home Screen</div>
+    </div>
+    <div class="pwa-action">
+      <button class="pwa-btn" onclick="openPwaGuide()">HOW</button>
+      <button class="pwa-dismiss" onclick="dismissPwaBanner()" aria-label="Close">×</button>
+    </div>
+  </div>
+</div>
+
+<!-- PWA GUIDE MODAL -->
+<div class="pwa-guide" id="pwaGuide">
+  <button class="pwa-guide-close" onclick="closePwaGuide()">×</button>
+  <div class="pwa-guide-content">
+    <div class="pwa-guide-step">
+      <div class="pwa-step-num">01</div>
+      <div class="pwa-step-icon">⎋</div>
+      <div class="pwa-step-text">画面下の<strong>共有ボタン（□↑）</strong>をタップ</div>
+    </div>
+    <div class="pwa-guide-step">
+      <div class="pwa-step-num">02</div>
+      <div class="pwa-step-icon">＋</div>
+      <div class="pwa-step-text"><strong>「ホーム画面に追加」</strong>を選択</div>
+    </div>
+    <div class="pwa-guide-step">
+      <div class="pwa-step-num">03</div>
+      <div class="pwa-step-icon">◉</div>
+      <div class="pwa-step-text">ホーム画面のアイコンから起動<br><strong>フルスクリーン — No Address Bar</strong></div>
+    </div>
+    <div class="pwa-guide-footer">ALL MUST DANCE™ · Fullscreen Experience</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  /* Only show on iOS Safari, not in standalone mode */
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  var isStandalone = window.navigator.standalone === true;
+  var dismissed = localStorage.getItem('amd-pwa-dismiss');
+  if(!isIOS || isStandalone || dismissed) return;
+
+  /* Show banner after 4 seconds */
+  setTimeout(function(){
+    var b = document.getElementById('pwaBanner');
+    if(b) b.classList.add('show');
+  }, 4000);
+})();
+
+function openPwaGuide(){
+  document.getElementById('pwaBanner').classList.remove('show');
+  document.getElementById('pwaGuide').classList.add('open');
+}
+function closePwaGuide(){
+  document.getElementById('pwaGuide').classList.remove('open');
+}
+function dismissPwaBanner(){
+  document.getElementById('pwaBanner').classList.remove('show');
+  localStorage.setItem('amd-pwa-dismiss','1');
+}
 </script>
 
 </body>
