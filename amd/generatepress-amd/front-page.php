@@ -75,7 +75,7 @@ echo '<link rel="icon" href="' . get_stylesheet_directory_uri() . '/logos/amdhea
 <style>
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 :root {
-  --amd-full-h: 100dvh;
+  --amd-full-h: 100vh;
   --black: #0C0F1A;
   --white: #EDEBE6;
   --red:   #E8100A;
@@ -119,14 +119,14 @@ html {
 [data-lang="jp"] .lang-jp { color:var(--white); font-weight:700; }
 [data-lang="en"] .lang-en { color:var(--white); font-weight:700; }
 #chap-counter, #panel-counter { display:none; }
-.chapter { width: 100%; height: 100vh; height: 100dvh; min-height: 100vh; min-height: 100dvh; position: relative; scroll-snap-align: start; scroll-snap-stop: always; }
-#c0, #c1 { max-height: 100vh; max-height: 100dvh; min-height: 100vh; min-height: 100dvh; overflow: hidden; }
+.chapter { width: 100%; height: 100vh; height: 100vh; min-height: 100vh; min-height: 100vh; position: relative; scroll-snap-align: start; scroll-snap-stop: always; }
+#c0, #c1 { max-height: 100vh; max-height: 100vh; min-height: 100vh; min-height: 100vh; overflow: hidden; }
 #c2, #c3, #c4 { height: auto; }
 .chapter.chapter-auto { height: auto; }
-.panel-track { display: flex; width: 100%; height: 100vh; height: 100dvh; flex-shrink: 0; overflow-x: scroll; overflow-y: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.panel-track { display: flex; width: 100%; height: 100vh; height: 100vh; flex-shrink: 0; overflow-x: scroll; overflow-y: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
 .panel-track::-webkit-scrollbar { display:none; }
-.panel { flex: 0 0 100%; width:100%; height:100vh; height:100dvh; position: relative; display: flex; flex-direction:column; justify-content: flex-end; overflow: hidden; }
-.panel.solo { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+.panel { flex: 0 0 100%; width:100%; height:100vh; height:100vh; position: relative; display: flex; flex-direction:column; justify-content: flex-end; overflow: hidden; }
+.panel.solo { display: flex; flex-direction: column; height: 100vh; height: 100vh; }
 #c2 .panel.solo, #c3 .panel.solo, #c4 .panel.solo { height: auto; overflow: visible; min-height: 0; }
 #c3 .panel-content, #c4 .panel-content { position: relative; z-index: 2; height: auto; overflow: visible; min-height: 0; padding: 0 24px max(48px, calc(env(safe-area-inset-bottom) + 24px)) 24px; box-sizing: border-box; }
 .panel.content-panel { justify-content: flex-start; }
@@ -603,7 +603,7 @@ body.overlay-open #amd-header { background: transparent !important; }
 
   <!-- CHAPTER 0: PARTY HERO -->
   <div class="chapter active" id="c0">
-    <div class="panel-track" id="c0-track" style="height:100dvh;overflow-x:scroll;overflow-y:hidden;position:sticky;top:0;">
+    <div class="panel-track" id="c0-track" style="height:100vh;overflow-x:scroll;overflow-y:hidden;position:sticky;top:0;">
       <div class="panel" id="p0-0" data-active>
         <div class="panel-bg parallax-bg" style="background:linear-gradient(160deg,#0f1428 0%,#0C0F1A 100%);">
           <img loading="eager" src="<?= get_stylesheet_directory_uri() ?>/logos/amd2026asia.jpg" alt="" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;opacity:0.85;">
@@ -665,8 +665,8 @@ body.overlay-open #amd-header { background: transparent !important; }
 
   <!-- CHAPTER 1: WORKSHOP -->
   <div class="chapter" id="c1">
-    <div class="panel-track" id="c1-track" style="height:100dvh;overflow-x:scroll;overflow-y:hidden;">
-      <div class="panel" id="p1-0" data-active style="height:100dvh;min-height:100dvh;justify-content:flex-end;">
+    <div class="panel-track" id="c1-track" style="height:100vh;overflow-x:scroll;overflow-y:hidden;">
+      <div class="panel" id="p1-0" data-active style="height:100vh;min-height:100vh;justify-content:flex-end;">
         <div class="panel-bg" style="background:#000;">
           <?php $ws_bg_photo = null; if(!empty($ws_artists)){ $ws_bg_photo = get_field('photo', $ws_artists[0]->ID); } if($ws_bg_photo): ?>
           <img src="<?= esc_url($ws_bg_photo['url']) ?>" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;">
@@ -752,9 +752,9 @@ body.overlay-open #amd-header { background: transparent !important; }
   </div>
 
   <!-- CHAPTER 2: YOUTUBE -->
-  <div class="chapter" id="c2" style="height:100dvh;">
-    <div class="panel-track" id="c2-track" style="height:100dvh;overflow:hidden;">
-      <div class="panel" id="p2-0" style="height:100dvh;position:relative;background:#000;">
+  <div class="chapter" id="c2" style="height:100vh;">
+    <div class="panel-track" id="c2-track" style="height:100vh;overflow:hidden;">
+      <div class="panel" id="p2-0" style="height:100vh;position:relative;background:#000;">
         <div class="panel-bg"><img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/03/theater.gif" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;"></div>
         <div class="vig"></div>
         <div class="panel-content">
@@ -770,9 +770,9 @@ body.overlay-open #amd-header { background: transparent !important; }
   </div>
 
   <!-- CHAPTER 3: GOOD GOODS -->
-  <div class="chapter" id="c3" style="height:100dvh;">
-    <div class="panel-track" id="c3-track" style="height:100dvh;overflow:hidden;">
-      <div class="panel" id="p3-0" style="height:100dvh;position:relative;">
+  <div class="chapter" id="c3" style="height:100vh;">
+    <div class="panel-track" id="c3-track" style="height:100vh;overflow:hidden;">
+      <div class="panel" id="p3-0" style="height:100vh;position:relative;">
         <div class="panel-bg"><img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/DSC5571.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;"></div>
         <div class="panel-bg" style="background:none;"><img loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="<?= get_stylesheet_directory_uri() ?>/artwear/gg.png" class="lazy-img" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0.15;mix-blend-mode:screen;"></div>
         <div class="vig"></div>
@@ -789,9 +789,9 @@ body.overlay-open #amd-header { background: transparent !important; }
   </div>
 
   <!-- CHAPTER 4: CONNECT -->
-  <div class="chapter" id="c4" style="height:100dvh;">
-    <div class="panel-track" id="c4-track" style="height:100dvh;">
-      <div class="panel content-panel solo" id="p4-0" style="height:100dvh;">
+  <div class="chapter" id="c4" style="height:100vh;">
+    <div class="panel-track" id="c4-track" style="height:100vh;">
+      <div class="panel content-panel solo" id="p4-0" style="height:100vh;">
         <div class="panel-bg"><img loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="<?= get_stylesheet_directory_uri() ?>/logos/getin.png" class="lazy-img" alt="" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.18;mix-blend-mode:luminosity;"></div>
         <div class="vig vig-heavy"></div>
         <div class="panel-content" style="padding-top:max(80px,calc(env(safe-area-inset-top)+64px));overflow-y:auto;overscroll-behavior-y:contain;height:100%;box-sizing:border-box;">
@@ -1433,14 +1433,7 @@ function amdCardNav(dir){
 
 <script>
 (function(){
-/* Viewport height fix */
-function setVH(){
-  var h=window.innerHeight;
-  document.documentElement.style.setProperty('--amd-full-h',h+'px');
-}
-setVH();
-window.addEventListener('resize',function(){setTimeout(setVH,100);});
-window.addEventListener('orientationchange',function(){setTimeout(setVH,400);});
+/* Viewport: use CSS 100vh (= large viewport in Safari, no dynamic resize) */
 
 /* Show chapters + lazy load */
 ['c1','c2','c3','c4'].forEach(function(id){
