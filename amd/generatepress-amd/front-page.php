@@ -216,9 +216,9 @@ html.pwa-mode #deck {
 .ac-sub { font-size:7px; font-weight:200; letter-spacing:0.32em; text-transform:uppercase; color:var(--white); opacity:0.65; margin-top:2px; }
 .ac.mystery .ac-name { opacity:0.48; }
 .ac.mystery .ac-img { background:#080808; }
-.af-genre { font-size:11px; font-weight:400; letter-spacing:0.45em; text-transform:uppercase; color:var(--red); opacity:0.95; margin-bottom:18px; text-shadow:0 1px 8px rgba(0,0,0,0.95); }
-.af-desc { font-size:14px; font-weight:300; line-height:2.0; color:var(--white); opacity:0.92; max-width:none; margin-top:0; margin-bottom:8px; text-shadow:0 1px 8px rgba(0,0,0,0.95); overflow:hidden; white-space:pre-line; }
-.af-desc-en { font-size:14px; font-weight:400; font-style:italic; line-height:1.75; color:var(--white); opacity:0.88; max-width:none; text-shadow:0 1px 8px rgba(0,0,0,0.95); overflow:hidden; white-space:pre-line; }
+.af-genre { font-size:11px; font-weight:400; letter-spacing:0.45em; text-transform:uppercase; color:var(--red); opacity:0.95; margin-bottom:18px; text-shadow:0 1px 12px rgba(0,0,0,1), 0 0 40px rgba(0,0,0,0.8); }
+.af-desc { font-size:14px; font-weight:300; line-height:2.0; color:var(--white); opacity:0.92; max-width:none; margin-top:0; margin-bottom:8px; text-shadow:0 1px 12px rgba(0,0,0,1), 0 0 40px rgba(0,0,0,0.8); overflow:hidden; }
+.af-desc-en { font-size:14px; font-weight:400; font-style:italic; line-height:1.75; color:var(--white); opacity:0.88; max-width:none; text-shadow:0 1px 12px rgba(0,0,0,1), 0 0 40px rgba(0,0,0,0.8); overflow:hidden; }
 .amd-word { display:inline-block; will-change:transform,opacity; color:inherit; }
 .af-links { display:flex; gap:20px; margin-top:12px; align-items:center; }
 .art-cover-content { display:flex; flex-direction:column; justify-content:flex-end; height:100%; }
