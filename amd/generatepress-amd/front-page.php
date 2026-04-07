@@ -767,7 +767,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
                 <div class="zine-card-cat">AMD™ EP.02</div>
                 <div class="zine-card-title" style="font-size:clamp(22px,6vw,36px);">ALL MUST<br>DANCE™</div>
                 <div class="zine-card-meta">EP.02</div>
-                <div class="zine-page-back-credit">Photo — AKAKI NAMPEI</div>
+                <div class="zine-page-back-credit">Photo — AKAKI NAMPEI<br>Shadow Dancer — Yasumin &amp; MIMI<br>Location — clubasia</div>
               </div>
             </div>
 
