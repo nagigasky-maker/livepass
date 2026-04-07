@@ -347,11 +347,11 @@ html.pwa-mode #deck {
 .sc-info { padding:12px 14px 16px; border-top:1px solid var(--line); }
 .sc-cat { font-size:7px; font-weight:200; letter-spacing:0.42em; text-transform:uppercase; color:var(--white); opacity:0.42; margin-bottom:4px; }
 /* GOOD GOODS showcase (single product display) */
-.gg-item { position:absolute; display:flex; flex-direction:column; align-items:center; justify-content:center; width:70%; max-width:320px; text-decoration:none; color:var(--white); pointer-events:all; cursor:pointer; -webkit-tap-highlight-color:transparent; }
-.gg-item img { width:100%; max-height:55vh; object-fit:contain; filter:drop-shadow(0 8px 32px rgba(0,0,0,0.6)); }
-.gg-item-info { text-align:center; margin-top:16px; }
-.gg-item-name { font-family:Arial,"Arial Black",sans-serif; font-size:14px; font-weight:900; letter-spacing:0.06em; color:var(--white); margin-bottom:4px; }
-.gg-item-cat { font-size:8px; font-weight:300; letter-spacing:0.35em; text-transform:uppercase; color:rgba(237,235,230,0.45); }
+.gg-item { position:absolute; top:8%; display:flex; flex-direction:column; align-items:center; width:85%; max-width:380px; text-decoration:none; color:var(--white); pointer-events:all; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.gg-item img { width:100%; max-height:62vh; object-fit:contain; filter:drop-shadow(0 8px 32px rgba(0,0,0,0.6)); }
+.gg-item-info { text-align:center; margin-top:12px; }
+.gg-item-name { font-family:Arial,"Arial Black",sans-serif; font-size:15px; font-weight:900; letter-spacing:0.06em; color:var(--white); margin-bottom:4px; text-shadow:0 2px 12px rgba(0,0,0,0.8); }
+.gg-item-cat { font-size:8px; font-weight:300; letter-spacing:0.35em; text-transform:uppercase; color:rgba(237,235,230,0.5); text-shadow:0 1px 8px rgba(0,0,0,0.8); }
 .sc-name { font-size:13px; font-weight:300; color:var(--white); margin-bottom:2px; }
 .sc-price { font-size:10px; font-weight:200; color:var(--white); opacity:0.65; }
 /* CONNECT */
@@ -980,7 +980,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         <div class="panel-bg" style="background:none;"><img loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="<?= get_stylesheet_directory_uri() ?>/artwear/gg.png" class="lazy-img" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0.15;mix-blend-mode:screen;"></div>
         <div class="vig"></div>
         <!-- Product showcase (1 item at a time) -->
-        <div id="ggShowcase" style="position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;pointer-events:none;overflow:hidden;"></div>
+        <div id="ggShowcase" style="position:absolute;inset:0;z-index:2;display:flex;align-items:flex-start;justify-content:center;pointer-events:none;overflow:hidden;"></div>
         <div class="panel-content">
           <div class="rv rv-up hero-icon-row"><img src="<?= get_stylesheet_directory_uri() ?>/logos/gg.png" alt="GOOD GOODS" class="hero-section-icon"></div>
           <div class="rv rv-up meta-line" style="margin-bottom:8px;"><a href="https://zzazz-za.stores.jp/" target="_blank" style="color:rgba(237,235,230,0.6);text-decoration:none;font-size:11px;letter-spacing:0.22em;">zzazz-za.stores.jp</a></div>
