@@ -531,7 +531,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 .gsap-ready [data-lazy] { visibility: visible; }
 #c2-track, #c3-track, #c4-track { overflow: hidden !important; }
 #c2 .panel-content, #c3 .panel-content { padding-left:56px; }
-@media (max-width:860px) { #c2 .panel-content, #c3 .panel-content { padding-left:32px; } }
+@media (max-width:860px) { #c2 .panel-content, #c3 .panel-content { padding-left:28px; padding-right:28px; } }
 #c0 .rv, #c0 .rv-left, #c0 .rv-right, #c0 .rv-up, #c0 .rv-scale,
 #c1 .rv, #c1 .rv-left, #c1 .rv-right, #c1 .rv-up, #c1 .rv-scale {
   opacity: 1 !important; transform: none !important; transition: none !important; transition-delay: 0s !important;
@@ -922,7 +922,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
   <?php endif; ?>
   <div class="vig-artist"></div>
   <div style="position:relative;z-index:2;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;display:flex;flex-direction:column;justify-content:flex-end;">
-    <div style="padding:max(80px,calc(env(safe-area-inset-top)+60px)) 28px 28px;">
+    <div style="padding:max(80px,calc(env(safe-area-inset-top)+60px)) 32px 32px;">
       <div class="eyebrow"><?= esc_html($wa_role) ?></div>
       <div class="af-genre"><?= esc_html($wa_genre) ?></div>
       <div class="af-name"><?= esc_html($wa->post_title) ?></div>
@@ -935,7 +935,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
   <div class="panel-bg" style="background:#000;"></div>
   <div class="vig-artist"></div>
   <div style="position:relative;z-index:2;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;display:flex;flex-direction:column;justify-content:flex-end;">
-    <div style="padding:max(80px,calc(env(safe-area-inset-top)+60px)) 28px 28px;">
+    <div style="padding:max(80px,calc(env(safe-area-inset-top)+60px)) 32px 32px;">
       <div class="eyebrow">Workshop Artist</div>
       <div class="af-genre">Dance · Movement · Expression</div>
       <div class="af-name">ARTIST<br>NAME TBA</div>
@@ -974,7 +974,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 <div class="amd-ticket-overlay" id="videoOverlay" style="background:#000;padding-top:max(16px,calc(env(safe-area-inset-top) + 8px));">
   <button class="amd-ticket-close" onclick="closeVideoOverlay()">×</button>
   <div style="flex-shrink:0;">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 20px 12px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 24px 12px;">
       <img src="<?= get_stylesheet_directory_uri() ?>/logos/video.png" alt="VIDEO" style="max-height:28px;">
       <a href="https://www.youtube.com/@allmustdancetokyo" target="_blank" style="font-size:10px;letter-spacing:0.2em;color:rgba(237,235,230,0.55);text-decoration:none;">CHANNEL →</a>
     </div>
@@ -989,7 +989,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
     </a>
   </div>
   <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;">
-    <div style="font-size:9px;font-weight:500;letter-spacing:0.42em;text-transform:uppercase;color:rgba(237,235,230,0.3);padding:16px 20px 8px;">ARCHIVE</div>
+    <div style="font-size:9px;font-weight:500;letter-spacing:0.42em;text-transform:uppercase;color:rgba(237,235,230,0.3);padding:16px 24px 8px;">ARCHIVE</div>
     <?php
     $vd_items = [
       ['id'=>'ya50ucLzGj0','title'=>'ALL MUST DANCE™ — ep04','meta'=>'club asia · Archive'],
@@ -1000,7 +1000,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
       ['id'=>'CM0JmwaVGaU','title'=>'Short Film','meta'=>'ALL MUST DANCE™'],
     ];
     foreach($vd_items as $vd): ?>
-    <a href="https://www.youtube.com/watch?v=<?= esc_attr($vd['id']) ?>" target="_blank" style="display:flex;align-items:center;gap:14px;padding:10px 20px;border-top:1px solid rgba(237,235,230,0.07);text-decoration:none;color:var(--white);">
+    <a href="https://www.youtube.com/watch?v=<?= esc_attr($vd['id']) ?>" target="_blank" style="display:flex;align-items:center;gap:14px;padding:10px 24px;border-top:1px solid rgba(237,235,230,0.07);text-decoration:none;color:var(--white);">
       <div style="flex-shrink:0;width:80px;height:50px;background:#111;position:relative;overflow:hidden;">
         <img src="https://img.youtube.com/vi/<?= esc_attr($vd['id']) ?>/default.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.8;">
         <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;"><div style="width:0;height:0;border-style:solid;border-width:6px 0 6px 11px;border-color:transparent transparent transparent rgba(255,255,255,0.7);"></div></div>
@@ -1011,7 +1011,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
       </div>
     </a>
     <?php endforeach; ?>
-    <div style="padding:16px 20px 80px;text-align:center;"><a href="https://www.youtube.com/@allmustdancetokyo" target="_blank" style="font-size:10px;letter-spacing:0.2em;color:rgba(237,235,230,0.4);text-decoration:none;">↗ YouTube Channel</a></div>
+    <div style="padding:16px 24px 80px;text-align:center;"><a href="https://www.youtube.com/@allmustdancetokyo" target="_blank" style="font-size:10px;letter-spacing:0.2em;color:rgba(237,235,230,0.4);text-decoration:none;">↗ YouTube Channel</a></div>
   </div>
 </div>
 
@@ -1023,13 +1023,13 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
   <!-- GIF banner at very top (above header) -->
   <div style="flex-shrink:0;width:100%;"><img src="<?= get_stylesheet_directory_uri() ?>/artwear/zzazzcm.GIF" alt="ZZAZZ" loading="lazy" style="width:100%;display:block;"></div>
   <!-- Header row: icon + STORE ALL -->
-  <div style="flex-shrink:0;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;">
+  <div style="flex-shrink:0;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;">
     <img src="<?= get_stylesheet_directory_uri() ?>/logos/gg.png" alt="GOOD GOODS" style="max-height:28px;">
     <a href="https://zzazz-za.stores.jp/" target="_blank" class="a-subtle" style="font-size:11px;">Store All →</a>
   </div>
   <!-- Products grid -->
   <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;">
-    <div class="store-grid" style="padding:4px 0 100px;">
+    <div class="store-grid" style="padding:4px 8px 100px;">
       <a class="sc" href="https://zzazz-za.stores.jp/items/6991f608580447c3fea658e0" target="_blank"><div class="sc-vis"><img src="<?= get_stylesheet_directory_uri() ?>/artwear/amd01minny.PNG" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div><div class="sc-info"><div class="sc-cat">Artwork Wear</div><div class="sc-name">AMD MN</div></div></a>
       <a class="sc" href="https://zzazz-za.stores.jp/items/69c00f86ccd49a7f3aa0df6e" target="_blank"><div class="sc-vis"><img src="<?= get_stylesheet_directory_uri() ?>/artwear/amd02jkt.PNG" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div><div class="sc-info"><div class="sc-cat">Artwork Wear</div><div class="sc-name">AMD JKT</div></div></a>
       <a class="sc" href="https://zzazz-za.stores.jp/items/6991f4d9580447c3fea6584c" target="_blank"><div class="sc-vis"><img src="<?= get_stylesheet_directory_uri() ?>/artwear/amd03best.PNG" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div><div class="sc-info"><div class="sc-cat">Artwork Wear</div><div class="sc-name">AMD Vest</div></div></a>
