@@ -300,10 +300,11 @@ html.pwa-mode #deck {
 .zine-page-layer img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.8; }
 .zine-page-layer .zine-card-vig { z-index:2; }
 .zine-page-layer .zine-card-body { z-index:3; }
-.zine-page-layer[data-layer="0"] { z-index:5; }
-.zine-page-layer[data-layer="1"] { z-index:4; }
-.zine-page-layer[data-layer="2"] { z-index:3; }
-.zine-page-layer[data-layer="3"] { z-index:2; }
+.zine-page-layer[data-layer="0"] { z-index:6; }
+.zine-page-layer[data-layer="1"] { z-index:5; }
+.zine-page-layer[data-layer="2"] { z-index:4; }
+.zine-page-layer[data-layer="3"] { z-index:3; }
+.zine-page-layer[data-layer="4"] { z-index:2; }
 .zine-page-back-credit { font-size:9px; font-weight:300; letter-spacing:.2em; color:rgba(237,235,230,.5); margin-top:12px; line-height:1.8; }
 /* Flippable pages */
 .zine-page-flip { transform-origin:left center; transition:transform 0.9s cubic-bezier(0.4,0,0.2,1); backface-visibility:hidden; will-change:transform; }
@@ -760,8 +761,20 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         <div class="zine-book" id="zineBook07" data-zine-card data-page="0" onclick="flipZineBook(event)">
           <div class="zine-book-inner">
 
-            <!-- Page 3 (deepest): EP03 — GREEN TECK -->
-            <div class="zine-page-back zine-page-layer" data-layer="3">
+            <!-- Page 4 (deepest): EP01 — MOZYSKEY -->
+            <div class="zine-page-back zine-page-layer" data-layer="4">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/g00-scaled.jpg" alt="AMD EP01">
+              <div class="zine-card-vig"></div>
+              <div class="zine-card-body">
+                <div class="zine-card-cat">AMD™ EP.01</div>
+                <div class="zine-card-title" style="font-size:clamp(22px,6vw,36px);">ALL MUST<br>DANCE™</div>
+                <div class="zine-card-meta">EP.01 · The Beginning</div>
+                <div class="zine-page-back-credit">Photo — NOBBY<br>Dancer — MOZYSKEY<br>Art Support — MOZYSKEY<br>Location — Tokyo</div>
+              </div>
+            </div>
+
+            <!-- Page 3: EP03 — GREEN TECK -->
+            <div class="zine-page-flip zine-page-layer" data-layer="3">
               <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/g15.jpg" alt="AMD EP03">
               <div class="zine-card-vig"></div>
               <div class="zine-card-body">
