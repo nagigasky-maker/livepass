@@ -229,14 +229,14 @@ html.pwa-mode #deck {
 .art-detail-overlay.open { transform:translateY(0); }
 #amd-chapter-line { position:fixed; top:0; left:0; right:0; height:2px; background:var(--red); z-index:9998; transform-origin:left center; transform:scaleX(0); pointer-events:none; }
 .amd-red-flash { position:fixed; inset:0; z-index:9997; background:var(--red); opacity:0; pointer-events:none; }
-.amd-ticket-overlay { position:fixed; inset:0; z-index:8900; touch-action:pan-y; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); overflow-x:hidden; overflow-y:auto; -webkit-overflow-scrolling:touch; background:var(--black); display:flex; flex-direction:column; padding-top:max(72px, calc(env(safe-area-inset-top) + 60px)); overscroll-behavior:contain; }
+.amd-ticket-overlay { position:fixed; inset:0; z-index:8900; touch-action:pan-y; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); overflow-x:hidden; overflow-y:auto; -webkit-overflow-scrolling:touch; background:var(--black); display:flex; flex-direction:column; padding-top:max(72px, calc(env(safe-area-inset-top) + 60px)); overscroll-behavior-y:contain; isolation:isolate; }
 .amd-ticket-overlay .panel-content { padding-left:32px; padding-right:32px; }
 .amd-ticket-overlay .two-col { gap:48px; }
 .amd-ticket-overlay .info-row { padding:16px 0; }
 @media (max-width:860px) { .amd-ticket-overlay .two-col { grid-template-columns:1fr; } }
 .amd-ticket-overlay.open { transform:translateY(0); }
 .amd-ticket-close { position:absolute; bottom:max(32px, calc(env(safe-area-inset-bottom) + 24px)); right:28px; z-index:10000; background:rgba(12,15,26,0.6); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border:1px solid rgba(237,235,230,0.2); color:rgba(237,235,230,0.6); font-size:18px; line-height:1; width:44px; height:44px; display:flex; align-items:center; justify-content:center; cursor:pointer; border-radius:50%; transition:border-color .2s, color .2s; }
-.amd-artist-panel { position:fixed; inset:0; z-index:9000; touch-action:pan-y; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+.amd-artist-panel { position:fixed; inset:0; z-index:9000; touch-action:pan-y; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; isolation:isolate; }
 .amd-artist-panel.open { transform:translateY(0); }
 .amd-ap-bg { position:absolute; inset:0; background:rgba(12,15,26,0.97); }
 .amd-ap-inner { position:relative; z-index:2; height:100%; display:flex; flex-direction:column; padding:max(72px, calc(env(safe-area-inset-top) + 60px)) 0 0; overflow-y:auto; }
@@ -251,7 +251,7 @@ html.pwa-mode #deck {
 .amd-ap-group-sub { font-size:9px; letter-spacing:0.38em; text-transform:uppercase; color:var(--red); margin-bottom:4px; }
 .amd-ap-group-name { font-size:24px; font-weight:300; letter-spacing:0.05em; color:var(--white); line-height:1.1; }
 .amd-ap-group-members { font-size:10px; letter-spacing:0.18em; color:rgba(237,235,230,0.45); margin-top:6px; line-height:1.8; }
-.amd-card-stack { position:fixed; inset:0; z-index:9100; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); background:var(--black); }
+.amd-card-stack { position:fixed; inset:0; z-index:9100; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); background:var(--black); touch-action:pan-y; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; isolation:isolate; }
 .amd-card-stack.open { transform:translateY(0); }
 .amd-cs-close { position:absolute; top:max(22px, calc(env(safe-area-inset-top) + 14px)); left:24px; z-index:10000; background:none; border:none; color:rgba(237,235,230,0.5); font-size:11px; letter-spacing:0.28em; text-transform:uppercase; cursor:pointer; }
 .amd-cs-title { position:absolute; top:max(24px, calc(env(safe-area-inset-top) + 14px)); left:50%; transform:translateX(-50%); z-index:10000; font-size:9px; letter-spacing:0.38em; text-transform:uppercase; color:rgba(237,235,230,0.3); white-space:nowrap; }
@@ -378,7 +378,7 @@ html.pwa-mode #deck {
 .menu-toggle.open .mt-bar2 { opacity:0; transform:translateX(8px); }
 .menu-toggle.open .mt-bar3 { transform:translateY(-6.5px) rotate(-45deg); opacity:1; }
 /* MENU OVERLAY */
-.menu-overlay { position:fixed; inset:0; z-index:450; background:#0C0F1A; display:flex; flex-direction:column; pointer-events:none; opacity:0; transform:translateY(-12px); transition:opacity 0.35s cubic-bezier(0.23,1,0.32,1), transform 0.35s cubic-bezier(0.23,1,0.32,1); }
+.menu-overlay { position:fixed; inset:0; z-index:450; background:#0C0F1A; display:flex; flex-direction:column; pointer-events:none; opacity:0; transform:translateY(-12px); transition:opacity 0.35s cubic-bezier(0.23,1,0.32,1), transform 0.35s cubic-bezier(0.23,1,0.32,1); touch-action:pan-y; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; }
 .menu-overlay.open { opacity:1; transform:translateY(0); pointer-events:all; }
 /* FIX 3: merged .menu-item + .menu-inner + .menu-nav (single definition) */
 .menu-inner { display:flex; flex-direction:column; height:100%; padding:70px 0 0; }
@@ -544,7 +544,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 .pwa-dismiss{background:none;border:none;color:rgba(237,235,230,.25);font-size:18px;cursor:pointer;padding:4px 2px;transition:color .2s;}
 .pwa-dismiss:hover{color:rgba(237,235,230,.6);}
 /* PWA GUIDE MODAL */
-.pwa-guide{position:fixed;inset:0;z-index:9600;background:rgba(12,15,26,.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
+.pwa-guide{position:fixed;inset:0;z-index:9600;background:rgba(12,15,26,.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;touch-action:none;overscroll-behavior-y:contain;}
 .pwa-guide.open{opacity:1;pointer-events:all;}
 .pwa-guide-close{position:absolute;top:max(20px,calc(env(safe-area-inset-top)+12px));right:20px;background:none;border:1px solid rgba(237,235,230,.15);color:rgba(237,235,230,.5);font-size:16px;width:40px;height:40px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .pwa-guide-content{text-align:center;padding:0 32px;max-width:340px;}
@@ -1551,9 +1551,10 @@ setTimeout(function(){ _revealed['c0']=true; },300);
 })();
 </script>
 
-<!-- FIX 6: iOS Safari tap fix for amd-ap-group -->
+<!-- iOS Safari tap fix + panel scroll isolation -->
 <script>
 document.addEventListener('DOMContentLoaded', function(){
+  /* tap fix for artist groups */
   document.querySelectorAll('.amd-ap-group[data-group]').forEach(function(el){
     var moved = false;
     el.addEventListener('touchstart', function(){ moved = false; }, {passive:true});
@@ -1563,6 +1564,21 @@ document.addEventListener('DOMContentLoaded', function(){
       e.preventDefault();
       var key = el.getAttribute('data-group');
       if(key && typeof openCardStack === 'function') openCardStack(key);
+    }, {passive:false});
+  });
+
+  /* Prevent scroll chaining from panels to body/deck */
+  var panelSelectors = '.amd-ticket-overlay, .amd-artist-panel, .amd-card-stack, .menu-overlay, #videoOverlay, #goodsOverlay';
+  document.querySelectorAll(panelSelectors).forEach(function(panel){
+    panel.addEventListener('touchmove', function(e){
+      /* Only prevent if panel is open and scrollable content at boundary */
+      if(!panel.classList.contains('open')) return;
+      var scrollable = panel.querySelector('[style*="overflow-y:auto"], [style*="overflow-y: auto"]') || panel;
+      var st = scrollable.scrollTop;
+      var sh = scrollable.scrollHeight;
+      var ch = scrollable.clientHeight;
+      /* At top and scrolling up, or at bottom and scrolling down → block */
+      if(sh <= ch) { e.preventDefault(); return; }
     }, {passive:false});
   });
 });
