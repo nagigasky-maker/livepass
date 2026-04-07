@@ -113,7 +113,7 @@ html {
 #amd-header {
   position: fixed; top:0; left:0; right:0; z-index:9999;
   display: flex; justify-content:space-between; align-items:center;
-  padding: 20px 40px;
+  padding: max(20px, calc(env(safe-area-inset-top) + 8px)) 40px 12px;
   background: linear-gradient(to bottom, rgba(12,15,26,0.85) 0%, transparent 100%);
   pointer-events: none;
 }
@@ -472,7 +472,7 @@ a.sc:hover { background: rgba(237,235,230,0.06); }
 ::-webkit-scrollbar { display:none; }
 /* MOBILE */
 @media (max-width: 860px) {
-  #amd-header { padding:16px 20px; }
+  #amd-header { padding:max(16px, calc(env(safe-area-inset-top) + 6px)) 20px 10px; }
   .panel-content { padding:0 20px max(40px, calc(env(safe-area-inset-bottom) + 40px)); }
   .content-panel .panel-content { padding:64px 20px 52px; }
   .panel-dots { left:20px; bottom:32px; }
