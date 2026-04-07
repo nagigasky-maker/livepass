@@ -231,11 +231,9 @@ html.pwa-mode #deck {
 .amd-red-flash { position:fixed; inset:0; z-index:9997; background:var(--red); opacity:0; pointer-events:none; }
 .amd-ticket-overlay { position:fixed; inset:0; z-index:8900; touch-action:pan-y; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); overflow-x:hidden; overflow-y:auto; -webkit-overflow-scrolling:touch; background:var(--black); display:flex; flex-direction:column; padding-top:max(72px, calc(env(safe-area-inset-top) + 60px)); overscroll-behavior-y:contain; isolation:isolate; }
 .amd-ticket-overlay .panel-content { padding-left:32px !important; padding-right:32px !important; }
-/* WS Artist overlay — force text width limit */
-#p1-1 .af-name { max-width:min(420px,68vw) !important; }
-#p1-1 .af-genre { max-width:min(340px,60vw) !important; word-break:break-word; }
-#p1-1 .af-desc, #p1-1 .af-desc-en { max-width:min(440px,68vw) !important; word-break:break-word; }
-#p1-1 .eyebrow { max-width:min(340px,60vw); }
+/* WS Artist overlay — force left/right margin on all text */
+#p1-1 .eyebrow, #p1-1 .af-genre, #p1-1 .af-name, #p1-1 .af-desc, #p1-1 .af-desc-en { margin-left:40px !important; margin-right:40px !important; }
+#p1-1 .amd-ticket-close { margin-right:40px !important; }
 .amd-ticket-overlay .body-txt, .amd-ticket-overlay .body-txt-en { max-width:100%; }
 .amd-ticket-overlay .eyebrow, .amd-ticket-overlay .h-section,
 .amd-ticket-overlay .info-table, .amd-ticket-overlay .ticket-section,
@@ -266,10 +264,7 @@ html.pwa-mode #deck {
 .amd-cs-title { position:absolute; top:max(24px, calc(env(safe-area-inset-top) + 14px)); left:50%; transform:translateX(-50%); z-index:10000; font-size:9px; letter-spacing:0.38em; text-transform:uppercase; color:rgba(237,235,230,0.3); white-space:nowrap; }
 #cardStackStage { position:absolute; inset:0; }
 .amd-card { position:absolute; inset:0; will-change:transform,opacity; overflow:hidden; }
-.amd-card-content { position:absolute; inset:0; z-index:2; display:flex; flex-direction:column; justify-content:flex-end; padding:28px 40px 44px; max-width:100%; box-sizing:border-box; }
-.amd-card-content .af-name { max-width:min(420px,68vw); }
-.amd-card-content .af-genre, .amd-card-content .eyebrow { max-width:min(340px,60vw); }
-.amd-card-content .af-desc, .amd-card-content .af-desc-en { max-width:min(440px,68vw); }
+.amd-card-content { position:absolute; top:0; bottom:0; left:40px; right:40px; z-index:2; display:flex; flex-direction:column; justify-content:flex-end; padding-bottom:44px; box-sizing:border-box; }
 .amd-card-num { font-size:10px; letter-spacing:0.32em; color:rgba(237,235,230,0.28); margin-top:16px; }
 .amd-card-nav { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; align-items:center; padding:14px 24px; z-index:300; border-top:1px solid rgba(237,235,230,0.1); background:rgba(12,15,26,0.6); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
 .amd-card-nav-btn { background:none; border:none; color:rgba(237,235,230,0.55); font-size:11px; letter-spacing:0.32em; text-transform:uppercase; cursor:pointer; padding:8px 0; transition:color 0.2s; }
