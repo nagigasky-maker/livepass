@@ -230,7 +230,8 @@ html.pwa-mode #deck {
 #amd-chapter-line { position:fixed; top:0; left:0; right:0; height:2px; background:var(--red); z-index:9998; transform-origin:left center; transform:scaleX(0); pointer-events:none; }
 .amd-red-flash { position:fixed; inset:0; z-index:9997; background:var(--red); opacity:0; pointer-events:none; }
 .amd-ticket-overlay { position:fixed; inset:0; z-index:8900; touch-action:pan-y; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); overflow-x:hidden; overflow-y:auto; -webkit-overflow-scrolling:touch; background:var(--black); display:flex; flex-direction:column; padding-top:max(72px, calc(env(safe-area-inset-top) + 60px)); overscroll-behavior-y:contain; isolation:isolate; }
-.amd-ticket-overlay .panel-content { padding-left:32px; padding-right:32px; }
+.amd-ticket-overlay .panel-content { padding-left:28px; padding-right:28px; }
+.amd-ticket-overlay .body-txt, .amd-ticket-overlay .body-txt-en { max-width:100%; }
 .amd-ticket-overlay .two-col { gap:48px; }
 .amd-ticket-overlay .info-row { padding:16px 0; }
 @media (max-width:860px) { .amd-ticket-overlay .two-col { grid-template-columns:1fr; } }
@@ -239,7 +240,7 @@ html.pwa-mode #deck {
 .amd-artist-panel { position:fixed; inset:0; z-index:9000; touch-action:pan-y; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; isolation:isolate; }
 .amd-artist-panel.open { transform:translateY(0); }
 .amd-ap-bg { position:absolute; inset:0; background:rgba(12,15,26,0.97); }
-.amd-ap-inner { position:relative; z-index:2; height:100%; display:flex; flex-direction:column; padding:max(72px, calc(env(safe-area-inset-top) + 60px)) 0 0; overflow-y:auto; }
+.amd-ap-inner { position:relative; z-index:2; height:100%; display:flex; flex-direction:column; padding:max(20px, calc(env(safe-area-inset-top) + 8px)) 0 0; overflow-y:auto; }
 .amd-ap-close { position:absolute; bottom:max(32px, calc(env(safe-area-inset-bottom) + 24px)); right:28px; z-index:10000; background:rgba(12,15,26,0.6); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border:1px solid rgba(237,235,230,0.2); color:rgba(237,235,230,0.6); font-size:18px; line-height:1; width:44px; height:44px; display:flex; align-items:center; justify-content:center; cursor:pointer; border-radius:50%; transition:border-color .2s, color .2s; }
 .amd-ap-title { font-size:9px; letter-spacing:0.42em; text-transform:uppercase; color:rgba(237,235,230,0.3); padding:0 20px; margin-bottom:16px; }
 .amd-ap-groups { display:flex; flex-direction:column; gap:3px; padding:0 0 40px; }
@@ -257,7 +258,7 @@ html.pwa-mode #deck {
 .amd-cs-title { position:absolute; top:max(24px, calc(env(safe-area-inset-top) + 14px)); left:50%; transform:translateX(-50%); z-index:10000; font-size:9px; letter-spacing:0.38em; text-transform:uppercase; color:rgba(237,235,230,0.3); white-space:nowrap; }
 #cardStackStage { position:absolute; inset:0; }
 .amd-card { position:absolute; inset:0; will-change:transform,opacity; }
-.amd-card-content { position:absolute; inset:0; z-index:2; display:flex; flex-direction:column; justify-content:flex-end; padding:28px 24px 44px; }
+.amd-card-content { position:absolute; inset:0; z-index:2; display:flex; flex-direction:column; justify-content:flex-end; padding:28px 28px 44px; }
 .amd-card-num { font-size:10px; letter-spacing:0.32em; color:rgba(237,235,230,0.28); margin-top:16px; }
 .amd-card-nav { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; align-items:center; padding:14px 24px; z-index:300; border-top:1px solid rgba(237,235,230,0.1); background:rgba(12,15,26,0.6); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
 .amd-card-nav-btn { background:none; border:none; color:rgba(237,235,230,0.55); font-size:11px; letter-spacing:0.32em; text-transform:uppercase; cursor:pointer; padding:8px 0; transition:color 0.2s; }
@@ -520,6 +521,9 @@ a.sc:hover { background: rgba(237,235,230,0.06); }
 [data-lang="en"] .amd-card-stack .af-desc { display:none; }
 [data-lang="en"] .amd-card-stack .af-desc-en { display:block; }
 body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opacity .2s; }
+/* Floating JP/EN switch - always visible */
+.lang-float { position:fixed; top:max(16px, calc(env(safe-area-inset-top) + 8px)); right:max(20px,env(safe-area-inset-right)); z-index:10001; }
+.lang-float .lang-toggle { pointer-events:all; background:rgba(12,15,26,0.5); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-radius:20px; padding:6px 12px; border:1px solid rgba(237,235,230,0.08); }
 [data-lazy] { visibility: hidden; }
 .gsap-ready [data-lazy] { visibility: visible; }
 #c2-track, #c3-track, #c4-track { overflow: hidden !important; }
@@ -571,17 +575,21 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
       <div id="chap-counter">01 / 06</div>
       <div id="panel-counter"></div>
     </div>
-    <button class="lang-toggle" id="langToggle" onclick="amdToggleLang()" aria-label="Language toggle">
-      <span class="lang-jp" id="langJp">JP</span>
-      <span class="lang-sep">/</span>
-      <span class="lang-en" id="langEn">EN</span>
-    </button>
     <button class="menu-toggle" id="menuToggle" aria-label="Menu">
       <span class="mt-bar mt-bar1"></span>
       <span class="mt-bar mt-bar2"></span>
       <span class="mt-bar mt-bar3"></span>
     </button>
   </div>
+</div>
+
+<!-- JP/EN SWITCH - always visible, even on overlays -->
+<div class="lang-float">
+  <button class="lang-toggle" id="langToggle" onclick="amdToggleLang()" aria-label="Language toggle">
+    <span class="lang-jp" id="langJp">JP</span>
+    <span class="lang-sep">/</span>
+    <span class="lang-en" id="langEn">EN</span>
+  </button>
 </div>
 
 <!-- MENU OVERLAY -->
@@ -618,10 +626,11 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
     <ul class="menu-nav" id="menuNav">
       <li class="menu-item" data-goto="0,0" data-menu-close><div class="menu-row-inner"><img class="menu-icon" src="<?= get_stylesheet_directory_uri() ?>/logos/party.png" alt="PARTY"><div class="menu-row-left"><span class="menu-label">PARTY</span><span class="menu-sub">May 4 · clubasia</span></div><span class="menu-row-arr">→</span><div class="menu-row-medias"><?= _sec_thumb($sec_thumbs['party']) ?></div></div></li>
       <li class="menu-item" data-goto="1,0" data-menu-close><div class="menu-row-inner"><img class="menu-icon" src="<?= get_stylesheet_directory_uri() ?>/logos/workshop.png" alt="WORKSHOP"><div class="menu-row-left"><span class="menu-label">WORKSHOP</span><span class="menu-sub">64BEAT · Apr 1·8·15</span></div><span class="menu-row-arr">→</span><div class="menu-row-medias"><?= _sec_thumb($sec_thumbs['ws']) ?></div></div></li>
-      <li class="menu-item" data-goto="2,0" data-menu-close><div class="menu-row-inner"><img class="menu-icon" src="<?= get_stylesheet_directory_uri() ?>/logos/video.png" alt="VIDEO" style="max-height:32px;"><div class="menu-row-left"><span class="menu-label">VIDEO</span><span class="menu-sub">@allmustdancetokyo</span></div><span class="menu-row-arr">→</span><div class="menu-row-medias"><?= _sec_thumb($sec_thumbs['video']) ?></div></div></li>
-      <li class="menu-item" data-href="<?= home_url('/zine-index/') ?>"><div class="menu-row-inner"><img class="menu-icon" src="<?= get_stylesheet_directory_uri() ?>/logos/zine.png" alt="ZINE" style="max-height:32px;"><div class="menu-row-left"><span class="menu-label">ZINE</span><span class="menu-sub">Issue Archive</span></div><span class="menu-row-arr">→</span><div class="menu-row-medias"><?= _sec_thumb($sec_thumbs['zine']) ?></div></div></li>
-      <li class="menu-item" data-goto="3,0" data-menu-close><div class="menu-row-inner"><img class="menu-icon" src="<?= get_stylesheet_directory_uri() ?>/logos/gg.png" alt="GOOD GOODS" style="max-height:32px;"><div class="menu-row-left"><span class="menu-label">GOOD GOODS</span><span class="menu-sub">Shop</span></div><span class="menu-row-arr">→</span><div class="menu-row-medias"><?= _sec_thumb($sec_thumbs['goods']) ?></div></div></li>
-      <li class="menu-item" data-goto="4,0" data-menu-close><div class="menu-row-inner"><img class="menu-icon" src="<?= get_stylesheet_directory_uri() ?>/logos/getin.png" alt="GET IN TOUCH" style="max-height:32px;"><div class="menu-row-left"><span class="menu-label">GET IN TOUCH</span><span class="menu-sub">niko@allmustdance.com</span></div><span class="menu-row-arr">→</span><div class="menu-row-medias"><?= _sec_thumb($sec_thumbs['contact']) ?></div></div></li>
+      <li class="menu-item" data-goto="2,0" data-menu-close><div class="menu-row-inner"><img class="menu-icon" src="<?= get_stylesheet_directory_uri() ?>/logos/zine.png" alt="ZINE" style="max-height:32px;"><div class="menu-row-left"><span class="menu-label">ZINE</span><span class="menu-sub">Issue Archive</span></div><span class="menu-row-arr">→</span><div class="menu-row-medias"><?= _sec_thumb($sec_thumbs['zine']) ?></div></div></li>
+      <li class="menu-item" data-goto="3,0" data-menu-close><div class="menu-row-inner"><img class="menu-icon" src="<?= get_stylesheet_directory_uri() ?>/logos/video.png" alt="VIDEO" style="max-height:32px;"><div class="menu-row-left"><span class="menu-label">VIDEO</span><span class="menu-sub">@allmustdancetokyo</span></div><span class="menu-row-arr">→</span><div class="menu-row-medias"><?= _sec_thumb($sec_thumbs['video']) ?></div></div></li>
+
+      <li class="menu-item" data-goto="4,0" data-menu-close><div class="menu-row-inner"><img class="menu-icon" src="<?= get_stylesheet_directory_uri() ?>/logos/gg.png" alt="GOOD GOODS" style="max-height:32px;"><div class="menu-row-left"><span class="menu-label">GOOD GOODS</span><span class="menu-sub">Shop</span></div><span class="menu-row-arr">→</span><div class="menu-row-medias"><?= _sec_thumb($sec_thumbs['goods']) ?></div></div></li>
+      <li class="menu-item" data-goto="5,0" data-menu-close><div class="menu-row-inner"><img class="menu-icon" src="<?= get_stylesheet_directory_uri() ?>/logos/getin.png" alt="GET IN TOUCH" style="max-height:32px;"><div class="menu-row-left"><span class="menu-label">GET IN TOUCH</span><span class="menu-sub">niko@allmustdance.com</span></div><span class="menu-row-arr">→</span><div class="menu-row-medias"><?= _sec_thumb($sec_thumbs['contact']) ?></div></div></li>
     </ul>
     <div class="menu-footer">
       <a href="https://www.instagram.com/allmustdancetokyo/" target="_blank" class="menu-social">Instagram</a>
@@ -704,6 +713,75 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- CHAPTER: ZINE (magazine-style section) -->
+  <div class="chapter chapter-auto" id="cZine" style="height:auto;min-height:100vh;scroll-snap-align:start;">
+    <div style="background:var(--black);min-height:100vh;position:relative;">
+      <!-- Magazine masthead -->
+      <div style="padding:max(60px,calc(env(safe-area-inset-top)+48px)) 28px 0;position:relative;z-index:2;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;">
+          <div>
+            <div style="font-family:Arial,'Arial Black',sans-serif;font-size:clamp(48px,12vw,72px);font-weight:900;color:var(--white);line-height:.85;letter-spacing:-.03em;">ZINE</div>
+            <div style="font-size:8px;letter-spacing:.5em;text-transform:uppercase;color:rgba(237,235,230,.25);margin-top:6px;">ALL MUST DANCE™ · Issue Archive</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:var(--red);font-weight:500;">Latest</div>
+            <div style="font-family:Arial,'Arial Black',sans-serif;font-size:32px;font-weight:900;color:rgba(237,235,230,.08);line-height:1;">07</div>
+          </div>
+        </div>
+        <!-- Divider -->
+        <div style="height:1px;background:linear-gradient(to right,var(--red),rgba(237,235,230,.08) 60%,transparent);margin-bottom:28px;"></div>
+        <!-- Featured article -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:2px;">
+          <a href="<?= home_url('/zine-index/') ?>" style="display:block;aspect-ratio:3/4;background:linear-gradient(160deg,#111428,#0C0F1A);position:relative;overflow:hidden;border:1px solid rgba(237,235,230,.06);">
+            <img loading="lazy" src="<?= get_stylesheet_directory_uri() ?>/logos/amd2026asia.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.7;transition:opacity .3s;">
+            <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(12,15,26,.95) 0%,transparent 60%);"></div>
+            <div style="position:absolute;bottom:0;left:0;right:0;padding:16px;">
+              <div style="font-size:7px;letter-spacing:.4em;text-transform:uppercase;color:var(--red);margin-bottom:4px;">EP.07</div>
+              <div style="font-family:Arial,'Arial Black',sans-serif;font-size:18px;font-weight:900;color:var(--white);line-height:1.1;">HOME<br>COMING</div>
+              <div style="font-size:8px;letter-spacing:.2em;color:rgba(237,235,230,.4);margin-top:6px;">2026.05.04</div>
+            </div>
+          </a>
+          <div style="display:flex;flex-direction:column;gap:2px;">
+            <a href="<?= home_url('/zine-index/') ?>" style="flex:1;display:block;background:#09090c;position:relative;overflow:hidden;border:1px solid rgba(237,235,230,.06);padding:16px;">
+              <div style="font-size:7px;letter-spacing:.4em;text-transform:uppercase;color:var(--red);margin-bottom:6px;">EP.06</div>
+              <div style="font-family:Arial,'Arial Black',sans-serif;font-size:14px;font-weight:900;color:var(--white);line-height:1.15;">CHEEKY<br>SESSION</div>
+              <div style="font-size:8px;letter-spacing:.15em;color:rgba(237,235,230,.35);margin-top:8px;">Experimental night</div>
+            </a>
+            <a href="<?= home_url('/zine-index/') ?>" style="flex:1;display:block;background:#09090c;position:relative;overflow:hidden;border:1px solid rgba(237,235,230,.06);padding:16px;">
+              <div style="font-size:7px;letter-spacing:.4em;text-transform:uppercase;color:var(--red);margin-bottom:6px;">EP.05</div>
+              <div style="font-family:Arial,'Arial Black',sans-serif;font-size:14px;font-weight:900;color:var(--white);line-height:1.15;">ROOFTOP<br>PARCO</div>
+              <div style="font-size:8px;letter-spacing:.15em;color:rgba(237,235,230,.35);margin-top:8px;">Shibuya skyline</div>
+            </a>
+          </div>
+        </div>
+        <!-- Article list -->
+        <div style="border-top:1px solid rgba(237,235,230,.06);margin-top:24px;">
+          <?php
+          $zine_eps = [
+            ['num'=>'04','title'=>'CLUB ASIA','date'=>'2024.07.14','tag'=>'Archive'],
+            ['num'=>'03','title'=>'ORIGINS','date'=>'2024.03','tag'=>'Archive'],
+            ['num'=>'02','title'=>'FIRST STEP','date'=>'2023','tag'=>'Archive'],
+            ['num'=>'01','title'=>'GENESIS','date'=>'2023','tag'=>'Archive'],
+          ];
+          foreach($zine_eps as $ze): ?>
+          <a href="<?= home_url('/zine-index/') ?>" style="display:flex;align-items:center;padding:14px 0;border-bottom:1px solid rgba(237,235,230,.06);text-decoration:none;color:var(--white);gap:16px;">
+            <span style="font-family:Arial,'Arial Black',sans-serif;font-size:28px;font-weight:900;color:rgba(237,235,230,.06);min-width:48px;text-align:right;"><?= $ze['num'] ?></span>
+            <span style="flex:1;">
+              <span style="display:block;font-family:Arial,'Arial Black',sans-serif;font-size:15px;font-weight:900;letter-spacing:.02em;"><?= $ze['title'] ?></span>
+              <span style="display:block;font-size:9px;letter-spacing:.15em;color:rgba(237,235,230,.35);margin-top:2px;"><?= $ze['date'] ?></span>
+            </span>
+            <span style="font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(237,235,230,.2);border:1px solid rgba(237,235,230,.08);padding:3px 8px;"><?= $ze['tag'] ?></span>
+          </a>
+          <?php endforeach; ?>
+        </div>
+        <!-- View all -->
+        <div style="text-align:center;padding:28px 0 max(40px,calc(env(safe-area-inset-bottom)+24px));">
+          <a href="<?= home_url('/zine-index/') ?>" style="font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:rgba(237,235,230,.35);text-decoration:none;border-bottom:1px solid rgba(237,235,230,.12);padding-bottom:3px;">View All Issues →</a>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -822,7 +900,6 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 
 <!-- WS ARTIST OVERLAY (moved outside deck) -->
 <div class="amd-ticket-overlay" id="p1-1" style="background:var(--black);padding-top:0;overflow:hidden;">
-  <button class="amd-ticket-close" onclick="closeWsArtistOverlay()">×</button>
   <?php if(!empty($ws_artists)): $wa = $ws_artists[0]; $wa_photo = get_field('photo',$wa->ID); $wa_genre = get_field('genre',$wa->ID); $wa_bio = get_field('bio_ja',$wa->ID); $wa_bio_en = get_field('bio_en',$wa->ID); $wa_role = get_field('role',$wa->ID); ?>
   <?php if($wa_photo): ?>
   <div style="position:absolute;inset:0;z-index:0;"><img loading="lazy" src="<?= esc_url($wa_photo['url']) ?>" alt="" style="width:100%;height:100%;object-fit:cover;"></div>
@@ -831,24 +908,26 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
   <?php endif; ?>
   <div class="vig-artist"></div>
   <div style="position:relative;z-index:2;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;display:flex;flex-direction:column;justify-content:flex-end;">
-    <div style="padding:max(100px,calc(env(safe-area-inset-top)+80px)) 32px max(80px,calc(env(safe-area-inset-bottom)+60px));">
+    <div style="padding:max(80px,calc(env(safe-area-inset-top)+60px)) 28px 28px;">
       <div class="eyebrow"><?= esc_html($wa_role) ?></div>
       <div class="af-genre"><?= esc_html($wa_genre) ?></div>
       <div class="af-name"><?= esc_html($wa->post_title) ?></div>
       <?php if($wa_bio): ?><p class="af-desc"><?= esc_html($wa_bio) ?></p><?php endif; ?>
       <?php if($wa_bio_en): ?><p class="af-desc-en"><?= esc_html($wa_bio_en) ?></p><?php endif; ?>
+      <div style="margin-top:24px;text-align:right;"><button class="amd-ticket-close" onclick="closeWsArtistOverlay()" style="position:static;display:inline-flex;">×</button></div>
     </div>
   </div>
   <?php else: ?>
   <div class="panel-bg" style="background:#000;"></div>
   <div class="vig-artist"></div>
   <div style="position:relative;z-index:2;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;display:flex;flex-direction:column;justify-content:flex-end;">
-    <div style="padding:max(100px,calc(env(safe-area-inset-top)+80px)) 32px max(80px,calc(env(safe-area-inset-bottom)+60px));">
+    <div style="padding:max(80px,calc(env(safe-area-inset-top)+60px)) 28px 28px;">
       <div class="eyebrow">Workshop Artist</div>
       <div class="af-genre">Dance · Movement · Expression</div>
       <div class="af-name">ARTIST<br>NAME TBA</div>
       <p class="af-desc">アーティスト情報は近日公開予定。</p>
       <p class="af-desc-en">Artist details coming soon.</p>
+      <div style="margin-top:24px;text-align:right;"><button class="amd-ticket-close" onclick="closeWsArtistOverlay()" style="position:static;display:inline-flex;">×</button></div>
     </div>
   </div>
   <?php endif; ?>
@@ -878,10 +957,10 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 </div>
 
 <!-- VIDEO OVERLAY -->
-<div class="amd-ticket-overlay" id="videoOverlay" style="background:#000;">
+<div class="amd-ticket-overlay" id="videoOverlay" style="background:#000;padding-top:max(16px,calc(env(safe-area-inset-top) + 8px));">
   <button class="amd-ticket-close" onclick="closeVideoOverlay()">×</button>
   <div style="flex-shrink:0;">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 20px 12px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 20px 12px;">
       <img src="<?= get_stylesheet_directory_uri() ?>/logos/video.png" alt="VIDEO" style="max-height:28px;">
       <a href="https://www.youtube.com/@allmustdancetokyo" target="_blank" style="font-size:10px;letter-spacing:0.2em;color:rgba(237,235,230,0.55);text-decoration:none;">CHANNEL →</a>
     </div>
@@ -1050,6 +1129,7 @@ function getScrollTop(){ return isPWA ? (document.getElementById('deck')||{}).sc
 const CHAPTERS = [
   { id:'c0', panels:['p0-0'] },
   { id:'c1', panels:['p1-0'] },
+  { id:'cZine', panels:[] },
   { id:'c2', panels:['p2-0'] },
   { id:'c3', panels:['p3-0'] },
   { id:'c4', panels:['p4-0'] },
@@ -1485,7 +1565,7 @@ function amdCardNav(dir){
 /* Viewport: use CSS 100vh (= large viewport in Safari, no dynamic resize) */
 
 /* Show chapters + lazy load */
-['c1','c2','c3','c4'].forEach(function(id){
+['c1','cZine','c2','c3','c4'].forEach(function(id){
   var el=document.getElementById(id); if(!el) return;
   el.style.display=''; el.style.visibility='visible';
   el.querySelectorAll('img[data-src]').forEach(function(img){
@@ -1497,7 +1577,7 @@ document.body.classList.add('gsap-ready');
 if(typeof gsap==='undefined') return;
 
 /* 3D exit animation on deck scroll */
-var defs=[{id:'c1',rz:-5},{id:'c2',rz:4},{id:'c3',rz:-4}];
+var defs=[{id:'c1',rz:-5},{id:'cZine',rz:3},{id:'c2',rz:4},{id:'c3',rz:-4}];
 var targets={};
 defs.forEach(function(d){
   var tgt=document.getElementById(d.id+'-track');
