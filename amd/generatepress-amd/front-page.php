@@ -1018,15 +1018,16 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 <!-- YouTube Theater: Pull-to-Play removed -->
 
 <!-- GOOD GOODS OVERLAY -->
-<div class="amd-ticket-overlay" id="goodsOverlay">
+<div class="amd-ticket-overlay" id="goodsOverlay" style="padding-top:max(16px,calc(env(safe-area-inset-top)+8px));">
   <button class="amd-ticket-close" onclick="closeGoodsOverlay()">×</button>
-  <div style="flex-shrink:0;position:relative;background:var(--black);">
-    <div style="padding:0 20px 12px;display:flex;align-items:flex-end;justify-content:space-between;">
-      <img src="<?= get_stylesheet_directory_uri() ?>/logos/gg.png" alt="GOOD GOODS" style="max-height:36px;margin-top:0;">
-      <a href="https://zzazz-za.stores.jp/" target="_blank" class="a-subtle" style="font-size:11px;">Store All →</a>
-    </div>
-    <div style="width:100%;"><img src="<?= get_stylesheet_directory_uri() ?>/artwear/zzazzcm.GIF" alt="ZZAZZ" loading="lazy" style="width:100%;display:block;"></div>
+  <!-- Header row: icon + STORE ALL -->
+  <div style="flex-shrink:0;padding:4px 20px 12px;display:flex;align-items:center;justify-content:space-between;">
+    <img src="<?= get_stylesheet_directory_uri() ?>/logos/gg.png" alt="GOOD GOODS" style="max-height:28px;">
+    <a href="https://zzazz-za.stores.jp/" target="_blank" class="a-subtle" style="font-size:11px;">Store All →</a>
   </div>
+  <!-- GIF banner at top -->
+  <div style="flex-shrink:0;width:100%;"><img src="<?= get_stylesheet_directory_uri() ?>/artwear/zzazzcm.GIF" alt="ZZAZZ" loading="lazy" style="width:100%;display:block;"></div>
+  <!-- Products grid -->
   <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;">
     <div class="store-grid" style="padding:4px 0 100px;">
       <a class="sc" href="https://zzazz-za.stores.jp/items/6991f608580447c3fea658e0" target="_blank"><div class="sc-vis"><img src="<?= get_stylesheet_directory_uri() ?>/artwear/amd01minny.PNG" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div><div class="sc-info"><div class="sc-cat">Artwork Wear</div><div class="sc-name">AMD MN</div></div></a>
