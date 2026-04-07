@@ -88,6 +88,7 @@ body {
   .zine-article { padding:36px 24px max(48px,calc(env(safe-area-inset-bottom)+32px)); }
 }
 </style>
+<?php wp_head(); ?>
 </head>
 <body class="amd-front amd-zine-page">
 
@@ -114,6 +115,12 @@ body {
   <div class="zine-section-label">ABOUT</div>
   <p class="zine-lead">ヨーロッパツアー。ワルシャワの地で、AMD™の精神が国境を越えた最初の記録。</p>
 
+  <?php
+  while(have_posts()): the_post();
+    the_content();
+  endwhile;
+  ?>
+
   <div class="zine-divider"></div>
 
   <div class="zine-credit-block">
@@ -129,5 +136,6 @@ body {
   <a href="<?= home_url('/zine-art01/') ?>">ART.01 →</a>
 </div>
 
+<?php wp_footer(); ?>
 </body>
 </html>

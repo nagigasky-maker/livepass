@@ -88,6 +88,7 @@ body {
   .zine-article { padding:36px 24px max(48px,calc(env(safe-area-inset-bottom)+32px)); }
 }
 </style>
+<?php wp_head(); ?>
 </head>
 <body class="amd-front amd-zine-page">
 
@@ -127,7 +128,11 @@ body {
     <div class="zine-credit-row"><span>Door</span><span>¥4,500</span></div>
   </div>
 
-  <!-- 既存コンテンツをここに移植してください -->
+  <?php
+  while(have_posts()): the_post();
+    the_content();
+  endwhile;
+  ?>
 
   <div class="zine-divider"></div>
 
@@ -144,5 +149,6 @@ body {
   <a href="<?= home_url('/zine-ep06/') ?>">EP.06 →</a>
 </div>
 
+<?php wp_footer(); ?>
 </body>
 </html>

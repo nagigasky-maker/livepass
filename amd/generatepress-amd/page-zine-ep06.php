@@ -64,6 +64,7 @@ body { overflow-x:hidden; overflow-y:auto; min-height:100vh; min-height:-webkit-
   .zine-article { padding:36px 24px max(48px,calc(env(safe-area-inset-bottom)+32px)); }
 }
 </style>
+<?php wp_head(); ?>
 </head>
 <body class="amd-front amd-zine-page">
 
@@ -86,7 +87,11 @@ body { overflow-x:hidden; overflow-y:auto; min-height:100vh; min-height:-webkit-
   <div class="zine-section-label">ABOUT</div>
   <p class="zine-lead">実験的な一夜。Cheekyを舞台に、AMD™が新たな領域に踏み込んだセッション。</p>
 
-  <!-- 既存コンテンツをここに移植してください -->
+  <?php
+  while(have_posts()): the_post();
+    the_content();
+  endwhile;
+  ?>
 
   <div class="zine-divider"></div>
   <div class="zine-credit-block">
@@ -99,5 +104,6 @@ body { overflow-x:hidden; overflow-y:auto; min-height:100vh; min-height:-webkit-
   <a href="<?= home_url('/zine-ep05/') ?>">EP.05 →</a>
 </div>
 
+<?php wp_footer(); ?>
 </body>
 </html>

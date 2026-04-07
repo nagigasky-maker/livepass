@@ -162,6 +162,7 @@ body {
   .zine-card { padding:24px; height:180px; }
 }
 </style>
+<?php wp_head(); ?>
 </head>
 <body class="amd-front amd-zine-page">
 
@@ -212,11 +213,18 @@ body {
 
 </div>
 
+<?php
+while(have_posts()): the_post();
+  the_content();
+endwhile;
+?>
+
 <!-- Footer navigation -->
 <div class="zine-footer-nav" style="margin-top:40px;">
   <a href="<?= home_url() ?>">← HOME</a>
   <span></span>
 </div>
 
+<?php wp_footer(); ?>
 </body>
 </html>
