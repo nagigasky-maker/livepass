@@ -261,7 +261,10 @@ html.pwa-mode #deck {
 .amd-cs-title { position:absolute; top:max(24px, calc(env(safe-area-inset-top) + 14px)); left:50%; transform:translateX(-50%); z-index:10000; font-size:9px; letter-spacing:0.38em; text-transform:uppercase; color:rgba(237,235,230,0.3); white-space:nowrap; }
 #cardStackStage { position:absolute; inset:0; }
 .amd-card { position:absolute; inset:0; will-change:transform,opacity; }
-.amd-card-content { position:absolute; inset:0; z-index:2; display:flex; flex-direction:column; justify-content:flex-end; padding:28px 32px 44px; }
+.amd-card-content { position:absolute; inset:0; z-index:2; display:flex; flex-direction:column; justify-content:flex-end; padding:28px 32px 44px; max-width:100%; box-sizing:border-box; }
+.amd-card-content .af-name { max-width:min(480px,75vw); }
+.amd-card-content .af-genre { max-width:min(400px,70vw); }
+.amd-card-content .af-desc, .amd-card-content .af-desc-en { max-width:min(560px,80vw); }
 .amd-card-num { font-size:10px; letter-spacing:0.32em; color:rgba(237,235,230,0.28); margin-top:16px; }
 .amd-card-nav { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; align-items:center; padding:14px 24px; z-index:300; border-top:1px solid rgba(237,235,230,0.1); background:rgba(12,15,26,0.6); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
 .amd-card-nav-btn { background:none; border:none; color:rgba(237,235,230,0.55); font-size:11px; letter-spacing:0.32em; text-transform:uppercase; cursor:pointer; padding:8px 0; transition:color 0.2s; }
@@ -314,7 +317,7 @@ html.pwa-mode #deck {
 @keyframes zinePulse { 0%,100%{opacity:.35} 50%{opacity:.7} }
 .zine-book.open .zine-tap-hint { opacity:0; transition:opacity .2s; }
 /* ZINE header bar (replaces site header in this section) */
-.zine-section-header { position:sticky; top:0; z-index:100; display:flex; justify-content:space-between; align-items:center; padding:max(20px,calc(env(safe-area-inset-top)+12px)) 24px 14px; background:linear-gradient(to bottom,rgba(12,15,26,.92) 0%,rgba(12,15,26,.6) 70%,transparent 100%); pointer-events:none; }
+.zine-section-header { position:sticky; top:0; z-index:100; display:flex; justify-content:space-between; align-items:center; padding:max(52px,calc(env(safe-area-inset-top)+20px)) 24px 14px; background:linear-gradient(to bottom,rgba(12,15,26,.95) 0%,rgba(12,15,26,.75) 60%,transparent 100%); pointer-events:none; }
 .zine-section-header > * { pointer-events:all; }
 /* View all link */
 .zine-view-all { display:block; text-align:center; padding:28px 0 max(40px,calc(env(safe-area-inset-bottom)+24px)); }
