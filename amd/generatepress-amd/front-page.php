@@ -276,29 +276,29 @@ html.pwa-mode #deck {
 .af-link { display:inline-flex; align-items:center; justify-content:center; text-decoration:none; transition:opacity 0.2s, transform 0.2s; }
 .af-link:hover { color:var(--white); transform:scale(1.1); }
 .af-link svg { width:40px; height:40px; fill:currentColor; }
-/* ZINE — Magazine card layout */
-.zine-feed { display:flex; flex-direction:column; gap:8px; }
-.zine-card { position:relative; overflow:hidden; border-radius:14px; text-decoration:none; color:var(--white); display:block; background:#0d1018; transition:transform .18s ease, box-shadow .25s ease; }
-.zine-card:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(0,0,0,.5); }
-.zine-card:active { transform:scale(.985); }
-.zine-card-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.7; transition:opacity .3s; }
-.zine-card:hover .zine-card-img { opacity:.85; }
+/* ZINE — Magazine card stack layout */
+.zine-feed { display:flex; flex-direction:column; gap:0; position:relative; }
+.zine-card { position:relative; overflow:hidden; border-radius:14px; text-decoration:none; color:var(--white); display:block; background:#0d1018; position:sticky; top:0; }
+.zine-card-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.75; }
 .zine-card-vig { position:absolute; inset:0; background:linear-gradient(to top,rgba(12,15,26,.95) 0%,rgba(12,15,26,.4) 50%,transparent 100%); }
-.zine-card-body { position:relative; z-index:2; display:flex; flex-direction:column; justify-content:flex-end; height:100%; padding:24px; box-sizing:border-box; }
+.zine-card-body { position:relative; z-index:2; display:flex; flex-direction:column; justify-content:flex-end; height:100%; padding:28px; box-sizing:border-box; }
 .zine-card-cat { font-size:9px; font-weight:600; letter-spacing:.4em; text-transform:uppercase; color:var(--red); margin-bottom:8px; }
 .zine-card-title { font-family:Arial,"Arial Black",sans-serif; font-weight:900; line-height:.95; letter-spacing:.01em; color:var(--white); }
 .zine-card-meta { font-size:10px; font-weight:300; letter-spacing:.15em; color:rgba(237,235,230,.45); margin-top:8px; }
 .zine-card-num { position:absolute; top:18px; right:20px; font-family:Arial,"Arial Black",sans-serif; font-size:clamp(48px,10vw,72px); font-weight:900; color:var(--red); opacity:.7; line-height:1; z-index:2; }
-/* Hero card (tall — nearly full screen) */
-.zine-card-hero { min-height:clamp(520px,85vh,720px); }
+/* Hero card (nearly full screen) */
+.zine-card-hero { height:85vh; min-height:520px; max-height:720px; }
 .zine-card-hero .zine-card-title { font-size:clamp(26px,7vw,40px); }
-/* Medium card (2-col) */
-.zine-card-2col { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-.zine-card-md { min-height:clamp(320px,50vh,440px); }
+/* Medium card (2-col row) */
+.zine-card-2col { display:grid; grid-template-columns:1fr 1fr; gap:8px; position:sticky; top:0; }
+.zine-card-md { min-height:clamp(320px,50vh,440px); border-radius:14px; overflow:hidden; position:relative; text-decoration:none; color:var(--white); display:block; background:#0d1018; }
 .zine-card-md .zine-card-title { font-size:clamp(18px,4.5vw,26px); }
 /* Full-width card */
-.zine-card-full { min-height:clamp(380px,60vh,500px); }
+.zine-card-full { height:70vh; min-height:380px; max-height:560px; }
 .zine-card-full .zine-card-title { font-size:clamp(22px,5.5vw,34px); }
+/* ZINE header bar (replaces site header in this section) */
+.zine-section-header { position:sticky; top:0; z-index:100; display:flex; justify-content:space-between; align-items:center; padding:max(20px,calc(env(safe-area-inset-top)+12px)) 24px 14px; background:linear-gradient(to bottom,rgba(12,15,26,.92) 0%,rgba(12,15,26,.6) 70%,transparent 100%); pointer-events:none; }
+.zine-section-header > * { pointer-events:all; }
 /* View all link */
 .zine-view-all { display:block; text-align:center; padding:28px 0 max(40px,calc(env(safe-area-inset-bottom)+24px)); }
 .zine-view-all a { font-size:10px; letter-spacing:.3em; text-transform:uppercase; color:rgba(237,235,230,.4); text-decoration:none; border-bottom:1px solid rgba(237,235,230,.12); padding-bottom:3px; transition:color .2s; }
@@ -721,84 +721,86 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
     </div>
   </div>
 
-  <!-- CHAPTER: ZINE (magazine card feed) -->
-  <div class="chapter chapter-auto" id="cZine" style="height:auto;min-height:100vh;scroll-snap-align:start;">
-    <div style="background:var(--black);min-height:100vh;position:relative;">
-      <div style="padding:max(110px,calc(env(safe-area-inset-top)+90px)) 16px 0;position:relative;z-index:2;">
+  <!-- CHAPTER: ZINE (magazine card stack) -->
+  <div class="chapter chapter-auto" id="cZine" style="height:auto;scroll-snap-align:start;">
+    <div style="background:var(--black);position:relative;">
 
-        <!-- Masthead -->
-        <div class="zine-anim" style="display:flex;justify-content:space-between;align-items:flex-start;padding:0 8px;margin-bottom:24px;">
-          <div>
-            <div style="font-family:Arial,'Arial Black',sans-serif;font-size:clamp(28px,7vw,42px);font-weight:900;color:var(--white);line-height:.9;letter-spacing:-.02em;">ZINE</div>
-            <div style="font-size:8px;letter-spacing:.4em;text-transform:uppercase;color:rgba(237,235,230,.3);margin-top:5px;">ALL MUST DANCE™ · Archive</div>
-          </div>
-          <div style="font-size:11px;letter-spacing:.2em;color:rgba(237,235,230,.35);font-weight:300;">2026.05</div>
+      <!-- ZINE section header (replaces site header) -->
+      <div class="zine-section-header">
+        <div>
+          <div style="font-family:Arial,'Arial Black',sans-serif;font-size:clamp(22px,5vw,32px);font-weight:900;color:var(--white);line-height:.9;letter-spacing:-.02em;">ZINE</div>
+          <div style="font-size:7px;letter-spacing:.4em;text-transform:uppercase;color:rgba(237,235,230,.3);margin-top:3px;">ALL MUST DANCE™ · Archive</div>
         </div>
-
-        <!-- Card feed -->
-        <div class="zine-feed">
-
-          <!-- HERO: EP.07 — HOME COMING -->
-          <a class="zine-card zine-card-hero zine-anim" href="https://allmustdance.com/zine-ep07/">
-            <img class="zine-card-img" loading="lazy" src="<?= get_stylesheet_directory_uri() ?>/logos/amd2026asia.jpg" alt="EP.07">
-            <div class="zine-card-vig"></div>
-            <div class="zine-card-num">007</div>
-            <div class="zine-card-body">
-              <div class="zine-card-cat">PARTY · FEATURED</div>
-              <div class="zine-card-title">HOME<br>COMING</div>
-              <div class="zine-card-meta">clubasia · Shibuya · 2026.05.04</div>
-            </div>
-          </a>
-
-          <!-- 2-COL: EP.06 + EP.05 -->
-          <div class="zine-card-2col zine-anim">
-            <a class="zine-card zine-card-md" href="https://allmustdance.com/zine-ep06/">
-              <div class="zine-card-vig" style="background:linear-gradient(to top,rgba(12,15,26,.92) 0%,rgba(12,15,26,.5) 100%);"></div>
-              <div class="zine-card-body">
-                <div class="zine-card-cat">EXPERIMENTAL</div>
-                <div class="zine-card-title">Cheeky<br>Session</div>
-                <div class="zine-card-meta">EP.06 · 2025</div>
-              </div>
-            </a>
-            <a class="zine-card zine-card-md" href="https://allmustdance.com/zine-ep05/">
-              <div class="zine-card-vig" style="background:linear-gradient(to top,rgba(12,15,26,.92) 0%,rgba(12,15,26,.5) 100%);"></div>
-              <div class="zine-card-body">
-                <div class="zine-card-cat">ROOFTOP</div>
-                <div class="zine-card-title">PARCO<br>Skyline</div>
-                <div class="zine-card-meta">EP.05 · Shibuya · 2024</div>
-              </div>
-            </a>
-          </div>
-
-          <!-- FULL: ARTWORK — MOZYSKEY × NOBBY -->
-          <a class="zine-card zine-card-full zine-anim" href="https://allmustdance.com/zine-art01/">
-            <div class="zine-card-vig" style="background:linear-gradient(to top,rgba(12,15,26,.92) 0%,rgba(12,15,26,.35) 60%,transparent 100%);"></div>
-            <div class="zine-card-body">
-              <div class="zine-card-cat">ARTWORK · FIGURE</div>
-              <div class="zine-card-title">MOZYSKEY<br>× NOBBY</div>
-              <div class="zine-card-meta">Artist · Space Cooking™ · 2025</div>
-            </div>
-          </a>
-
-          <!-- FULL: EP.02 — FIRST STEP -->
-          <a class="zine-card zine-card-full zine-anim" href="https://allmustdance.com/zine-ep02/">
-            <div class="zine-card-vig" style="background:linear-gradient(to top,rgba(12,15,26,.92) 0%,rgba(12,15,26,.5) 100%);"></div>
-            <div class="zine-card-num" style="opacity:.15;">002</div>
-            <div class="zine-card-body">
-              <div class="zine-card-cat">ORIGINS</div>
-              <div class="zine-card-title">First<br>Step</div>
-              <div class="zine-card-meta">EP.02 · The beginning · 2023</div>
-            </div>
-          </a>
-
-        </div><!-- /zine-feed -->
-
-        <!-- View all -->
-        <div class="zine-anim zine-view-all">
-          <a href="<?= home_url('/zine-index/') ?>">View All Issues →</a>
-        </div>
-
+        <div style="font-size:10px;letter-spacing:.2em;color:rgba(237,235,230,.35);font-weight:300;">2026.05</div>
       </div>
+
+      <!-- Card stack feed -->
+      <div class="zine-feed" id="zineFeed" style="padding:0 12px;">
+
+        <!-- HERO: EP.07 — HOME COMING -->
+        <a class="zine-card zine-card-hero" data-zine-card href="https://allmustdance.com/zine-ep07/">
+          <img class="zine-card-img" loading="lazy" src="<?= get_stylesheet_directory_uri() ?>/logos/amd2026asia.jpg" alt="EP.07">
+          <div class="zine-card-vig"></div>
+          <div class="zine-card-num">007</div>
+          <div class="zine-card-body">
+            <div class="zine-card-cat">PARTY · FEATURED</div>
+            <div class="zine-card-title">HOME<br>COMING</div>
+            <div class="zine-card-meta">clubasia · Shibuya · 2026.05.04</div>
+          </div>
+        </a>
+
+        <!-- 2-COL: EP.06 + EP.05 -->
+        <div class="zine-card-2col" data-zine-card>
+          <a class="zine-card-md" href="https://allmustdance.com/zine-ep06/">
+            <img class="zine-card-img" loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/009.jpeg" alt="EP.06">
+            <div class="zine-card-vig" style="background:linear-gradient(to top,rgba(12,15,26,.92) 0%,rgba(12,15,26,.4) 100%);"></div>
+            <div class="zine-card-body">
+              <div class="zine-card-cat">EXPERIMENTAL</div>
+              <div class="zine-card-title">Cheeky<br>Session</div>
+              <div class="zine-card-meta">EP.06 · 2025</div>
+            </div>
+          </a>
+          <a class="zine-card-md" href="https://allmustdance.com/zine-ep05/">
+            <img class="zine-card-img" loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/IMG_7615.jpg" alt="EP.05">
+            <div class="zine-card-vig" style="background:linear-gradient(to top,rgba(12,15,26,.92) 0%,rgba(12,15,26,.4) 100%);"></div>
+            <div class="zine-card-body">
+              <div class="zine-card-cat">ROOFTOP</div>
+              <div class="zine-card-title">PARCO<br>Skyline</div>
+              <div class="zine-card-meta">EP.05 · Shibuya · 2024</div>
+            </div>
+          </a>
+        </div>
+
+        <!-- FULL: ARTWORK — MOZYSKEY × NOBBY -->
+        <a class="zine-card zine-card-full" data-zine-card href="https://allmustdance.com/zine-art01/">
+          <img class="zine-card-img" loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/04/mozyskeyxnobbyのコピー.jpg" alt="ARTWORK 01">
+          <div class="zine-card-vig" style="background:linear-gradient(to top,rgba(12,15,26,.92) 0%,rgba(12,15,26,.3) 60%,transparent 100%);"></div>
+          <div class="zine-card-body">
+            <div class="zine-card-cat">ARTWORK · FIGURE</div>
+            <div class="zine-card-title">MOZYSKEY<br>× NOBBY</div>
+            <div class="zine-card-meta">Artist · Space Cooking™ · 2025</div>
+          </div>
+        </a>
+
+        <!-- FULL: EP.02 — WARSAW -->
+        <a class="zine-card zine-card-full" data-zine-card href="https://allmustdance.com/zine-ep02/">
+          <img class="zine-card-img" loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/IMG_6299-scaled-e1769346293771.jpeg" alt="EP.02">
+          <div class="zine-card-vig"></div>
+          <div class="zine-card-num" style="opacity:.5;">002</div>
+          <div class="zine-card-body">
+            <div class="zine-card-cat">TOUR</div>
+            <div class="zine-card-title">WARSAW</div>
+            <div class="zine-card-meta">EP.02 · Europe Tour · 2023</div>
+          </div>
+        </a>
+
+      </div><!-- /zine-feed -->
+
+      <!-- View all -->
+      <div class="zine-view-all">
+        <a href="<?= home_url('/zine-index/') ?>">View All Issues →</a>
+      </div>
+
     </div>
   </div>
 
@@ -1140,6 +1142,7 @@ echo json_encode($out, JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_QUOT);
    ALL MUST DANCE — Main Script
    CHAPTERS: c0=PARTY c1=WORKSHOP c2=VIDEO c3=STORE c4=CONNECT
 ════════════════════════════════════════ */
+if(typeof gsap!=='undefined'&&typeof ScrollTrigger!=='undefined') gsap.registerPlugin(ScrollTrigger);
 const isPWA = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
 if(isPWA){ document.documentElement.classList.add('pwa-mode'); }
 function getScrollEl(){ return isPWA ? document.getElementById('deck') : document.documentElement; }
@@ -1659,6 +1662,70 @@ function checkReveal(){
 (_pwa2?document.getElementById('deck'):window).addEventListener('scroll',checkReveal,{passive:true});
 
 setTimeout(function(){ _revealed['c0']=true; },300);
+
+/* ================================================
+   GSAP 031 — ZINE Card Stack Effect
+   Cards overlap ~60%, rear card spins 3x and disappears
+   ================================================ */
+(function initZineStack(){
+  var feed = document.getElementById('zineFeed');
+  if(!feed) return;
+  var cards = feed.querySelectorAll('[data-zine-card]');
+  if(!cards.length) return;
+  var scroller = _pwa2 ? document.getElementById('deck') : window;
+
+  cards.forEach(function(card, i){
+    if(i >= cards.length - 1) return; /* last card doesn't exit */
+
+    card.style.transformOrigin = '50% 30%';
+    card.style.willChange = 'transform, opacity';
+
+    ScrollTrigger.create({
+      trigger: card,
+      scroller: scroller,
+      start: 'top top',
+      end: function(){ return '+=' + (card.offsetHeight * 0.6); },
+      scrub: 0.3,
+      onUpdate: function(self){
+        var p = self.progress; /* 0→1 as next card covers 60% */
+        if(p <= 0){
+          gsap.set(card, { rotation:0, scale:1, opacity:1, transformPerspective:1200 });
+        } else {
+          /* 3 full rotations (1080°) as it goes behind */
+          var rot = p * 1080;
+          var sc  = 1 - (0.5 * p);
+          var op  = 1 - p;
+          gsap.set(card, {
+            rotation: rot,
+            scale: sc,
+            opacity: op,
+            transformPerspective: 1200
+          });
+        }
+      }
+    });
+  });
+})();
+
+/* Hide site header when ZINE section is in view */
+(function(){
+  var zSec = document.getElementById('cZine');
+  var hdr  = document.getElementById('amd-header');
+  if(!zSec || !hdr) return;
+  var scroller = _pwa2 ? document.getElementById('deck') : window;
+
+  ScrollTrigger.create({
+    trigger: zSec,
+    scroller: scroller,
+    start: 'top 80%',
+    end: 'bottom 20%',
+    onEnter:     function(){ hdr.style.opacity='0'; hdr.style.pointerEvents='none'; },
+    onLeave:     function(){ hdr.style.opacity=''; hdr.style.pointerEvents=''; },
+    onEnterBack: function(){ hdr.style.opacity='0'; hdr.style.pointerEvents='none'; },
+    onLeaveBack: function(){ hdr.style.opacity=''; hdr.style.pointerEvents=''; }
+  });
+})();
+
 })();
 </script>
 
