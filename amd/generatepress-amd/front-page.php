@@ -289,15 +289,15 @@ html.pwa-mode #deck {
 .zine-card-title { font-family:Arial,"Arial Black",sans-serif; font-weight:900; line-height:.95; letter-spacing:.01em; color:var(--white); }
 .zine-card-meta { font-size:10px; font-weight:300; letter-spacing:.15em; color:rgba(237,235,230,.45); margin-top:8px; }
 .zine-card-num { position:absolute; top:18px; right:20px; font-family:Arial,"Arial Black",sans-serif; font-size:clamp(48px,10vw,72px); font-weight:900; color:var(--red); opacity:.7; line-height:1; z-index:2; }
-/* Hero card (tall) */
-.zine-card-hero { min-height:clamp(380px,65vh,520px); }
+/* Hero card (tall — nearly full screen) */
+.zine-card-hero { min-height:clamp(520px,85vh,720px); }
 .zine-card-hero .zine-card-title { font-size:clamp(26px,7vw,40px); }
 /* Medium card (2-col) */
 .zine-card-2col { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-.zine-card-md { min-height:clamp(220px,35vh,300px); }
+.zine-card-md { min-height:clamp(320px,50vh,440px); }
 .zine-card-md .zine-card-title { font-size:clamp(18px,4.5vw,26px); }
 /* Full-width card */
-.zine-card-full { min-height:clamp(260px,40vh,360px); }
+.zine-card-full { min-height:clamp(380px,60vh,500px); }
 .zine-card-full .zine-card-title { font-size:clamp(22px,5.5vw,34px); }
 /* View all link */
 .zine-view-all { display:block; text-align:center; padding:28px 0 max(40px,calc(env(safe-area-inset-bottom)+24px)); }
