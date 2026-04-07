@@ -217,8 +217,8 @@ html.pwa-mode #deck {
 .ac.mystery .ac-name { opacity:0.48; }
 .ac.mystery .ac-img { background:#080808; }
 .af-genre { font-size:11px; font-weight:400; letter-spacing:0.45em; text-transform:uppercase; color:var(--red); opacity:0.95; margin-bottom:18px; text-shadow:0 1px 8px rgba(0,0,0,0.95); }
-.af-desc { font-size:14px; font-weight:300; line-height:2.0; color:var(--white); opacity:0.92; max-width:none; margin-top:0; margin-bottom:8px; text-shadow:0 1px 8px rgba(0,0,0,0.95); overflow:hidden; }
-.af-desc-en { font-size:14px; font-weight:400; font-style:italic; line-height:1.75; color:var(--white); opacity:0.88; max-width:none; text-shadow:0 1px 8px rgba(0,0,0,0.95); overflow:hidden; }
+.af-desc { font-size:14px; font-weight:300; line-height:2.0; color:var(--white); opacity:0.92; max-width:none; margin-top:0; margin-bottom:8px; text-shadow:0 1px 8px rgba(0,0,0,0.95); overflow:hidden; white-space:pre-line; }
+.af-desc-en { font-size:14px; font-weight:400; font-style:italic; line-height:1.75; color:var(--white); opacity:0.88; max-width:none; text-shadow:0 1px 8px rgba(0,0,0,0.95); overflow:hidden; white-space:pre-line; }
 .amd-word { display:inline-block; will-change:transform,opacity; color:inherit; }
 .af-links { display:flex; gap:20px; margin-top:12px; align-items:center; }
 .art-cover-content { display:flex; flex-direction:column; justify-content:flex-end; height:100%; }
@@ -1075,8 +1075,8 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
       <div class="eyebrow"><?= esc_html($wa_role) ?></div>
       <div class="af-genre"><?= esc_html($wa_genre) ?></div>
       <div class="af-name"><?= esc_html($wa->post_title) ?></div>
-      <?php if($wa_bio): ?><p class="af-desc"><?= esc_html($wa_bio) ?></p><?php endif; ?>
-      <?php if($wa_bio_en): ?><p class="af-desc-en"><?= esc_html($wa_bio_en) ?></p><?php endif; ?>
+      <?php if($wa_bio): ?><p class="af-desc"><?= nl2br(esc_html($wa_bio)) ?></p><?php endif; ?>
+      <?php if($wa_bio_en): ?><p class="af-desc-en"><?= nl2br(esc_html($wa_bio_en)) ?></p><?php endif; ?>
       <div style="margin-top:24px;text-align:right;"><button class="amd-ticket-close" onclick="closeWsArtistOverlay()" style="position:static;display:inline-flex;">×</button></div>
     </div>
   </div>
@@ -1687,7 +1687,7 @@ function _buildCardStack(stage,artists){
     const photoHtml=a.photo?`<img src="${a.photo}" alt="${a.name}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;">`:'';
     const scHtml=a.sc?`<a href="${a.sc}" target="_blank" class="af-link"><img src="${_amdThemeUrl}/logos/sc.png" style="width:28px;height:28px;object-fit:contain;opacity:0.82;"></a>`:'';
     const igHtml=a.ig?`<a href="${a.ig}" target="_blank" class="af-link"><img src="${_amdThemeUrl}/logos/insta.png" style="width:28px;height:28px;object-fit:contain;opacity:0.82;"></a>`:'';
-    card.innerHTML=`<div style="position:absolute;inset:0;">${photoHtml}</div><div class="vig-artist"></div><div class="amd-card-content"><div class="af-genre">${a.genre||''}</div><div class="af-name">${a.name}</div><div class="af-links" style="margin-bottom:14px;">${scHtml}${igHtml}</div><p class="af-desc">${a.bio_ja||''}</p><p class="af-desc-en">${a.bio_en||''}</p><div class="amd-card-num">${String(i+1).padStart(2,'0')} / ${String(artists.length).padStart(2,'0')}</div></div>`;
+    card.innerHTML=`<div style="position:absolute;inset:0;">${photoHtml}</div><div class="vig-artist"></div><div class="amd-card-content"><div class="af-genre">${a.genre||''}</div><div class="af-name">${a.name}</div><div class="af-links" style="margin-bottom:14px;">${scHtml}${igHtml}</div><p class="af-desc">${(a.bio_ja||'').replace(/\n/g,'<br>')}</p><p class="af-desc-en">${(a.bio_en||'').replace(/\n/g,'<br>')}</p><div class="amd-card-num">${String(i+1).padStart(2,'0')} / ${String(artists.length).padStart(2,'0')}</div></div>`;
     stage.appendChild(card);
   });
   const overlay=document.getElementById('cardStackOverlay');
