@@ -287,10 +287,6 @@ html.pwa-mode #deck {
 .zine-card-title { font-family:Arial,"Arial Black",sans-serif; font-weight:900; line-height:.95; letter-spacing:.01em; color:var(--white); font-size:clamp(26px,7vw,40px); }
 .zine-card-meta { font-size:10px; font-weight:300; letter-spacing:.15em; color:rgba(237,235,230,.45); margin-top:8px; }
 .zine-card-num { position:absolute; top:18px; right:20px; font-family:Arial,"Arial Black",sans-serif; font-size:clamp(48px,10vw,72px); font-weight:900; color:var(--red); opacity:.7; line-height:1; z-index:2; }
-/* 2-col row: same height as other cards */
-.zine-card-2col { display:grid; grid-template-columns:1fr 1fr; gap:8px; height:85vh; min-height:520px; max-height:720px; }
-.zine-card-md { border-radius:14px; overflow:hidden; position:relative; text-decoration:none; color:var(--white); display:block; background:#0d1018; height:100%; }
-.zine-card-md .zine-card-title { font-size:clamp(18px,4.5vw,26px); }
 /* ── ZINE Book (HOME COMING special) ── */
 .zine-book { position:relative; height:85vh; min-height:520px; max-height:720px; perspective:1800px; cursor:pointer; }
 .zine-book.open { cursor:default; }
@@ -325,7 +321,6 @@ html.pwa-mode #deck {
 .zine-view-all a { font-size:10px; letter-spacing:.3em; text-transform:uppercase; color:rgba(237,235,230,.4); text-decoration:none; border-bottom:1px solid rgba(237,235,230,.12); padding-bottom:3px; transition:color .2s; }
 .zine-view-all a:hover { color:var(--red); border-color:var(--red); }
 @media (max-width:480px) {
-  .zine-card-2col { grid-template-columns:1fr; }
   .zine-card-body { padding:20px; }
 }
 /* YOUTUBE */
@@ -840,32 +835,32 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
           </div>
         </div>
 
-        <!-- 2-COL: EP.06 + EP.05 -->
-        <div class="zine-card-2col" data-zine-card>
-          <a class="zine-card-md" href="https://allmustdance.com/zine-ep06/">
-            <img class="zine-card-img" loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/009.jpeg" alt="EP.06">
-            <div class="zine-card-vig" style="background:linear-gradient(to top,rgba(12,15,26,.92) 0%,rgba(12,15,26,.4) 100%);"></div>
-            <div class="zine-card-body">
-              <div class="zine-card-cat">EXPERIMENTAL</div>
-              <div class="zine-card-title">Cheeky<br>Session</div>
-              <div class="zine-card-meta">EP.06 · 2025</div>
-            </div>
-          </a>
-          <a class="zine-card-md" href="https://allmustdance.com/zine-ep05/">
-            <img class="zine-card-img" loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/IMG_7615.jpg" alt="EP.05">
-            <div class="zine-card-vig" style="background:linear-gradient(to top,rgba(12,15,26,.92) 0%,rgba(12,15,26,.4) 100%);"></div>
-            <div class="zine-card-body">
-              <div class="zine-card-cat">ROOFTOP</div>
-              <div class="zine-card-title">PARCO<br>Skyline</div>
-              <div class="zine-card-meta">EP.05 · Shibuya · 2024</div>
-            </div>
-          </a>
-        </div>
+        <!-- EP.06 — Cheeky Session -->
+        <a class="zine-card" data-zine-card href="https://allmustdance.com/zine-ep06/">
+          <img class="zine-card-img" loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/009.jpeg" alt="EP.06">
+          <div class="zine-card-vig"></div>
+          <div class="zine-card-body">
+            <div class="zine-card-cat">EXPERIMENTAL</div>
+            <div class="zine-card-title">Cheeky<br>Session</div>
+            <div class="zine-card-meta">EP.06 · 2025</div>
+          </div>
+        </a>
 
-        <!-- FULL: ARTWORK — MOZYSKEY × NOBBY -->
-        <a class="zine-card zine-card-full" data-zine-card href="https://allmustdance.com/zine-art01/">
+        <!-- EP.05 — PARCO Skyline -->
+        <a class="zine-card" data-zine-card href="https://allmustdance.com/zine-ep05/">
+          <img class="zine-card-img" loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/IMG_7615.jpg" alt="EP.05">
+          <div class="zine-card-vig"></div>
+          <div class="zine-card-body">
+            <div class="zine-card-cat">ROOFTOP</div>
+            <div class="zine-card-title">PARCO<br>Skyline</div>
+            <div class="zine-card-meta">EP.05 · Shibuya · 2024</div>
+          </div>
+        </a>
+
+        <!-- ARTWORK — MOZYSKEY × NOBBY -->
+        <a class="zine-card" data-zine-card href="https://allmustdance.com/zine-art01/">
           <img class="zine-card-img" loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/04/mozyskeyxnobby%E3%81%AE%E3%82%B3%E3%83%94%E3%83%BC.jpg" alt="ARTWORK 01">
-          <div class="zine-card-vig" style="background:linear-gradient(to top,rgba(12,15,26,.92) 0%,rgba(12,15,26,.3) 60%,transparent 100%);"></div>
+          <div class="zine-card-vig"></div>
           <div class="zine-card-body">
             <div class="zine-card-cat">ARTWORK · FIGURE</div>
             <div class="zine-card-title">MOZYSKEY<br>× NOBBY</div>
@@ -873,8 +868,8 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
           </div>
         </a>
 
-        <!-- FULL: EP.02 — WARSAW -->
-        <a class="zine-card zine-card-full" data-zine-card href="https://allmustdance.com/zine-ep02/">
+        <!-- EP.02 — WARSAW -->
+        <a class="zine-card" data-zine-card href="https://allmustdance.com/zine-ep02/">
           <img class="zine-card-img" loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/IMG_6299-scaled-e1769346293771.jpeg" alt="EP.02">
           <div class="zine-card-vig"></div>
           <div class="zine-card-num" style="opacity:.5;">002</div>
@@ -1557,7 +1552,7 @@ function amdSetLang(lang){
       if(typeof _amdWrapWords==='function'){
         el.querySelectorAll('.af-desc,.af-desc-en').forEach(_amdWrapWords);
         const words=el.querySelectorAll('.amd-word');
-        if(words.length&&typeof gsap!=='undefined'){gsap.set(words,{x:'80vw',opacity:0});gsap.to(words,{x:0,opacity:1,duration:0.55,stagger:0.014,ease:'power4.out'});}
+        if(words.length&&typeof gsap!=='undefined'){gsap.set(words,{y:30,opacity:0});gsap.to(words,{y:0,opacity:1,duration:0.55,stagger:0.014,ease:'power4.out'});}
       }
     }
   }
@@ -1654,12 +1649,12 @@ function _showCard(idx,animate){
         gsap.fromTo(el,{rotationX:-10,rotationZ:0,y:40,opacity:0,scale:0.96,transformPerspective:800,transformOrigin:'50% 10%'},{rotationX:0,rotationZ:0,y:0,opacity:1,scale:1,duration:0.52,ease:'power3.out'});
         el.querySelectorAll('.af-desc,.af-desc-en').forEach(_amdWrapWords);
         const words=el.querySelectorAll('.amd-word');
-        if(words.length){gsap.set(words,{x:'80vw',opacity:0});gsap.to(words,{x:0,opacity:1,duration:0.65,stagger:0.016,ease:'power4.out',delay:0.3});}
+        if(words.length){gsap.set(words,{y:30,opacity:0});gsap.to(words,{y:0,opacity:1,duration:0.65,stagger:0.016,ease:'power4.out',delay:0.3});}
       } else {
         gsap.set(el,{rotationX:0,rotationZ:0,y:0,opacity:1,scale:1,transformPerspective:800,transformOrigin:'50% 10%'});
         el.querySelectorAll('.af-desc,.af-desc-en').forEach(_amdWrapWords);
         const words=el.querySelectorAll('.amd-word');
-        if(words.length){gsap.set(words,{x:'80vw',opacity:0});gsap.to(words,{x:0,opacity:1,duration:0.65,stagger:0.016,ease:'power4.out',delay:0.45});}
+        if(words.length){gsap.set(words,{y:30,opacity:0});gsap.to(words,{y:0,opacity:1,duration:0.65,stagger:0.016,ease:'power4.out',delay:0.45});}
       }
     } else gsap.set(el,{rotationX:0,y:0,opacity:0,scale:1,transformPerspective:800,transformOrigin:'50% 10%'});
   });
