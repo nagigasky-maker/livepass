@@ -720,7 +720,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
   <div class="chapter chapter-auto" id="cZine" style="height:auto;min-height:100vh;scroll-snap-align:start;">
     <div style="background:var(--black);min-height:100vh;position:relative;">
       <!-- Magazine masthead -->
-      <div style="padding:max(60px,calc(env(safe-area-inset-top)+48px)) 28px 0;position:relative;z-index:2;">
+      <div style="padding:max(90px,calc(env(safe-area-inset-top)+72px)) 28px 0;position:relative;z-index:2;">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;">
           <div>
             <div style="font-family:Arial,'Arial Black',sans-serif;font-size:clamp(48px,12vw,72px);font-weight:900;color:var(--white);line-height:.85;letter-spacing:-.03em;">ZINE</div>
