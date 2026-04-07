@@ -300,9 +300,10 @@ html.pwa-mode #deck {
 .zine-page-layer img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.8; }
 .zine-page-layer .zine-card-vig { z-index:2; }
 .zine-page-layer .zine-card-body { z-index:3; }
-.zine-page-layer[data-layer="0"] { z-index:4; }
-.zine-page-layer[data-layer="1"] { z-index:3; }
-.zine-page-layer[data-layer="2"] { z-index:2; }
+.zine-page-layer[data-layer="0"] { z-index:5; }
+.zine-page-layer[data-layer="1"] { z-index:4; }
+.zine-page-layer[data-layer="2"] { z-index:3; }
+.zine-page-layer[data-layer="3"] { z-index:2; }
 .zine-page-back-credit { font-size:9px; font-weight:300; letter-spacing:.2em; color:rgba(237,235,230,.5); margin-top:12px; line-height:1.8; }
 /* Flippable pages */
 .zine-page-flip { transform-origin:left center; transition:transform 0.9s cubic-bezier(0.4,0,0.2,1); backface-visibility:hidden; will-change:transform; }
@@ -759,8 +760,20 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         <div class="zine-book" id="zineBook07" data-zine-card data-page="0" onclick="flipZineBook(event)">
           <div class="zine-book-inner">
 
-            <!-- Page 2 (deepest): EP02 — AKAKI NAMPEI -->
-            <div class="zine-page-back zine-page-layer" data-layer="2">
+            <!-- Page 3 (deepest): EP03 — GREEN TECK -->
+            <div class="zine-page-back zine-page-layer" data-layer="3">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/g15.jpg" alt="AMD EP03">
+              <div class="zine-card-vig"></div>
+              <div class="zine-card-body">
+                <div class="zine-card-cat">AMD™ EP.03</div>
+                <div class="zine-card-title" style="font-size:clamp(22px,6vw,36px);">ALL MUST<br>DANCE™</div>
+                <div class="zine-card-meta">EP.03 · Tokyo</div>
+                <div class="zine-page-back-credit">Photo — NOBBY<br>Dancer — GREEN TECK<br>Wear Support — Dickies<br>Location — TOKYO</div>
+              </div>
+            </div>
+
+            <!-- Page 2: EP02 — AKAKI NAMPEI -->
+            <div class="zine-page-flip zine-page-layer" data-layer="2">
               <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/g1.jpg" alt="AMD EP02">
               <div class="zine-card-vig"></div>
               <div class="zine-card-body">
@@ -771,7 +784,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
               </div>
             </div>
 
-            <!-- Page 1 (middle): EP03 Teaser — NOBBY -->
+            <!-- Page 1: EP03 Teaser — AKAKI NAMPEI -->
             <div class="zine-page-flip zine-page-layer" data-layer="1">
               <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88-2024-07-02-20.13.45.png" alt="AMD EP03 Teaser">
               <div class="zine-card-vig"></div>
@@ -779,7 +792,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
                 <div class="zine-card-cat">TEASER · AMD™ EP.03</div>
                 <div class="zine-card-title" style="font-size:clamp(22px,6vw,36px);">ALL MUST<br>DANCE™</div>
                 <div class="zine-card-meta">EP.03 · Amsterdam</div>
-                <div class="zine-page-back-credit">Photo — NOBBY<br>Location — Amsterdam Friend House</div>
+                <div class="zine-page-back-credit">Photo — AKAKI NAMPEI<br>Shadow Dancer — Yasumin &amp; MIMI<br>Location — clubasia</div>
               </div>
             </div>
 
