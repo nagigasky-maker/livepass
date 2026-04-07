@@ -2233,16 +2233,23 @@ function toggleScPlayer(){
     iframe.src = _scSrc;
     _scPlaying = true;
     if(player) player.classList.add('expanded');
+    updateScIcon();
+    /* Auto-collapse after 3 seconds — keeps playing */
+    setTimeout(function(){ if(player) player.classList.remove('expanded'); }, 3000);
+  } else if(player && player.classList.contains('expanded')){
+    /* Collapse widget (keep playing) */
+    player.classList.remove('expanded');
   } else if(_scPlaying){
-    iframe.src = '';
-    _scPlaying = false;
-    if(player) player.classList.remove('expanded');
+    /* Expand to show widget */
+    if(player) player.classList.add('expanded');
   } else {
+    /* Resume */
     iframe.src = _scSrc;
     _scPlaying = true;
     if(player) player.classList.add('expanded');
+    updateScIcon();
+    setTimeout(function(){ if(player) player.classList.remove('expanded'); }, 3000);
   }
-  updateScIcon();
 }
 function updateScIcon(){
   var icon = document.getElementById('scPlayIcon');
