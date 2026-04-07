@@ -230,8 +230,11 @@ html.pwa-mode #deck {
 #amd-chapter-line { position:fixed; top:0; left:0; right:0; height:2px; background:var(--red); z-index:9998; transform-origin:left center; transform:scaleX(0); pointer-events:none; }
 .amd-red-flash { position:fixed; inset:0; z-index:9997; background:var(--red); opacity:0; pointer-events:none; }
 .amd-ticket-overlay { position:fixed; inset:0; z-index:8900; touch-action:pan-y; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); overflow-x:hidden; overflow-y:auto; -webkit-overflow-scrolling:touch; background:var(--black); display:flex; flex-direction:column; padding-top:max(72px, calc(env(safe-area-inset-top) + 60px)); overscroll-behavior-y:contain; isolation:isolate; }
-.amd-ticket-overlay .panel-content { padding-left:28px; padding-right:28px; }
+.amd-ticket-overlay .panel-content { padding-left:28px !important; padding-right:28px !important; }
 .amd-ticket-overlay .body-txt, .amd-ticket-overlay .body-txt-en { max-width:100%; }
+.amd-ticket-overlay .eyebrow, .amd-ticket-overlay .h-section,
+.amd-ticket-overlay .info-table, .amd-ticket-overlay .ticket-section,
+.amd-ticket-overlay .two-col { padding-left:0; padding-right:0; }
 .amd-ticket-overlay .two-col { gap:48px; }
 .amd-ticket-overlay .info-row { padding:16px 0; }
 @media (max-width:860px) { .amd-ticket-overlay .two-col { grid-template-columns:1fr; } }
@@ -1509,7 +1512,7 @@ function _buildCardStack(stage,artists){
     const photoHtml=a.photo?`<img src="${a.photo}" alt="${a.name}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;">`:'';
     const scHtml=a.sc?`<a href="${a.sc}" target="_blank" class="af-link"><img src="${_amdThemeUrl}/logos/sc.png" style="width:28px;height:28px;object-fit:contain;opacity:0.82;"></a>`:'';
     const igHtml=a.ig?`<a href="${a.ig}" target="_blank" class="af-link"><img src="${_amdThemeUrl}/logos/insta.png" style="width:28px;height:28px;object-fit:contain;opacity:0.82;"></a>`:'';
-    card.innerHTML=`<div style="position:absolute;inset:0;">${photoHtml}</div><div class="vig-artist"></div><div class="amd-card-content panel-content"><div class="af-genre">${a.genre||''}</div><div class="af-name">${a.name}</div><div class="af-links" style="margin-bottom:14px;">${scHtml}${igHtml}</div><p class="af-desc">${a.bio_ja||''}</p><p class="af-desc-en">${a.bio_en||''}</p><div class="amd-card-num">${String(i+1).padStart(2,'0')} / ${String(artists.length).padStart(2,'0')}</div></div>`;
+    card.innerHTML=`<div style="position:absolute;inset:0;">${photoHtml}</div><div class="vig-artist"></div><div class="amd-card-content"><div class="af-genre">${a.genre||''}</div><div class="af-name">${a.name}</div><div class="af-links" style="margin-bottom:14px;">${scHtml}${igHtml}</div><p class="af-desc">${a.bio_ja||''}</p><p class="af-desc-en">${a.bio_en||''}</p><div class="amd-card-num">${String(i+1).padStart(2,'0')} / ${String(artists.length).padStart(2,'0')}</div></div>`;
     stage.appendChild(card);
   });
   const overlay=document.getElementById('cardStackOverlay');
