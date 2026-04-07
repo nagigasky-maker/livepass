@@ -1610,7 +1610,7 @@ function amdSetLang(lang){
       if(typeof _amdWrapWords==='function'){
         el.querySelectorAll('.af-desc,.af-desc-en').forEach(_amdWrapWords);
         const words=el.querySelectorAll('.amd-word');
-        if(words.length&&typeof gsap!=='undefined'){gsap.set(words,{y:30,opacity:0});gsap.to(words,{y:0,opacity:1,duration:0.55,stagger:0.014,ease:'power4.out'});}
+        if(words.length&&typeof gsap!=='undefined'){words.forEach(function(w,i){gsap.set(w,{y:40+(i%3)*15,opacity:0,rotationX:20});});gsap.to(words,{y:0,opacity:1,rotationX:0,duration:0.6,stagger:0.02,ease:'power4.out'});}
       }
     }
   }
@@ -1707,12 +1707,12 @@ function _showCard(idx,animate){
         gsap.fromTo(el,{rotationX:-10,rotationZ:0,y:40,opacity:0,scale:0.96,transformPerspective:800,transformOrigin:'50% 10%'},{rotationX:0,rotationZ:0,y:0,opacity:1,scale:1,duration:0.52,ease:'power3.out'});
         el.querySelectorAll('.af-desc,.af-desc-en').forEach(_amdWrapWords);
         const words=el.querySelectorAll('.amd-word');
-        if(words.length){gsap.set(words,{y:30,opacity:0});gsap.to(words,{y:0,opacity:1,duration:0.65,stagger:0.016,ease:'power4.out',delay:0.3});}
+        if(words.length){words.forEach(function(w,i){gsap.set(w,{y:40+(i%3)*15,opacity:0,rotationX:20});});gsap.to(words,{y:0,opacity:1,rotationX:0,duration:0.65,stagger:0.02,ease:'power4.out',delay:0.3});}
       } else {
         gsap.set(el,{rotationX:0,rotationZ:0,y:0,opacity:1,scale:1,transformPerspective:800,transformOrigin:'50% 10%'});
         el.querySelectorAll('.af-desc,.af-desc-en').forEach(_amdWrapWords);
         const words=el.querySelectorAll('.amd-word');
-        if(words.length){gsap.set(words,{y:30,opacity:0});gsap.to(words,{y:0,opacity:1,duration:0.65,stagger:0.016,ease:'power4.out',delay:0.45});}
+        if(words.length){words.forEach(function(w,i){gsap.set(w,{y:40+(i%3)*15,opacity:0,rotationX:20});});gsap.to(words,{y:0,opacity:1,rotationX:0,duration:0.65,stagger:0.02,ease:'power4.out',delay:0.45});}
       }
     } else gsap.set(el,{rotationX:0,y:0,opacity:0,scale:1,transformPerspective:800,transformOrigin:'50% 10%'});
   });
