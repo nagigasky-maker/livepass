@@ -346,6 +346,12 @@ html.pwa-mode #deck {
 .sc-badge { position:absolute; top:13px; left:13px; font-size:7px; font-weight:300; letter-spacing:0.3em; text-transform:uppercase; color:var(--red); border:1px solid rgba(200,16,10,0.4); padding:3px 8px; }
 .sc-info { padding:12px 14px 16px; border-top:1px solid var(--line); }
 .sc-cat { font-size:7px; font-weight:200; letter-spacing:0.42em; text-transform:uppercase; color:var(--white); opacity:0.42; margin-bottom:4px; }
+/* GOOD GOODS showcase (single product display) */
+.gg-item { position:absolute; display:flex; flex-direction:column; align-items:center; justify-content:center; width:70%; max-width:320px; text-decoration:none; color:var(--white); pointer-events:all; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.gg-item img { width:100%; max-height:55vh; object-fit:contain; filter:drop-shadow(0 8px 32px rgba(0,0,0,0.6)); }
+.gg-item-info { text-align:center; margin-top:16px; }
+.gg-item-name { font-family:Arial,"Arial Black",sans-serif; font-size:14px; font-weight:900; letter-spacing:0.06em; color:var(--white); margin-bottom:4px; }
+.gg-item-cat { font-size:8px; font-weight:300; letter-spacing:0.35em; text-transform:uppercase; color:rgba(237,235,230,0.45); }
 .sc-name { font-size:13px; font-weight:300; color:var(--white); margin-bottom:2px; }
 .sc-price { font-size:10px; font-weight:200; color:var(--white); opacity:0.65; }
 /* CONNECT */
@@ -973,11 +979,13 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         <div class="panel-bg"><img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/DSC5571.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;"></div>
         <div class="panel-bg" style="background:none;"><img loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="<?= get_stylesheet_directory_uri() ?>/artwear/gg.png" class="lazy-img" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0.15;mix-blend-mode:screen;"></div>
         <div class="vig"></div>
+        <!-- Product showcase (1 item at a time) -->
+        <div id="ggShowcase" style="position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;pointer-events:none;overflow:hidden;"></div>
         <div class="panel-content">
           <div class="rv rv-up hero-icon-row"><img src="<?= get_stylesheet_directory_uri() ?>/logos/gg.png" alt="GOOD GOODS" class="hero-section-icon"></div>
           <div class="rv rv-up meta-line" style="margin-bottom:8px;"><a href="https://zzazz-za.stores.jp/" target="_blank" style="color:rgba(237,235,230,0.6);text-decoration:none;font-size:11px;letter-spacing:0.22em;">zzazz-za.stores.jp</a></div>
           <div class="rv rv-up cta-row">
-            <span class="btn-fill" onclick="openGoodsOverlay()">SHOP</span>
+            <span class="btn-fill" id="ggCheckBtn" style="cursor:pointer;">CHECK</span>
             <a href="https://zzazz-za.stores.jp/" target="_blank" class="btn-ghost">STORE ALL</a>
           </div>
         </div>
@@ -1644,6 +1652,56 @@ function amdRedFlash(onComplete){
 /* OVERLAY FUNCTIONS */
 function openGoodsOverlay(){document.body.classList.add('overlay-open');document.getElementById('goodsOverlay').classList.add('open');lockBodyScroll();}
 function closeGoodsOverlay(){document.body.classList.remove('overlay-open');document.getElementById('goodsOverlay').classList.remove('open');unlockBodyScroll();}
+
+/* GOOD GOODS — CHECK button product showcase */
+(function(){
+  var _ggItems = [
+    {img:'<?= get_stylesheet_directory_uri() ?>/artwear/amd01minny.PNG',name:'AMD MN',cat:'Artwork Wear',url:'https://zzazz-za.stores.jp/items/6991f608580447c3fea658e0'},
+    {img:'<?= get_stylesheet_directory_uri() ?>/artwear/amd02jkt.PNG',name:'AMD JKT',cat:'Artwork Wear',url:'https://zzazz-za.stores.jp/items/69c00f86ccd49a7f3aa0df6e'},
+    {img:'<?= get_stylesheet_directory_uri() ?>/artwear/amd03best.PNG',name:'AMD Vest',cat:'Artwork Wear',url:'https://zzazz-za.stores.jp/items/6991f4d9580447c3fea6584c'},
+    {img:'<?= get_stylesheet_directory_uri() ?>/artwear/mozyskeylamp.png',name:'Lamp (Hand Drawing)',cat:'Artist : Mozyskey',url:'https://zzazz-za.stores.jp/items/69564870a6f4f8fadfb809f8'},
+    {img:'<?= get_stylesheet_directory_uri() ?>/artwear/amd10ufotee.png',name:'AMD UFO Tee',cat:'Artwork Wear',url:'https://zzazz-za.stores.jp/items/69c04acbe126f8ad4fcb6b57'},
+    {img:'<?= get_stylesheet_directory_uri() ?>/artwear/amd08grtee.png',name:'AMD GR Tee',cat:'Artwork Wear',url:'https://zzazz-za.stores.jp/items/69c04a31d9171133f7e5e2e1'},
+    {img:'<?= get_stylesheet_directory_uri() ?>/artwear/amd09kidtee.png',name:'AMD Kid Tee',cat:'Artwork Wear',url:'https://zzazz-za.stores.jp/items/69c04b67e126f8b4d7cb6b58'},
+    {img:'<?= get_stylesheet_directory_uri() ?>/artwear/amd09bl.png',name:'AMD BL',cat:'Artwork Wear',url:'https://zzazz-za.stores.jp/items/69c04bdbd917113bede5e2fb'},
+    {img:'<?= get_stylesheet_directory_uri() ?>/artwear/amd08blpk.png',name:'AMD BL PK',cat:'Artwork Wear',url:'https://zzazz-za.stores.jp/items/69c04c3bd9171143c6e5e2d0'},
+    {img:'<?= get_stylesheet_directory_uri() ?>/artwear/amd07jktufo_1.PNG',name:'AMD JKT UFO',cat:'Artwork Wear',url:'https://zzazz-za.stores.jp/items/69c04cb6e126f8b4d7cb6b71'}
+  ];
+  var _ggIdx = -1;
+  var _ggCur = null;
+  var showcase = document.getElementById('ggShowcase');
+  var btn = document.getElementById('ggCheckBtn');
+  if(!btn || !showcase) return;
+
+  btn.addEventListener('click', function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    _ggIdx++;
+    if(_ggIdx >= _ggItems.length) _ggIdx = 0;
+    showGGItem(_ggIdx);
+  });
+
+  function showGGItem(idx){
+    var item = _ggItems[idx];
+    /* Slide out current */
+    if(_ggCur && typeof gsap!=='undefined'){
+      var old = _ggCur;
+      gsap.to(old, {y:'-100%', opacity:0, duration:0.4, ease:'power2.in', onComplete:function(){ if(old.parentNode) old.parentNode.removeChild(old); }});
+    }
+    /* Create new item */
+    var el = document.createElement('a');
+    el.className = 'gg-item';
+    el.href = item.url;
+    el.target = '_blank';
+    el.innerHTML = '<img src="'+item.img+'" alt="'+item.name+'" loading="lazy"><div class="gg-item-info"><div class="gg-item-name">'+item.name+'</div><div class="gg-item-cat">'+item.cat+'</div></div>';
+    showcase.appendChild(el);
+    _ggCur = el;
+    /* Animate in from behind (scale up from small + fade) */
+    if(typeof gsap!=='undefined'){
+      gsap.fromTo(el, {scale:0.5, opacity:0, y:40}, {scale:1, opacity:1, y:0, duration:0.55, ease:'back.out(1.4)'});
+    }
+  }
+})();
 function openWsArtistOverlay(){
   document.body.classList.add('overlay-open');
   var panel=document.getElementById('p1-1');
