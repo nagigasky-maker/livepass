@@ -1644,7 +1644,28 @@ function amdRedFlash(onComplete){
 /* OVERLAY FUNCTIONS */
 function openGoodsOverlay(){document.body.classList.add('overlay-open');document.getElementById('goodsOverlay').classList.add('open');lockBodyScroll();}
 function closeGoodsOverlay(){document.body.classList.remove('overlay-open');document.getElementById('goodsOverlay').classList.remove('open');unlockBodyScroll();}
-function openWsArtistOverlay(){document.body.classList.add('overlay-open');document.getElementById('p1-1').classList.add('open');lockBodyScroll();}
+function openWsArtistOverlay(){
+  document.body.classList.add('overlay-open');
+  var panel=document.getElementById('p1-1');
+  panel.classList.add('open');
+  lockBodyScroll();
+  /* Animate text elements */
+  if(typeof gsap!=='undefined'){
+    var els=panel.querySelectorAll('.eyebrow,.af-genre,.af-name,.af-desc,.af-desc-en,.amd-ticket-close');
+    gsap.set(els,{opacity:0,y:30});
+    gsap.to(els,{opacity:1,y:0,duration:0.6,stagger:0.08,ease:'power3.out',delay:0.35});
+    /* Word animation on bio text */
+    panel.querySelectorAll('.af-desc,.af-desc-en').forEach(function(el){
+      if(el.dataset.wrapped) return;
+      var text=el.textContent;
+      el.innerHTML=text.split(' ').map(function(w){return '<span class="amd-word">'+w+'</span>';}).join(' ');
+      el.dataset.wrapped='1';
+      var words=el.querySelectorAll('.amd-word');
+      words.forEach(function(w,i){gsap.set(w,{y:40+(i%3)*15,opacity:0,rotationX:20});});
+      gsap.to(words,{y:0,opacity:1,rotationX:0,duration:0.6,stagger:0.02,ease:'power4.out',delay:0.55});
+    });
+  }
+}
 function closeWsArtistOverlay(){document.body.classList.remove('overlay-open');document.getElementById('p1-1').classList.remove('open');unlockBodyScroll();}
 function openWsTicketOverlay(){var d=document.getElementById('deck'),s=d?d.scrollTop:0;document.body.classList.add('overlay-open');document.getElementById('p1-2').classList.add('open');lockBodyScroll();if(d)d.scrollTop=s;}
 function closeWsTicketOverlay(){var d=document.getElementById('deck'),s=d?d.scrollTop:0;document.body.classList.remove('overlay-open');document.getElementById('p1-2').classList.remove('open');unlockBodyScroll();if(d)d.scrollTop=s;}
