@@ -574,10 +574,9 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 .sc-player-text{min-width:0;flex:1;}
 .sc-player-title{font-family:Arial,"Arial Black",sans-serif;font-size:10px;font-weight:700;letter-spacing:.03em;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .sc-player-sub{font-size:7px;font-weight:300;letter-spacing:.18em;text-transform:uppercase;color:rgba(237,235,230,.4);margin-top:1px;}
-.sc-player-play{width:34px;height:34px;border-radius:50%;background:var(--red);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s;flex-shrink:0;}
+.sc-player-play{width:34px;height:34px;border-radius:8px;background:rgba(237,235,230,.1);border:1px solid rgba(237,235,230,.15);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s;flex-shrink:0;}
 .sc-player-play:active{transform:scale(.9);}
-.sc-player-play svg{width:13px;height:13px;fill:#fff;margin-left:2px;}
-.sc-player-play.playing svg{margin-left:0;}
+.sc-player-play svg{width:18px;height:18px;fill:rgba(237,235,230,.6);}
 .sc-player-close{background:none;border:none;color:rgba(237,235,230,.3);font-size:14px;cursor:pointer;padding:4px;line-height:1;flex-shrink:0;}
 .sc-player-embed{height:0;overflow:hidden;transition:height .3s ease;}
 .sc-player.expanded .sc-player-embed{height:120px;}
@@ -2130,15 +2129,15 @@ document.addEventListener('DOMContentLoaded', function(){
 <!-- SOUNDCLOUD BOTTOM BAR PLAYER -->
 <div class="sc-player" id="scPlayer">
   <div class="sc-player-bar">
-    <div class="sc-player-header" onclick="toggleScExpand()">
+    <div class="sc-player-header" onclick="toggleScExpand()" style="-webkit-tap-highlight-color:transparent;touch-action:manipulation;">
       <div class="sc-player-icon"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div>
       <div class="sc-player-pulse"></div>
       <div class="sc-player-text">
         <div class="sc-player-title">Somewhere_MST 2</div>
         <div class="sc-player-sub">Elhast_experience · AMD™ EP.07</div>
       </div>
-      <button class="sc-player-play" id="scPlayBtn" onclick="event.stopPropagation();toggleScPlayer()">
-        <svg id="scPlayIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      <button class="sc-player-play" id="scPlayBtn" onclick="event.stopPropagation();toggleScExpand()">
+        <svg id="scPlayIcon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
       </button>
       <button class="sc-player-close" onclick="event.stopPropagation();dismissScPlayer()">×</button>
     </div>
@@ -2216,7 +2215,23 @@ function showScPlayer(){
 }
 function toggleScExpand(){
   var el = document.getElementById('scPlayer');
-  if(el) el.classList.toggle('expanded');
+  var icon = document.getElementById('scPlayIcon');
+  if(!el) return;
+  var expanding = !el.classList.contains('expanded');
+  el.classList.toggle('expanded');
+  /* Load iframe on first expand */
+  if(expanding && !_scLoaded){
+    _scLoaded = true;
+    var iframe = document.getElementById('scIframe');
+    if(iframe) iframe.src = _scSrc;
+    el.classList.add('playing');
+  }
+  /* Toggle arrow direction */
+  if(icon){
+    icon.innerHTML = expanding
+      ? '<path d="M7 14l5-5 5 5z"/>'
+      : '<path d="M7 10l5 5 5-5z"/>';
+  }
 }
 function dismissScPlayer(){
   _scDismissed = true;
