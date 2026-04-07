@@ -276,26 +276,21 @@ html.pwa-mode #deck {
 .af-link { display:inline-flex; align-items:center; justify-content:center; text-decoration:none; transition:opacity 0.2s, transform 0.2s; }
 .af-link:hover { color:var(--white); transform:scale(1.1); }
 .af-link svg { width:40px; height:40px; fill:currentColor; }
-/* ZINE — Magazine card stack layout */
+/* ZINE — Magazine card stack layout (all cards same tall size) */
 .zine-feed { display:flex; flex-direction:column; gap:0; position:relative; }
-.zine-card { position:relative; overflow:hidden; border-radius:14px; text-decoration:none; color:var(--white); display:block; background:#0d1018; position:sticky; top:0; }
+.zine-card, .zine-card-2col { position:sticky; top:0; }
+.zine-card { position:relative; overflow:hidden; border-radius:14px; text-decoration:none; color:var(--white); display:block; background:#0d1018; height:85vh; min-height:520px; max-height:720px; }
 .zine-card-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.75; }
 .zine-card-vig { position:absolute; inset:0; background:linear-gradient(to top,rgba(12,15,26,.95) 0%,rgba(12,15,26,.4) 50%,transparent 100%); }
 .zine-card-body { position:relative; z-index:2; display:flex; flex-direction:column; justify-content:flex-end; height:100%; padding:28px; box-sizing:border-box; }
 .zine-card-cat { font-size:9px; font-weight:600; letter-spacing:.4em; text-transform:uppercase; color:var(--red); margin-bottom:8px; }
-.zine-card-title { font-family:Arial,"Arial Black",sans-serif; font-weight:900; line-height:.95; letter-spacing:.01em; color:var(--white); }
+.zine-card-title { font-family:Arial,"Arial Black",sans-serif; font-weight:900; line-height:.95; letter-spacing:.01em; color:var(--white); font-size:clamp(26px,7vw,40px); }
 .zine-card-meta { font-size:10px; font-weight:300; letter-spacing:.15em; color:rgba(237,235,230,.45); margin-top:8px; }
 .zine-card-num { position:absolute; top:18px; right:20px; font-family:Arial,"Arial Black",sans-serif; font-size:clamp(48px,10vw,72px); font-weight:900; color:var(--red); opacity:.7; line-height:1; z-index:2; }
-/* Hero card (nearly full screen) */
-.zine-card-hero { height:85vh; min-height:520px; max-height:720px; }
-.zine-card-hero .zine-card-title { font-size:clamp(26px,7vw,40px); }
-/* Medium card (2-col row) */
-.zine-card-2col { display:grid; grid-template-columns:1fr 1fr; gap:8px; position:sticky; top:0; }
-.zine-card-md { min-height:clamp(320px,50vh,440px); border-radius:14px; overflow:hidden; position:relative; text-decoration:none; color:var(--white); display:block; background:#0d1018; }
+/* 2-col row: same height as other cards */
+.zine-card-2col { display:grid; grid-template-columns:1fr 1fr; gap:8px; height:85vh; min-height:520px; max-height:720px; }
+.zine-card-md { border-radius:14px; overflow:hidden; position:relative; text-decoration:none; color:var(--white); display:block; background:#0d1018; height:100%; }
 .zine-card-md .zine-card-title { font-size:clamp(18px,4.5vw,26px); }
-/* Full-width card */
-.zine-card-full { height:70vh; min-height:380px; max-height:560px; }
-.zine-card-full .zine-card-title { font-size:clamp(22px,5.5vw,34px); }
 /* ZINE header bar (replaces site header in this section) */
 .zine-section-header { position:sticky; top:0; z-index:100; display:flex; justify-content:space-between; align-items:center; padding:max(20px,calc(env(safe-area-inset-top)+12px)) 24px 14px; background:linear-gradient(to bottom,rgba(12,15,26,.92) 0%,rgba(12,15,26,.6) 70%,transparent 100%); pointer-events:none; }
 .zine-section-header > * { pointer-events:all; }
@@ -422,9 +417,9 @@ html.pwa-mode #deck {
 .parallax-bg { position: absolute; inset: 0; z-index: 0; will-change: transform; transition: transform 0.1s linear; }
 .parallax-bg img, .parallax-bg video { width: 100%; height: 120%; object-fit: cover; position: absolute; top: -10%; left: 0; }
 /* SLIDE IN */
-.rv-left { opacity: 0; transform: translateX(-40px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
-.rv-right { opacity: 0; transform: translateX(40px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
-.rv-left.visible, .rv-right.visible { opacity: 1; transform: translateX(0); }
+.rv-left { opacity: 0; transform: translateY(20px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
+.rv-right { opacity: 0; transform: translateY(20px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
+.rv-left.visible, .rv-right.visible { opacity: 1; transform: translateY(0); }
 .rv-up { opacity: 0; transform: translateY(30px); transition: opacity 0.65s cubic-bezier(0.22,1,0.36,1), transform 0.65s cubic-bezier(0.22,1,0.36,1); }
 .rv-up.visible { opacity: 1; transform: translateY(0); }
 .rv-scale { opacity: 0; transform: scale(0.94); transition: opacity 0.7s ease, transform 0.7s ease; }
@@ -462,8 +457,8 @@ a.sc:hover { background: rgba(237,235,230,0.06); }
 @keyframes scrollPulse { 0%,100% { transform:scaleY(0.3); opacity:.25; } 50% { transform:scaleY(1); opacity:.7; } }
 /* SCROLL ANIMATIONS */
 .anim-up { opacity: 0; transform: translateY(32px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
-.anim-left { opacity: 0; transform: translateX(-36px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
-.anim-right { opacity: 0; transform: translateX(36px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
+.anim-left { opacity: 0; transform: translateY(20px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
+.anim-right { opacity: 0; transform: translateY(20px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
 .anim-up.in, .anim-left.in, .anim-right.in { opacity: 1; transform: translate(0); }
 ::selection { background:var(--red); color:var(--white); }
 /* ARTIST INDEX */
@@ -811,7 +806,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         <div class="panel-bg"><img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/03/theater.gif" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;"></div>
         <div class="vig"></div>
         <div class="panel-content">
-          <div class="rv rv-left hero-icon-row"><img src="<?= get_stylesheet_directory_uri() ?>/logos/video.png" alt="VIDEO" class="hero-section-icon"></div>
+          <div class="rv rv-up hero-icon-row"><img src="<?= get_stylesheet_directory_uri() ?>/logos/video.png" alt="VIDEO" class="hero-section-icon"></div>
           <div class="rv rv-up meta-line" style="margin-bottom:8px;"><a href="https://www.youtube.com/@allmustdancetokyo" target="_blank" style="color:rgba(237,235,230,0.6);text-decoration:none;font-size:11px;letter-spacing:0.22em;">@allmustdancetokyo</a></div>
           <div class="rv rv-up cta-row">
             <span class="btn-fill" onclick="openVideoOverlay()">▶ PLAY</span>
@@ -830,7 +825,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         <div class="panel-bg" style="background:none;"><img loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="<?= get_stylesheet_directory_uri() ?>/artwear/gg.png" class="lazy-img" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0.15;mix-blend-mode:screen;"></div>
         <div class="vig"></div>
         <div class="panel-content">
-          <div class="rv rv-left hero-icon-row"><img src="<?= get_stylesheet_directory_uri() ?>/logos/gg.png" alt="GOOD GOODS" class="hero-section-icon"></div>
+          <div class="rv rv-up hero-icon-row"><img src="<?= get_stylesheet_directory_uri() ?>/logos/gg.png" alt="GOOD GOODS" class="hero-section-icon"></div>
           <div class="rv rv-up meta-line" style="margin-bottom:8px;"><a href="https://zzazz-za.stores.jp/" target="_blank" style="color:rgba(237,235,230,0.6);text-decoration:none;font-size:11px;letter-spacing:0.22em;">zzazz-za.stores.jp</a></div>
           <div class="rv rv-up cta-row">
             <span class="btn-fill" onclick="openGoodsOverlay()">SHOP</span>
