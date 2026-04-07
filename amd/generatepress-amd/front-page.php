@@ -62,6 +62,13 @@ $ws_artists = get_posts([
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<!-- PWA: ホーム画面追加時にアドレスバーなしで表示 -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AMD™">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0C0F1A">
+<link rel="manifest" href="<?= get_stylesheet_directory_uri() ?>/manifest.json">
 <title>ALL MUST DANCE™</title>
 <?php
 echo '<link rel="icon" href="' . get_stylesheet_directory_uri() . '/logos/amdheaderlogo.png">' . PHP_EOL;
