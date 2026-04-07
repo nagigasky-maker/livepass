@@ -103,11 +103,19 @@ body {
 #deck {
   width:100%;
 }
-/* Safari needs body-level scroll to hide address bar */
+/* Browser mode: snap on html for Safari address bar hide */
 html {
   scroll-snap-type: y mandatory;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: none;
+}
+/* PWA standalone mode: snap on #deck container for tighter control */
+html.pwa-mode { overflow:hidden; scroll-snap-type:none; }
+html.pwa-mode body { overflow:hidden; }
+html.pwa-mode #deck {
+  height:100vh; height:calc(100vh - env(safe-area-inset-top));
+  overflow-y:scroll; scroll-snap-type:y mandatory;
+  -webkit-overflow-scrolling:touch; overscroll-behavior-y:none;
 }
 #vtrack { width:100%; }
 #amd-header {
@@ -1035,6 +1043,10 @@ echo json_encode($out, JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_QUOT);
    ALL MUST DANCE — Main Script
    CHAPTERS: c0=PARTY c1=WORKSHOP c2=VIDEO c3=STORE c4=CONNECT
 ════════════════════════════════════════ */
+const isPWA = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+if(isPWA){ document.documentElement.classList.add('pwa-mode'); }
+function getScrollEl(){ return isPWA ? document.getElementById('deck') : document.documentElement; }
+function getScrollTop(){ return isPWA ? (document.getElementById('deck')||{}).scrollTop||0 : window.scrollY||document.documentElement.scrollTop; }
 const CHAPTERS = [
   { id:'c0', panels:['p0-0'] },
   { id:'c1', panels:['p1-0'] },
@@ -1091,7 +1103,9 @@ function goChapter(newC, newP = 0){
   if(_chapNavLock) return;
   _chapNavLock = true;
   cIdx = newC; pIdx = newP;
-  window.scrollTo({ top: chapEls[cIdx].offsetTop, behavior: 'smooth' });
+  var scrollEl = getScrollEl();
+  if(isPWA && scrollEl.scrollTo){ scrollEl.scrollTo({ top: chapEls[cIdx].offsetTop, behavior: 'smooth' }); }
+  else { window.scrollTo({ top: chapEls[cIdx].offsetTop, behavior: 'smooth' }); }
   if(trackEls[cIdx]) trackEls[cIdx].scrollLeft = newP * W();
   updateUI();
   if(typeof gsap !== 'undefined'){
@@ -1110,12 +1124,13 @@ function snapToPanel(newP){
 }
 
 let scrollTimer;
-window.addEventListener('scroll', () => {
+var _scrollTarget = isPWA ? document.getElementById('deck') : window;
+(_scrollTarget||window).addEventListener('scroll', () => {
   const si = document.getElementById('scrollIndicator');
   if(si) si.style.opacity = '0';
   clearTimeout(scrollTimer);
   scrollTimer = setTimeout(() => {
-    const sy = window.scrollY; const vh = window.innerHeight;
+    const sy = getScrollTop(); const vh = window.innerHeight;
     let accumulated = 0, newC = cIdx;
     for(let i = 0; i < N; i++){
       if(!chapEls[i] || chapEls[i].style.display === 'none') continue;
@@ -1138,8 +1153,8 @@ trackEls.forEach((tr, ci) => {
 
 /* BODY SCROLL LOCK */
 let _scrollLockCount = 0;
-function lockBodyScroll(){ _scrollLockCount++; if(_scrollLockCount===1){ document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden'; } }
-function unlockBodyScroll(){ _scrollLockCount=Math.max(0,_scrollLockCount-1); if(_scrollLockCount===0){ document.documentElement.style.overflow=''; document.body.style.overflow=''; } }
+function lockBodyScroll(){ _scrollLockCount++; if(_scrollLockCount===1){ if(isPWA){var d=document.getElementById('deck');if(d)d.style.overflowY='hidden';} else{document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';} } }
+function unlockBodyScroll(){ _scrollLockCount=Math.max(0,_scrollLockCount-1); if(_scrollLockCount===0){ if(isPWA){var d=document.getElementById('deck');if(d)d.style.overflowY='scroll';} else{document.documentElement.style.overflow='';document.body.style.overflow='';} } }
 
 /* SWIPE ENGINE */
 let swipeX0=0, swipeY0=0, swipeDir=null, swipeActive=false;
@@ -1494,7 +1509,7 @@ function onDeckScroll(){
   if(_raf) return;
   _raf=requestAnimationFrame(function(){
     _raf=null; _vh=window.innerHeight;
-    var scrollTop=window.scrollY||document.documentElement.scrollTop;
+    var scrollTop=typeof getScrollTop==='function'?getScrollTop():(window.scrollY||document.documentElement.scrollTop);
     defs.forEach(function(d){
       var ch=document.getElementById(d.id); var info=targets[d.id];
       if(!ch||!info) return;
@@ -1507,12 +1522,13 @@ function onDeckScroll(){
     });
   });
 }
-window.addEventListener('scroll',onDeckScroll,{passive:true});
+var _pwa2=typeof isPWA!=='undefined'&&isPWA;
+(_pwa2?document.getElementById('deck'):window).addEventListener('scroll',onDeckScroll,{passive:true});
 
 /* Text reveal on deck scroll */
 var _revealed={};
 function checkReveal(){
-  var scrollTop=window.scrollY||document.documentElement.scrollTop;
+  var scrollTop=typeof getScrollTop==='function'?getScrollTop():(window.scrollY||0);
   defs.forEach(function(d){
     if(d.id==='c0') return; if(_revealed[d.id]) return;
     var ch=document.getElementById(d.id); if(!ch) return;
@@ -1529,7 +1545,7 @@ function checkReveal(){
     }
   }
 }
-window.addEventListener('scroll',checkReveal,{passive:true});
+(_pwa2?document.getElementById('deck'):window).addEventListener('scroll',checkReveal,{passive:true});
 
 setTimeout(function(){ _revealed['c0']=true; },300);
 })();
