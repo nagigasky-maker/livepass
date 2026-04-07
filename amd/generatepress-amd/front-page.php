@@ -667,34 +667,6 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         <div class="scroll-indicator" id="scrollIndicator"><div class="scroll-indicator-line"></div><div class="scroll-indicator-text">Scroll</div></div>
       </div>
 
-      <!-- Ticket Overlay -->
-      <div class="amd-ticket-overlay" id="p0-2">
-        <button class="amd-ticket-close" onclick="closeTicketOverlay()">×</button>
-        <div class="panel-bg"></div><div class="vig vig-heavy"></div>
-        <div class="panel-content" style="height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;padding:max(80px,calc(env(safe-area-inset-top)+64px)) 32px 100px;">
-          <div class="two-col">
-            <div class="rv">
-              <div class="eyebrow lang-switchable" data-jp="次のイベント — EP.07" data-en="Next Event — EP.07">Next Event — EP.07</div>
-              <div class="h-section lang-switchable" data-jp="ホーム<br>カミング." data-en="HOME<br>COMING.">HOME<br>COMING.</div>
-              <p class="body-txt">EP.05でPARCOの屋上へ飛び出し、EP.06でCheekyで実験し——AMD™はclubasia（ホームグラウンド）に戻ってくる。これは帰還であり、次の旅への出発点だ。</p>
-              <p class="body-txt-en">After rooftops and experiments, ALL MUST DANCE™ returns home. This is not a comeback. This is a departure.</p>
-            </div>
-            <div class="rv">
-              <div class="info-table">
-                <div class="info-row"><span class="ik">Date</span><span class="iv"><?= esc_html($party_date) ?><small class="lang-switchable" data-jp="月曜日 · 祝日" data-en="Monday · National Holiday">Monday · National Holiday</small></span></div>
-                <div class="info-row"><span class="ik">Time</span><span class="iv"><?= esc_html($party_time) ?></span></div>
-                <div class="info-row"><span class="ik">Venue</span><span class="iv"><?= esc_html($party_venue) ?><small class="lang-switchable" data-jp="円山町, 渋谷" data-en="Maruyamacho, Shibuya">Maruyamacho, Shibuya</small></span></div>
-              </div>
-              <div class="ticket-section">
-                <div class="ticket-head"><span class="ticket-head-lbl">Tickets</span><span class="ticket-head-note lang-switchable" data-jp="Web only · 電子チケット" data-en="Web only · E-ticket">Web only · 電子チケット</span></div>
-                <a class="trow" href="<?= esc_url($party_ticket) ?>" target="_blank"><div class="trow-left"><span class="trow-type">Early Bird</span><span class="trow-price"><?= esc_html($party_eb_price) ?></span></div><div class="trow-right"><span class="trow-tag">30枚限定</span><span class="trow-arr">→</span></div></a>
-                <a class="trow" href="<?= esc_url($party_ticket) ?>" target="_blank"><div class="trow-left"><span class="trow-type">Advance</span><span class="trow-price"><?= esc_html($party_adv_price) ?></span></div><div class="trow-right"><span class="trow-arr">→</span></div></a>
-                <div class="trow disabled"><div class="trow-left"><span class="trow-type">Door</span><span class="trow-price">¥4,500</span></div><div class="trow-right"><span style="font-size:8px;letter-spacing:0.3em;text-transform:uppercase;color:var(--white)">On the Night</span></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -724,65 +696,6 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         </div>
       </div>
 
-      <!-- WS Artist Overlay — Fullscreen photo background -->
-      <div class="amd-ticket-overlay" id="p1-1" style="background:var(--black);padding-top:0;overflow:hidden;">
-        <button class="amd-ticket-close" onclick="closeWsArtistOverlay()">×</button>
-        <?php if(!empty($ws_artists)): $wa = $ws_artists[0]; $wa_photo = get_field('photo',$wa->ID); $wa_genre = get_field('genre',$wa->ID); $wa_bio = get_field('bio_ja',$wa->ID); $wa_bio_en = get_field('bio_en',$wa->ID); $wa_role = get_field('role',$wa->ID); ?>
-        <!-- Fullscreen photo background -->
-        <?php if($wa_photo): ?>
-        <div style="position:absolute;inset:0;z-index:0;">
-          <img loading="lazy" src="<?= esc_url($wa_photo['url']) ?>" alt="" style="width:100%;height:100%;object-fit:cover;">
-        </div>
-        <?php else: ?>
-        <div class="panel-bg" style="background:#000;"></div>
-        <?php endif; ?>
-        <div class="vig-artist"></div>
-        <!-- Scrollable content overlay -->
-        <div style="position:relative;z-index:2;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;display:flex;flex-direction:column;justify-content:flex-end;">
-          <div style="padding:max(100px,calc(env(safe-area-inset-top)+80px)) 32px max(80px,calc(env(safe-area-inset-bottom)+60px));">
-            <div class="rv eyebrow"><?= esc_html($wa_role) ?></div>
-            <div class="rv">
-              <div class="af-genre"><?= esc_html($wa_genre) ?></div>
-              <div class="af-name"><?= esc_html($wa->post_title) ?></div>
-              <?php if($wa_bio): ?><p class="af-desc"><?= esc_html($wa_bio) ?></p><?php endif; ?>
-              <?php if($wa_bio_en): ?><p class="af-desc-en"><?= esc_html($wa_bio_en) ?></p><?php endif; ?>
-            </div>
-          </div>
-        </div>
-        <?php else: ?>
-        <div class="panel-bg" style="background:#000;"></div>
-        <div class="vig-artist"></div>
-        <div style="position:relative;z-index:2;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;display:flex;flex-direction:column;justify-content:flex-end;">
-          <div style="padding:max(100px,calc(env(safe-area-inset-top)+80px)) 32px max(80px,calc(env(safe-area-inset-bottom)+60px));">
-            <div class="rv eyebrow">Workshop Artist</div>
-            <div class="rv"><div class="af-genre">Dance · Movement · Expression</div><div class="af-name">ARTIST<br>NAME TBA</div><p class="af-desc">アーティスト情報は近日公開予定。</p><p class="af-desc-en">Artist details coming soon.</p></div>
-          </div>
-        </div>
-        <?php endif; ?>
-      </div>
-
-      <!-- WS Ticket Overlay -->
-      <div class="amd-ticket-overlay" id="p1-2">
-        <button class="amd-ticket-close" onclick="closeWsTicketOverlay()">×</button>
-        <div class="panel-bg"></div><div class="vig vig-heavy"></div>
-        <div class="panel-content" style="height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;padding:max(80px,calc(env(safe-area-inset-top)+64px)) 32px 100px;">
-          <div class="two-col">
-            <div class="rv">
-              <div class="eyebrow lang-switchable" data-jp="ワークショップ情報" data-en="Workshop Info">Workshop Info</div>
-              <div class="h-section lang-switchable" data-jp="詳細." data-en="DETAILS.">DETAILS.</div>
-              <p class="body-txt">ダンス・音楽・表現の境界を溶かす、ALL MUST DANCE™ のワークショップ。身体と音が出会う実験的な時間。参加者全員が主役になる。</p>
-              <p class="body-txt-en">A workshop where movement meets music. Experimental, open, and essential.</p>
-            </div>
-            <div class="rv">
-              <div class="info-table">
-                <div class="info-row"><span class="ik">Date</span><span class="iv"><?= $ws_date ? esc_html($ws_date) : 'TBA' ?></span></div>
-                <div class="info-row"><span class="ik">Time</span><span class="iv"><?= $ws_time ? esc_html($ws_time) : 'TBA' ?></span></div>
-                <div class="info-row"><span class="ik">Venue</span><span class="iv"><?= $ws_venue ? esc_html($ws_venue) : 'TBA' ?></span></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -869,6 +782,92 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 
 </div><!-- /vtrack -->
 </div><!-- /deck -->
+
+<!-- PARTY TICKET OVERLAY (moved outside deck) -->
+<div class="amd-ticket-overlay" id="p0-2">
+  <button class="amd-ticket-close" onclick="closeTicketOverlay()">×</button>
+  <div class="panel-bg"></div><div class="vig vig-heavy"></div>
+  <div class="panel-content" style="height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;padding:max(80px,calc(env(safe-area-inset-top)+64px)) 32px 100px;">
+    <div class="two-col">
+      <div class="rv">
+        <div class="eyebrow lang-switchable" data-jp="次のイベント — EP.07" data-en="Next Event — EP.07">Next Event — EP.07</div>
+        <div class="h-section lang-switchable" data-jp="ホーム<br>カミング." data-en="HOME<br>COMING.">HOME<br>COMING.</div>
+        <p class="body-txt">EP.05でPARCOの屋上へ飛び出し、EP.06でCheekyで実験し——AMD™はclubasia（ホームグラウンド）に戻ってくる。これは帰還であり、次の旅への出発点だ。</p>
+        <p class="body-txt-en">After rooftops and experiments, ALL MUST DANCE™ returns home. This is not a comeback. This is a departure.</p>
+      </div>
+      <div class="rv">
+        <div class="info-table">
+          <div class="info-row"><span class="ik">Date</span><span class="iv"><?= esc_html($party_date) ?><small class="lang-switchable" data-jp="月曜日 · 祝日" data-en="Monday · National Holiday">Monday · National Holiday</small></span></div>
+          <div class="info-row"><span class="ik">Time</span><span class="iv"><?= esc_html($party_time) ?></span></div>
+          <div class="info-row"><span class="ik">Venue</span><span class="iv"><?= esc_html($party_venue) ?><small class="lang-switchable" data-jp="円山町, 渋谷" data-en="Maruyamacho, Shibuya">Maruyamacho, Shibuya</small></span></div>
+        </div>
+        <div class="ticket-section">
+          <div class="ticket-head"><span class="ticket-head-lbl">Tickets</span><span class="ticket-head-note lang-switchable" data-jp="Web only · 電子チケット" data-en="Web only · E-ticket">Web only · 電子チケット</span></div>
+          <a class="trow" href="<?= esc_url($party_ticket) ?>" target="_blank"><div class="trow-left"><span class="trow-type">Early Bird</span><span class="trow-price"><?= esc_html($party_eb_price) ?></span></div><div class="trow-right"><span class="trow-tag">30枚限定</span><span class="trow-arr">→</span></div></a>
+          <a class="trow" href="<?= esc_url($party_ticket) ?>" target="_blank"><div class="trow-left"><span class="trow-type">Advance</span><span class="trow-price"><?= esc_html($party_adv_price) ?></span></div><div class="trow-right"><span class="trow-arr">→</span></div></a>
+          <div class="trow disabled"><div class="trow-left"><span class="trow-type">Door</span><span class="trow-price">¥4,500</span></div><div class="trow-right"><span style="font-size:8px;letter-spacing:0.3em;text-transform:uppercase;color:var(--white)">On the Night</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WS ARTIST OVERLAY (moved outside deck) -->
+<div class="amd-ticket-overlay" id="p1-1" style="background:var(--black);padding-top:0;overflow:hidden;">
+  <button class="amd-ticket-close" onclick="closeWsArtistOverlay()">×</button>
+  <?php if(!empty($ws_artists)): $wa = $ws_artists[0]; $wa_photo = get_field('photo',$wa->ID); $wa_genre = get_field('genre',$wa->ID); $wa_bio = get_field('bio_ja',$wa->ID); $wa_bio_en = get_field('bio_en',$wa->ID); $wa_role = get_field('role',$wa->ID); ?>
+  <?php if($wa_photo): ?>
+  <div style="position:absolute;inset:0;z-index:0;"><img loading="lazy" src="<?= esc_url($wa_photo['url']) ?>" alt="" style="width:100%;height:100%;object-fit:cover;"></div>
+  <?php else: ?>
+  <div class="panel-bg" style="background:#000;"></div>
+  <?php endif; ?>
+  <div class="vig-artist"></div>
+  <div style="position:relative;z-index:2;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;display:flex;flex-direction:column;justify-content:flex-end;">
+    <div style="padding:max(100px,calc(env(safe-area-inset-top)+80px)) 32px max(80px,calc(env(safe-area-inset-bottom)+60px));">
+      <div class="eyebrow"><?= esc_html($wa_role) ?></div>
+      <div class="af-genre"><?= esc_html($wa_genre) ?></div>
+      <div class="af-name"><?= esc_html($wa->post_title) ?></div>
+      <?php if($wa_bio): ?><p class="af-desc"><?= esc_html($wa_bio) ?></p><?php endif; ?>
+      <?php if($wa_bio_en): ?><p class="af-desc-en"><?= esc_html($wa_bio_en) ?></p><?php endif; ?>
+    </div>
+  </div>
+  <?php else: ?>
+  <div class="panel-bg" style="background:#000;"></div>
+  <div class="vig-artist"></div>
+  <div style="position:relative;z-index:2;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;display:flex;flex-direction:column;justify-content:flex-end;">
+    <div style="padding:max(100px,calc(env(safe-area-inset-top)+80px)) 32px max(80px,calc(env(safe-area-inset-bottom)+60px));">
+      <div class="eyebrow">Workshop Artist</div>
+      <div class="af-genre">Dance · Movement · Expression</div>
+      <div class="af-name">ARTIST<br>NAME TBA</div>
+      <p class="af-desc">アーティスト情報は近日公開予定。</p>
+      <p class="af-desc-en">Artist details coming soon.</p>
+    </div>
+  </div>
+  <?php endif; ?>
+</div>
+
+<!-- WS TICKET OVERLAY (moved outside deck) -->
+<div class="amd-ticket-overlay" id="p1-2">
+  <button class="amd-ticket-close" onclick="closeWsTicketOverlay()">×</button>
+  <div class="panel-bg"></div><div class="vig vig-heavy"></div>
+  <div class="panel-content" style="height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;padding:max(80px,calc(env(safe-area-inset-top)+64px)) 32px 100px;">
+    <div class="two-col">
+      <div class="rv">
+        <div class="eyebrow lang-switchable" data-jp="ワークショップ情報" data-en="Workshop Info">Workshop Info</div>
+        <div class="h-section lang-switchable" data-jp="詳細." data-en="DETAILS.">DETAILS.</div>
+        <p class="body-txt">ダンス・音楽・表現の境界を溶かす、ALL MUST DANCE™ のワークショップ。身体と音が出会う実験的な時間。参加者全員が主役になる。</p>
+        <p class="body-txt-en">A workshop where movement meets music. Experimental, open, and essential.</p>
+      </div>
+      <div class="rv">
+        <div class="info-table">
+          <div class="info-row"><span class="ik">Date</span><span class="iv"><?= $ws_date ? esc_html($ws_date) : 'TBA' ?></span></div>
+          <div class="info-row"><span class="ik">Time</span><span class="iv"><?= $ws_time ? esc_html($ws_time) : 'TBA' ?></span></div>
+          <div class="info-row"><span class="ik">Venue</span><span class="iv"><?= $ws_venue ? esc_html($ws_venue) : 'TBA' ?></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- VIDEO OVERLAY -->
 <div class="amd-ticket-overlay" id="videoOverlay" style="background:#000;">
