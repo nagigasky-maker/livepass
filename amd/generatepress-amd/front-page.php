@@ -296,8 +296,7 @@ html.pwa-mode #deck {
 .zine-card-meta { font-size:10px; font-weight:300; letter-spacing:.15em; color:rgba(237,235,230,.45); margin-top:8px; }
 .zine-card-num { position:absolute; top:18px; right:20px; font-family:Arial,"Arial Black",sans-serif; font-size:clamp(48px,10vw,72px); font-weight:900; color:var(--red); opacity:.7; line-height:1; z-index:2; }
 /* ── ZINE Book (HOME COMING special) ── */
-.zine-book { position:relative; height:85vh; min-height:520px; max-height:720px; perspective:1800px; cursor:pointer; }
-.zine-book.open { cursor:default; }
+.zine-book { position:relative; height:85vh; min-height:520px; max-height:720px; perspective:1800px; cursor:pointer; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
 .zine-book-inner { position:relative; width:100%; height:100%; border-radius:14px; overflow:visible; }
 /* Page layers (stacked by z-index) */
 .zine-page-layer { position:absolute; inset:0; border-radius:14px; overflow:hidden; background:#0a0c14; }
@@ -1868,7 +1867,7 @@ window.closeZineBook = function(){
 
 /* Generic book flip for other ZINE cards (2-page: cover → inner → navigate) */
 window.flipZineCard = function(book, e){
-  if(e.target.closest('.zine-book-close')) return;
+  if(e && e.target && e.target.closest('.zine-book-close')) return;
   var cur = parseInt(book.getAttribute('data-page')||'0',10);
   var pages = book.querySelectorAll('.zine-page-flip');
   var total = pages.length;
@@ -1879,11 +1878,26 @@ window.flipZineCard = function(book, e){
     book.setAttribute('data-page', cur);
     book.classList.add('open');
   } else {
-    /* All flipped — navigate to ZINE page */
     var href = book.getAttribute('data-href');
     if(href) window.location.href = href;
   }
 };
+
+/* Register touch events on all zine-book cards (Safari onclick fix) */
+(function(){
+  var books = document.querySelectorAll('.zine-book[data-href]');
+  books.forEach(function(book){
+    var moved = false;
+    book.addEventListener('touchstart', function(){ moved = false; }, {passive:true});
+    book.addEventListener('touchmove', function(){ moved = true; }, {passive:true});
+    book.addEventListener('touchend', function(e){
+      if(moved) return;
+      if(e.target.closest('.zine-book-close')) return;
+      e.preventDefault();
+      window.flipZineCard(book, e);
+    }, {passive:false});
+  });
+})();
 
 /* ================================================
    GSAP 031 — ZINE Card Stack Effect
