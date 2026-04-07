@@ -773,10 +773,10 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
               <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/g00-scaled.jpg" alt="AMD EP01">
               <div class="zine-card-vig"></div>
               <div class="zine-card-body">
-                <div class="zine-card-cat">AMD™ EP.01</div>
+                <div class="zine-card-cat">AMD™ EP.01 · VISUAL POSTER</div>
                 <div class="zine-card-title" style="font-size:clamp(22px,6vw,36px);">ALL MUST<br>DANCE™</div>
                 <div class="zine-card-meta">EP.01 · The Beginning</div>
-                <div class="zine-page-back-credit">Photo — NOBBY<br>Dancer — MOZYSKEY<br>Art Support — MOZYSKEY<br>Location — Tokyo</div>
+                <div class="zine-page-back-credit">Photo — NOBBY<br>Art Support — MOZYSKEY</div>
               </div>
             </div>
 
@@ -812,7 +812,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
                 <div class="zine-card-cat">TEASER · AMD™ EP.03</div>
                 <div class="zine-card-title" style="font-size:clamp(22px,6vw,36px);">ALL MUST<br>DANCE™</div>
                 <div class="zine-card-meta">EP.03 · Amsterdam</div>
-                <div class="zine-page-back-credit">Photo — AKAKI NAMPEI<br>Shadow Dancer — Yasumin &amp; MIMI<br>Location — clubasia</div>
+                <div class="zine-page-back-credit">Photo — NOBBY<br>Location — Amsterdam in Friend Room</div>
               </div>
             </div>
 
