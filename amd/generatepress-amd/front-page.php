@@ -411,24 +411,7 @@ html {
 .rv-up.visible { opacity: 1; transform: translateY(0); }
 .rv-scale { opacity: 0; transform: scale(0.94); transition: opacity 0.7s ease, transform 0.7s ease; }
 .rv-scale.visible { opacity: 1; transform: scale(1); }
-/* YOUTUBE THEATER */
-.yt-theater { position: fixed; inset: 0; z-index: 800; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; visibility: hidden; opacity: 0; transition: opacity 0.15s ease, visibility 0s 0.15s; }
-.yt-theater.open { visibility: visible; opacity: 1; transition: opacity 0.15s ease, visibility 0s; }
-.yt-theater-close { position: absolute; top: 56px; left: 20px; width: 44px; height: 44px; background: rgba(255,255,255,0.1); border: none; border-radius: 50%; color: #fff; font-size: 20px; cursor: pointer; z-index: 801; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
-.yt-theater-close:hover { background: rgba(255,255,255,0.25); }
-.yt-mute-btn { position: fixed; bottom: 80px; right: 20px; z-index: 9010; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.3); color: #fff; font-size: 22px; width: 48px; height: 48px; border-radius: 50%; cursor: pointer; display: none; align-items: center; justify-content: center; transition: background 0.2s; }
-.yt-mute-btn.visible { display: flex; }
-.yt-mute-btn:hover { background: rgba(0,0,0,0.85); }
-.yt-theater-intro { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 1; }
-.yt-theater-intro video, .yt-theater-intro img { width: 100%; height: 100%; object-fit: cover; }
-.yt-theater-intro.fade-out { animation: theaterFadeOut 0.4s ease forwards; }
-@keyframes theaterFadeOut { 0% { opacity: 1; } 100% { opacity: 0; pointer-events: none; } }
-.yt-shorts-wrap { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.6s 0.3s ease; position: relative; z-index: 2; }
-.yt-shorts-wrap.visible { opacity: 1; }
-.yt-shorts-frame { width: 100%; height: 100%; max-width: calc(100vh * 9 / 16); border: none; }
-.yt-shorts-nav { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 3; }
-.yt-shorts-dot { width: 4px; height: 32px; border-radius: 2px; background: rgba(255,255,255,0.25); cursor: pointer; transition: background 0.2s, transform 0.2s; }
-.yt-shorts-dot.on { background: #fff; transform: scaleY(1.2); }
+/* YOUTUBE THEATER: removed (Pull-to-Play deleted) */
 /* MENU ICON */
 .menu-icon { width: auto; height: auto; max-width: 100%; max-height: 32px; object-fit: contain; object-position: left center; flex-shrink: 0; opacity: 0.82; transition: opacity 0.2s; }
 .menu-item:hover .menu-icon { opacity: 1; transform: scale(1.08); }
@@ -436,14 +419,7 @@ html {
 .zi-external { cursor: pointer; }
 .zi-external .zi-arr { opacity: 0.5; }
 .zi-external:hover .zi-arr { opacity: 1; }
-/* PULL TO PLAY */
-@keyframes pullBounce { 0%,100% { transform:translateY(0); opacity:0.4; } 50% { transform:translateY(-8px); opacity:0.8; } }
-@keyframes spin { to { transform:rotate(360deg); } }
-#ytTriggerScreen { background:#000; }
-#ytPullBar { position: fixed; bottom: -80px; left: 0; right: 0; height: 80px; display: flex; align-items: center; justify-content: center; z-index: 10000; pointer-events: none; transition: bottom 0.15s ease; }
-.ptr-spinner { width: 32px; height: 32px; border: 2.5px solid rgba(237,235,230,0.2); border-top: 2.5px solid #E8100A; border-radius: 50%; opacity: 0; transform: scale(0.6); transition: opacity 0.2s, transform 0.2s; }
-.ptr-spinner.loading { animation: ptrSpin 0.7s linear infinite; opacity: 1; transform: scale(1); }
-@keyframes ptrSpin { to { transform: rotate(360deg) scale(1); } }
+/* PULL TO PLAY: removed */
 .panel[data-active] .panel-content { padding-bottom: 40px; }
 @media (max-width: 860px) { .panel[data-active] .panel-content { padding-bottom: 28px; } }
 /* HERO SECTION ICON */
@@ -542,7 +518,6 @@ body.overlay-open #amd-header { background: transparent !important; }
 <!-- FIX 1: GSAP removed from head, loaded only before </body> -->
 </head>
 <body>
-<div id="ytPullBar"><div class="ptr-spinner" id="ptrSpinner"></div></div>
 
 <div id="amd-header">
   <a class="logo" href="/" onclick="event.preventDefault();window.location.reload();">
@@ -714,28 +689,41 @@ body.overlay-open #amd-header { background: transparent !important; }
         </div>
       </div>
 
-      <!-- WS Artist Overlay -->
-      <div class="amd-ticket-overlay" id="p1-1" style="background:var(--black);padding-top:0;">
+      <!-- WS Artist Overlay — Fullscreen photo background -->
+      <div class="amd-ticket-overlay" id="p1-1" style="background:var(--black);padding-top:0;overflow:hidden;">
         <button class="amd-ticket-close" onclick="closeWsArtistOverlay()" style="position:fixed;top:max(20px,calc(env(safe-area-inset-top)+12px));right:20px;bottom:auto;z-index:10;">×</button>
         <?php if(!empty($ws_artists)): $wa = $ws_artists[0]; $wa_photo = get_field('photo',$wa->ID); $wa_genre = get_field('genre',$wa->ID); $wa_bio = get_field('bio_ja',$wa->ID); $wa_bio_en = get_field('bio_en',$wa->ID); $wa_role = get_field('role',$wa->ID); ?>
-        <div class="panel-bg" style="background:#000;"><video autoplay muted loop playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;"><source src="https://allmustdance.com/wp-content/uploads/2026/03/20260323_152503.mp4" type="video/mp4"><img src="https://allmustdance.com/wp-content/uploads/2026/03/20260323_152503.gif" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></video></div>
-        <div class="vig-artist"></div>
-        <div class="panel-content" style="padding:24px 32px max(80px,calc(env(safe-area-inset-bottom)+60px));overflow-y:auto;overscroll-behavior-y:contain;position:relative;z-index:2;">
-          <?php if($wa_photo): ?><div style="position:absolute;inset:0;z-index:0"><img loading="lazy" src="<?= esc_url($wa_photo['url']) ?>" alt="" style="width:100%;height:100%;object-fit:cover;opacity:0.3;"></div><?php endif; ?>
-          <div class="rv eyebrow"><?= esc_html($wa_role) ?></div>
-          <div class="rv">
-            <div class="af-genre"><?= esc_html($wa_genre) ?></div>
-            <div class="af-name"><?= esc_html($wa->post_title) ?></div>
-            <?php if($wa_bio): ?><p class="af-desc"><?= esc_html($wa_bio) ?></p><?php endif; ?>
-            <?php if($wa_bio_en): ?><p class="af-desc-en"><?= esc_html($wa_bio_en) ?></p><?php endif; ?>
-          </div>
-        <?php else: ?>
-        <div class="panel-bg" style="background:#000;"></div><div class="vig-artist"></div>
-        <div class="panel-content" style="padding:24px 32px max(80px,calc(env(safe-area-inset-bottom)+60px));overflow-y:auto;overscroll-behavior-y:contain;position:relative;z-index:2;">
-          <div class="rv eyebrow">Workshop Artist</div>
-          <div class="rv"><div class="af-genre">Dance · Movement · Expression</div><div class="af-name">ARTIST<br>NAME TBA</div><p class="af-desc">アーティスト情報は近日公開予定。</p><p class="af-desc-en">Artist details coming soon.</p></div>
-        <?php endif; ?>
+        <!-- Fullscreen photo background -->
+        <?php if($wa_photo): ?>
+        <div style="position:absolute;inset:0;z-index:0;">
+          <img loading="lazy" src="<?= esc_url($wa_photo['url']) ?>" alt="" style="width:100%;height:100%;object-fit:cover;">
         </div>
+        <?php else: ?>
+        <div class="panel-bg" style="background:#000;"></div>
+        <?php endif; ?>
+        <div class="vig-artist"></div>
+        <!-- Scrollable content overlay -->
+        <div style="position:relative;z-index:2;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;display:flex;flex-direction:column;justify-content:flex-end;">
+          <div style="padding:max(100px,calc(env(safe-area-inset-top)+80px)) 32px max(80px,calc(env(safe-area-inset-bottom)+60px));">
+            <div class="rv eyebrow"><?= esc_html($wa_role) ?></div>
+            <div class="rv">
+              <div class="af-genre"><?= esc_html($wa_genre) ?></div>
+              <div class="af-name"><?= esc_html($wa->post_title) ?></div>
+              <?php if($wa_bio): ?><p class="af-desc"><?= esc_html($wa_bio) ?></p><?php endif; ?>
+              <?php if($wa_bio_en): ?><p class="af-desc-en"><?= esc_html($wa_bio_en) ?></p><?php endif; ?>
+            </div>
+          </div>
+        </div>
+        <?php else: ?>
+        <div class="panel-bg" style="background:#000;"></div>
+        <div class="vig-artist"></div>
+        <div style="position:relative;z-index:2;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;display:flex;flex-direction:column;justify-content:flex-end;">
+          <div style="padding:max(100px,calc(env(safe-area-inset-top)+80px)) 32px max(80px,calc(env(safe-area-inset-bottom)+60px));">
+            <div class="rv eyebrow">Workshop Artist</div>
+            <div class="rv"><div class="af-genre">Dance · Movement · Expression</div><div class="af-name">ARTIST<br>NAME TBA</div><p class="af-desc">アーティスト情報は近日公開予定。</p><p class="af-desc-en">Artist details coming soon.</p></div>
+          </div>
+        </div>
+        <?php endif; ?>
       </div>
 
       <!-- WS Ticket Overlay -->
@@ -892,20 +880,7 @@ body.overlay-open #amd-header { background: transparent !important; }
   </div>
 </div>
 
-<!-- FIX 4: YouTube Theater HTML -->
-<div class="yt-theater" id="ytTheater">
-  <button class="yt-theater-close" id="ytClose" onclick="closeTheater()">×</button>
-  <div class="yt-theater-intro" id="ytIntro">
-    <img id="ytIntroGif" src="" alt="" style="width:100%;height:100%;object-fit:cover;">
-  </div>
-  <div class="yt-shorts-wrap" id="ytShortsWrap">
-    <iframe class="yt-shorts-frame" id="ytShortsFrame" src="" allow="autoplay;encrypted-media" allowfullscreen></iframe>
-    <div class="yt-shorts-nav" id="ytShortsNav"></div>
-    <div id="ytSwipeOverlay" style="position:absolute;inset:0;z-index:4;"></div>
-    <div id="ytSwipeOverlay2" style="position:absolute;bottom:0;left:0;right:0;height:120px;z-index:5;"></div>
-  </div>
-</div>
-<button class="yt-mute-btn" id="ytMuteBtn">🔇</button>
+<!-- YouTube Theater: Pull-to-Play removed -->
 
 <!-- GOOD GOODS OVERLAY -->
 <div class="amd-ticket-overlay" id="goodsOverlay">
@@ -1262,88 +1237,7 @@ const parallaxEls=document.querySelectorAll('.parallax-bg');
 let ticking=false;
 window.addEventListener('scroll',()=>{if(ticking)return;ticking=true;requestAnimationFrame(()=>{parallaxEls.forEach(el=>{const section=el.closest('.chapter');if(!section)return;const progress=-section.getBoundingClientRect().top/window.innerHeight;el.style.transform=`translateY(${progress*40}px)`;});ticking=false;});},{passive:true});
 
-/* YOUTUBE THEATER */
-const ytTheater    = document.getElementById('ytTheater');
-const ytClose      = document.getElementById('ytClose');
-const ytIntro      = document.getElementById('ytIntro');
-const ytShortsWrap = document.getElementById('ytShortsWrap');
-const ytShortsFrame= document.getElementById('ytShortsFrame');
-const ytShortsNav  = document.getElementById('ytShortsNav');
-
-const GIF_URL      = 'https://allmustdance.com/wp-content/uploads/2026/03/theater.gif';
-const GIF_DURATION = 4000;
-const SHORTS = [
-  { id: 'kP56sTI5bIw', title: 'Short 1' },
-  { id: 'g0cKZ3CK84Q', title: 'Short 2' },
-  { id: 'kJFir9vlOC0', title: 'Short 3' },
-  { id: '1cSuNZ9y71Q', title: 'Short 4' },
-];
-let ytIdx = 0, ytFallbackTimer, ytTheaterOpened = false, ytMuted = true;
-
-function buildYtNav(){
-  if(!ytShortsNav) return;
-  ytShortsNav.innerHTML = '';
-  SHORTS.forEach((_,i)=>{
-    const d=document.createElement('div');
-    d.className='yt-shorts-dot'+(i===ytIdx?' on':'');
-    d.onclick=()=>loadShort(i);
-    ytShortsNav.appendChild(d);
-  });
-}
-
-function loadShort(idx){
-  ytIdx=idx;
-  const muteParam=ytMuted?'1':'0';
-  if(ytShortsFrame) ytShortsFrame.src=`https://www.youtube.com/embed/${SHORTS[idx].id}?autoplay=1&mute=${muteParam}&rel=0&playsinline=1&loop=1&playlist=${SHORTS[idx].id}&enablejsapi=1`;
-  buildYtNav(); updateMuteBtn();
-}
-
-function updateMuteBtn(){
-  const btn=document.getElementById('ytMuteBtn');
-  if(btn) btn.textContent=ytMuted?'🔇':'🔊';
-}
-
-const ytMuteBtn=document.getElementById('ytMuteBtn');
-if(ytMuteBtn){ ytMuteBtn.addEventListener('click',()=>{ ytMuted=!ytMuted; loadShort(ytIdx); updateMuteBtn(); }); }
-
-function showShorts(){
-  clearTimeout(ytFallbackTimer);
-  if(ytIntro) ytIntro.classList.add('fade-out');
-  setTimeout(()=>{
-    if(ytShortsWrap) ytShortsWrap.classList.add('visible');
-    loadShort(0); buildYtNav();
-    const btn=document.getElementById('ytMuteBtn');
-    if(btn) btn.classList.add('visible');
-  },400);
-}
-
-/* FIX 5: openTheater and closeTheater defined */
-function openTheater(){
-  if(!ytTheater) return;
-  ytTheater.classList.add('open');
-  document.body.classList.add('overlay-open');
-  lockBodyScroll();
-  if(ytIntro) ytIntro.classList.remove('fade-out');
-  if(ytShortsWrap) ytShortsWrap.classList.remove('visible');
-  var gif=document.getElementById('ytIntroGif');
-  if(gif){ gif.src=GIF_URL+'?r='+Math.random(); }
-  clearTimeout(ytFallbackTimer);
-  ytFallbackTimer=setTimeout(showShorts, GIF_DURATION);
-}
-
-function closeTheater(){
-  if(!ytTheater) return;
-  ytTheater.classList.remove('open');
-  document.body.classList.remove('overlay-open');
-  unlockBodyScroll();
-  var gif=document.getElementById('ytIntroGif');
-  if(gif) gif.src='';
-  if(ytShortsFrame) ytShortsFrame.src='';
-  clearTimeout(ytFallbackTimer);
-  ytMuted=true;
-  var btn=document.getElementById('ytMuteBtn');
-  if(btn){btn.classList.remove('visible');btn.textContent='🔇';}
-}
+/* YOUTUBE THEATER: removed */
 
 function openVideoOverlay(){
   document.body.classList.add('overlay-open');
@@ -1359,46 +1253,9 @@ function closeVideoOverlay(){
   updateUI();
 }
 
-/* Theater swipe */
-let ytSwipeY0=0;
-['ytSwipeOverlay','ytSwipeOverlay2'].forEach(id=>{
-  const el=document.getElementById(id); if(!el) return;
-  el.addEventListener('touchstart',e=>{ytSwipeY0=e.touches[0].clientY;},{passive:true});
-  el.addEventListener('touchend',e=>{const dy=ytSwipeY0-e.changedTouches[0].clientY;if(Math.abs(dy)<40)return;if(dy>0&&ytIdx<SHORTS.length-1)loadShort(ytIdx+1);else if(dy<0&&ytIdx>0)loadShort(ytIdx-1);},{passive:true});
-});
+/* Theater swipe: removed */
 
-/* PULL TO PLAY */
-const ytPullBar=document.getElementById('ytPullBar');
-const ptrSpinner=document.getElementById('ptrSpinner');
-const PTR_CHAPTER=document.getElementById('c1');
-const PTR_PX=100;
-let ptrY0=0,ptrOn=false,ptrDone=false,ptrReady=false;
-
-function atWorkshopEnd(){
-  if(ytTheaterOpened||ptrDone) return false;
-  const el=document.getElementById('c1'); if(!el) return false;
-  const elTop=el.offsetTop; const elH=el.offsetHeight;
-  const sy=window.scrollY; const vh=window.innerHeight;
-  return Math.abs((elTop+elH)-(sy+vh))<150;
-}
-
-window.addEventListener('touchstart',e=>{if(!atWorkshopEnd())return;ptrY0=e.touches[0].clientY;ptrOn=true;ptrReady=false;},{passive:true});
-window.addEventListener('touchmove',e=>{
-  if(!ptrOn) return; const dy=ptrY0-e.touches[0].clientY;
-  if(dy<=0){ptrOn=false;ptrReady=false;return;}
-  const p=Math.min(dy/PTR_PX,1);
-  if(PTR_CHAPTER) PTR_CHAPTER.style.transform=`translateY(-${dy*0.15}px)`;
-  if(ytPullBar) ytPullBar.style.bottom=`${-80+Math.min(dy*0.8,72)}px`;
-  if(ptrSpinner){ ptrSpinner.style.opacity=p.toFixed(2); if(p<1){ptrSpinner.style.transform=`rotate(${dy*5}deg) scale(${0.4+p*0.6})`;} else if(!ptrReady){ptrReady=true;ptrSpinner.classList.add('loading');ptrSpinner.style.transform='';} }
-},{passive:true});
-window.addEventListener('touchend',()=>{
-  if(!ptrOn) return; ptrOn=false;
-  if(PTR_CHAPTER){PTR_CHAPTER.style.transition='transform 0.5s cubic-bezier(0.34,1.56,0.64,1)';PTR_CHAPTER.style.transform='translateY(0)';setTimeout(()=>{PTR_CHAPTER.style.transition='';},550);}
-  if(ytPullBar){ytPullBar.style.transition='bottom 0.35s ease';ytPullBar.style.bottom='-80px';setTimeout(()=>{ytPullBar.style.transition='';},400);}
-  if(ptrSpinner){ptrSpinner.classList.remove('loading');ptrSpinner.style.opacity='0';ptrSpinner.style.transform='scale(0.4)';}
-  if(ptrReady&&!ytTheaterOpened){ptrDone=true;ytTheaterOpened=true;setTimeout(()=>openTheater(),300);}
-  ptrReady=false;
-},{passive:true});
+/* PULL TO PLAY: removed */
 
 /* WHEEL */
 let wheelTimer, wheelDelta=0;
@@ -1422,9 +1279,6 @@ window.addEventListener('wheel',e=>{
 /* SCROLL ANIMATION OBSERVER */
 const animIO=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('in');animIO.unobserve(entry.target);}});},{threshold:0.15,rootMargin:'0px 0px -40px 0px'});
 document.querySelectorAll('.anim-up, .anim-left, .anim-right').forEach(el=>animIO.observe(el));
-
-/* GIF PRECACHE */
-(new Image()).src = GIF_URL;
 
 /* JP/EN LANGUAGE */
 function amdToggleLang(){
