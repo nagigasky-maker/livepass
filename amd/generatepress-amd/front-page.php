@@ -561,34 +561,26 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 }
 /* PWA INSTALL BANNER */
 .pwa-banner{position:fixed;bottom:0;left:0;right:0;z-index:9500;transform:translateY(100%);transition:transform .5s cubic-bezier(.22,1,.36,1);pointer-events:none;}
-/* SOUNDCLOUD SIDE TAB PLAYER */
-.sc-player{position:fixed;right:0;top:50%;transform:translateY(-50%) translateX(100%);z-index:9400;transition:transform .5s cubic-bezier(.22,1,.36,1);pointer-events:none;display:flex;flex-direction:row-reverse;align-items:center;}
-.sc-player.show{transform:translateY(-50%) translateX(0);pointer-events:all;}
-.sc-player.show.collapsed{transform:translateY(-50%) translateX(calc(100% - 40px));pointer-events:all;}
-/* Tab handle (always visible when shown) */
-.sc-player-tab{flex-shrink:0;width:40px;min-height:120px;background:rgba(12,15,26,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(237,235,230,.08);border-right:none;border-radius:14px 0 0 14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
-.sc-player-tab-icon{width:22px;height:22px;fill:var(--red);}
-.sc-player-tab-label{writing-mode:vertical-rl;text-orientation:mixed;font-size:8px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(237,235,230,.5);}
-.sc-player-tab-pulse{width:6px;height:6px;border-radius:50%;background:var(--red);opacity:0;animation:none;}
-.sc-player.playing .sc-player-tab-pulse{opacity:1;animation:scPulse 1.5s ease-in-out infinite;}
-@keyframes scPulse{0%,100%{opacity:.4;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
-/* Panel content */
-.sc-player-panel{width:280px;background:rgba(12,15,26,.95);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(237,235,230,.08);border-right:none;border-radius:14px 0 0 14px;overflow:hidden;}
-.sc-player-header{padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
-.sc-player-info{display:flex;align-items:center;gap:10px;}
+/* SOUNDCLOUD BOTTOM BAR PLAYER */
+.sc-player{position:fixed;bottom:0;left:0;right:0;z-index:9400;transform:translateY(100%);transition:transform .5s cubic-bezier(.22,1,.36,1);pointer-events:none;}
+.sc-player.show{transform:translateY(0);pointer-events:all;}
+.sc-player-bar{margin:0 10px max(10px,env(safe-area-inset-bottom));background:rgba(12,15,26,.94);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(237,235,230,.08);border-radius:14px;overflow:hidden;}
+.sc-player-header{display:flex;align-items:center;padding:10px 14px;gap:10px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
 .sc-player-icon{flex-shrink:0;width:32px;height:32px;border-radius:8px;background:rgba(232,16,10,.08);border:1px solid rgba(232,16,10,.25);display:flex;align-items:center;justify-content:center;}
 .sc-player-icon svg{width:16px;height:16px;fill:var(--red);}
+.sc-player-pulse{width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0;opacity:0;}
+.sc-player.playing .sc-player-pulse{opacity:1;animation:scPulse 1.5s ease-in-out infinite;}
+@keyframes scPulse{0%,100%{opacity:.4;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
 .sc-player-text{min-width:0;flex:1;}
-.sc-player-title{font-family:Arial,"Arial Black",sans-serif;font-size:10px;font-weight:700;letter-spacing:.04em;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.sc-player-sub{font-size:7px;font-weight:300;letter-spacing:.2em;text-transform:uppercase;color:rgba(237,235,230,.4);margin-top:2px;}
-.sc-player-btns{display:flex;align-items:center;gap:8px;}
-.sc-player-play{width:36px;height:36px;border-radius:50%;background:var(--red);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s;flex-shrink:0;}
+.sc-player-title{font-family:Arial,"Arial Black",sans-serif;font-size:10px;font-weight:700;letter-spacing:.03em;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sc-player-sub{font-size:7px;font-weight:300;letter-spacing:.18em;text-transform:uppercase;color:rgba(237,235,230,.4);margin-top:1px;}
+.sc-player-play{width:34px;height:34px;border-radius:50%;background:var(--red);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s;flex-shrink:0;}
 .sc-player-play:active{transform:scale(.9);}
-.sc-player-play svg{width:14px;height:14px;fill:#fff;margin-left:2px;}
+.sc-player-play svg{width:13px;height:13px;fill:#fff;margin-left:2px;}
 .sc-player-play.playing svg{margin-left:0;}
-.sc-player-close{background:none;border:none;color:rgba(237,235,230,.3);font-size:9px;letter-spacing:.15em;cursor:pointer;padding:4px 0;text-transform:uppercase;}
-.sc-player-embed{overflow:hidden;transition:height .3s;height:0;}
-.sc-player.expanded .sc-player-embed{height:166px;}
+.sc-player-close{background:none;border:none;color:rgba(237,235,230,.3);font-size:14px;cursor:pointer;padding:4px;line-height:1;flex-shrink:0;}
+.sc-player-embed{height:0;overflow:hidden;transition:height .3s ease;}
+.sc-player.expanded .sc-player-embed{height:120px;}
 .pwa-banner.show{transform:translateY(0);pointer-events:all;}
 .pwa-banner-inner{margin:0 12px max(12px,env(safe-area-inset-bottom));background:rgba(12,15,26,.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(237,235,230,.08);padding:16px 20px;display:flex;align-items:center;gap:16px;}
 .pwa-icon-wrap{flex-shrink:0;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(232,16,10,.3);background:rgba(232,16,10,.06);}
@@ -2135,33 +2127,23 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 </script>
 
-<!-- SOUNDCLOUD SIDE TAB PLAYER -->
+<!-- SOUNDCLOUD BOTTOM BAR PLAYER -->
 <div class="sc-player" id="scPlayer">
-  <!-- Tab handle -->
-  <div class="sc-player-tab" id="scTab" onclick="toggleScTab()">
-    <svg class="sc-player-tab-icon" viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
-    <span class="sc-player-tab-label">MUSIC</span>
-    <div class="sc-player-tab-pulse"></div>
-  </div>
-  <!-- Panel -->
-  <div class="sc-player-panel">
-    <div class="sc-player-header">
-      <div class="sc-player-info">
-        <div class="sc-player-icon"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div>
-        <div class="sc-player-text">
-          <div class="sc-player-title">Somewhere_MST 2</div>
-          <div class="sc-player-sub">Elhast_experience · AMD™ EP.07</div>
-        </div>
+  <div class="sc-player-bar">
+    <div class="sc-player-header" onclick="toggleScExpand()">
+      <div class="sc-player-icon"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div>
+      <div class="sc-player-pulse"></div>
+      <div class="sc-player-text">
+        <div class="sc-player-title">Somewhere_MST 2</div>
+        <div class="sc-player-sub">Elhast_experience · AMD™ EP.07</div>
       </div>
-      <div class="sc-player-btns">
-        <button class="sc-player-play" id="scPlayBtn" onclick="toggleScPlayer()">
-          <svg id="scPlayIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        </button>
-        <button class="sc-player-close" onclick="dismissScPlayer()">CLOSE</button>
-      </div>
+      <button class="sc-player-play" id="scPlayBtn" onclick="event.stopPropagation();toggleScPlayer()">
+        <svg id="scPlayIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <button class="sc-player-close" onclick="event.stopPropagation();dismissScPlayer()">×</button>
     </div>
     <div class="sc-player-embed" id="scEmbed">
-      <iframe id="scIframe" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="" style="display:block;"></iframe>
+      <iframe id="scIframe" width="100%" height="120" scrolling="no" frameborder="no" allow="autoplay" src="" style="display:block;"></iframe>
     </div>
   </div>
 </div>
@@ -2230,17 +2212,16 @@ var _scSrc = 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/
 function showScPlayer(){
   if(_scDismissed) return;
   var el = document.getElementById('scPlayer');
-  if(el){ el.classList.add('show'); el.classList.add('collapsed'); }
+  if(el) el.classList.add('show');
 }
-function toggleScTab(){
+function toggleScExpand(){
   var el = document.getElementById('scPlayer');
-  if(!el) return;
-  el.classList.toggle('collapsed');
+  if(el) el.classList.toggle('expanded');
 }
 function dismissScPlayer(){
   _scDismissed = true;
   var el = document.getElementById('scPlayer');
-  if(el){ el.classList.remove('show'); el.classList.remove('collapsed'); el.classList.remove('playing'); }
+  if(el){ el.classList.remove('show','expanded','playing'); }
   var iframe = document.getElementById('scIframe');
   if(iframe) iframe.src = '';
   _scPlaying = false;
@@ -2253,17 +2234,17 @@ function toggleScPlayer(){
     _scLoaded = true;
     iframe.src = _scSrc;
     _scPlaying = true;
-    if(player){ player.classList.add('expanded'); player.classList.add('playing'); }
+    if(player) player.classList.add('playing');
     updateScIcon();
   } else if(_scPlaying){
     iframe.src = '';
     _scPlaying = false;
-    if(player){ player.classList.remove('expanded'); player.classList.remove('playing'); }
+    if(player) player.classList.remove('playing','expanded');
     updateScIcon();
   } else {
     iframe.src = _scSrc;
     _scPlaying = true;
-    if(player){ player.classList.add('expanded'); player.classList.add('playing'); }
+    if(player) player.classList.add('playing');
     updateScIcon();
   }
 }
