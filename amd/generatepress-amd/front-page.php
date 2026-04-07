@@ -220,12 +220,12 @@ html {
 .amd-ticket-overlay .info-row { padding:16px 0; }
 @media (max-width:860px) { .amd-ticket-overlay .two-col { grid-template-columns:1fr; } }
 .amd-ticket-overlay.open { transform:translateY(0); }
-.amd-ticket-close { position:absolute; bottom:max(32px, calc(env(safe-area-inset-bottom) + 24px)); right:28px; z-index:5; background:none; border:1px solid rgba(237,235,230,0.2); color:rgba(237,235,230,0.6); font-size:18px; line-height:1; width:44px; height:44px; display:flex; align-items:center; justify-content:center; cursor:pointer; border-radius:50%; }
+.amd-ticket-close { position:absolute; bottom:max(32px, calc(env(safe-area-inset-bottom) + 24px)); right:28px; z-index:10000; background:rgba(12,15,26,0.6); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border:1px solid rgba(237,235,230,0.2); color:rgba(237,235,230,0.6); font-size:18px; line-height:1; width:44px; height:44px; display:flex; align-items:center; justify-content:center; cursor:pointer; border-radius:50%; transition:border-color .2s, color .2s; }
 .amd-artist-panel { position:fixed; inset:0; z-index:9000; touch-action:pan-y; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; }
 .amd-artist-panel.open { transform:translateY(0); }
 .amd-ap-bg { position:absolute; inset:0; background:rgba(12,15,26,0.97); }
 .amd-ap-inner { position:relative; z-index:2; height:100%; display:flex; flex-direction:column; padding:max(72px, calc(env(safe-area-inset-top) + 60px)) 0 0; overflow-y:auto; }
-.amd-ap-close { position:absolute; bottom:max(32px, calc(env(safe-area-inset-bottom) + 24px)); right:28px; z-index:5; background:none; border:1px solid rgba(237,235,230,0.2); color:rgba(237,235,230,0.6); font-size:18px; line-height:1; width:44px; height:44px; display:flex; align-items:center; justify-content:center; cursor:pointer; border-radius:50%; transition:border-color .2s, color .2s; }
+.amd-ap-close { position:absolute; bottom:max(32px, calc(env(safe-area-inset-bottom) + 24px)); right:28px; z-index:10000; background:rgba(12,15,26,0.6); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border:1px solid rgba(237,235,230,0.2); color:rgba(237,235,230,0.6); font-size:18px; line-height:1; width:44px; height:44px; display:flex; align-items:center; justify-content:center; cursor:pointer; border-radius:50%; transition:border-color .2s, color .2s; }
 .amd-ap-title { font-size:9px; letter-spacing:0.42em; text-transform:uppercase; color:rgba(237,235,230,0.3); padding:0 20px; margin-bottom:16px; }
 .amd-ap-groups { display:flex; flex-direction:column; gap:3px; padding:0 0 40px; }
 .amd-ap-group { position:relative; height:clamp(200px,28vh,280px); overflow:hidden; cursor:pointer; border-radius:0; }
@@ -238,8 +238,8 @@ html {
 .amd-ap-group-members { font-size:10px; letter-spacing:0.18em; color:rgba(237,235,230,0.45); margin-top:6px; line-height:1.8; }
 .amd-card-stack { position:fixed; inset:0; z-index:9100; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); background:var(--black); }
 .amd-card-stack.open { transform:translateY(0); }
-.amd-cs-close { position:absolute; top:max(22px, calc(env(safe-area-inset-top) + 14px)); left:24px; z-index:30; background:none; border:none; color:rgba(237,235,230,0.5); font-size:11px; letter-spacing:0.28em; text-transform:uppercase; cursor:pointer; }
-.amd-cs-title { position:absolute; top:max(24px, calc(env(safe-area-inset-top) + 14px)); left:50%; transform:translateX(-50%); z-index:30; font-size:9px; letter-spacing:0.38em; text-transform:uppercase; color:rgba(237,235,230,0.3); white-space:nowrap; }
+.amd-cs-close { position:absolute; top:max(22px, calc(env(safe-area-inset-top) + 14px)); left:24px; z-index:10000; background:none; border:none; color:rgba(237,235,230,0.5); font-size:11px; letter-spacing:0.28em; text-transform:uppercase; cursor:pointer; }
+.amd-cs-title { position:absolute; top:max(24px, calc(env(safe-area-inset-top) + 14px)); left:50%; transform:translateX(-50%); z-index:10000; font-size:9px; letter-spacing:0.38em; text-transform:uppercase; color:rgba(237,235,230,0.3); white-space:nowrap; }
 #cardStackStage { position:absolute; inset:0; }
 .amd-card { position:absolute; inset:0; will-change:transform,opacity; }
 .amd-card-content { position:absolute; inset:0; z-index:2; display:flex; flex-direction:column; justify-content:flex-end; padding:28px 24px 44px; }
@@ -504,7 +504,7 @@ a.sc:hover { background: rgba(237,235,230,0.06); }
 .amd-card-stack .af-desc-en { display:none; color:var(--white); }
 [data-lang="en"] .amd-card-stack .af-desc { display:none; }
 [data-lang="en"] .amd-card-stack .af-desc-en { display:block; }
-body.overlay-open #amd-header { background: transparent !important; }
+body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opacity .2s; }
 [data-lazy] { visibility: hidden; }
 .gsap-ready [data-lazy] { visibility: visible; }
 #c2-track, #c3-track, #c4-track { overflow: hidden !important; }
@@ -691,7 +691,7 @@ body.overlay-open #amd-header { background: transparent !important; }
 
       <!-- WS Artist Overlay — Fullscreen photo background -->
       <div class="amd-ticket-overlay" id="p1-1" style="background:var(--black);padding-top:0;overflow:hidden;">
-        <button class="amd-ticket-close" onclick="closeWsArtistOverlay()" style="position:fixed;top:max(20px,calc(env(safe-area-inset-top)+12px));right:20px;bottom:auto;z-index:10;">×</button>
+        <button class="amd-ticket-close" onclick="closeWsArtistOverlay()">×</button>
         <?php if(!empty($ws_artists)): $wa = $ws_artists[0]; $wa_photo = get_field('photo',$wa->ID); $wa_genre = get_field('genre',$wa->ID); $wa_bio = get_field('bio_ja',$wa->ID); $wa_bio_en = get_field('bio_en',$wa->ID); $wa_role = get_field('role',$wa->ID); ?>
         <!-- Fullscreen photo background -->
         <?php if($wa_photo): ?>
