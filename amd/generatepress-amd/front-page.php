@@ -1758,7 +1758,7 @@ setTimeout(function(){ _revealed['c0']=true; },300);
    ZINE Book — HOME COMING multi-page flip
    page 0 = cover, 1 = EP03, 2 = EP02 (last, no flip)
    ================================================ */
-function flipZineBook(e){
+window.flipZineBook = function(e){
   if(e.target.closest('.zine-book-close')) return;
   var book = document.getElementById('zineBook07');
   if(!book) return;
@@ -1778,10 +1778,10 @@ function flipZineBook(e){
     if(deck) deck.style.overflow='hidden';
   } else {
     /* All pages flipped — return to cover */
-    closeZineBook();
+    window.closeZineBook();
   }
-}
-function closeZineBook(){
+};
+window.closeZineBook = function(){
   var book = document.getElementById('zineBook07');
   if(!book) return;
   /* Unflip all pages */
@@ -1791,7 +1791,7 @@ function closeZineBook(){
   document.body.style.overflow='';
   var deck=document.getElementById('deck');
   if(deck) deck.style.overflow='';
-}
+};
 
 /* ================================================
    GSAP 031 — ZINE Card Stack Effect
