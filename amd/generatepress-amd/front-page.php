@@ -564,6 +564,14 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 .pwa-step-text{font-size:13px;font-weight:300;color:rgba(237,235,230,.8);letter-spacing:.04em;line-height:1.8;}
 .pwa-step-text strong{font-weight:500;color:var(--white);}
 .pwa-guide-footer{font-size:8px;letter-spacing:.4em;text-transform:uppercase;color:rgba(237,235,230,.2);margin-top:20px;}
+/* ZINE ANIMATIONS */
+.zine-anim { opacity:0; transform:translateY(24px); transition:opacity .6s cubic-bezier(.22,1,.36,1), transform .6s cubic-bezier(.22,1,.36,1); }
+.zine-anim.in { opacity:1; transform:translateY(0); }
+/* ZINE ISSUE OVERLAY */
+.zine-overlay { position:fixed; inset:0; z-index:8950; background:var(--black); transform:translateY(100%); transition:transform .45s cubic-bezier(.32,0,.2,1); overflow-x:hidden; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; touch-action:pan-y; isolation:isolate; }
+.zine-overlay.open { transform:translateY(0); }
+.zine-overlay-header { position:sticky; top:0; z-index:5; display:flex; justify-content:space-between; align-items:center; padding:max(16px,calc(env(safe-area-inset-top)+8px)) 28px 14px; background:linear-gradient(to bottom,rgba(12,15,26,.95) 0%,rgba(12,15,26,.8) 80%,transparent); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+.zine-overlay-body { padding:0 28px max(60px,calc(env(safe-area-inset-bottom)+40px)); }
 </style>
 <!-- FIX 1: GSAP removed from head, loaded only before </body> -->
 </head>
@@ -722,9 +730,9 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
   <!-- CHAPTER: ZINE (magazine-style section) -->
   <div class="chapter chapter-auto" id="cZine" style="height:auto;min-height:100vh;scroll-snap-align:start;">
     <div style="background:var(--black);min-height:100vh;position:relative;">
-      <!-- Magazine masthead -->
       <div style="padding:max(90px,calc(env(safe-area-inset-top)+72px)) 28px 0;position:relative;z-index:2;">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;">
+        <!-- Masthead (animated) -->
+        <div class="zine-anim" style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;">
           <div>
             <div style="font-family:Arial,'Arial Black',sans-serif;font-size:clamp(48px,12vw,72px);font-weight:900;color:var(--white);line-height:.85;letter-spacing:-.03em;">ZINE</div>
             <div style="font-size:8px;letter-spacing:.5em;text-transform:uppercase;color:rgba(237,235,230,.25);margin-top:6px;">ALL MUST DANCE™ · Issue Archive</div>
@@ -734,54 +742,54 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
             <div style="font-family:Arial,'Arial Black',sans-serif;font-size:32px;font-weight:900;color:rgba(237,235,230,.08);line-height:1;">07</div>
           </div>
         </div>
-        <!-- Divider -->
-        <div style="height:1px;background:linear-gradient(to right,var(--red),rgba(237,235,230,.08) 60%,transparent);margin-bottom:28px;"></div>
-        <!-- Featured article -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:2px;">
-          <a href="<?= home_url('/zine-index/') ?>" style="display:block;aspect-ratio:3/4;background:linear-gradient(160deg,#111428,#0C0F1A);position:relative;overflow:hidden;border:1px solid rgba(237,235,230,.06);">
-            <img loading="lazy" src="<?= get_stylesheet_directory_uri() ?>/logos/amd2026asia.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.7;transition:opacity .3s;">
+        <div class="zine-anim" style="height:1px;background:linear-gradient(to right,var(--red),rgba(237,235,230,.08) 60%,transparent);margin-bottom:28px;"></div>
+
+        <!-- Featured grid (animated) -->
+        <div class="zine-anim" style="display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:2px;">
+          <div onclick="openZineIssue('ep07')" style="cursor:pointer;display:block;aspect-ratio:3/4;background:linear-gradient(160deg,#111428,#0C0F1A);position:relative;overflow:hidden;border:1px solid rgba(237,235,230,.06);">
+            <img loading="lazy" src="<?= get_stylesheet_directory_uri() ?>/logos/amd2026asia.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.7;transition:opacity .3s,transform .4s;">
             <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(12,15,26,.95) 0%,transparent 60%);"></div>
             <div style="position:absolute;bottom:0;left:0;right:0;padding:16px;">
               <div style="font-size:7px;letter-spacing:.4em;text-transform:uppercase;color:var(--red);margin-bottom:4px;">EP.07</div>
               <div style="font-family:Arial,'Arial Black',sans-serif;font-size:18px;font-weight:900;color:var(--white);line-height:1.1;">HOME<br>COMING</div>
               <div style="font-size:8px;letter-spacing:.2em;color:rgba(237,235,230,.4);margin-top:6px;">2026.05.04</div>
             </div>
-          </a>
+          </div>
           <div style="display:flex;flex-direction:column;gap:2px;">
-            <a href="<?= home_url('/zine-index/') ?>" style="flex:1;display:block;background:#09090c;position:relative;overflow:hidden;border:1px solid rgba(237,235,230,.06);padding:16px;">
+            <div onclick="openZineIssue('ep06')" style="cursor:pointer;flex:1;display:block;background:#09090c;position:relative;overflow:hidden;border:1px solid rgba(237,235,230,.06);padding:16px;transition:background .2s;">
               <div style="font-size:7px;letter-spacing:.4em;text-transform:uppercase;color:var(--red);margin-bottom:6px;">EP.06</div>
               <div style="font-family:Arial,'Arial Black',sans-serif;font-size:14px;font-weight:900;color:var(--white);line-height:1.15;">CHEEKY<br>SESSION</div>
               <div style="font-size:8px;letter-spacing:.15em;color:rgba(237,235,230,.35);margin-top:8px;">Experimental night</div>
-            </a>
-            <a href="<?= home_url('/zine-index/') ?>" style="flex:1;display:block;background:#09090c;position:relative;overflow:hidden;border:1px solid rgba(237,235,230,.06);padding:16px;">
+            </div>
+            <div onclick="openZineIssue('ep05')" style="cursor:pointer;flex:1;display:block;background:#09090c;position:relative;overflow:hidden;border:1px solid rgba(237,235,230,.06);padding:16px;transition:background .2s;">
               <div style="font-size:7px;letter-spacing:.4em;text-transform:uppercase;color:var(--red);margin-bottom:6px;">EP.05</div>
               <div style="font-family:Arial,'Arial Black',sans-serif;font-size:14px;font-weight:900;color:var(--white);line-height:1.15;">ROOFTOP<br>PARCO</div>
               <div style="font-size:8px;letter-spacing:.15em;color:rgba(237,235,230,.35);margin-top:8px;">Shibuya skyline</div>
-            </a>
+            </div>
           </div>
         </div>
-        <!-- Article list -->
+
+        <!-- Archive list (animated) -->
         <div style="border-top:1px solid rgba(237,235,230,.06);margin-top:24px;">
           <?php
           $zine_eps = [
-            ['num'=>'04','title'=>'CLUB ASIA','date'=>'2024.07.14','tag'=>'Archive'],
-            ['num'=>'03','title'=>'ORIGINS','date'=>'2024.03','tag'=>'Archive'],
-            ['num'=>'02','title'=>'FIRST STEP','date'=>'2023','tag'=>'Archive'],
-            ['num'=>'01','title'=>'GENESIS','date'=>'2023','tag'=>'Archive'],
+            ['key'=>'ep04','num'=>'04','title'=>'CLUB ASIA','date'=>'2024.07.14','tag'=>'Archive'],
+            ['key'=>'ep03','num'=>'03','title'=>'ORIGINS','date'=>'2024.03','tag'=>'Archive'],
+            ['key'=>'ep02','num'=>'02','title'=>'FIRST STEP','date'=>'2023','tag'=>'Archive'],
+            ['key'=>'ep01','num'=>'01','title'=>'GENESIS','date'=>'2023','tag'=>'Archive'],
           ];
           foreach($zine_eps as $ze): ?>
-          <a href="<?= home_url('/zine-index/') ?>" style="display:flex;align-items:center;padding:14px 0;border-bottom:1px solid rgba(237,235,230,.06);text-decoration:none;color:var(--white);gap:16px;">
+          <div class="zine-anim" onclick="openZineIssue('<?= $ze['key'] ?>')" style="cursor:pointer;display:flex;align-items:center;padding:14px 0;border-bottom:1px solid rgba(237,235,230,.06);color:var(--white);gap:16px;transition:padding-left .2s;" onmouseover="this.style.paddingLeft='8px'" onmouseout="this.style.paddingLeft='0'">
             <span style="font-family:Arial,'Arial Black',sans-serif;font-size:28px;font-weight:900;color:rgba(237,235,230,.06);min-width:48px;text-align:right;"><?= $ze['num'] ?></span>
             <span style="flex:1;">
               <span style="display:block;font-family:Arial,'Arial Black',sans-serif;font-size:15px;font-weight:900;letter-spacing:.02em;"><?= $ze['title'] ?></span>
               <span style="display:block;font-size:9px;letter-spacing:.15em;color:rgba(237,235,230,.35);margin-top:2px;"><?= $ze['date'] ?></span>
             </span>
-            <span style="font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(237,235,230,.2);border:1px solid rgba(237,235,230,.08);padding:3px 8px;"><?= $ze['tag'] ?></span>
-          </a>
+            <span style="font-size:12px;color:var(--red);opacity:0;transition:opacity .2s;">→</span>
+          </div>
           <?php endforeach; ?>
         </div>
-        <!-- View all -->
-        <div style="text-align:center;padding:28px 0 max(40px,calc(env(safe-area-inset-bottom)+24px));">
+        <div class="zine-anim" style="text-align:center;padding:28px 0 max(40px,calc(env(safe-area-inset-bottom)+24px));">
           <a href="<?= home_url('/zine-index/') ?>" style="font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:rgba(237,235,230,.35);text-decoration:none;border-bottom:1px solid rgba(237,235,230,.12);padding-bottom:3px;">View All Issues →</a>
         </div>
       </div>
@@ -1412,6 +1420,19 @@ window.addEventListener('wheel',e=>{
 const animIO=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('in');animIO.unobserve(entry.target);}});},{threshold:0.15,rootMargin:'0px 0px -40px 0px'});
 document.querySelectorAll('.anim-up, .anim-left, .anim-right').forEach(el=>animIO.observe(el));
 
+/* ZINE section staggered entrance animation */
+const zineAnimIO = new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      const els = document.querySelectorAll('.zine-anim');
+      els.forEach((el,i)=>{ setTimeout(()=>el.classList.add('in'), i*100); });
+      zineAnimIO.unobserve(entry.target);
+    }
+  });
+},{threshold:0.1});
+const zineEl = document.getElementById('cZine');
+if(zineEl) zineAnimIO.observe(zineEl);
+
 /* JP/EN LANGUAGE */
 function amdToggleLang(){
   const html=document.getElementById('amdHtml');
@@ -1665,6 +1686,99 @@ document.addEventListener('DOMContentLoaded', function(){
     }, {passive:false});
   });
 });
+</script>
+
+<!-- ZINE ISSUE OVERLAY -->
+<div class="zine-overlay" id="zineOverlay">
+  <div class="zine-overlay-header">
+    <div style="font-size:9px;letter-spacing:.38em;text-transform:uppercase;color:rgba(237,235,230,.4);" id="zineOverlayLabel">ZINE</div>
+    <button onclick="closeZineIssue()" style="background:none;border:1px solid rgba(237,235,230,.15);color:rgba(237,235,230,.5);font-size:16px;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
+  </div>
+  <div class="zine-overlay-body" id="zineOverlayBody"></div>
+</div>
+
+<!-- ZINE ISSUE DATA -->
+<script>
+var _zineData = {
+  ep07: {
+    num:'07', title:'HOMECOMING', date:'2026.05.04', venue:'clubasia, Shibuya',
+    lead:'EP.05でPARCOの屋上へ飛び出し、EP.06でCheekyで実験し——AMD™はclubasia（ホームグラウンド）に戻ってくる。',
+    body:'<p>これは帰還であり、次の旅への出発点だ。ホームグラウンドであるclubasiaに帰ってくる意味。それは単なるノスタルジーではない。すべての実験を経て、原点に立ち返ることで見えるものがある。</p><p>DEEP FLOOR、FDOOR、DRESSER BY DANCER——3つのフロアが交差する夜。踊る者、聴く者、纏う者。すべてが一つになる。</p>',
+    credits:[['DJ','EJOE WILLSON · DJ KANGO · Williams · MOZYSKEY'],['BAR','FDOOR crew'],['DRESSER','DRESSER BY DANCER']]
+  },
+  ep06: {
+    num:'06', title:'CHEEKY SESSION', date:'2026.03', venue:'Cheeky, Shibuya',
+    lead:'実験の夜。ルールのない空間で、新しい表現が生まれる。',
+    body:'<p>Cheekyという小さな箱で行われた実験的セッション。DJとダンサーが即興で対話する。音楽と身体の境界が溶ける瞬間を目撃した夜。</p>',
+    credits:[['DJ','NOBBY'],['DANCE','Session members']]
+  },
+  ep05: {
+    num:'05', title:'ROOFTOP PARCO', date:'2025.12', venue:'PARCO Rooftop, Shibuya',
+    lead:'渋谷の屋上で、空に向かって踊る。',
+    body:'<p>PARCO屋上という非日常的な空間。都市の喧騒を見下ろしながら、ダンスフロアが出現する。寒空の下、熱量だけが上昇していく。</p>',
+    credits:[['VENUE','PARCO Rooftop'],['DJ','ALL MUST DANCE crew']]
+  },
+  ep04: {
+    num:'04', title:'CLUB ASIA', date:'2024.07.14', venue:'clubasia, Shibuya',
+    lead:'真夏の夜、clubasiaが揺れた。',
+    body:'<p>EP.04はALL MUST DANCE™の転換点だった。初めてのフルスケール開催。3フロアすべてが稼働し、朝5時まで止まらなかった夜。</p>',
+    credits:[['DJ','EJOE WILLSON · DJ KANGO · Williams · MOZYSKEY'],['VIDEO','ALL MUST DANCE™ Archive']]
+  },
+  ep03: {
+    num:'03', title:'ORIGINS', date:'2024.03', venue:'Tokyo',
+    lead:'原点回帰。すべてはここから始まった。',
+    body:'<p>まだ名前すらなかった頃の衝動。踊りたい、音楽を鳴らしたい、集まりたい——そのシンプルな欲求だけがあった。</p>',
+    credits:[]
+  },
+  ep02: {
+    num:'02', title:'FIRST STEP', date:'2023', venue:'Tokyo',
+    lead:'最初の一歩。',
+    body:'<p>ALL MUST DANCEという名前が生まれた瞬間。すべての人が踊らなければならない——その宣言が、すべてを動かし始めた。</p>',
+    credits:[]
+  },
+  ep01: {
+    num:'01', title:'GENESIS', date:'2023', venue:'Tokyo',
+    lead:'始まり。',
+    body:'<p>アイデアだけがあった。ダンスと音楽と文化を、東京から世界へ届けるという夢。EP.01はその種を蒔いた記録。</p>',
+    credits:[]
+  }
+};
+
+function openZineIssue(key){
+  var d = _zineData[key]; if(!d) return;
+  var label = document.getElementById('zineOverlayLabel');
+  var body = document.getElementById('zineOverlayBody');
+  if(label) label.textContent = 'ZINE · EP.' + d.num;
+
+  var creditsHtml = '';
+  if(d.credits && d.credits.length){
+    creditsHtml = '<div style="margin-top:32px;border-top:1px solid rgba(237,235,230,.1);padding-top:16px;">';
+    d.credits.forEach(function(c){
+      creditsHtml += '<div style="display:flex;justify-content:space-between;align-items:baseline;padding:10px 0;border-bottom:1px solid rgba(237,235,230,.06);"><span style="font-size:9px;font-weight:500;letter-spacing:.32em;text-transform:uppercase;color:var(--red);opacity:.85;">'+c[0]+'</span><span style="font-size:12px;font-weight:300;color:rgba(237,235,230,.75);text-align:right;">'+c[1]+'</span></div>';
+    });
+    creditsHtml += '</div>';
+  }
+
+  body.innerHTML = ''
+    + '<div style="margin-bottom:8px;"><span style="font-family:Arial,\'Arial Black\',sans-serif;font-size:72px;font-weight:900;color:rgba(237,235,230,.04);line-height:.85;">'+d.num+'</span></div>'
+    + '<div style="font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:var(--red);margin-bottom:10px;">EP.'+d.num+' — '+d.date+'</div>'
+    + '<div style="font-family:Arial,\'Arial Black\',sans-serif;font-size:clamp(28px,7vw,44px);font-weight:900;color:var(--white);line-height:.92;margin-bottom:16px;">'+d.title+'</div>'
+    + '<div style="font-size:12px;font-weight:300;letter-spacing:.15em;color:rgba(237,235,230,.45);margin-bottom:24px;">'+d.venue+'</div>'
+    + '<div style="height:1px;background:rgba(237,235,230,.08);margin-bottom:24px;"></div>'
+    + '<div style="font-size:15px;font-weight:300;font-style:italic;color:rgba(237,235,230,.85);line-height:1.8;margin-bottom:20px;">'+d.lead+'</div>'
+    + '<div style="font-size:14px;font-weight:300;line-height:2.1;color:rgba(237,235,230,.72);">'+d.body+'</div>'
+    + creditsHtml;
+
+  document.getElementById('zineOverlay').classList.add('open');
+  document.body.classList.add('overlay-open');
+  lockBodyScroll();
+}
+
+function closeZineIssue(){
+  document.getElementById('zineOverlay').classList.remove('open');
+  document.body.classList.remove('overlay-open');
+  unlockBodyScroll();
+}
 </script>
 
 <!-- PWA INSTALL BANNER -->
