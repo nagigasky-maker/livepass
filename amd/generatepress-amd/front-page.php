@@ -291,6 +291,26 @@ html.pwa-mode #deck {
 .zine-card-2col { display:grid; grid-template-columns:1fr 1fr; gap:8px; height:85vh; min-height:520px; max-height:720px; }
 .zine-card-md { border-radius:14px; overflow:hidden; position:relative; text-decoration:none; color:var(--white); display:block; background:#0d1018; height:100%; }
 .zine-card-md .zine-card-title { font-size:clamp(18px,4.5vw,26px); }
+/* ── ZINE Book (HOME COMING special) ── */
+.zine-book { position:relative; height:85vh; min-height:520px; max-height:720px; perspective:1800px; cursor:pointer; }
+.zine-book.open { cursor:default; }
+.zine-book-inner { position:relative; width:100%; height:100%; border-radius:14px; overflow:visible; }
+/* Back page (EP03 teaser — always behind) */
+.zine-page-back { position:absolute; inset:0; border-radius:14px; overflow:hidden; background:#0a0c14; z-index:1; }
+.zine-page-back img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.8; }
+.zine-page-back .zine-card-vig { z-index:2; }
+.zine-page-back .zine-card-body { z-index:3; }
+.zine-page-back-credit { font-size:9px; font-weight:300; letter-spacing:.2em; color:rgba(237,235,230,.5); margin-top:12px; line-height:1.8; }
+/* Front page (cover — flips open) */
+.zine-page-front { position:absolute; inset:0; border-radius:14px; overflow:hidden; z-index:5; transform-origin:left center; transition:transform 0.9s cubic-bezier(0.4,0,0.2,1); backface-visibility:hidden; will-change:transform; }
+.zine-book.open .zine-page-front { transform:rotateY(-160deg); pointer-events:none; }
+/* Close button on back page */
+.zine-book-close { position:absolute; top:max(20px,calc(env(safe-area-inset-top)+12px)); right:20px; z-index:10; width:40px; height:40px; border-radius:50%; border:1px solid rgba(237,235,230,.2); background:rgba(12,15,26,.6); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); color:rgba(237,235,230,.6); font-size:16px; display:flex; align-items:center; justify-content:center; cursor:pointer; opacity:0; transition:opacity .3s .6s; pointer-events:none; }
+.zine-book.open .zine-book-close { opacity:1; pointer-events:all; }
+/* Tap hint on cover */
+.zine-tap-hint { position:absolute; bottom:28px; right:28px; z-index:6; font-size:8px; letter-spacing:.4em; text-transform:uppercase; color:rgba(237,235,230,.35); animation:zinePulse 2.5s ease-in-out infinite; }
+@keyframes zinePulse { 0%,100%{opacity:.35} 50%{opacity:.7} }
+.zine-book.open .zine-tap-hint { opacity:0; transition:opacity .2s; }
 /* ZINE header bar (replaces site header in this section) */
 .zine-section-header { position:sticky; top:0; z-index:100; display:flex; justify-content:space-between; align-items:center; padding:max(20px,calc(env(safe-area-inset-top)+12px)) 24px 14px; background:linear-gradient(to bottom,rgba(12,15,26,.92) 0%,rgba(12,15,26,.6) 70%,transparent 100%); pointer-events:none; }
 .zine-section-header > * { pointer-events:all; }
@@ -732,17 +752,35 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
       <!-- Card stack feed -->
       <div class="zine-feed" id="zineFeed" style="padding:0 12px;">
 
-        <!-- HERO: EP.07 — HOME COMING -->
-        <a class="zine-card zine-card-hero" data-zine-card href="https://allmustdance.com/zine-ep07/">
-          <img class="zine-card-img" loading="lazy" src="<?= get_stylesheet_directory_uri() ?>/logos/amd2026asia.jpg" alt="EP.07">
-          <div class="zine-card-vig"></div>
-          <div class="zine-card-num">007</div>
-          <div class="zine-card-body">
-            <div class="zine-card-cat">PARTY · FEATURED</div>
-            <div class="zine-card-title">HOME<br>COMING</div>
-            <div class="zine-card-meta">clubasia · Shibuya · 2026.05.04</div>
+        <!-- HERO: EP.07 — HOME COMING (book flip) -->
+        <div class="zine-book" id="zineBook07" data-zine-card onclick="toggleZineBook(event)">
+          <div class="zine-book-inner">
+            <!-- Back page: EP03 Teaser -->
+            <div class="zine-page-back">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88-2024-07-02-20.13.45.png" alt="AMD EP03 Teaser">
+              <div class="zine-card-vig"></div>
+              <div class="zine-card-body">
+                <div class="zine-card-cat">TEASER · AMD™ EP.03</div>
+                <div class="zine-card-title" style="font-size:clamp(22px,6vw,36px);">ALL MUST<br>DANCE™</div>
+                <div class="zine-card-meta">EP.03 · Amsterdam</div>
+                <div class="zine-page-back-credit">Photo — NOBBY<br>Location — Amsterdam Friend House</div>
+              </div>
+              <button class="zine-book-close" onclick="event.stopPropagation();closeZineBook()">×</button>
+            </div>
+            <!-- Front page: Cover (flips open on tap) -->
+            <div class="zine-page-front">
+              <img class="zine-card-img" loading="lazy" src="<?= get_stylesheet_directory_uri() ?>/logos/amd2026asia.jpg" alt="EP.07">
+              <div class="zine-card-vig"></div>
+              <div class="zine-card-num">007</div>
+              <div class="zine-card-body">
+                <div class="zine-card-cat">PARTY · FEATURED</div>
+                <div class="zine-card-title">HOME<br>COMING</div>
+                <div class="zine-card-meta">clubasia · Shibuya · 2026.05.04</div>
+              </div>
+            </div>
+            <div class="zine-tap-hint">TAP TO OPEN ▸</div>
           </div>
-        </a>
+        </div>
 
         <!-- 2-COL: EP.06 + EP.05 -->
         <div class="zine-card-2col" data-zine-card>
@@ -1657,6 +1695,35 @@ function checkReveal(){
 (_pwa2?document.getElementById('deck'):window).addEventListener('scroll',checkReveal,{passive:true});
 
 setTimeout(function(){ _revealed['c0']=true; },300);
+
+/* ================================================
+   ZINE Book — HOME COMING page flip
+   ================================================ */
+function toggleZineBook(e){
+  var book = document.getElementById('zineBook07');
+  if(!book) return;
+  if(book.classList.contains('open')){
+    /* If open, tap on back page goes to zine */
+    if(!e.target.closest('.zine-book-close')){
+      window.location.href = 'https://allmustdance.com/zine-ep07/';
+    }
+    return;
+  }
+  e.preventDefault();
+  book.classList.add('open');
+  /* Disable scroll while book is open */
+  document.body.style.overflow = 'hidden';
+  var deck = document.getElementById('deck');
+  if(deck) deck.style.overflow = 'hidden';
+}
+function closeZineBook(){
+  var book = document.getElementById('zineBook07');
+  if(!book) return;
+  book.classList.remove('open');
+  document.body.style.overflow = '';
+  var deck = document.getElementById('deck');
+  if(deck) deck.style.overflow = '';
+}
 
 /* ================================================
    GSAP 031 — ZINE Card Stack Effect
