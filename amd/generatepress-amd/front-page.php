@@ -300,11 +300,12 @@ html.pwa-mode #deck {
 .zine-page-layer img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.8; }
 .zine-page-layer .zine-card-vig { z-index:2; }
 .zine-page-layer .zine-card-body { z-index:3; }
-.zine-page-layer[data-layer="0"] { z-index:6; }
-.zine-page-layer[data-layer="1"] { z-index:5; }
-.zine-page-layer[data-layer="2"] { z-index:4; }
-.zine-page-layer[data-layer="3"] { z-index:3; }
-.zine-page-layer[data-layer="4"] { z-index:2; }
+.zine-page-layer[data-layer="0"] { z-index:7; }
+.zine-page-layer[data-layer="1"] { z-index:6; }
+.zine-page-layer[data-layer="2"] { z-index:5; }
+.zine-page-layer[data-layer="3"] { z-index:4; }
+.zine-page-layer[data-layer="4"] { z-index:3; }
+.zine-page-layer[data-layer="5"] { z-index:2; }
 .zine-page-back-credit { font-size:9px; font-weight:300; letter-spacing:.2em; color:rgba(237,235,230,.5); margin-top:12px; line-height:1.8; }
 /* Flippable pages */
 .zine-page-flip { transform-origin:left center; transition:transform 0.9s cubic-bezier(0.4,0,0.2,1); backface-visibility:hidden; will-change:transform; }
@@ -761,8 +762,19 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         <div class="zine-book" id="zineBook07" data-zine-card data-page="0" onclick="flipZineBook(event)">
           <div class="zine-book-inner">
 
-            <!-- Page 4 (deepest): EP01 — MOZYSKEY -->
-            <div class="zine-page-back zine-page-layer" data-layer="4">
+            <!-- Page 5 (deepest): NEXT UPDATE -->
+            <div class="zine-page-back zine-page-layer" data-layer="5" style="background:#0C0F1A;">
+              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;">
+                <div style="font-size:8px;letter-spacing:.6em;text-transform:uppercase;color:var(--red);margin-bottom:20px;">COMING SOON</div>
+                <div style="font-family:Arial,'Arial Black',sans-serif;font-size:clamp(32px,8vw,52px);font-weight:900;color:var(--white);line-height:.9;letter-spacing:-.02em;">NEXT<br>FRIDAY</div>
+                <div style="font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:rgba(237,235,230,.35);margin-top:16px;">UPDATE</div>
+                <div style="width:40px;height:1px;background:var(--red);margin:24px 0;"></div>
+                <div style="font-size:10px;letter-spacing:.2em;color:rgba(237,235,230,.3);">ALL MUST DANCE™ ZINE</div>
+              </div>
+            </div>
+
+            <!-- Page 4: EP01 — MOZYSKEY -->
+            <div class="zine-page-flip zine-page-layer" data-layer="4">
               <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/g00-scaled.jpg" alt="AMD EP01">
               <div class="zine-card-vig"></div>
               <div class="zine-card-body">
@@ -1765,8 +1777,8 @@ function flipZineBook(e){
     var deck=document.getElementById('deck');
     if(deck) deck.style.overflow='hidden';
   } else {
-    /* All pages flipped — tap last page goes to zine */
-    window.location.href='https://allmustdance.com/zine-ep07/';
+    /* All pages flipped — return to cover */
+    closeZineBook();
   }
 }
 function closeZineBook(){
