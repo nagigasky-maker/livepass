@@ -89,9 +89,9 @@ echo '<link rel="icon" href="' . get_stylesheet_directory_uri() . '/logos/amdhea
   --blue:  #1A2E6B;
   --line:  rgba(237,235,230,0.09);
 }
-html { height: 100%; overflow-x: hidden; overflow-y: auto; max-width: 100vw; }
+html { height: 100%; overflow-x: hidden; overflow-y: auto; max-width: 100vw; overscroll-behavior-x: none; }
 body {
-  overflow-x: hidden !important; overflow-y: auto; min-height: 100vh; min-height: -webkit-fill-available; max-width: 100vw;
+  overflow-x: hidden !important; overflow-y: auto; min-height: 100vh; min-height: -webkit-fill-available; max-width: 100vw; overscroll-behavior-x: none;
   background: var(--black); color: var(--white);
   font-family: "Noto Sans JP","Montserrat",sans-serif;
   font-weight: 300; font-feature-settings: "palt";
@@ -231,6 +231,11 @@ html.pwa-mode #deck {
 .amd-red-flash { position:fixed; inset:0; z-index:9997; background:var(--red); opacity:0; pointer-events:none; }
 .amd-ticket-overlay { position:fixed; inset:0; z-index:8900; touch-action:pan-y; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); overflow-x:hidden; overflow-y:auto; -webkit-overflow-scrolling:touch; background:var(--black); display:flex; flex-direction:column; padding-top:max(72px, calc(env(safe-area-inset-top) + 60px)); overscroll-behavior-y:contain; isolation:isolate; }
 .amd-ticket-overlay .panel-content { padding-left:32px !important; padding-right:32px !important; }
+/* WS Artist overlay — force text width limit */
+#p1-1 .af-name { max-width:min(480px,70vw) !important; }
+#p1-1 .af-genre { max-width:min(400px,65vw) !important; word-break:break-word; }
+#p1-1 .af-desc, #p1-1 .af-desc-en { max-width:min(520px,75vw) !important; word-break:break-word; }
+#p1-1 .eyebrow { max-width:min(400px,65vw); }
 .amd-ticket-overlay .body-txt, .amd-ticket-overlay .body-txt-en { max-width:100%; }
 .amd-ticket-overlay .eyebrow, .amd-ticket-overlay .h-section,
 .amd-ticket-overlay .info-table, .amd-ticket-overlay .ticket-section,
@@ -310,14 +315,14 @@ html.pwa-mode #deck {
 .zine-page-flip { transform-origin:left center; transition:transform 0.9s cubic-bezier(0.4,0,0.2,1); backface-visibility:hidden; will-change:transform; }
 .zine-page-flip.flipped { transform:rotateY(-160deg); pointer-events:none; }
 /* Close button */
-.zine-book-close { position:absolute; top:max(20px,calc(env(safe-area-inset-top)+12px)); right:20px; z-index:20; width:40px; height:40px; border-radius:50%; border:1px solid rgba(237,235,230,.2); background:rgba(12,15,26,.6); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); color:rgba(237,235,230,.6); font-size:16px; display:flex; align-items:center; justify-content:center; cursor:pointer; opacity:0; transition:opacity .3s .6s; pointer-events:none; }
+.zine-book-close { position:absolute; top:max(20px,calc(env(safe-area-inset-top)+12px)); right:20px; z-index:100; width:48px; height:48px; border-radius:50%; border:1px solid rgba(237,235,230,.25); background:rgba(12,15,26,.7); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); color:rgba(237,235,230,.7); font-size:18px; display:flex; align-items:center; justify-content:center; cursor:pointer; opacity:0; transition:opacity .3s .6s; pointer-events:none; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
 .zine-book.open .zine-book-close { opacity:1; pointer-events:all; }
 /* Tap hint on cover */
 .zine-tap-hint { position:absolute; bottom:28px; right:28px; z-index:10; font-size:8px; letter-spacing:.4em; text-transform:uppercase; color:rgba(237,235,230,.35); animation:zinePulse 2.5s ease-in-out infinite; }
 @keyframes zinePulse { 0%,100%{opacity:.35} 50%{opacity:.7} }
 .zine-book.open .zine-tap-hint { opacity:0; transition:opacity .2s; }
 /* ZINE header bar (replaces site header in this section) */
-.zine-section-header { position:sticky; top:0; z-index:100; display:flex; justify-content:space-between; align-items:center; padding:max(52px,calc(env(safe-area-inset-top)+20px)) 24px 14px; background:linear-gradient(to bottom,rgba(12,15,26,.95) 0%,rgba(12,15,26,.75) 60%,transparent 100%); pointer-events:none; }
+.zine-section-header { position:sticky; top:0; z-index:100; display:flex; justify-content:space-between; align-items:center; padding:max(60px,calc(env(safe-area-inset-top)+28px)) 24px 16px; background:linear-gradient(to bottom,rgba(12,15,26,.97) 0%,rgba(12,15,26,.85) 50%,rgba(12,15,26,.4) 80%,transparent 100%); pointer-events:none; }
 .zine-section-header > * { pointer-events:all; }
 /* View all link */
 .zine-view-all { display:block; text-align:center; padding:28px 0 max(40px,calc(env(safe-area-inset-bottom)+24px)); }
@@ -832,7 +837,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
             </div>
 
             <!-- Close + hint -->
-            <button class="zine-book-close" onclick="event.stopPropagation();closeZineBook()">×</button>
+            <button class="zine-book-close" id="zineBookClose07">×</button>
             <div class="zine-tap-hint">TAP TO OPEN ▸</div>
 
           </div>
@@ -1812,6 +1817,20 @@ setTimeout(function(){ _revealed['c0']=true; },300);
    ZINE Book — HOME COMING multi-page flip
    page 0 = cover, 1 = EP03, 2 = EP02 (last, no flip)
    ================================================ */
+/* ×ボタン — タッチ＆クリック両対応 */
+(function(){
+  var closeBtn = document.getElementById('zineBookClose07');
+  if(!closeBtn) return;
+  function handleClose(e){
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    window.closeZineBook();
+  }
+  closeBtn.addEventListener('touchend', handleClose, {passive:false});
+  closeBtn.addEventListener('click', handleClose);
+})();
+
 window.flipZineBook = function(e){
   if(e.target.closest('.zine-book-close')) return;
   var book = document.getElementById('zineBook07');
