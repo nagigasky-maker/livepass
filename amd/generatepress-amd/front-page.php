@@ -835,50 +835,106 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
           </div>
         </div>
 
-        <!-- EP.06 — Cheeky Session -->
-        <a class="zine-card" data-zine-card href="https://allmustdance.com/zine-ep06/">
-          <img class="zine-card-img" loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/009.jpeg" alt="EP.06">
-          <div class="zine-card-vig"></div>
-          <div class="zine-card-body">
-            <div class="zine-card-cat">EXPERIMENTAL</div>
-            <div class="zine-card-title">Cheeky<br>Session</div>
-            <div class="zine-card-meta">EP.06 · 2025</div>
+        <!-- EP.06 — Cheeky Session (book flip) -->
+        <div class="zine-book" data-zine-card data-page="0" data-href="https://allmustdance.com/zine-ep06/" onclick="flipZineCard(this,event)">
+          <div class="zine-book-inner">
+            <div class="zine-page-back zine-page-layer" data-layer="1">
+              <div style="position:absolute;inset:0;background:#0a0c14;"></div>
+              <div class="zine-card-body" style="justify-content:center;align-items:center;text-align:center;">
+                <div style="font-family:Arial,'Arial Black',sans-serif;font-size:clamp(28px,7vw,42px);font-weight:900;color:var(--white);line-height:.9;opacity:.08;">06</div>
+                <div class="zine-card-cat" style="margin-top:20px;">EXPERIMENTAL</div>
+                <div class="zine-card-title" style="font-size:clamp(18px,5vw,28px);">Cheeky Session</div>
+                <div class="zine-card-meta" style="margin-top:12px;">TAP TO READ →</div>
+              </div>
+            </div>
+            <div class="zine-page-flip zine-page-layer" data-layer="0">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/009.jpeg" alt="EP.06">
+              <div class="zine-card-vig"></div>
+              <div class="zine-card-body">
+                <div class="zine-card-cat">EXPERIMENTAL</div>
+                <div class="zine-card-title">Cheeky<br>Session</div>
+                <div class="zine-card-meta">EP.06 · 2025</div>
+              </div>
+            </div>
+            <div class="zine-tap-hint">TAP TO OPEN ▸</div>
           </div>
-        </a>
+        </div>
 
-        <!-- EP.05 — PARCO Skyline -->
-        <a class="zine-card" data-zine-card href="https://allmustdance.com/zine-ep05/">
-          <img class="zine-card-img" loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/IMG_7615.jpg" alt="EP.05">
-          <div class="zine-card-vig"></div>
-          <div class="zine-card-body">
-            <div class="zine-card-cat">ROOFTOP</div>
-            <div class="zine-card-title">PARCO<br>Skyline</div>
-            <div class="zine-card-meta">EP.05 · Shibuya · 2024</div>
+        <!-- EP.05 — PARCO Skyline (book flip) -->
+        <div class="zine-book" data-zine-card data-page="0" data-href="https://allmustdance.com/zine-ep05/" onclick="flipZineCard(this,event)">
+          <div class="zine-book-inner">
+            <div class="zine-page-back zine-page-layer" data-layer="1">
+              <div style="position:absolute;inset:0;background:#0a0c14;"></div>
+              <div class="zine-card-body" style="justify-content:center;align-items:center;text-align:center;">
+                <div style="font-family:Arial,'Arial Black',sans-serif;font-size:clamp(28px,7vw,42px);font-weight:900;color:var(--white);line-height:.9;opacity:.08;">05</div>
+                <div class="zine-card-cat" style="margin-top:20px;">ROOFTOP</div>
+                <div class="zine-card-title" style="font-size:clamp(18px,5vw,28px);">PARCO Skyline</div>
+                <div class="zine-card-meta" style="margin-top:12px;">TAP TO READ →</div>
+              </div>
+            </div>
+            <div class="zine-page-flip zine-page-layer" data-layer="0">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/IMG_7615.jpg" alt="EP.05">
+              <div class="zine-card-vig"></div>
+              <div class="zine-card-body">
+                <div class="zine-card-cat">ROOFTOP</div>
+                <div class="zine-card-title">PARCO<br>Skyline</div>
+                <div class="zine-card-meta">EP.05 · Shibuya · 2024</div>
+              </div>
+            </div>
+            <div class="zine-tap-hint">TAP TO OPEN ▸</div>
           </div>
-        </a>
+        </div>
 
-        <!-- ARTWORK — MOZYSKEY × NOBBY -->
-        <a class="zine-card" data-zine-card href="https://allmustdance.com/zine-art01/">
-          <img class="zine-card-img" loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/04/mozyskeyxnobby%E3%81%AE%E3%82%B3%E3%83%94%E3%83%BC.jpg" alt="ARTWORK 01">
-          <div class="zine-card-vig"></div>
-          <div class="zine-card-body">
-            <div class="zine-card-cat">ARTWORK · FIGURE</div>
-            <div class="zine-card-title">MOZYSKEY<br>× NOBBY</div>
-            <div class="zine-card-meta">Artist · Space Cooking™ · 2025</div>
+        <!-- ARTWORK — MOZYSKEY × NOBBY (book flip) -->
+        <div class="zine-book" data-zine-card data-page="0" data-href="https://allmustdance.com/zine-art01/" onclick="flipZineCard(this,event)">
+          <div class="zine-book-inner">
+            <div class="zine-page-back zine-page-layer" data-layer="1">
+              <div style="position:absolute;inset:0;background:#0a0c14;"></div>
+              <div class="zine-card-body" style="justify-content:center;align-items:center;text-align:center;">
+                <div style="font-family:Arial,'Arial Black',sans-serif;font-size:clamp(28px,7vw,42px);font-weight:900;color:var(--white);line-height:.9;opacity:.08;">A01</div>
+                <div class="zine-card-cat" style="margin-top:20px;">ARTWORK · FIGURE</div>
+                <div class="zine-card-title" style="font-size:clamp(18px,5vw,28px);">MOZYSKEY × NOBBY</div>
+                <div class="zine-card-meta" style="margin-top:12px;">TAP TO READ →</div>
+              </div>
+            </div>
+            <div class="zine-page-flip zine-page-layer" data-layer="0">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/04/mozyskeyxnobby%E3%81%AE%E3%82%B3%E3%83%94%E3%83%BC.jpg" alt="ARTWORK 01">
+              <div class="zine-card-vig"></div>
+              <div class="zine-card-body">
+                <div class="zine-card-cat">ARTWORK · FIGURE</div>
+                <div class="zine-card-title">MOZYSKEY<br>× NOBBY</div>
+                <div class="zine-card-meta">Artist · Space Cooking™ · 2025</div>
+              </div>
+            </div>
+            <div class="zine-tap-hint">TAP TO OPEN ▸</div>
           </div>
-        </a>
+        </div>
 
-        <!-- EP.02 — WARSAW -->
-        <a class="zine-card" data-zine-card href="https://allmustdance.com/zine-ep02/">
-          <img class="zine-card-img" loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/IMG_6299-scaled-e1769346293771.jpeg" alt="EP.02">
-          <div class="zine-card-vig"></div>
-          <div class="zine-card-num" style="opacity:.5;">002</div>
-          <div class="zine-card-body">
-            <div class="zine-card-cat">TOUR</div>
-            <div class="zine-card-title">WARSAW</div>
-            <div class="zine-card-meta">EP.02 · Europe Tour · 2023</div>
+        <!-- EP.02 — WARSAW (book flip) -->
+        <div class="zine-book" data-zine-card data-page="0" data-href="https://allmustdance.com/zine-ep02/" onclick="flipZineCard(this,event)">
+          <div class="zine-book-inner">
+            <div class="zine-page-back zine-page-layer" data-layer="1">
+              <div style="position:absolute;inset:0;background:#0a0c14;"></div>
+              <div class="zine-card-body" style="justify-content:center;align-items:center;text-align:center;">
+                <div style="font-family:Arial,'Arial Black',sans-serif;font-size:clamp(28px,7vw,42px);font-weight:900;color:var(--white);line-height:.9;opacity:.08;">02</div>
+                <div class="zine-card-cat" style="margin-top:20px;">TOUR</div>
+                <div class="zine-card-title" style="font-size:clamp(18px,5vw,28px);">WARSAW</div>
+                <div class="zine-card-meta" style="margin-top:12px;">TAP TO READ →</div>
+              </div>
+            </div>
+            <div class="zine-page-flip zine-page-layer" data-layer="0">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/IMG_6299-scaled-e1769346293771.jpeg" alt="EP.02">
+              <div class="zine-card-vig"></div>
+              <div class="zine-card-num" style="opacity:.5;">002</div>
+              <div class="zine-card-body">
+                <div class="zine-card-cat">TOUR</div>
+                <div class="zine-card-title">WARSAW</div>
+                <div class="zine-card-meta">EP.02 · Europe Tour · 2023</div>
+              </div>
+            </div>
+            <div class="zine-tap-hint">TAP TO OPEN ▸</div>
           </div>
-        </a>
+        </div>
 
       </div><!-- /zine-feed -->
 
@@ -1786,6 +1842,25 @@ window.closeZineBook = function(){
   document.body.style.overflow='';
   var deck=document.getElementById('deck');
   if(deck) deck.style.overflow='';
+};
+
+/* Generic book flip for other ZINE cards (2-page: cover → inner → navigate) */
+window.flipZineCard = function(book, e){
+  if(e.target.closest('.zine-book-close')) return;
+  var cur = parseInt(book.getAttribute('data-page')||'0',10);
+  var pages = book.querySelectorAll('.zine-page-flip');
+  var total = pages.length;
+
+  if(cur < total){
+    pages[total - 1 - cur].classList.add('flipped');
+    cur++;
+    book.setAttribute('data-page', cur);
+    book.classList.add('open');
+  } else {
+    /* All flipped — navigate to ZINE page */
+    var href = book.getAttribute('data-href');
+    if(href) window.location.href = href;
+  }
 };
 
 /* ================================================
