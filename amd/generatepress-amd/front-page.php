@@ -159,7 +159,7 @@ html.pwa-mode #deck {
 .h-section { font-family:Arial,"Arial Black",sans-serif; font-size:clamp(28px,5.5vw,52px); line-height:0.94; letter-spacing:0.01em; color:var(--white); margin-bottom:20px; font-weight:900; }
 .connect-h2 { font-family:Arial,"Arial Black",sans-serif; font-size:clamp(30px,6.5vw,56px); line-height:0.92; letter-spacing:0.01em; color:var(--white); margin-bottom:20px; font-weight:900; }
 .connect-h2 span { color:var(--red); }
-.af-name { font-family:Arial,"Arial Black",sans-serif; font-size:clamp(32px,7vw,64px); line-height:0.92; letter-spacing:0.01em; color:var(--white); margin-bottom:20px; font-weight:900; }
+.af-name { font-family:Arial,"Arial Black",sans-serif; font-size:clamp(32px,7vw,64px); line-height:0.92; letter-spacing:0.01em; color:var(--white); margin-bottom:20px; font-weight:900; max-width:480px; }
 .body-txt { font-size:14px; font-weight:300; line-height:2.0; color:var(--white); opacity:0.88; max-width:380px; letter-spacing:0.04em; }
 .body-txt-en { font-size:13px; font-weight:300; font-style:italic; line-height:1.9; color:var(--white); opacity:0.72; max-width:380px; margin-top:14px; }
 [data-lang="jp"] .body-txt { display:block; }
@@ -773,7 +773,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 
         <!-- FULL: ARTWORK — MOZYSKEY × NOBBY -->
         <a class="zine-card zine-card-full" data-zine-card href="https://allmustdance.com/zine-art01/">
-          <img class="zine-card-img" loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/04/mozyskeyxnobbyのコピー.jpg" alt="ARTWORK 01">
+          <img class="zine-card-img" loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/04/mozyskeyxnobby%E3%81%AE%E3%82%B3%E3%83%94%E3%83%BC.jpg" alt="ARTWORK 01">
           <div class="zine-card-vig" style="background:linear-gradient(to top,rgba(12,15,26,.92) 0%,rgba(12,15,26,.3) 60%,transparent 100%);"></div>
           <div class="zine-card-body">
             <div class="zine-card-cat">ARTWORK · FIGURE</div>
@@ -850,17 +850,17 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         <div class="panel-content" style="padding-top:max(80px,calc(env(safe-area-inset-top)+64px));overflow-y:auto;overscroll-behavior-y:contain;height:100%;box-sizing:border-box;">
           <div class="connect-grid">
             <div class="rv">
-              <img src="<?= get_stylesheet_directory_uri() ?>/logos/getin.png" alt="GET IN TOUCH" class="section-icon-heading anim-left" style="max-height:80px;margin-top:80px;transition-delay:0s;">
+              <img src="<?= get_stylesheet_directory_uri() ?>/logos/getin.png" alt="GET IN TOUCH" class="section-icon-heading anim-up" style="max-height:80px;margin-top:80px;transition-delay:0s;">
               <p class="connect-body anim-up" style="transition-delay:0.1s;">For collaborations, media inquiries, and sponsorships aligned with our cultural and social mission.</p>
               <a href="mailto:niko@allmustdance.com" class="connect-mail anim-up" style="transition-delay:0.2s;">niko@allmustdance.com</a>
             </div>
             <div class="rv">
               <ul class="connect-list">
-                <li class="cl anim-right" style="transition-delay:0.1s;"><a href="https://www.instagram.com/allmustdancetokyo/" target="_blank">Instagram</a><span class="cl-type">Social</span></li>
-                <li class="cl anim-right" style="transition-delay:0.15s;"><a href="https://www.youtube.com/@allmustdancetokyo" target="_blank">YouTube</a><span class="cl-type">Video</span></li>
-                <li class="cl anim-right" style="transition-delay:0.2s;"><a href="<?= home_url('/zine-index/') ?>">Zine</a><span class="cl-type">Archive</span></li>
-                <li class="cl anim-right" style="transition-delay:0.25s;"><a href="https://zzazz-za.stores.jp/" target="_blank">Store</a><span class="cl-type">Shop</span></li>
-                <li class="cl anim-right" style="transition-delay:0.3s;"><a href="mailto:niko@allmustdance.com">Contact</a><span class="cl-type">Mail</span></li>
+                <li class="cl anim-up" style="transition-delay:0.1s;"><a href="https://www.instagram.com/allmustdancetokyo/" target="_blank">Instagram</a><span class="cl-type">Social</span></li>
+                <li class="cl anim-up" style="transition-delay:0.15s;"><a href="https://www.youtube.com/@allmustdancetokyo" target="_blank">YouTube</a><span class="cl-type">Video</span></li>
+                <li class="cl anim-up" style="transition-delay:0.2s;"><a href="<?= home_url('/zine-index/') ?>">Zine</a><span class="cl-type">Archive</span></li>
+                <li class="cl anim-up" style="transition-delay:0.25s;"><a href="https://zzazz-za.stores.jp/" target="_blank">Store</a><span class="cl-type">Shop</span></li>
+                <li class="cl anim-up" style="transition-delay:0.3s;"><a href="mailto:niko@allmustdance.com">Contact</a><span class="cl-type">Mail</span></li>
               </ul>
               <div class="partner-logos rv">
                 <div class="partner-logos-label">Partners &amp; Venue</div>
@@ -927,7 +927,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
   <?php endif; ?>
   <div class="vig-artist"></div>
   <div style="position:relative;z-index:2;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;display:flex;flex-direction:column;justify-content:flex-end;">
-    <div style="padding:max(80px,calc(env(safe-area-inset-top)+60px)) 32px 32px;">
+    <div style="padding:max(80px,calc(env(safe-area-inset-top)+60px)) 32px max(32px,calc(env(safe-area-inset-bottom)+24px));max-width:560px;">
       <div class="eyebrow"><?= esc_html($wa_role) ?></div>
       <div class="af-genre"><?= esc_html($wa_genre) ?></div>
       <div class="af-name"><?= esc_html($wa->post_title) ?></div>
@@ -940,7 +940,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
   <div class="panel-bg" style="background:#000;"></div>
   <div class="vig-artist"></div>
   <div style="position:relative;z-index:2;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;display:flex;flex-direction:column;justify-content:flex-end;">
-    <div style="padding:max(80px,calc(env(safe-area-inset-top)+60px)) 32px 32px;">
+    <div style="padding:max(80px,calc(env(safe-area-inset-top)+60px)) 32px max(32px,calc(env(safe-area-inset-bottom)+24px));max-width:560px;">
       <div class="eyebrow">Workshop Artist</div>
       <div class="af-genre">Dance · Movement · Expression</div>
       <div class="af-name">ARTIST<br>NAME TBA</div>
@@ -1557,7 +1557,7 @@ function _buildCardStack(stage,artists){
 function _showCard(idx,animate){
   _apArtists.forEach((_,i)=>{
     const el=document.getElementById('amc-'+i); if(!el) return;
-    if(i<idx) gsap.set(el,{rotationX:40,rotationZ:(i%2===0?5:-5),scale:0.72,opacity:0,transformPerspective:800,transformOrigin:'50% 10%'});
+    if(i<idx) gsap.set(el,{rotationX:40,rotationZ:0,scale:0.72,opacity:0,transformPerspective:800,transformOrigin:'50% 10%'});
     else if(i===idx){
       if(animate){
         gsap.fromTo(el,{rotationX:-10,rotationZ:0,y:40,opacity:0,scale:0.96,transformPerspective:800,transformOrigin:'50% 10%'},{rotationX:0,rotationZ:0,y:0,opacity:1,scale:1,duration:0.52,ease:'power3.out'});
@@ -1584,12 +1584,12 @@ function amdCardNav(dir){
   if(next<0) return;
   if(next>=_apArtists.length){
     const el=document.getElementById('amc-'+_apCurIdx);
-    if(el) gsap.to(el,{rotationX:40,rotationZ:(_apCurIdx%2===0?5:-5),scale:0.72,opacity:0,duration:0.42,ease:'power2.in',transformPerspective:800,transformOrigin:'50% 10%',onComplete:closeCardStack});
+    if(el) gsap.to(el,{rotationX:40,rotationZ:0,scale:0.72,opacity:0,duration:0.42,ease:'power2.in',transformPerspective:800,transformOrigin:'50% 10%',onComplete:closeCardStack});
     else closeCardStack();
     return;
   }
   const cur=document.getElementById('amc-'+_apCurIdx);
-  if(cur) gsap.to(cur,{rotationX:40,rotationZ:(_apCurIdx%2===0?5:-5),scale:0.72,opacity:0,duration:0.45,ease:'power2.in',transformPerspective:800,transformOrigin:'50% 10%'});
+  if(cur) gsap.to(cur,{rotationX:40,rotationZ:0,scale:0.72,opacity:0,duration:0.45,ease:'power2.in',transformPerspective:800,transformOrigin:'50% 10%'});
   _apCurIdx=next; _showCard(_apCurIdx,true);
 }
 </script>
@@ -1610,12 +1610,12 @@ document.body.classList.add('gsap-ready');
 
 if(typeof gsap==='undefined') return;
 
-/* 3D exit animation on deck scroll */
-var defs=[{id:'c1',rz:-5},{id:'cZine',rz:3},{id:'c2',rz:4},{id:'c3',rz:-4}];
+/* 3D exit animation on deck scroll — vertical only, no lateral rotation */
+var defs=[{id:'c1'},{id:'cZine'},{id:'c2'},{id:'c3'}];
 var targets={};
 defs.forEach(function(d){
   var tgt=document.getElementById(d.id+'-track');
-  if(tgt){tgt.style.transformOrigin='50% 10%';tgt.style.willChange='transform,opacity';targets[d.id]={el:tgt,rz:d.rz};}
+  if(tgt){tgt.style.transformOrigin='50% 10%';tgt.style.willChange='transform,opacity';targets[d.id]={el:tgt};}
 });
 var _raf=null, _vh=window.innerHeight;
 
@@ -1628,11 +1628,11 @@ function onDeckScroll(){
       var ch=document.getElementById(d.id); var info=targets[d.id];
       if(!ch||!info) return;
       var chTop=ch.offsetTop; var offset=scrollTop-chTop; var ratio=offset/_vh;
-      if(ratio<=0) gsap.set(info.el,{rotationX:0,rotationZ:0,scale:1,opacity:1,transformPerspective:900});
+      if(ratio<=0) gsap.set(info.el,{rotationX:0,scale:1,opacity:1,transformPerspective:900});
       else if(ratio<1){
         var p=Math.max(0,(ratio-0.45)/0.55); p=Math.min(1,p);
-        gsap.set(info.el,{rotationX:32*p,rotationZ:d.rz*p,scale:1-0.26*p,opacity:1-p,transformPerspective:900});
-      } else gsap.set(info.el,{rotationX:32,rotationZ:d.rz,scale:0.74,opacity:0,transformPerspective:900});
+        gsap.set(info.el,{rotationX:32*p,scale:1-0.26*p,opacity:1-p,transformPerspective:900});
+      } else gsap.set(info.el,{rotationX:32,scale:0.74,opacity:0,transformPerspective:900});
     });
   });
 }
@@ -1665,43 +1665,57 @@ setTimeout(function(){ _revealed['c0']=true; },300);
 
 /* ================================================
    GSAP 031 — ZINE Card Stack Effect
-   Cards overlap ~60%, rear card spins 3x and disappears
+   Next card overlaps 40% before rear card starts spinning
+   Rear card: 3 rotations on X axis (vertical flip), no lateral
+   Cards stay pinned — they do NOT scroll upward
    ================================================ */
 (function initZineStack(){
   var feed = document.getElementById('zineFeed');
   if(!feed) return;
   var cards = feed.querySelectorAll('[data-zine-card]');
-  if(!cards.length) return;
+  if(!cards.length || typeof ScrollTrigger === 'undefined') return;
   var scroller = _pwa2 ? document.getElementById('deck') : window;
 
   cards.forEach(function(card, i){
     if(i >= cards.length - 1) return; /* last card doesn't exit */
 
-    card.style.transformOrigin = '50% 30%';
+    card.style.transformOrigin = '50% 50%';
     card.style.willChange = 'transform, opacity';
 
+    /* Pin the card so it stays in place while next card scrolls over it */
     ScrollTrigger.create({
       trigger: card,
       scroller: scroller,
       start: 'top top',
-      end: function(){ return '+=' + (card.offsetHeight * 0.6); },
+      /* Total scroll distance: card height (next card fully covers) */
+      end: function(){ return '+=' + card.offsetHeight; },
+      pin: true,
+      pinSpacing: false,
       scrub: 0.3,
       onUpdate: function(self){
-        var p = self.progress; /* 0→1 as next card covers 60% */
-        if(p <= 0){
-          gsap.set(card, { rotation:0, scale:1, opacity:1, transformPerspective:1200 });
-        } else {
-          /* 3 full rotations (1080°) as it goes behind */
-          var rot = p * 1080;
-          var sc  = 1 - (0.5 * p);
-          var op  = 1 - p;
-          gsap.set(card, {
-            rotation: rot,
-            scale: sc,
-            opacity: op,
-            transformPerspective: 1200
-          });
+        var progress = self.progress; /* 0→1 over full card height */
+
+        /* Phase 1 (0–0.4): next card is approaching, no effect yet */
+        if(progress <= 0.4){
+          gsap.set(card, { rotationX:0, scale:1, opacity:1, transformPerspective:1200 });
+          return;
         }
+
+        /* Phase 2 (0.4–1.0): next card has overlapped 40%+, start spinning */
+        var p = (progress - 0.4) / 0.6; /* normalize to 0→1 */
+        p = Math.min(1, Math.max(0, p));
+
+        /* 3 full rotations on X axis (1080°) — vertical flip only */
+        var rotX = p * 1080;
+        var sc   = 1 - (0.45 * p);
+        var op   = 1 - p;
+
+        gsap.set(card, {
+          rotationX: rotX,
+          scale: sc,
+          opacity: op,
+          transformPerspective: 1200
+        });
       }
     });
   });
