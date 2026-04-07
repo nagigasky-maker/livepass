@@ -89,9 +89,9 @@ echo '<link rel="icon" href="' . get_stylesheet_directory_uri() . '/logos/amdhea
   --blue:  #1A2E6B;
   --line:  rgba(237,235,230,0.09);
 }
-html { height: 100%; overflow: hidden; overflow: auto; }
+html { height: 100%; overflow-x: hidden; overflow-y: auto; max-width: 100vw; }
 body {
-  overflow-x: hidden; overflow-y: auto; min-height: 100vh; min-height: -webkit-fill-available;
+  overflow-x: hidden !important; overflow-y: auto; min-height: 100vh; min-height: -webkit-fill-available; max-width: 100vw;
   background: var(--black); color: var(--white);
   font-family: "Noto Sans JP","Montserrat",sans-serif;
   font-weight: 300; font-feature-settings: "palt";
@@ -240,7 +240,7 @@ html.pwa-mode #deck {
 @media (max-width:860px) { .amd-ticket-overlay .two-col { grid-template-columns:1fr; } }
 .amd-ticket-overlay.open { transform:translateY(0); }
 .amd-ticket-close { position:absolute; bottom:max(32px, calc(env(safe-area-inset-bottom) + 24px)); right:28px; z-index:10000; background:rgba(12,15,26,0.6); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border:1px solid rgba(237,235,230,0.2); color:rgba(237,235,230,0.6); font-size:18px; line-height:1; width:44px; height:44px; display:flex; align-items:center; justify-content:center; cursor:pointer; border-radius:50%; transition:border-color .2s, color .2s; }
-.amd-artist-panel { position:fixed; inset:0; z-index:9000; touch-action:pan-y; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; isolation:isolate; }
+.amd-artist-panel { position:fixed; inset:0; z-index:9000; touch-action:pan-y; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); display:flex; flex-direction:column; overflow-x:hidden; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; isolation:isolate; }
 .amd-artist-panel.open { transform:translateY(0); }
 .amd-ap-bg { position:absolute; inset:0; background:rgba(12,15,26,0.97); }
 .amd-ap-inner { position:relative; z-index:2; height:100%; display:flex; flex-direction:column; padding:max(20px, calc(env(safe-area-inset-top) + 8px)) 0 0; overflow-y:auto; }
@@ -255,12 +255,12 @@ html.pwa-mode #deck {
 .amd-ap-group-sub { font-size:9px; letter-spacing:0.38em; text-transform:uppercase; color:var(--red); margin-bottom:4px; }
 .amd-ap-group-name { font-size:24px; font-weight:300; letter-spacing:0.05em; color:var(--white); line-height:1.1; }
 .amd-ap-group-members { font-size:10px; letter-spacing:0.18em; color:rgba(237,235,230,0.45); margin-top:6px; line-height:1.8; }
-.amd-card-stack { position:fixed; inset:0; z-index:9100; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); background:var(--black); touch-action:pan-y; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; isolation:isolate; }
+.amd-card-stack { position:fixed; inset:0; z-index:9100; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); background:var(--black); touch-action:pan-y; overflow-x:hidden; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; isolation:isolate; }
 .amd-card-stack.open { transform:translateY(0); }
 .amd-cs-close { position:absolute; top:max(22px, calc(env(safe-area-inset-top) + 14px)); left:24px; z-index:10000; background:none; border:none; color:rgba(237,235,230,0.5); font-size:11px; letter-spacing:0.28em; text-transform:uppercase; cursor:pointer; }
 .amd-cs-title { position:absolute; top:max(24px, calc(env(safe-area-inset-top) + 14px)); left:50%; transform:translateX(-50%); z-index:10000; font-size:9px; letter-spacing:0.38em; text-transform:uppercase; color:rgba(237,235,230,0.3); white-space:nowrap; }
 #cardStackStage { position:absolute; inset:0; }
-.amd-card { position:absolute; inset:0; will-change:transform,opacity; }
+.amd-card { position:absolute; inset:0; will-change:transform,opacity; overflow:hidden; }
 .amd-card-content { position:absolute; inset:0; z-index:2; display:flex; flex-direction:column; justify-content:flex-end; padding:28px 32px 44px; max-width:100%; box-sizing:border-box; }
 .amd-card-content .af-name { max-width:min(480px,75vw); }
 .amd-card-content .af-genre { max-width:min(400px,70vw); }
