@@ -1660,6 +1660,7 @@ function closeGoodsOverlay(){document.body.classList.remove('overlay-open');docu
     {img:'<?= get_stylesheet_directory_uri() ?>/artwear/amd02jkt.PNG',name:'AMD JKT',cat:'Artwork Wear',url:'https://zzazz-za.stores.jp/items/69c00f86ccd49a7f3aa0df6e'},
     {img:'<?= get_stylesheet_directory_uri() ?>/artwear/amd03best.PNG',name:'AMD Vest',cat:'Artwork Wear',url:'https://zzazz-za.stores.jp/items/6991f4d9580447c3fea6584c'},
     {img:'<?= get_stylesheet_directory_uri() ?>/artwear/mozyskeylamp.png',name:'Lamp (Hand Drawing)',cat:'Artist : Mozyskey',url:'https://zzazz-za.stores.jp/items/69564870a6f4f8fadfb809f8'},
+    {img:'<?= get_stylesheet_directory_uri() ?>/artwear/zzazzcm.GIF',name:'ZZAZZ-ZA™',cat:'GOOD GOODS · Collection',url:'https://zzazz-za.stores.jp/',gif:true},
     {img:'<?= get_stylesheet_directory_uri() ?>/artwear/amd10ufotee.png',name:'AMD UFO Tee',cat:'Artwork Wear',url:'https://zzazz-za.stores.jp/items/69c04acbe126f8ad4fcb6b57'},
     {img:'<?= get_stylesheet_directory_uri() ?>/artwear/amd08grtee.png',name:'AMD GR Tee',cat:'Artwork Wear',url:'https://zzazz-za.stores.jp/items/69c04a31d9171133f7e5e2e1'},
     {img:'<?= get_stylesheet_directory_uri() ?>/artwear/amd09kidtee.png',name:'AMD Kid Tee',cat:'Artwork Wear',url:'https://zzazz-za.stores.jp/items/69c04b67e126f8b4d7cb6b58'},
