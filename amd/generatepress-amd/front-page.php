@@ -1921,22 +1921,25 @@ window.flipZineCard = function(book, e){
   });
 })();
 
-/* Hide site header when ZINE section is in view */
+/* Hide site header + JP/EN switch when ZINE section is in view */
 (function(){
   var zSec = document.getElementById('cZine');
   var hdr  = document.getElementById('amd-header');
-  if(!zSec || !hdr) return;
+  var lang = document.querySelector('.lang-float');
+  if(!zSec) return;
   var scroller = _pwa2 ? document.getElementById('deck') : window;
+  function hideUI(){ if(hdr){hdr.style.opacity='0';hdr.style.pointerEvents='none';} if(lang){lang.style.opacity='0';lang.style.pointerEvents='none';} }
+  function showUI(){ if(hdr){hdr.style.opacity='';hdr.style.pointerEvents='';} if(lang){lang.style.opacity='';lang.style.pointerEvents='';} }
 
   ScrollTrigger.create({
     trigger: zSec,
     scroller: scroller,
     start: 'top 80%',
     end: 'bottom 20%',
-    onEnter:     function(){ hdr.style.opacity='0'; hdr.style.pointerEvents='none'; },
-    onLeave:     function(){ hdr.style.opacity=''; hdr.style.pointerEvents=''; },
-    onEnterBack: function(){ hdr.style.opacity='0'; hdr.style.pointerEvents='none'; },
-    onLeaveBack: function(){ hdr.style.opacity=''; hdr.style.pointerEvents=''; }
+    onEnter: hideUI,
+    onLeave: showUI,
+    onEnterBack: hideUI,
+    onLeaveBack: showUI
   });
 })();
 
