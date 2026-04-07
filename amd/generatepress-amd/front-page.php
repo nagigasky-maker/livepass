@@ -2129,17 +2129,17 @@ document.addEventListener('DOMContentLoaded', function(){
 <!-- SOUNDCLOUD BOTTOM BAR PLAYER -->
 <div class="sc-player" id="scPlayer">
   <div class="sc-player-bar">
-    <div class="sc-player-header" onclick="toggleScExpand()" style="-webkit-tap-highlight-color:transparent;touch-action:manipulation;">
+    <div class="sc-player-header" id="scHeader">
       <div class="sc-player-icon"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div>
       <div class="sc-player-pulse"></div>
       <div class="sc-player-text">
         <div class="sc-player-title">Somewhere_MST 2</div>
         <div class="sc-player-sub">Elhast_experience · AMD™ EP.07</div>
       </div>
-      <button class="sc-player-play" id="scPlayBtn" onclick="event.stopPropagation();toggleScExpand()">
+      <button class="sc-player-play" id="scPlayBtn">
         <svg id="scPlayIcon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
       </button>
-      <button class="sc-player-close" onclick="event.stopPropagation();dismissScPlayer()">×</button>
+      <button class="sc-player-close" id="scCloseBtn">×</button>
     </div>
     <div class="sc-player-embed" id="scEmbed">
       <iframe id="scIframe" width="100%" height="120" scrolling="no" frameborder="no" allow="autoplay" src="" style="display:block;"></iframe>
@@ -2275,7 +2275,23 @@ function updateScIcon(){
     btn.classList.remove('playing');
   }
 }
-/* Show tab after 5 seconds */
+/* Register touch events for Safari */
+(function(){
+  function addTap(id, fn){
+    var el = document.getElementById(id);
+    if(!el) return;
+    var moved = false;
+    el.addEventListener('touchstart', function(){ moved=false; }, {passive:true});
+    el.addEventListener('touchmove', function(){ moved=true; }, {passive:true});
+    el.addEventListener('touchend', function(e){ if(!moved){ e.preventDefault(); e.stopPropagation(); fn(); }}, {passive:false});
+    el.addEventListener('click', function(e){ e.stopPropagation(); fn(); });
+  }
+  addTap('scHeader', toggleScExpand);
+  addTap('scPlayBtn', toggleScExpand);
+  addTap('scCloseBtn', dismissScPlayer);
+})();
+
+/* Show after 5 seconds */
 setTimeout(function(){ showScPlayer(); }, 5000);
 
 function openPwaGuide(){
