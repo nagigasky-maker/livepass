@@ -866,7 +866,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         </div>
 
         <!-- EP.06 — Cheeky Session (book flip) -->
-        <div class="zine-book" data-zine-card data-page="0" data-href="https://allmustdance.com/zine-ep06/" onclick="flipZineCard(this,event)">
+        <div class="zine-book" data-zine-card data-page="0" data-href="https://allmustdance.com/zine-ep06/">
           <div class="zine-book-inner">
             <div class="zine-page-back zine-page-layer" data-layer="1">
               <div style="position:absolute;inset:0;background:#0a0c14;"></div>
@@ -891,7 +891,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         </div>
 
         <!-- EP.05 — PARCO Skyline (book flip) -->
-        <div class="zine-book" data-zine-card data-page="0" data-href="https://allmustdance.com/zine-ep05/" onclick="flipZineCard(this,event)">
+        <div class="zine-book" data-zine-card data-page="0" data-href="https://allmustdance.com/zine-ep05/">
           <div class="zine-book-inner">
             <div class="zine-page-back zine-page-layer" data-layer="1">
               <div style="position:absolute;inset:0;background:#0a0c14;"></div>
@@ -916,7 +916,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         </div>
 
         <!-- ARTWORK — MOZYSKEY × NOBBY (book flip) -->
-        <div class="zine-book" data-zine-card data-page="0" data-href="https://allmustdance.com/zine-art01/" onclick="flipZineCard(this,event)">
+        <div class="zine-book" data-zine-card data-page="0" data-href="https://allmustdance.com/zine-art01/">
           <div class="zine-book-inner">
             <div class="zine-page-back zine-page-layer" data-layer="1">
               <div style="position:absolute;inset:0;background:#0a0c14;"></div>
@@ -941,7 +941,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         </div>
 
         <!-- EP.02 — WARSAW (book flip) -->
-        <div class="zine-book" data-zine-card data-page="0" data-href="https://allmustdance.com/zine-ep02/" onclick="flipZineCard(this,event)">
+        <div class="zine-book" data-zine-card data-page="0" data-href="https://allmustdance.com/zine-ep02/">
           <div class="zine-book-inner">
             <div class="zine-page-back zine-page-layer" data-layer="1">
               <div style="position:absolute;inset:0;background:#0a0c14;"></div>
@@ -1991,19 +1991,28 @@ window.flipZineCard = function(book, e){
   }
 };
 
-/* Register touch events on all zine-book cards (Safari onclick fix) */
+/* Register touch events on all zine-book cards */
 (function(){
   var books = document.querySelectorAll('.zine-book[data-href]');
+  var _flipLock = false;
   books.forEach(function(book){
     var moved = false;
     book.addEventListener('touchstart', function(){ moved = false; }, {passive:true});
     book.addEventListener('touchmove', function(){ moved = true; }, {passive:true});
     book.addEventListener('touchend', function(e){
-      if(moved) return;
+      if(moved || _flipLock) return;
       if(e.target.closest('.zine-book-close')) return;
       e.preventDefault();
+      e.stopPropagation();
+      _flipLock = true;
       window.flipZineCard(book, e);
+      setTimeout(function(){ _flipLock = false; }, 600);
     }, {passive:false});
+    /* Block click to prevent double-fire */
+    book.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+    });
   });
 })();
 
