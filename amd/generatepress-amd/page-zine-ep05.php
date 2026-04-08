@@ -52,13 +52,13 @@ body {
 .zine-hero { position:relative; width:100%; height:100vh; min-height:100vh; overflow:hidden; }
 .zine-hero img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 .zine-hero-vig { position:absolute; inset:0; background:linear-gradient(to top, rgba(12,15,26,0.95) 0%, rgba(12,15,26,0.3) 50%, transparent 100%); }
-.zine-hero-body { position:absolute; bottom:0; left:0; right:0; z-index:2; padding:0 32px max(40px,calc(env(safe-area-inset-bottom)+24px)); }
+.zine-hero-body { position:absolute; bottom:0; left:0; right:0; z-index:2; padding:0 32px max(40px,calc(env(safe-area-inset-bottom)+24px)) !important; }
 .zine-hero-ep { font-size:9px; font-weight:600; letter-spacing:0.5em; text-transform:uppercase; color:var(--red); margin-bottom:10px; }
 .zine-hero-title { font-family:Arial,"Arial Black",sans-serif; font-size:clamp(36px,10vw,64px); font-weight:900; line-height:0.9; letter-spacing:-0.02em; color:var(--white); margin-bottom:12px; }
 .zine-hero-meta { font-size:10px; font-weight:300; letter-spacing:0.2em; color:rgba(237,235,230,0.45); }
 
 /* Article body */
-.zine-article { padding:48px 32px max(60px,calc(env(safe-area-inset-bottom)+40px)); max-width:640px; }
+.zine-article { padding:48px 32px max(60px,calc(env(safe-area-inset-bottom)+40px)) !important; max-width:640px; }
 .zine-section-label { font-size:10px; font-weight:600; letter-spacing:0.4em; text-transform:uppercase; color:var(--red); margin:40px 0 12px; opacity:0.9; }
 .zine-section-label:first-child { margin-top:0; }
 .zine-body p { font-size:14px; font-weight:300; line-height:2.1; color:rgba(237,235,230,0.85); margin-bottom:16px; }
@@ -84,8 +84,8 @@ body {
 .zine-footer-nav a:hover { color:var(--red); }
 
 @media (max-width:860px) {
-  .zine-hero-body { padding:0 24px max(32px,calc(env(safe-area-inset-bottom)+20px)); }
-  .zine-article { padding:36px 24px max(48px,calc(env(safe-area-inset-bottom)+32px)); }
+  .zine-hero-body { padding:0 24px max(32px,calc(env(safe-area-inset-bottom)+20px)) !important; }
+  .zine-article { padding:36px 24px max(48px,calc(env(safe-area-inset-bottom)+32px)) !important; }
 }
 </style>
 <?php wp_head(); ?>
