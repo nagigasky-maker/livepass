@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PASSES COLLECTION — LIVE PASS</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Observer.min.js"></script>
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --black: #080808;
+  --white: #EDEBE6;
+  --red:   #E8100A;
+  --card-w: 200px;
+  --card-h: 310px;
+}
+html, body {
+  width:100%; height:100%;
+  background: var(--black);
+  overflow: hidden;
+  font-family: 'Noto Sans JP', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  user-select: none; -webkit-user-select: none;
+  touch-action: none;
+}
+
+/* ── HEADER ── */
+.header {
+  position: fixed; top:0; left:0; right:0; z-index:20;
+  padding: max(18px, calc(env(safe-area-inset-top) + 10px)) 24px 0;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(8,8,8,0.9) 0%, transparent 100%);
+  padding-bottom: 32px;
+}
+.header-label {
+  font-size: 9px; letter-spacing: 0.44em; text-transform: uppercase;
+  color: rgba(237,235,230,0.3);
+}
+.header-sub {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase;
+  color: rgba(237,235,230,0.15); margin-top: 2px;
+}
+.header-count {
+  position: absolute; right:24px;
+  top: max(18px, calc(env(safe-area-inset-top) + 10px));
+  font-family: 'Bebas Neue', sans-serif; font-size: 13px;
+  letter-spacing: 0.2em; color: rgba(237,235,230,0.25);
+}
+
+/* ── SCROLL TRACK ── */
+#track-wrap {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+
+#track {
+  position: relative;
+  height: var(--card-h);
+  display: flex;
+  align-items: center;
+}
+
+/* ── CARD ── */
+.card {
+  position: absolute;
+  width: var(--card-w);
+  height: var(--card-h);
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  will-change: transform, opacity;
+  -webkit-tap-highlight-color: transparent;
+  transform-origin: 50% 100%;
+}
+
+/* card flip container */
+.card-inner {
+  position: absolute; inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+  border-radius: 14px;
+}
+.card.flipped .card-inner { transform: rotateY(180deg); }
+
+.card-face {
+  position: absolute; inset: 0;
+  border-radius: 14px; overflow: hidden;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+}
+.card-face.back { transform: rotateY(180deg); }
+
+.card-face img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+
+/* holographic shimmer */
+.card-holo {
+  position: absolute; inset: 0; z-index: 2;
+  border-radius: 14px; pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(255,255,255,0.06) 35%,
+    rgba(255,255,255,0.12) 50%,
+    rgba(255,255,255,0.06) 65%,
+    transparent 80%
+  );
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+/* card info overlay */
+.card-info {
+  position: absolute; bottom:0; left:0; right:0; z-index:3;
+  padding: 14px 12px 12px;
+  background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, transparent 100%);
+  border-radius: 0 0 14px 14px;
+}
+.card-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 15px; letter-spacing: 0.04em; color: var(--white);
+  line-height: 1;
+}
+.card-date {
+  font-size: 8px; font-weight: 300; letter-spacing: 0.22em;
+  color: rgba(237,235,230,0.45); margin-top: 3px; text-transform: uppercase;
+}
+.card-num {
+  position: absolute; top: 10px; right: 12px; z-index: 3;
+  font-family: 'Bebas Neue', sans-serif; font-size: 10px;
+  letter-spacing: 0.18em; color: rgba(237,235,230,0.22);
+}
+
+/* active card indicator */
+.card-dot {
+  position: absolute; top: 10px; left: 12px; z-index: 3;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--red); opacity: 0;
+  transition: opacity 0.3s;
+}
+.card.is-center .card-dot { opacity: 1; }
+
+/* Open button */
+.card-open {
+  position: absolute; bottom: 52px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 4; white-space: nowrap;
+  font-size: 8px; letter-spacing: 0.28em; text-transform: uppercase;
+  padding: 7px 18px; border: 1px solid rgba(237,235,230,0.45);
+  color: var(--white); border-radius: 99px;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.card.is-center .card-open { opacity: 1; pointer-events: all; }
+
+/* ── GYRO TILT on center card ── */
+.card.is-center .card-inner {
+  transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+.card.is-center.gyro-active .card-inner {
+  transition: transform 0.12s ease-out;
+}
+
+/* ── PROGRESS DOTS ── */
+#dots {
+  position: fixed;
+  bottom: max(32px, calc(env(safe-area-inset-bottom) + 20px));
+  left: 50%; transform: translateX(-50%);
+  display: flex; gap: 6px; align-items: center;
+  z-index: 20;
+}
+.dot {
+  width: 4px; height: 4px; border-radius: 50%;
+  background: rgba(237,235,230,0.25);
+  transition: background 0.3s, transform 0.3s;
+}
+.dot.active {
+  background: var(--white);
+  transform: scale(1.5);
+}
+
+/* ── HINT ── */
+#hint {
+  position: fixed;
+  bottom: max(56px, calc(env(safe-area-inset-bottom) + 44px));
+  left: 50%; transform: translateX(-50%);
+  font-size: 8px; letter-spacing: 0.42em; text-transform: uppercase;
+  color: rgba(237,235,230,0.2); white-space: nowrap;
+  pointer-events: none; z-index: 20;
+  transition: opacity 1s ease;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-label">Passes Collection</div>
+  <div class="header-sub">You Were There</div>
+  <div class="header-count" id="passCount"></div>
+</div>
+
+<div id="track-wrap">
+  <div id="track"></div>
+</div>
+
+<div id="dots"></div>
+<div id="hint">scroll to explore</div>
+
+<script>
+/* ── placeholder card images (base64) ── */
+const CARD_FRONT = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='620' fill='%23181818'%3E%3Crect width='400' height='620' rx='28'/%3E%3C/svg%3E";
+const CARD_BACK  = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='620' fill='%23111'%3E%3Crect width='400' height='620' rx='28'/%3E%3C/svg%3E";
+const CARD_GREEN = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='620' fill='%230c1a00'%3E%3Crect width='400' height='620' rx='28'/%3E%3C/svg%3E";
+
+/* ── PASS DATA ── */
+const PASSES = [
+  { id:'sc',   front:CARD_GREEN, back:CARD_FRONT, title:'SPACE COOKING',    date:'Mar 21 2025 · Unit',        num:'#002' },
+  { id:'amd',  front:CARD_FRONT, back:CARD_BACK,  title:'ALL MUST DANCE',   date:'May 4 2026 · Clubasia',     num:'#003' },
+  { id:'ws',   front:CARD_BACK,  back:CARD_GREEN, title:'64BEAT WORKSHOP',  date:'Apr 1 2025 · Noah Studio',  num:'#004' },
+  { id:'amd2', front:CARD_FRONT, back:CARD_BACK,  title:'ALL MUST DANCE',   date:'May 4 2026 · Clubasia',     num:'#005' },
+  { id:'sc2',  front:CARD_GREEN, back:CARD_FRONT, title:'SPACE COOKING',    date:'Mar 21 2025 · Unit',        num:'#006' },
+];
+
+/* ── LAYOUT CONSTANTS ── */
+const CARD_W    = 200;
+const CARD_H    = 310;
+const GAP       = 20;
+const SPREAD    = CARD_W + GAP;
+const SIDE_ROT  = 38;
+const SIDE_TYOFF = 18;
+const SIDE_SCALE = 0.82;
+const CENTER_SCALE = 1.0;
+
+let totalCards = PASSES.length;
+let currentIdx = 0;
+let scrollPos  = 0;
+let maxScroll  = 0;
+
+const trackEl = document.getElementById('track');
+const dotsEl  = document.getElementById('dots');
+const hintEl  = document.getElementById('hint');
+const cards   = [];
+
+/* ══════════════════════════════════
+   HAPTIC FEEDBACK — short vibration
+   ══════════════════════════════════ */
+function haptic(ms) {
+  if (navigator.vibrate) navigator.vibrate(ms || 8);
+}
+
+/* ══════════════════════════════════
+   GYRO TILT — DeviceOrientation
+   ══════════════════════════════════ */
+let gyroX = 0, gyroY = 0;     // normalized -1..1
+let gyroEnabled = false;
+let gyroPermissionAsked = false;
+
+function initGyro() {
+  if (gyroPermissionAsked) return;
+  gyroPermissionAsked = true;
+
+  // iOS 13+ requires permission request
+  if (typeof DeviceOrientationEvent !== 'undefined' &&
+      typeof DeviceOrientationEvent.requestPermission === 'function') {
+    DeviceOrientationEvent.requestPermission()
+      .then(state => { if (state === 'granted') startGyro(); })
+      .catch(() => {});
+  } else {
+    startGyro();
+  }
+}
+
+function startGyro() {
+  window.addEventListener('deviceorientation', e => {
+    if (e.gamma === null || e.beta === null) return;
+    gyroEnabled = true;
+    // gamma: left/right tilt (-90..90), beta: front/back (−180..180)
+    gyroX = Math.max(-1, Math.min(1, e.gamma / 30));  // clamp ±30° → ±1
+    gyroY = Math.max(-1, Math.min(1, (e.beta - 45) / 30)); // neutral ~45°
+  }, { passive: true });
+}
+
+/* Desktop fallback: mouse position drives tilt */
+let mouseX = 0, mouseY = 0;
+document.addEventListener('mousemove', e => {
+  if (gyroEnabled) return;
+  mouseX = (e.clientX / window.innerWidth  - 0.5) * 2; // -1..1
+  mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+}, { passive: true });
+
+
+/* ── BUILD ── */
+function build() {
+  document.getElementById('passCount').textContent = `${totalCards} Passes`;
+  trackEl.style.width = `${SPREAD * totalCards}px`;
+
+  PASSES.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-inner">
+        <div class="card-face front">
+          <img src="${p.front}" alt="">
+          <div class="card-holo"></div>
+        </div>
+        <div class="card-face back">
+          <img src="${p.back}" alt="">
+        </div>
+      </div>
+      <div class="card-info">
+        <div class="card-title">${p.title}</div>
+        <div class="card-date">${p.date}</div>
+      </div>
+      <div class="card-num">${p.num}</div>
+      <div class="card-dot"></div>
+      <button class="card-open" onclick="openPass(event,'${p.id}')">Open Pass →</button>
+    `;
+
+    card.addEventListener('click', e => {
+      if (e.target.classList.contains('card-open')) return;
+      if (i === currentIdx) {
+        card.classList.toggle('flipped');
+        haptic(12);  // flip haptic — slightly longer
+      } else {
+        scrollToCard(i);
+      }
+    });
+
+    trackEl.appendChild(card);
+    cards.push({ el: card, data: p, idx: i });
+
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    dotsEl.appendChild(dot);
+  });
+
+  maxScroll = totalCards - 1;
+  updateLayout(true);
+
+  // request gyro on first touch (iOS permission requirement)
+  document.addEventListener('touchstart', initGyro, { once: true });
+  // also try immediately for Android / desktop
+  initGyro();
+}
+
+
+/* ── LAYOUT UPDATE ── */
+function updateLayout(instant) {
+  const vw = window.innerWidth;
+
+  cards.forEach(({ el }, i) => {
+    const offset = i - scrollPos;
+    const absOff = Math.abs(offset);
+
+    const rot    = offset * SIDE_ROT * 0.55;
+    const ty     = absOff * SIDE_TYOFF * 0.7;
+    const scale  = CENTER_SCALE - absOff * (1 - SIDE_SCALE) * 0.55;
+    const clampedScale = Math.max(scale, 0.55);
+    const tx = offset * (CARD_W * 0.72 + GAP * 0.8);
+    const opacity = Math.max(0, 1 - absOff * 0.28);
+    const z = 10 - Math.round(absOff * 2);
+
+    el.style.left = `${vw/2 - CARD_W/2}px`;
+    el.style.zIndex = z;
+
+    if (instant) {
+      el.style.transition = 'none';
+      el.style.transform  = `translateX(${tx}px) translateY(${ty}px) rotate(${rot}deg) scale(${clampedScale})`;
+      el.style.opacity    = opacity.toString();
+    } else {
+      el.style.transition = 'transform 0.42s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.42s ease';
+      el.style.transform  = `translateX(${tx}px) translateY(${ty}px) rotate(${rot}deg) scale(${clampedScale})`;
+      el.style.opacity    = opacity.toString();
+    }
+
+    const isCenter = i === Math.round(scrollPos);
+    el.classList.toggle('is-center', isCenter);
+
+    const holo = el.querySelector('.card-holo');
+    if (holo) holo.style.opacity = isCenter ? '1' : '0';
+  });
+
+  // dots
+  const centerIdx = Math.round(scrollPos);
+  document.querySelectorAll('.dot').forEach((d, i) => {
+    d.classList.toggle('active', i === centerIdx);
+  });
+}
+
+
+/* ── SCROLL TO CARD ── */
+let prevIdx = 0;
+function scrollToCard(idx, dur = 0.5) {
+  idx = Math.max(0, Math.min(totalCards - 1, idx));
+  prevIdx = currentIdx;
+  currentIdx = idx;
+
+  cards.forEach(c => c.el.classList.remove('flipped'));
+
+  // ★ Haptic on card change
+  if (prevIdx !== currentIdx) haptic(8);
+
+  gsap.to({ v: scrollPos }, {
+    v: idx,
+    duration: dur,
+    ease: 'power3.out',
+    onUpdate: function() {
+      scrollPos = this.targets()[0].v;
+      updateLayout(false);
+    },
+    onComplete: () => {
+      scrollPos = idx;
+      updateLayout(false);
+    }
+  });
+
+  hintEl.style.opacity = '0';
+}
+
+
+/* ── OBSERVER (scroll / swipe) ── */
+let scrollAccum = 0;
+let scrollTimeout = null;
+
+Observer.create({
+  target: document.getElementById('track-wrap'),
+  type: 'wheel,touch',
+  tolerance: 8,
+  onChangeX: (self) => {
+    scrollAccum += self.deltaX / 180;
+    const liveTarget = Math.max(0, Math.min(totalCards - 1, currentIdx + scrollAccum));
+    scrollPos = liveTarget;
+    updateLayout(false);
+
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      scrollToCard(Math.round(liveTarget));
+      scrollAccum = 0;
+    }, 80);
+
+    hintEl.style.opacity = '0';
+  },
+  onLeft:  () => { scrollToCard(currentIdx + 1); scrollAccum = 0; },
+  onRight: () => { scrollToCard(currentIdx - 1); scrollAccum = 0; },
+});
+
+
+/* ── KEYBOARD ── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') scrollToCard(currentIdx + 1);
+  if (e.key === 'ArrowLeft')  scrollToCard(currentIdx - 1);
+});
+
+
+/* ── OPEN PASS ── */
+function openPass(e, id) {
+  e.stopPropagation();
+  haptic(15);
+  console.log('open', id);
+}
+
+
+/* ══════════════════════════════════════════
+   ANIMATION LOOP — gyro tilt + holo shimmer
+   ══════════════════════════════════════════ */
+let holoT = 0;
+let lastT = performance.now();
+
+function tick(now) {
+  requestAnimationFrame(tick);
+  const dt = now - lastT;
+  lastT = now;
+  holoT += dt * 0.0006;
+
+  const center = cards[Math.round(scrollPos)];
+  if (!center) return;
+  const cardEl = center.el;
+  const inner  = cardEl.querySelector('.card-inner');
+  const holo   = cardEl.querySelector('.card-holo');
+  if (!inner || !holo) return;
+
+  /* ── Gyro / Mouse tilt ── */
+  const tiltX = gyroEnabled ? gyroX : mouseX;  // left-right
+  const tiltY = gyroEnabled ? gyroY : mouseY;  // up-down
+
+  if (gyroEnabled || (mouseX !== 0 || mouseY !== 0)) {
+    cardEl.classList.add('gyro-active');
+    // rotateY for left-right, rotateX for up-down (inverted)
+    const ry =  tiltX * 12;  // max ±12°
+    const rx = -tiltY * 8;   // max ±8°
+
+    // Only apply gyro transform if card is NOT flipped
+    if (!cardEl.classList.contains('flipped')) {
+      inner.style.transform = `rotateY(${ry}deg) rotateX(${rx}deg)`;
+    }
+  } else {
+    cardEl.classList.remove('gyro-active');
+    if (!cardEl.classList.contains('flipped')) {
+      inner.style.transform = '';
+    }
+  }
+
+  /* ── Holo shimmer — driven by gyro + ambient ── */
+  const ambientAngle = 95 + Math.sin(holoT) * 18;
+  const ambientPos   = 35 + Math.sin(holoT * 0.7) * 18;
+
+  // shift holo based on tilt
+  const gyroShift = tiltX * 25;  // ±25% shift
+  const angle = ambientAngle + tiltX * 30;
+  const pos   = ambientPos + gyroShift;
+
+  holo.style.background = `linear-gradient(
+    ${angle}deg,
+    transparent ${pos - 15}%,
+    rgba(255,255,255,0.07) ${pos}%,
+    rgba(255,255,255,0.13) ${pos + 8}%,
+    rgba(255,255,255,0.07) ${pos + 16}%,
+    transparent ${pos + 30}%
+  )`;
+}
+
+
+/* ── INIT ── */
+build();
+requestAnimationFrame(tick);
+setTimeout(() => hintEl.style.opacity = '0', 3500);
+window.addEventListener('resize', () => updateLayout(true));
+</script>
+</body>
+</html>
