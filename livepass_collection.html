@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>PASSES COLLECTION — LIVE PASS</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Observer.min.js"></script>
 <style>
@@ -13,6 +13,7 @@
   --black: #080808;
   --white: #EDEBE6;
   --red:   #E8100A;
+  --blue:  #3DAAFF;
   --card-w: 200px;
   --card-h: 310px;
 }
@@ -26,33 +27,146 @@ html, body {
   touch-action: none;
 }
 
-/* ── HEADER ── */
-.header {
-  position: fixed; top:0; left:0; right:0; z-index:20;
-  padding: max(18px, calc(env(safe-area-inset-top) + 10px)) 24px 0;
-  pointer-events: none;
-  background: linear-gradient(to bottom, rgba(8,8,8,0.9) 0%, transparent 100%);
-  padding-bottom: 32px;
+/* ══════════════════════
+   HEADER BAR
+   ══════════════════════ */
+.top-bar {
+  position: fixed; top:0; left:0; right:0; z-index:30;
+  padding: max(12px, calc(env(safe-area-inset-top) + 6px)) 20px 10px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: linear-gradient(to bottom, rgba(8,8,8,0.95) 60%, transparent 100%);
 }
-.header-label {
-  font-size: 9px; letter-spacing: 0.44em; text-transform: uppercase;
-  color: rgba(237,235,230,0.3);
+.top-bar-left {
+  display: flex; flex-direction: column;
 }
-.header-sub {
+.top-bar-title {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase;
-  color: rgba(237,235,230,0.15); margin-top: 2px;
+  font-size: 16px; letter-spacing: 0.14em; color: var(--white);
+  line-height: 1;
 }
-.header-count {
-  position: absolute; right:24px;
-  top: max(18px, calc(env(safe-area-inset-top) + 10px));
-  font-family: 'Bebas Neue', sans-serif; font-size: 13px;
-  letter-spacing: 0.2em; color: rgba(237,235,230,0.25);
+.top-bar-sub {
+  font-size: 6px; letter-spacing: 0.38em; text-transform: uppercase;
+  color: rgba(237,235,230,0.25); margin-top: 2px;
+}
+.top-bar-icons {
+  display: flex; gap: 14px; align-items: center;
+}
+.top-bar-icons button {
+  background: none; border: none; color: rgba(237,235,230,0.35);
+  font-size: 14px; cursor: pointer; padding: 4px;
+  transition: color 0.2s;
+}
+.top-bar-icons button:hover { color: rgba(237,235,230,0.7); }
+
+/* ══════════════════════
+   HERO — PROFILE
+   ══════════════════════ */
+.hero {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+  padding-top: max(56px, calc(env(safe-area-inset-top) + 48px));
+  display: flex; flex-direction: column; align-items: center;
+  pointer-events: none;
+}
+.hero > * { pointer-events: auto; }
+
+/* Avatar */
+.avatar-wrap {
+  position: relative; width: 76px; height: 76px; margin-bottom: 10px;
+}
+.avatar {
+  width: 76px; height: 76px; border-radius: 50%;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px;
+  border: 2px solid rgba(255,255,255,0.06);
+}
+.avatar-pro {
+  position: absolute; top: -2px; left: -4px;
+  background: var(--blue); color: #000;
+  font-size: 7px; font-weight: 700; letter-spacing: 0.08em;
+  padding: 2px 6px; border-radius: 4px;
+  text-transform: uppercase;
 }
 
-/* ── SCROLL TRACK ── */
+/* Name / Role */
+.profile-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px; letter-spacing: 0.08em; color: var(--white);
+  line-height: 1; margin-bottom: 4px;
+}
+.profile-role {
+  font-size: 8px; letter-spacing: 0.28em; text-transform: uppercase;
+  color: rgba(237,235,230,0.3); margin-bottom: 2px;
+}
+.profile-loc {
+  font-size: 7px; letter-spacing: 0.32em; text-transform: uppercase;
+  color: rgba(237,235,230,0.18); margin-bottom: 12px;
+}
+
+/* Action row (search, heart) */
+.profile-actions {
+  position: absolute; right: 20px; top: max(100px, calc(env(safe-area-inset-top) + 92px));
+  display: flex; flex-direction: column; gap: 14px; z-index: 12;
+}
+.profile-actions button {
+  background: none; border: none; cursor: pointer;
+  font-size: 18px; padding: 2px;
+  transition: transform 0.2s;
+}
+.profile-actions button:hover { transform: scale(1.15); }
+
+/* Stats */
+.profile-stats {
+  display: flex; align-items: center; gap: 20px; margin-bottom: 16px;
+}
+.p-stat {
+  display: flex; flex-direction: column; align-items: center;
+}
+.p-stat-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px; color: var(--white); line-height: 1;
+}
+.p-stat-label {
+  font-size: 7px; letter-spacing: 0.18em; color: rgba(237,235,230,0.3);
+  margin-top: 2px;
+}
+.p-stat-add {
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 1px solid rgba(237,235,230,0.12); background: none;
+  color: rgba(237,235,230,0.4); font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: border-color 0.2s;
+}
+.p-stat-add:hover { border-color: rgba(237,235,230,0.3); }
+
+/* ══════════════════════
+   PASS HOLDER SECTION
+   ══════════════════════ */
+.pass-section {
+  position: fixed;
+  top: max(280px, calc(env(safe-area-inset-top) + 272px));
+  left: 0; right: 0;
+  padding: 0 24px;
+  z-index: 10;
+  pointer-events: none;
+}
+.pass-section-label {
+  font-size: 9px; letter-spacing: 0.42em; text-transform: uppercase;
+  color: rgba(237,235,230,0.3); font-weight: 500;
+}
+.pass-section-count {
+  font-size: 7px; letter-spacing: 0.3em; text-transform: uppercase;
+  color: rgba(237,235,230,0.15); margin-top: 2px;
+}
+
+/* ══════════════════════
+   CARD TRACK
+   ══════════════════════ */
 #track-wrap {
-  position: fixed; inset: 0;
+  position: fixed;
+  left: 0; right: 0;
+  top: max(330px, calc(env(safe-area-inset-top) + 322px));
+  bottom: max(60px, calc(env(safe-area-inset-bottom) + 52px));
   display: flex; align-items: center; justify-content: center;
   overflow: hidden;
 }
@@ -77,7 +191,6 @@ html, body {
   transform-origin: 50% 100%;
 }
 
-/* card flip container */
 .card-inner {
   position: absolute; inset: 0;
   transform-style: preserve-3d;
@@ -137,7 +250,6 @@ html, body {
   letter-spacing: 0.18em; color: rgba(237,235,230,0.22);
 }
 
-/* active card indicator */
 .card-dot {
   position: absolute; top: 10px; left: 12px; z-index: 3;
   width: 6px; height: 6px; border-radius: 50%;
@@ -146,7 +258,6 @@ html, body {
 }
 .card.is-center .card-dot { opacity: 1; }
 
-/* Open button */
 .card-open {
   position: absolute; bottom: 52px; left: 50%;
   transform: translateX(-50%);
@@ -161,7 +272,7 @@ html, body {
 }
 .card.is-center .card-open { opacity: 1; pointer-events: all; }
 
-/* ── GYRO TILT on center card ── */
+/* gyro tilt */
 .card.is-center .card-inner {
   transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
 }
@@ -172,7 +283,7 @@ html, body {
 /* ── PROGRESS DOTS ── */
 #dots {
   position: fixed;
-  bottom: max(32px, calc(env(safe-area-inset-bottom) + 20px));
+  bottom: max(68px, calc(env(safe-area-inset-bottom) + 60px));
   left: 50%; transform: translateX(-50%);
   display: flex; gap: 6px; align-items: center;
   z-index: 20;
@@ -187,10 +298,26 @@ html, body {
   transform: scale(1.5);
 }
 
+/* ══════════════════════
+   BOTTOM NAV
+   ══════════════════════ */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 30;
+  padding: 10px 0 max(10px, env(safe-area-inset-bottom));
+  display: flex; justify-content: space-around; align-items: center;
+  background: linear-gradient(to top, rgba(8,8,8,0.95) 60%, transparent 100%);
+}
+.bottom-nav button {
+  background: none; border: none; color: rgba(237,235,230,0.28);
+  font-size: 18px; cursor: pointer; padding: 6px 12px;
+  transition: color 0.2s;
+}
+.bottom-nav button.active { color: var(--white); }
+
 /* ── HINT ── */
 #hint {
   position: fixed;
-  bottom: max(56px, calc(env(safe-area-inset-bottom) + 44px));
+  bottom: max(90px, calc(env(safe-area-inset-bottom) + 82px));
   left: 50%; transform: translateX(-50%);
   font-size: 8px; letter-spacing: 0.42em; text-transform: uppercase;
   color: rgba(237,235,230,0.2); white-space: nowrap;
@@ -201,12 +328,55 @@ html, body {
 </head>
 <body>
 
-<div class="header">
-  <div class="header-label">Passes Collection</div>
-  <div class="header-sub">You Were There</div>
-  <div class="header-count" id="passCount"></div>
+<!-- ═══ TOP BAR ═══ -->
+<div class="top-bar">
+  <div class="top-bar-left">
+    <div class="top-bar-title">LIVE PASS</div>
+    <div class="top-bar-sub">You Were There</div>
+  </div>
+  <div class="top-bar-icons">
+    <button>✏️</button>
+    <button>🔗</button>
+    <button>↗</button>
+    <button>⚙</button>
+  </div>
 </div>
 
+<!-- ═══ HERO — PROFILE ═══ -->
+<div class="hero">
+  <div class="avatar-wrap">
+    <div class="avatar">🎩</div>
+    <div class="avatar-pro">PRO</div>
+  </div>
+  <div class="profile-name">NOBBY</div>
+  <div class="profile-role">Dancer / DJ / Organizer</div>
+  <div class="profile-loc">Tokyo</div>
+  <div class="profile-stats">
+    <div class="p-stat">
+      <div class="p-stat-num">25</div>
+      <div class="p-stat-label">フォロワー</div>
+    </div>
+    <div class="p-stat">
+      <div class="p-stat-num">25</div>
+      <div class="p-stat-label">フォロー中</div>
+    </div>
+    <button class="p-stat-add">+</button>
+  </div>
+</div>
+
+<!-- Profile action buttons (right side) -->
+<div class="profile-actions">
+  <button>🔍</button>
+  <button style="color:#E8100A">♥</button>
+</div>
+
+<!-- ═══ PASS HOLDER LABEL ═══ -->
+<div class="pass-section">
+  <div class="pass-section-label">Pass Holder</div>
+  <div class="pass-section-count" id="passCount"></div>
+</div>
+
+<!-- ═══ CARD TRACK ═══ -->
 <div id="track-wrap">
   <div id="track"></div>
 </div>
@@ -214,8 +384,16 @@ html, body {
 <div id="dots"></div>
 <div id="hint">scroll to explore</div>
 
+<!-- ═══ BOTTOM NAV ═══ -->
+<div class="bottom-nav">
+  <button class="active">🏠</button>
+  <button>▶</button>
+  <button>📅</button>
+  <button>☰</button>
+</div>
+
 <script>
-/* ── placeholder card images (base64) ── */
+/* ── placeholder card images ── */
 const CARD_FRONT = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='620' fill='%23181818'%3E%3Crect width='400' height='620' rx='28'/%3E%3C/svg%3E";
 const CARD_BACK  = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='620' fill='%23111'%3E%3Crect width='400' height='620' rx='28'/%3E%3C/svg%3E";
 const CARD_GREEN = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='620' fill='%230c1a00'%3E%3Crect width='400' height='620' rx='28'/%3E%3C/svg%3E";
@@ -226,48 +404,34 @@ const PASSES = [
   { id:'amd',  front:CARD_FRONT, back:CARD_BACK,  title:'ALL MUST DANCE',   date:'May 4 2026 · Clubasia',     num:'#003' },
   { id:'ws',   front:CARD_BACK,  back:CARD_GREEN, title:'64BEAT WORKSHOP',  date:'Apr 1 2025 · Noah Studio',  num:'#004' },
   { id:'amd2', front:CARD_FRONT, back:CARD_BACK,  title:'ALL MUST DANCE',   date:'May 4 2026 · Clubasia',     num:'#005' },
-  { id:'sc2',  front:CARD_GREEN, back:CARD_FRONT, title:'SPACE COOKING',    date:'Mar 21 2025 · Unit',        num:'#006' },
 ];
 
-/* ── LAYOUT CONSTANTS ── */
-const CARD_W    = 200;
-const CARD_H    = 310;
-const GAP       = 20;
-const SPREAD    = CARD_W + GAP;
-const SIDE_ROT  = 38;
-const SIDE_TYOFF = 18;
-const SIDE_SCALE = 0.82;
-const CENTER_SCALE = 1.0;
+/* ── LAYOUT ── */
+const CARD_W = 200, CARD_H = 310, GAP = 20;
+const SIDE_ROT = 38, SIDE_TYOFF = 18, SIDE_SCALE = 0.82, CENTER_SCALE = 1.0;
 
 let totalCards = PASSES.length;
 let currentIdx = 0;
 let scrollPos  = 0;
-let maxScroll  = 0;
 
 const trackEl = document.getElementById('track');
 const dotsEl  = document.getElementById('dots');
 const hintEl  = document.getElementById('hint');
 const cards   = [];
 
-/* ══════════════════════════════════
-   HAPTIC FEEDBACK — short vibration
-   ══════════════════════════════════ */
+/* ── HAPTIC ── */
 function haptic(ms) {
   if (navigator.vibrate) navigator.vibrate(ms || 8);
 }
 
-/* ══════════════════════════════════
-   GYRO TILT — DeviceOrientation
-   ══════════════════════════════════ */
-let gyroX = 0, gyroY = 0;     // normalized -1..1
+/* ── GYRO ── */
+let gyroX = 0, gyroY = 0;
 let gyroEnabled = false;
 let gyroPermissionAsked = false;
 
 function initGyro() {
   if (gyroPermissionAsked) return;
   gyroPermissionAsked = true;
-
-  // iOS 13+ requires permission request
   if (typeof DeviceOrientationEvent !== 'undefined' &&
       typeof DeviceOrientationEvent.requestPermission === 'function') {
     DeviceOrientationEvent.requestPermission()
@@ -282,17 +446,15 @@ function startGyro() {
   window.addEventListener('deviceorientation', e => {
     if (e.gamma === null || e.beta === null) return;
     gyroEnabled = true;
-    // gamma: left/right tilt (-90..90), beta: front/back (−180..180)
-    gyroX = Math.max(-1, Math.min(1, e.gamma / 30));  // clamp ±30° → ±1
-    gyroY = Math.max(-1, Math.min(1, (e.beta - 45) / 30)); // neutral ~45°
+    gyroX = Math.max(-1, Math.min(1, e.gamma / 30));
+    gyroY = Math.max(-1, Math.min(1, (e.beta - 45) / 30));
   }, { passive: true });
 }
 
-/* Desktop fallback: mouse position drives tilt */
 let mouseX = 0, mouseY = 0;
 document.addEventListener('mousemove', e => {
   if (gyroEnabled) return;
-  mouseX = (e.clientX / window.innerWidth  - 0.5) * 2; // -1..1
+  mouseX = (e.clientX / window.innerWidth  - 0.5) * 2;
   mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
 }, { passive: true });
 
@@ -300,7 +462,7 @@ document.addEventListener('mousemove', e => {
 /* ── BUILD ── */
 function build() {
   document.getElementById('passCount').textContent = `${totalCards} Passes`;
-  trackEl.style.width = `${SPREAD * totalCards}px`;
+  trackEl.style.width = `${(CARD_W + GAP) * totalCards}px`;
 
   PASSES.forEach((p, i) => {
     const card = document.createElement('div');
@@ -328,7 +490,7 @@ function build() {
       if (e.target.classList.contains('card-open')) return;
       if (i === currentIdx) {
         card.classList.toggle('flipped');
-        haptic(12);  // flip haptic — slightly longer
+        haptic(12);
       } else {
         scrollToCard(i);
       }
@@ -342,12 +504,8 @@ function build() {
     dotsEl.appendChild(dot);
   });
 
-  maxScroll = totalCards - 1;
   updateLayout(true);
-
-  // request gyro on first touch (iOS permission requirement)
   document.addEventListener('touchstart', initGyro, { once: true });
-  // also try immediately for Android / desktop
   initGyro();
 }
 
@@ -371,15 +529,14 @@ function updateLayout(instant) {
     el.style.left = `${vw/2 - CARD_W/2}px`;
     el.style.zIndex = z;
 
+    const t = `translateX(${tx}px) translateY(${ty}px) rotate(${rot}deg) scale(${clampedScale})`;
     if (instant) {
       el.style.transition = 'none';
-      el.style.transform  = `translateX(${tx}px) translateY(${ty}px) rotate(${rot}deg) scale(${clampedScale})`;
-      el.style.opacity    = opacity.toString();
     } else {
       el.style.transition = 'transform 0.42s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.42s ease';
-      el.style.transform  = `translateX(${tx}px) translateY(${ty}px) rotate(${rot}deg) scale(${clampedScale})`;
-      el.style.opacity    = opacity.toString();
     }
+    el.style.transform = t;
+    el.style.opacity   = opacity.toString();
 
     const isCenter = i === Math.round(scrollPos);
     el.classList.toggle('is-center', isCenter);
@@ -388,7 +545,6 @@ function updateLayout(instant) {
     if (holo) holo.style.opacity = isCenter ? '1' : '0';
   });
 
-  // dots
   const centerIdx = Math.round(scrollPos);
   document.querySelectorAll('.dot').forEach((d, i) => {
     d.classList.toggle('active', i === centerIdx);
@@ -402,31 +558,19 @@ function scrollToCard(idx, dur = 0.5) {
   idx = Math.max(0, Math.min(totalCards - 1, idx));
   prevIdx = currentIdx;
   currentIdx = idx;
-
   cards.forEach(c => c.el.classList.remove('flipped'));
-
-  // ★ Haptic on card change
   if (prevIdx !== currentIdx) haptic(8);
 
   gsap.to({ v: scrollPos }, {
-    v: idx,
-    duration: dur,
-    ease: 'power3.out',
-    onUpdate: function() {
-      scrollPos = this.targets()[0].v;
-      updateLayout(false);
-    },
-    onComplete: () => {
-      scrollPos = idx;
-      updateLayout(false);
-    }
+    v: idx, duration: dur, ease: 'power3.out',
+    onUpdate: function() { scrollPos = this.targets()[0].v; updateLayout(false); },
+    onComplete: () => { scrollPos = idx; updateLayout(false); }
   });
-
   hintEl.style.opacity = '0';
 }
 
 
-/* ── OBSERVER (scroll / swipe) ── */
+/* ── OBSERVER ── */
 let scrollAccum = 0;
 let scrollTimeout = null;
 
@@ -439,26 +583,19 @@ Observer.create({
     const liveTarget = Math.max(0, Math.min(totalCards - 1, currentIdx + scrollAccum));
     scrollPos = liveTarget;
     updateLayout(false);
-
     clearTimeout(scrollTimeout);
-    scrollTimeout = setTimeout(() => {
-      scrollToCard(Math.round(liveTarget));
-      scrollAccum = 0;
-    }, 80);
-
+    scrollTimeout = setTimeout(() => { scrollToCard(Math.round(liveTarget)); scrollAccum = 0; }, 80);
     hintEl.style.opacity = '0';
   },
   onLeft:  () => { scrollToCard(currentIdx + 1); scrollAccum = 0; },
   onRight: () => { scrollToCard(currentIdx - 1); scrollAccum = 0; },
 });
 
-
 /* ── KEYBOARD ── */
 document.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight') scrollToCard(currentIdx + 1);
   if (e.key === 'ArrowLeft')  scrollToCard(currentIdx - 1);
 });
-
 
 /* ── OPEN PASS ── */
 function openPass(e, id) {
@@ -468,17 +605,13 @@ function openPass(e, id) {
 }
 
 
-/* ══════════════════════════════════════════
-   ANIMATION LOOP — gyro tilt + holo shimmer
-   ══════════════════════════════════════════ */
-let holoT = 0;
-let lastT = performance.now();
+/* ── ANIMATION LOOP — gyro + holo ── */
+let holoT = 0, lastT = performance.now();
 
 function tick(now) {
   requestAnimationFrame(tick);
-  const dt = now - lastT;
+  holoT += (now - lastT) * 0.0006;
   lastT = now;
-  holoT += dt * 0.0006;
 
   const center = cards[Math.round(scrollPos)];
   if (!center) return;
@@ -487,46 +620,28 @@ function tick(now) {
   const holo   = cardEl.querySelector('.card-holo');
   if (!inner || !holo) return;
 
-  /* ── Gyro / Mouse tilt ── */
-  const tiltX = gyroEnabled ? gyroX : mouseX;  // left-right
-  const tiltY = gyroEnabled ? gyroY : mouseY;  // up-down
+  const tiltX = gyroEnabled ? gyroX : mouseX;
+  const tiltY = gyroEnabled ? gyroY : mouseY;
 
   if (gyroEnabled || (mouseX !== 0 || mouseY !== 0)) {
     cardEl.classList.add('gyro-active');
-    // rotateY for left-right, rotateX for up-down (inverted)
-    const ry =  tiltX * 12;  // max ±12°
-    const rx = -tiltY * 8;   // max ±8°
-
-    // Only apply gyro transform if card is NOT flipped
     if (!cardEl.classList.contains('flipped')) {
-      inner.style.transform = `rotateY(${ry}deg) rotateX(${rx}deg)`;
+      inner.style.transform = `rotateY(${tiltX * 12}deg) rotateX(${-tiltY * 8}deg)`;
     }
   } else {
     cardEl.classList.remove('gyro-active');
-    if (!cardEl.classList.contains('flipped')) {
-      inner.style.transform = '';
-    }
+    if (!cardEl.classList.contains('flipped')) inner.style.transform = '';
   }
 
-  /* ── Holo shimmer — driven by gyro + ambient ── */
-  const ambientAngle = 95 + Math.sin(holoT) * 18;
-  const ambientPos   = 35 + Math.sin(holoT * 0.7) * 18;
-
-  // shift holo based on tilt
-  const gyroShift = tiltX * 25;  // ±25% shift
-  const angle = ambientAngle + tiltX * 30;
-  const pos   = ambientPos + gyroShift;
-
-  holo.style.background = `linear-gradient(
-    ${angle}deg,
-    transparent ${pos - 15}%,
+  const angle = 95 + Math.sin(holoT) * 18 + tiltX * 30;
+  const pos   = 35 + Math.sin(holoT * 0.7) * 18 + tiltX * 25;
+  holo.style.background = `linear-gradient(${angle}deg,
+    transparent ${pos-15}%,
     rgba(255,255,255,0.07) ${pos}%,
-    rgba(255,255,255,0.13) ${pos + 8}%,
-    rgba(255,255,255,0.07) ${pos + 16}%,
-    transparent ${pos + 30}%
-  )`;
+    rgba(255,255,255,0.13) ${pos+8}%,
+    rgba(255,255,255,0.07) ${pos+16}%,
+    transparent ${pos+30}%)`;
 }
-
 
 /* ── INIT ── */
 build();
