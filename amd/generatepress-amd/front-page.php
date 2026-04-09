@@ -1146,6 +1146,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         </div>
         <div class="ticket-section">
           <div class="ticket-head"><span class="ticket-head-lbl">Tickets</span><span class="ticket-head-note lang-switchable" data-jp="STORES 決済" data-en="via STORES">STORES 決済</span></div>
+          <a class="trow" href="https://zzazz-za.stores.jp/items/69d70ba4fad3bf67ecb79c58" target="_blank"><div class="trow-left"><span class="trow-type">1 Class</span><span class="trow-price" style="font-size:22px;">Roche Apinsa</span></div><div class="trow-right"><span class="trow-arr">→</span></div></a>
           <a class="trow" href="https://zzazz-za.stores.jp/items/69d70c26b45246652704b2f9" target="_blank"><div class="trow-left"><span class="trow-type">1 Class</span><span class="trow-price" style="font-size:22px;">Ruben Chi</span></div><div class="trow-right"><span class="trow-arr">→</span></div></a>
           <a class="trow" href="<?= esc_url($ws_ticket) ?>" target="_blank"><div class="trow-left"><span class="trow-type">2 Class</span><span class="trow-price"><?= $ws_1w_price ? esc_html($ws_1w_price) : '¥5,500' ?></span></div><div class="trow-right"><span class="trow-arr">→</span></div></a>
           <a class="trow" href="<?= esc_url($ws_ticket2) ?>" target="_blank"><div class="trow-left"><span class="trow-type">3 Class</span><span class="trow-price"><?= $ws_3w_price ? esc_html($ws_3w_price) : '¥7,500' ?></span></div><div class="trow-right"><span class="trow-arr">→</span></div></a>
