@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>YOU WERE THERE — LIVE PASS Flashback</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;700;900&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --black:#000;--white:#EDEBE6;--red:#E8100A;--blue:#3DAAFF;--green:#A8E63D;--gold:#F5C842;
+}
+html,body{width:100%;height:100%;background:var(--black);overflow:hidden;
+  font-family:'Noto Sans JP','Inter',sans-serif;color:var(--white);
+  -webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none;
+  touch-action:manipulation}
+
+/* ═══════════════════════════
+   TRIGGER STATE — mock purchase button
+   ═══════════════════════════ */
+#trigger{position:fixed;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;z-index:10;
+  background:radial-gradient(circle at center,#0a0a0f 0%,#000 80%)}
+#trigger.hidden{display:none}
+.trigger-label{font-size:10px;letter-spacing:.42em;text-transform:uppercase;
+  color:rgba(237,235,230,.3);margin-bottom:10px}
+.trigger-title{font-family:'Bebas Neue';font-size:28px;letter-spacing:.12em;
+  color:var(--white);margin-bottom:4px;line-height:1}
+.trigger-venue{font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--blue);margin-bottom:40px}
+.trigger-card{width:220px;height:320px;border-radius:14px;
+  background:linear-gradient(135deg,#0c1a00,#1a3000,#0c1a00);
+  border:1px solid rgba(168,230,61,.25);
+  box-shadow:0 12px 40px rgba(168,230,61,.08);
+  display:flex;flex-direction:column;justify-content:space-between;padding:18px;
+  margin-bottom:40px}
+.trigger-card-badge{font-family:'Bebas Neue';font-size:11px;letter-spacing:.18em;
+  color:var(--green);border:1px solid rgba(168,230,61,.3);padding:3px 10px;
+  border-radius:99px;align-self:flex-start}
+.trigger-card-center{font-family:'Bebas Neue';font-size:32px;line-height:1;
+  color:var(--white);text-align:center;letter-spacing:.06em}
+.trigger-card-bot{font-size:8px;letter-spacing:.16em;color:rgba(237,235,230,.35);text-transform:uppercase}
+.trigger-edition{font-family:'Bebas Neue';font-size:11px;letter-spacing:.18em;
+  color:var(--gold);margin-bottom:10px}
+.trigger-price{font-family:'Bebas Neue';font-size:22px;color:var(--white);
+  letter-spacing:.08em;margin-bottom:24px}
+.trigger-btn{padding:14px 42px;background:var(--red);border:none;color:var(--white);
+  font-family:'Bebas Neue';font-size:14px;letter-spacing:.24em;border-radius:99px;
+  cursor:pointer;box-shadow:0 8px 24px rgba(232,16,10,.35);
+  transition:transform .2s,box-shadow .2s}
+.trigger-btn:active{transform:scale(.96)}
+
+/* ═══════════════════════════
+   FLASHBACK OVERLAY
+   ═══════════════════════════ */
+#flashback{position:fixed;inset:0;z-index:100;pointer-events:none;opacity:0;display:none}
+#flashback.running{display:block;pointer-events:all}
+
+/* Phase 1 — Blackout */
+.fb-blackout{position:absolute;inset:0;background:#000;opacity:0}
+
+/* Phase 2 — Light point */
+.fb-light{position:absolute;top:50%;left:50%;width:4px;height:4px;
+  border-radius:50%;background:#fff;opacity:0;
+  transform:translate(-50%,-50%) scale(1);
+  box-shadow:0 0 40px 6px rgba(255,255,255,.8),
+             0 0 80px 20px rgba(100,180,255,.3),
+             0 0 120px 40px rgba(100,180,255,.1)}
+
+/* Phase 3 — BPM pulse rings */
+.fb-pulse{position:absolute;top:50%;left:50%;width:60px;height:60px;
+  border-radius:50%;border:1px solid rgba(255,255,255,.4);
+  transform:translate(-50%,-50%) scale(.3);opacity:0;pointer-events:none}
+.fb-pulse.r2{border-color:rgba(100,180,255,.3)}
+.fb-pulse.r3{border-color:rgba(168,230,61,.25)}
+
+/* Phase 4 — YOU WERE THERE text */
+.fb-ywt{position:absolute;top:38%;left:50%;transform:translate(-50%,-50%);
+  font-family:'Bebas Neue';font-size:32px;letter-spacing:.24em;
+  color:var(--white);opacity:0;white-space:nowrap;
+  text-shadow:0 0 24px rgba(255,255,255,.25);text-transform:uppercase}
+
+/* Phase 5 — Typewriter date/venue */
+.fb-venue{position:absolute;top:46%;left:50%;transform:translate(-50%,-50%);
+  font-family:'Bebas Neue';font-size:14px;letter-spacing:.28em;
+  color:var(--blue);opacity:0;white-space:nowrap;text-transform:uppercase}
+.fb-date{position:absolute;top:51%;left:50%;transform:translate(-50%,-50%);
+  font-family:'Bebas Neue';font-size:11px;letter-spacing:.22em;
+  color:rgba(237,235,230,.5);opacity:0;white-space:nowrap;text-transform:uppercase}
+
+/* Phase 6 — Card reveal */
+.fb-card-wrap{position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);width:220px;height:320px;
+  opacity:0;perspective:1200px}
+.fb-card{position:relative;width:100%;height:100%;
+  transform-style:preserve-3d;
+  transition:transform 1.2s cubic-bezier(.4,0,.2,1)}
+.fb-card.flipped{transform:rotateY(180deg)}
+.fb-face{position:absolute;inset:0;border-radius:14px;overflow:hidden;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 40px rgba(168,230,61,.15)}
+.fb-face.front{background:linear-gradient(135deg,#0c1a00,#1a3000,#0c1a00);
+  border:1px solid rgba(168,230,61,.35);padding:18px;
+  display:flex;flex-direction:column;justify-content:space-between}
+.fb-face.back{background:linear-gradient(135deg,#1a3000,#0c1a00,#1a3000);
+  border:1px solid rgba(168,230,61,.35);padding:18px;transform:rotateY(180deg);
+  display:flex;flex-direction:column;gap:12px}
+.fb-badge{font-family:'Bebas Neue';font-size:11px;letter-spacing:.18em;
+  color:var(--green);border:1px solid rgba(168,230,61,.3);padding:3px 10px;
+  border-radius:99px;align-self:flex-start}
+.fb-card-title{font-family:'Bebas Neue';font-size:32px;color:var(--white);
+  text-align:center;letter-spacing:.06em;line-height:1}
+.fb-card-id{font-size:7px;letter-spacing:.22em;color:rgba(237,235,230,.4);text-transform:uppercase}
+.fb-card-val{font-family:'Bebas Neue';font-size:14px;color:var(--green);letter-spacing:.1em}
+.fb-card-foot{display:flex;justify-content:space-between;align-items:flex-end}
+
+/* holo shimmer on front */
+.fb-holo{position:absolute;inset:0;border-radius:14px;pointer-events:none;
+  background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.08) 45%,
+    rgba(255,255,255,.18) 50%,rgba(255,255,255,.08) 55%,transparent 70%);
+  mix-blend-mode:screen;opacity:0}
+
+/* back content */
+.fb-back-label{font-size:6px;letter-spacing:.3em;color:var(--green);
+  text-transform:uppercase;margin-bottom:4px}
+.fb-back-section{border-top:1px solid rgba(168,230,61,.15);padding-top:8px}
+.fb-back-list{font-size:8px;line-height:1.6;color:rgba(237,235,230,.7)}
+.fb-back-waveform{display:flex;align-items:flex-end;gap:2px;height:28px;margin-top:4px}
+.fb-back-waveform span{flex:1;background:rgba(168,230,61,.4);border-radius:1px}
+
+/* Phase 7 — edition number */
+.fb-edition{position:absolute;top:calc(50% + 180px);left:50%;
+  transform:translate(-50%,-50%);font-family:'Bebas Neue';
+  font-size:18px;letter-spacing:.2em;color:var(--gold);opacity:0}
+
+/* Phase 8 — Added to collection */
+.fb-added{position:absolute;top:calc(50% + 210px);left:50%;
+  transform:translate(-50%,-50%);font-size:9px;letter-spacing:.32em;
+  color:rgba(237,235,230,.5);opacity:0;text-transform:uppercase;white-space:nowrap}
+
+/* End state — View Collection button */
+.fb-view{position:absolute;bottom:max(60px,calc(env(safe-area-inset-bottom) + 50px));
+  left:50%;transform:translate(-50%,20px);opacity:0;
+  padding:12px 32px;background:none;border:1px solid rgba(237,235,230,.35);
+  color:var(--white);font-family:'Bebas Neue';font-size:11px;letter-spacing:.22em;
+  border-radius:99px;cursor:pointer;text-decoration:none;white-space:nowrap;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+
+/* Replay button (dev) */
+.fb-replay{position:fixed;top:max(14px,calc(env(safe-area-inset-top) + 10px));right:14px;
+  z-index:200;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);
+  color:rgba(237,235,230,.5);font-size:9px;letter-spacing:.18em;
+  padding:6px 12px;border-radius:99px;cursor:pointer;text-transform:uppercase;
+  opacity:0;transition:opacity .3s}
+.fb-replay.shown{opacity:1}
+</style>
+</head>
+<body>
+
+<!-- ═══ TRIGGER STATE ═══ -->
+<div id="trigger">
+  <div class="trigger-label">Live Pass Purchase</div>
+  <div class="trigger-title">ALL MUST DANCE</div>
+  <div class="trigger-venue">May 4, 2026 · Club Asia Tokyo</div>
+  <div class="trigger-card">
+    <div class="trigger-card-badge">LIVE PASS</div>
+    <div class="trigger-card-center">ALL MUST<br>DANCE</div>
+    <div class="trigger-card-bot">
+      <div class="trigger-edition">#043 / 100</div>
+      <div class="trigger-price">¥3,000</div>
+    </div>
+  </div>
+  <button class="trigger-btn" onclick="startFlashback()">Purchase PASS</button>
+</div>
+
+<!-- ═══ FLASHBACK OVERLAY ═══ -->
+<div id="flashback">
+  <div class="fb-blackout"></div>
+  <div class="fb-light"></div>
+  <div class="fb-pulse r1"></div>
+  <div class="fb-pulse r2"></div>
+  <div class="fb-pulse r3"></div>
+  <div class="fb-ywt">You Were There</div>
+  <div class="fb-venue"></div>
+  <div class="fb-date"></div>
+  <div class="fb-card-wrap">
+    <div class="fb-card" id="fbCard">
+      <div class="fb-face front">
+        <div class="fb-badge">LIVE PASS</div>
+        <div class="fb-card-title">ALL MUST<br>DANCE</div>
+        <div class="fb-card-foot">
+          <div class="fb-card-id">SC-AMD-043<br>LIQUIDROOM 2026</div>
+          <div class="fb-card-val">¥3,000</div>
+        </div>
+        <div class="fb-holo"></div>
+      </div>
+      <div class="fb-face back">
+        <div>
+          <div class="fb-back-label">Setlist</div>
+          <div class="fb-back-list">
+            01 · Opening Ritual<br>
+            02 · Somewhere — MST 2<br>
+            03 · All Must Dance (Live Mix)<br>
+            04 · Night Vision · NOBBY<br>
+            05 · Closing Fragments
+          </div>
+        </div>
+        <div class="fb-back-section">
+          <div class="fb-back-label">Photos</div>
+          <div class="fb-back-list">24 moments captured</div>
+        </div>
+        <div class="fb-back-section">
+          <div class="fb-back-label">Choreography</div>
+          <div class="fb-back-list">NOBBY · SACHI · KEITA</div>
+        </div>
+        <div class="fb-back-section">
+          <div class="fb-back-label">Audio Fingerprint</div>
+          <div class="fb-back-waveform" id="fbWaveform"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="fb-edition">#043 / 100</div>
+  <div class="fb-added">Added to Your Collection</div>
+  <a href="livepass_collection.html" class="fb-view">View Collection →</a>
+</div>
+
+<button class="fb-replay" onclick="location.reload()">Replay</button>
+
+<script>
+/* ═══════════════════════════════════════
+   FLASHBACK SEQUENCE — "YOU WERE THERE"
+   ═══════════════════════════════════════ */
+
+const BPM = 128;
+const BEAT = 60 / BPM;  // seconds per beat ≈ 0.469s
+
+function haptic(pattern) {
+  if (navigator.vibrate) navigator.vibrate(pattern);
+}
+
+/* Build waveform bars */
+function buildWaveform() {
+  const wf = document.getElementById('fbWaveform');
+  const heights = [40,70,55,85,60,95,75,50,80,65,90,70,55,80,45,75,60,85,50,70];
+  heights.forEach(h => {
+    const bar = document.createElement('span');
+    bar.style.height = h + '%';
+    wf.appendChild(bar);
+  });
+}
+buildWaveform();
+
+/* Typewriter helper */
+function typewriter(el, text, charDur = 0.06) {
+  const tl = gsap.timeline();
+  el.textContent = '';
+  tl.to(el, { opacity: 1, duration: 0.1 });
+  for (let i = 0; i < text.length; i++) {
+    tl.call(() => { el.textContent += text[i]; }, null, '+=' + charDur);
+  }
+  return tl;
+}
+
+function startFlashback() {
+  haptic(20);  // confirm purchase tap
+  const trigger = document.getElementById('trigger');
+  const fb = document.getElementById('flashback');
+
+  // Hide trigger after a brief beat
+  gsap.to(trigger, { opacity: 0, duration: 0.4, onComplete: () => trigger.classList.add('hidden') });
+
+  // Activate flashback
+  fb.classList.add('running');
+  gsap.set(fb, { opacity: 1 });
+
+  const tl = gsap.timeline({ delay: 0.3 });
+
+  /* ── Phase 1: Blackout (venue darkness) ── */
+  tl.to('.fb-blackout', {
+    opacity: 1,
+    duration: 0.9,
+    ease: 'power2.inOut',
+  });
+
+  /* ── Phase 2: Light point emerges ── */
+  tl.to('.fb-light', {
+    opacity: 1,
+    scale: 1,
+    duration: 0.8,
+    ease: 'power2.out',
+  }, '+=0.2');
+
+  /* ── Phase 3: BPM-synced pulse rings ── */
+  // 4 beats of pulse, synced to 128 BPM
+  const pulses = ['.fb-pulse.r1', '.fb-pulse.r2', '.fb-pulse.r3'];
+  for (let i = 0; i < 4; i++) {
+    const ring = pulses[i % 3];
+    tl.fromTo(ring,
+      { scale: 0.3, opacity: 0.7 },
+      { scale: 4, opacity: 0, duration: BEAT * 2, ease: 'power1.out' },
+      `+=${i === 0 ? 0 : BEAT - BEAT * 2}`  // overlap so they fire on the beat
+    );
+    // haptic tick on each beat
+    tl.call(() => haptic(8), null, `-=${BEAT * 2 - 0.02}`);
+  }
+
+  // Light point pulse in sync with BPM
+  tl.to('.fb-light', {
+    scale: 1.8,
+    duration: BEAT / 2,
+    yoyo: true,
+    repeat: 7,
+    ease: 'sine.inOut',
+  }, `-=${BEAT * 4}`);
+
+  /* ── Phase 4: YOU WERE THERE text fade in ── */
+  tl.to('.fb-ywt', {
+    opacity: 1,
+    duration: 1.2,
+    ease: 'power2.out',
+    onStart: () => haptic(15),
+  }, '+=0.2');
+
+  /* ── Phase 5: Typewriter venue + date ── */
+  tl.add(typewriter(document.querySelector('.fb-venue'), 'ALL MUST DANCE', 0.045), '+=0.3');
+  tl.add(typewriter(document.querySelector('.fb-date'), 'MAY 4, 2026 · CLUB ASIA TOKYO', 0.028), '-=0.3');
+
+  /* ── Phase 6: Card rises with holo shimmer ── */
+  // Fade out text elements as card takes over
+  tl.to(['.fb-ywt', '.fb-venue', '.fb-date'], {
+    y: -40,
+    opacity: 0.2,
+    duration: 0.8,
+    ease: 'power2.inOut',
+  }, '+=0.8');
+
+  // Light point fades out as card appears
+  tl.to('.fb-light', {
+    opacity: 0,
+    scale: 3,
+    duration: 0.6,
+    ease: 'power2.out',
+  }, '-=0.6');
+
+  // Card rises from below with scale
+  tl.fromTo('.fb-card-wrap',
+    { opacity: 0, y: 120, scale: 0.7, rotationX: 20 },
+    { opacity: 1, y: 0, scale: 1, rotationX: 0,
+      duration: 1.4, ease: 'power3.out',
+      onStart: () => haptic(30),
+    },
+    '-=0.4'
+  );
+
+  // Holo shimmer sweep
+  tl.fromTo('.fb-holo',
+    { opacity: 0, backgroundPositionX: '-100%' },
+    { opacity: 1, backgroundPositionX: '200%', duration: 1.2, ease: 'power1.inOut' },
+    '-=0.8'
+  );
+
+  /* ── Phase 7: Card flip ── */
+  tl.call(() => {
+    document.getElementById('fbCard').classList.add('flipped');
+    haptic([20, 40, 20]);
+  }, null, '+=0.8');
+
+  /* ── Phase 8: Edition number appears ── */
+  tl.to('.fb-edition', {
+    opacity: 1,
+    y: -8,
+    duration: 0.8,
+    ease: 'power2.out',
+  }, '+=1.2');
+
+  /* ── Phase 9: "Added to Collection" message ── */
+  tl.to('.fb-added', {
+    opacity: 1,
+    duration: 0.8,
+    ease: 'power2.out',
+    onStart: () => haptic([30, 40, 80]),  // long completion haptic
+  }, '+=0.3');
+
+  /* ── Phase 10: View Collection button ── */
+  tl.to('.fb-view', {
+    opacity: 1,
+    y: 0,
+    duration: 0.6,
+    ease: 'power2.out',
+  }, '+=0.6');
+
+  tl.call(() => {
+    document.querySelector('.fb-replay').classList.add('shown');
+  });
+}
+
+/* ── Auto-start on page load if ?auto=1 ── */
+if (new URLSearchParams(location.search).get('auto') === '1') {
+  setTimeout(startFlashback, 400);
+}
+</script>
+</body>
+</html>
