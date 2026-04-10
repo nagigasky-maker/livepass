@@ -338,10 +338,10 @@ function updateTopbar(tab) {
 
 /* ═══════ PASS CARDS (fan layout) ═══════ */
 const PASS_CARDS = [
+  { img:'assets/cards/amd-clubasia-2026-05-04.svg' },
   { color:'linear-gradient(135deg,#d8b4c8,#c4a0b4)', label:'LIVE PASS' },
   { color:'linear-gradient(135deg,#2a1a0a,#4a2a1a,#8a3a2a)', label:'COLLECTORS LIMITED' },
   { color:'linear-gradient(135deg,#0a4a2a,#2a8a4a,#0aaa6a)', label:'64BEAT' },
-  { color:'linear-gradient(135deg,#c04a3a,#e06a5a)', label:'DROP' },
 ];
 
 function buildPassFan() {
@@ -349,8 +349,8 @@ function buildPassFan() {
   const vw = window.innerWidth;
   const cardW = 180, cardH = 260;
   const centerX = vw / 2 - cardW / 2;
-  const spread = 52; // px between card centers
-  const rotSpread = 12; // degrees between cards
+  const spread = 52;
+  const rotSpread = 12;
 
   PASS_CARDS.forEach((p, i) => {
     const card = document.createElement('div');
@@ -363,10 +363,14 @@ function buildPassFan() {
     card.style.top = (30 + ty) + 'px';
     card.style.transform = `rotate(${rot}deg)`;
     card.style.zIndex = 10 - Math.abs(Math.round(offset));
-    card.style.background = p.color;
-    card.innerHTML = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-      font-size:8px;letter-spacing:.2em;color:rgba(255,255,255,.15);text-transform:uppercase;writing-mode:vertical-rl;
-      transform:rotate(180deg)">${p.label}</div>`;
+    if (p.img) {
+      card.innerHTML = `<img src="${p.img}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">`;
+    } else {
+      card.style.background = p.color;
+      card.innerHTML = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+        font-size:8px;letter-spacing:.2em;color:rgba(255,255,255,.15);text-transform:uppercase;writing-mode:vertical-rl;
+        transform:rotate(180deg)">${p.label}</div>`;
+    }
     container.appendChild(card);
   });
 }

@@ -30,21 +30,16 @@ html,body{width:100%;height:100%;background:var(--black);overflow:hidden;
 .trigger-venue{font-size:10px;letter-spacing:.22em;text-transform:uppercase;
   color:var(--blue);margin-bottom:40px}
 .trigger-card{width:220px;height:320px;border-radius:14px;
-  background:linear-gradient(135deg,#0c1a00,#1a3000,#0c1a00);
-  border:1px solid rgba(168,230,61,.25);
-  box-shadow:0 12px 40px rgba(168,230,61,.08);
-  display:flex;flex-direction:column;justify-content:space-between;padding:18px;
+  overflow:hidden;position:relative;
+  background:#000;
+  box-shadow:0 12px 40px rgba(0,0,0,.8),0 0 40px rgba(232,16,10,.08);
   margin-bottom:40px}
-.trigger-card-badge{font-family:'Bebas Neue';font-size:11px;letter-spacing:.18em;
-  color:var(--green);border:1px solid rgba(168,230,61,.3);padding:3px 10px;
-  border-radius:99px;align-self:flex-start}
-.trigger-card-center{font-family:'Bebas Neue';font-size:32px;line-height:1;
-  color:var(--white);text-align:center;letter-spacing:.06em}
-.trigger-card-bot{font-size:8px;letter-spacing:.16em;color:rgba(237,235,230,.35);text-transform:uppercase}
-.trigger-edition{font-family:'Bebas Neue';font-size:11px;letter-spacing:.18em;
-  color:var(--gold);margin-bottom:10px}
-.trigger-price{font-family:'Bebas Neue';font-size:22px;color:var(--white);
-  letter-spacing:.08em;margin-bottom:24px}
+.trigger-card img{width:100%;height:100%;object-fit:cover;display:block}
+.trigger-edition-line{display:flex;align-items:center;gap:10px;margin-bottom:24px;
+  font-family:'Bebas Neue';letter-spacing:.18em}
+.te-ed{color:var(--gold);font-size:12px}
+.te-sep{color:rgba(237,235,230,.2);font-size:12px}
+.te-price{color:var(--white);font-size:18px}
 .trigger-btn{padding:14px 42px;background:var(--red);border:none;color:var(--white);
   font-family:'Bebas Neue';font-size:14px;letter-spacing:.24em;border-radius:99px;
   cursor:pointer;box-shadow:0 8px 24px rgba(232,16,10,.35);
@@ -99,21 +94,12 @@ html,body{width:100%;height:100%;background:var(--black);overflow:hidden;
 .fb-card.flipped{transform:rotateY(180deg)}
 .fb-face{position:absolute;inset:0;border-radius:14px;overflow:hidden;
   backface-visibility:hidden;-webkit-backface-visibility:hidden;
-  box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 40px rgba(168,230,61,.15)}
-.fb-face.front{background:linear-gradient(135deg,#0c1a00,#1a3000,#0c1a00);
-  border:1px solid rgba(168,230,61,.35);padding:18px;
-  display:flex;flex-direction:column;justify-content:space-between}
-.fb-face.back{background:linear-gradient(135deg,#1a3000,#0c1a00,#1a3000);
-  border:1px solid rgba(168,230,61,.35);padding:18px;transform:rotateY(180deg);
-  display:flex;flex-direction:column;gap:12px}
-.fb-badge{font-family:'Bebas Neue';font-size:11px;letter-spacing:.18em;
-  color:var(--green);border:1px solid rgba(168,230,61,.3);padding:3px 10px;
-  border-radius:99px;align-self:flex-start}
-.fb-card-title{font-family:'Bebas Neue';font-size:32px;color:var(--white);
-  text-align:center;letter-spacing:.06em;line-height:1}
-.fb-card-id{font-size:7px;letter-spacing:.22em;color:rgba(237,235,230,.4);text-transform:uppercase}
-.fb-card-val{font-family:'Bebas Neue';font-size:14px;color:var(--green);letter-spacing:.1em}
-.fb-card-foot{display:flex;justify-content:space-between;align-items:flex-end}
+  box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 40px rgba(232,16,10,.18)}
+.fb-face.front{background:#000}
+.fb-face.front img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.fb-face.back{background:#0a0a0a;
+  border:1px solid rgba(237,235,230,.12);padding:18px 14px;transform:rotateY(180deg);
+  display:flex;flex-direction:column;gap:10px}
 
 /* holo shimmer on front */
 .fb-holo{position:absolute;inset:0;border-radius:14px;pointer-events:none;
@@ -122,12 +108,16 @@ html,body{width:100%;height:100%;background:var(--black);overflow:hidden;
   mix-blend-mode:screen;opacity:0}
 
 /* back content */
-.fb-back-label{font-size:6px;letter-spacing:.3em;color:var(--green);
-  text-transform:uppercase;margin-bottom:4px}
-.fb-back-section{border-top:1px solid rgba(168,230,61,.15);padding-top:8px}
-.fb-back-list{font-size:8px;line-height:1.6;color:rgba(237,235,230,.7)}
-.fb-back-waveform{display:flex;align-items:flex-end;gap:2px;height:28px;margin-top:4px}
-.fb-back-waveform span{flex:1;background:rgba(168,230,61,.4);border-radius:1px}
+.fb-back-header{font-family:'Bebas Neue';font-size:11px;letter-spacing:.2em;
+  color:var(--white);border-bottom:1px solid rgba(232,16,10,.3);padding-bottom:6px;margin-bottom:4px}
+.fb-back-header .lp{color:var(--white)}
+.fb-back-header .p{color:var(--red)}
+.fb-back-label{font-size:6px;letter-spacing:.3em;color:var(--red);
+  text-transform:uppercase;margin-bottom:3px}
+.fb-back-section{padding-top:6px}
+.fb-back-list{font-size:8px;line-height:1.55;color:rgba(237,235,230,.78)}
+.fb-back-waveform{display:flex;align-items:flex-end;gap:2px;height:22px;margin-top:4px}
+.fb-back-waveform span{flex:1;background:rgba(237,235,230,.45);border-radius:1px}
 
 /* Phase 7 — edition number */
 .fb-edition{position:absolute;top:calc(50% + 180px);left:50%;
@@ -164,12 +154,12 @@ html,body{width:100%;height:100%;background:var(--black);overflow:hidden;
   <div class="trigger-title">ALL MUST DANCE</div>
   <div class="trigger-venue">May 4, 2026 · Club Asia Tokyo</div>
   <div class="trigger-card">
-    <div class="trigger-card-badge">LIVE PASS</div>
-    <div class="trigger-card-center">ALL MUST<br>DANCE</div>
-    <div class="trigger-card-bot">
-      <div class="trigger-edition">#043 / 100</div>
-      <div class="trigger-price">¥3,000</div>
-    </div>
+    <img src="assets/cards/amd-clubasia-2026-05-04.svg" alt="ALL MUST DANCE">
+  </div>
+  <div class="trigger-edition-line">
+    <span class="te-ed">#043 / 100</span>
+    <span class="te-sep">·</span>
+    <span class="te-price">¥3,000</span>
   </div>
   <button class="trigger-btn" onclick="startFlashback()">Purchase PASS</button>
 </div>
@@ -187,16 +177,12 @@ html,body{width:100%;height:100%;background:var(--black);overflow:hidden;
   <div class="fb-card-wrap">
     <div class="fb-card" id="fbCard">
       <div class="fb-face front">
-        <div class="fb-badge">LIVE PASS</div>
-        <div class="fb-card-title">ALL MUST<br>DANCE</div>
-        <div class="fb-card-foot">
-          <div class="fb-card-id">SC-AMD-043<br>LIQUIDROOM 2026</div>
-          <div class="fb-card-val">¥3,000</div>
-        </div>
+        <img src="assets/cards/amd-clubasia-2026-05-04.svg" alt="ALL MUST DANCE">
         <div class="fb-holo"></div>
       </div>
       <div class="fb-face back">
-        <div>
+        <div class="fb-back-header"><span class="lp">LIVE </span><span class="p">PASS</span><span style="float:right;font-size:9px;color:rgba(237,235,230,.35)">#043 / 100</span></div>
+        <div class="fb-back-section">
           <div class="fb-back-label">Setlist</div>
           <div class="fb-back-list">
             01 · Opening Ritual<br>
