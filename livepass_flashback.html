@@ -78,14 +78,13 @@ html,body{width:100%;height:100%;background:var(--black);overflow:hidden;
 
 /* Phase 5 — Typewriter date/venue
    (matches the former YOU WERE THERE styling: Bebas 32px, .24em, white glow) */
-.fb-venue{position:absolute;top:32%;left:50%;transform:translate(-50%,-50%);
+.fb-venue{position:absolute;top:36%;left:50%;transform:translate(-50%,-50%);
   font-family:'Bebas Neue';font-size:32px;letter-spacing:.24em;
   color:var(--white);opacity:0;white-space:nowrap;text-transform:uppercase;
   text-shadow:0 0 24px rgba(255,255,255,.25)}
-.fb-date{position:absolute;top:46%;left:50%;transform:translate(-50%,-50%);
-  font-family:'Bebas Neue';font-size:32px;letter-spacing:.24em;
-  color:var(--white);opacity:0;text-transform:uppercase;
-  white-space:pre-line;text-align:center;line-height:1.15;
+.fb-date{position:absolute;top:44%;left:50%;transform:translate(-50%,-50%);
+  font-family:'Bebas Neue';font-size:clamp(14px,4.6vw,18px);letter-spacing:.24em;
+  color:var(--white);opacity:0;white-space:nowrap;text-transform:uppercase;
   text-shadow:0 0 24px rgba(255,255,255,.25)}
 
 /* Phase 6 — Card reveal */
@@ -439,7 +438,7 @@ function startFlashback() {
 
   /* ── Phase 4: Typewriter venue + date (slower for readability) ── */
   tl.add(typewriter(document.querySelector('.fb-venue'), 'ALL MUST DANCE', 0.09), '+=0.5');
-  tl.add(typewriter(document.querySelector('.fb-date'), 'MAY 4, 2026\nCLUB ASIA TOKYO', 0.07), '+=0.4');
+  tl.add(typewriter(document.querySelector('.fb-date'), 'MAY 4, 2026 · CLUB ASIA TOKYO', 0.05), '+=0.4');
 
   /* ── Phase 5: Card rises with holo shimmer ── */
   // Fade out text elements as card takes over
