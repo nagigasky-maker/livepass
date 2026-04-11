@@ -101,8 +101,8 @@ html,body{width:100%;height:100%;background:var(--black);overflow:hidden;
 .fb-face.front{background:#000}
 .fb-face.front img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .fb-face.back{background:#0a0a0a;
-  border:1px solid rgba(237,235,230,.12);padding:18px 14px;transform:rotateY(180deg);
-  display:flex;flex-direction:column;gap:10px}
+  border:1px solid rgba(237,235,230,.12);padding:14px 12px 12px;transform:rotateY(180deg);
+  display:flex;flex-direction:column;gap:6px}
 
 /* holo shimmer on front */
 .fb-holo{position:absolute;inset:0;border-radius:14px;pointer-events:none;
@@ -111,16 +111,21 @@ html,body{width:100%;height:100%;background:var(--black);overflow:hidden;
   mix-blend-mode:screen;opacity:0}
 
 /* back content */
-.fb-back-header{font-family:'Bebas Neue';font-size:11px;letter-spacing:.2em;
-  color:var(--white);border-bottom:1px solid rgba(232,16,10,.3);padding-bottom:6px;margin-bottom:4px}
-.fb-back-header .lp{color:var(--white)}
-.fb-back-header .p{color:var(--red)}
-.fb-back-label{font-size:6px;letter-spacing:.3em;color:var(--red);
-  text-transform:uppercase;margin-bottom:3px}
-.fb-back-section{padding-top:6px}
-.fb-back-list{font-size:8px;line-height:1.55;color:rgba(237,235,230,.78)}
-.fb-back-waveform{display:flex;align-items:flex-end;gap:2px;height:22px;margin-top:4px}
-.fb-back-waveform span{flex:1;background:rgba(237,235,230,.45);border-radius:1px}
+.fb-back-header{font-family:'Bebas Neue';
+  border-bottom:1px solid rgba(232,16,10,.3);padding-bottom:5px;margin-bottom:2px}
+.fb-back-title{font-size:13px;letter-spacing:.14em;color:var(--white);
+  display:flex;align-items:baseline;justify-content:space-between;line-height:1}
+.fb-back-title .ed{font-size:8px;color:rgba(237,235,230,.45);letter-spacing:.1em}
+.fb-back-sub{font-size:7px;letter-spacing:.22em;color:var(--blue);
+  text-transform:uppercase;margin-top:3px}
+.fb-back-label{font-size:5.5px;letter-spacing:.32em;color:var(--red);
+  text-transform:uppercase;margin-bottom:2px;font-weight:700}
+.fb-back-section{padding-top:2px}
+.fb-back-list{font-size:7px;line-height:1.5;color:rgba(237,235,230,.82);
+  letter-spacing:.02em}
+.fb-back-footer{margin-top:auto;padding-top:6px;border-top:1px solid rgba(237,235,230,.08);
+  font-family:'Bebas Neue';font-size:6px;letter-spacing:.32em;
+  color:rgba(237,235,230,.45);text-transform:uppercase;text-align:center}
 
 /* Phase 7 — edition number */
 .fb-edition{position:absolute;top:calc(50% + 180px);left:50%;
@@ -183,29 +188,38 @@ html,body{width:100%;height:100%;background:var(--black);overflow:hidden;
         <div class="fb-holo"></div>
       </div>
       <div class="fb-face back">
-        <div class="fb-back-header"><span class="lp">LIVE </span><span class="p">PASS</span><span style="float:right;font-size:9px;color:rgba(237,235,230,.35)">#043 / 100</span></div>
-        <div class="fb-back-section">
-          <div class="fb-back-label">Setlist</div>
-          <div class="fb-back-list">
-            01 · Opening Ritual<br>
-            02 · Somewhere — MST 2<br>
-            03 · All Must Dance (Live Mix)<br>
-            04 · Night Vision · NOBBY<br>
-            05 · Closing Fragments
+        <div class="fb-back-header">
+          <div class="fb-back-title">
+            <span>ALL MUST DANCE™</span>
+            <span class="ed">#043 / 100</span>
           </div>
+          <div class="fb-back-sub">May 4 2026 · clubasia</div>
         </div>
         <div class="fb-back-section">
-          <div class="fb-back-label">Photos</div>
-          <div class="fb-back-list">24 moments captured</div>
+          <div class="fb-back-label">DJ</div>
+          <div class="fb-back-list">EJOE WILSON · KANGO · WIILIAMS · YACHEEMI · BUNGO · NINA YAMADA · ALI</div>
         </div>
         <div class="fb-back-section">
-          <div class="fb-back-label">Choreography</div>
-          <div class="fb-back-list">NOBBY · SACHI · KEITA</div>
+          <div class="fb-back-label">Ghost Drawing</div>
+          <div class="fb-back-list">MOZYSKYE</div>
         </div>
         <div class="fb-back-section">
-          <div class="fb-back-label">Audio Fingerprint</div>
-          <div class="fb-back-waveform" id="fbWaveform"></div>
+          <div class="fb-back-label">Dresser by Dancer</div>
+          <div class="fb-back-list">TAKESABURO · KYO · OOZORA · KARIM · TENJU · PEPE · KOTORI · RIO · KONA</div>
         </div>
+        <div class="fb-back-section">
+          <div class="fb-back-label">Photo / Movie</div>
+          <div class="fb-back-list">GAKU · ヤッホー隊</div>
+        </div>
+        <div class="fb-back-section">
+          <div class="fb-back-label">Food</div>
+          <div class="fb-back-list">TAKOBAR</div>
+        </div>
+        <div class="fb-back-section">
+          <div class="fb-back-label">Support</div>
+          <div class="fb-back-list">waname · SPACE COOKING · DUBLA</div>
+        </div>
+        <div class="fb-back-footer">Sponsored by LIVE <span style="color:var(--blue)">PASS</span></div>
       </div>
     </div>
   </div>
@@ -343,22 +357,10 @@ function applyEditionToDom(ed) {
   const trigEd = document.querySelector('.te-ed');
   if (trigEd) trigEd.textContent = padded;
   // Back-of-card serial in header
-  document.querySelectorAll('.fb-back-header > span:last-child').forEach(s => {
+  document.querySelectorAll('.fb-back-title .ed').forEach(s => {
     s.textContent = padded;
   });
 }
-
-/* Build waveform bars */
-function buildWaveform() {
-  const wf = document.getElementById('fbWaveform');
-  const heights = [40,70,55,85,60,95,75,50,80,65,90,70,55,80,45,75,60,85,50,70];
-  heights.forEach(h => {
-    const bar = document.createElement('span');
-    bar.style.height = h + '%';
-    wf.appendChild(bar);
-  });
-}
-buildWaveform();
 
 /* Typewriter helper */
 function typewriter(el, text, charDur = 0.06) {
