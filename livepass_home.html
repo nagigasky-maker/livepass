@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#000000">
+<title>LIVE PASS — Home</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#000;--bg:#080808;--white:#EDEBE6;
+  --red:#E8100A;--blue:#3DAAFF;--green:#A8E63D;
+  --gold:#F5C842;--mint:#00E5A0;--pink:#F4C0D1;
+  --muted:rgba(237,235,230,.3);--muted2:rgba(237,235,230,.14);
+  --border:rgba(255,255,255,.07);
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+  --nav-h:64px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;height:100dvh;background:var(--black);color:var(--white);
+  font-family:'Noto Sans JP','Inter',sans-serif;-webkit-font-smoothing:antialiased;
+  user-select:none;-webkit-user-select:none;overflow:hidden;}
+a{color:inherit;text-decoration:none}
+button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
+
+.topbar{position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:max(12px,calc(var(--safe-top) + 10px)) 18px 12px;
+  display:flex;align-items:center;gap:14px;
+  background:linear-gradient(to bottom,rgba(0,0,0,.95) 70%,transparent);}
+.tb-brand{display:flex;align-items:baseline;gap:0;margin-right:auto;white-space:nowrap}
+.tb-brand .l{font-family:'Bebas Neue';font-size:22px;letter-spacing:.16em;color:var(--white)}
+.tb-brand .p{font-family:'Bebas Neue';font-size:22px;letter-spacing:.16em;color:var(--blue)}
+.tb-icon{background:none;border:none;cursor:pointer;position:relative;
+  width:26px;height:26px;display:flex;align-items:center;justify-content:center;color:var(--white);}
+.tb-icon svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
+.tb-icon .badge{position:absolute;top:-4px;right:-6px;background:var(--red);color:#fff;
+  font-size:8px;font-weight:700;min-width:14px;height:14px;padding:0 3px;border-radius:99px;
+  display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;}
+.tb-stat{display:flex;flex-direction:column;align-items:center;line-height:1;gap:2px;color:var(--blue);}
+.tb-stat-n{font-family:'Bebas Neue';font-size:16px;color:var(--white);letter-spacing:.04em}
+.tb-stat-l{font-size:7px;color:var(--blue);letter-spacing:.08em;font-weight:500}
+
+.content{position:fixed;top:0;left:0;right:0;bottom:calc(var(--nav-h) + var(--safe-bot));
+  padding-top:max(66px,calc(var(--safe-top) + 58px));
+  overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.content::-webkit-scrollbar{display:none}
+
+.bottomnav{position:fixed;bottom:0;left:0;right:0;z-index:100;
+  height:calc(var(--nav-h) + var(--safe-bot));padding:0 0 var(--safe-bot);
+  display:flex;align-items:center;justify-content:space-around;
+  background:rgba(0,0,0,.96);border-top:0.5px solid var(--border);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);}
+.bn-btn{flex:1;height:100%;display:flex;align-items:center;justify-content:center;
+  color:rgba(237,235,230,.35);text-decoration:none;position:relative;}
+.bn-btn svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.8}
+.bn-btn.active{color:var(--white)}
+.bn-avatar{width:30px;height:30px;border-radius:50%;
+  background:linear-gradient(135deg,#1a2030,#0a1020);
+  border:1.5px solid rgba(237,235,230,.25);
+  overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.bn-btn.active .bn-avatar{border-color:var(--white)}
+
+/* Home placeholder */
+.placeholder-hero{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:60vh;padding:40px 24px;text-align:center;gap:18px;
+}
+.ph-label{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:9px;letter-spacing:.4em;text-transform:uppercase;
+  color:rgba(237,235,230,.3);
+}
+.ph-title{
+  font-family:'Bebas Neue';font-size:42px;letter-spacing:.12em;
+  color:var(--white);line-height:1;
+}
+.ph-desc{
+  font-size:11px;color:rgba(237,235,230,.5);line-height:1.8;max-width:280px;
+  letter-spacing:.02em;
+}
+.ph-todo{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:8px;letter-spacing:.3em;text-transform:uppercase;
+  color:rgba(237,235,230,.18);margin-top:16px;
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tb-brand"><span class="l">LIVE&nbsp;</span><span class="p">PASS</span></div>
+  <button class="tb-icon" aria-label="Create"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round"/></svg></button>
+  <button class="tb-icon" aria-label="Messages"><svg viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><polyline points="3,7 12,13 21,7"/></svg><span class="badge">9</span></button>
+  <a class="tb-stat" href="#"><div class="tb-stat-n">25</div><div class="tb-stat-l">フォロー中</div></a>
+  <a class="tb-stat" href="#"><div class="tb-stat-n">25</div><div class="tb-stat-l">フォロワー</div></a>
+  <a class="tb-icon" href="/settings" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a>
+</div>
+
+<main class="content">
+  <div class="placeholder-hero">
+    <div class="ph-label">You Were There — Feed</div>
+    <div class="ph-title">HOME</div>
+    <div class="ph-desc">フォロー中アカウントの ARTICLE 投稿がここに流れます。タップしたくなる見せ方で。</div>
+    <div class="ph-todo">— Step 4 で実装 —</div>
+  </div>
+</main>
+
+<nav class="bottomnav">
+  <a href="/home" class="bn-btn active" aria-label="Home"><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1v-9.5z" stroke-linejoin="round"/></svg></a>
+  <a href="/search" class="bn-btn" aria-label="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/></svg></a>
+  <a href="/calendar" class="bn-btn" aria-label="Calendar"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7" stroke-linecap="round"/><line x1="16" y1="3" x2="16" y2="7" stroke-linecap="round"/></svg></a>
+  <a href="/profile" class="bn-btn" aria-label="Profile"><div class="bn-avatar"><span style="font-family:'Bebas Neue';font-size:13px;color:var(--white)">N</span></div></a>
+</nav>
+
+</body>
+</html>
