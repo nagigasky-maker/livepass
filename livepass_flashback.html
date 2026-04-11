@@ -226,6 +226,115 @@ function haptic(pattern) {
   if (navigator.vibrate) navigator.vibrate(pattern);
 }
 
+/* ═══════════════════════════════════════
+   AUDIO — Web Audio API drone + bell tones
+   No mp3 dependency. Stays under 1KB of code.
+   ═══════════════════════════════════════ */
+let audioCtx = null;
+function audio() {
+  if (audioCtx) return audioCtx;
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  } catch(e) { audioCtx = null; }
+  return audioCtx;
+}
+
+// Sustained sub drone (heart-of-room hum)
+function playDrone(durationSec = 6, freq = 55) {
+  const ctx = audio(); if (!ctx) return;
+  const osc1 = ctx.createOscillator();
+  const osc2 = ctx.createOscillator();
+  const gain = ctx.createGain();
+  const filt = ctx.createBiquadFilter();
+  filt.type = 'lowpass'; filt.frequency.value = 240;
+  osc1.type = 'sine';     osc1.frequency.value = freq;
+  osc2.type = 'triangle'; osc2.frequency.value = freq * 1.5;  // perfect 5th
+  gain.gain.value = 0;
+  osc1.connect(filt); osc2.connect(filt);
+  filt.connect(gain); gain.connect(ctx.destination);
+  const t = ctx.currentTime;
+  gain.gain.linearRampToValueAtTime(0.18, t + 1.0);     // fade in
+  gain.gain.linearRampToValueAtTime(0.18, t + durationSec - 0.6);
+  gain.gain.linearRampToValueAtTime(0,    t + durationSec);
+  osc1.start(t); osc2.start(t);
+  osc1.stop(t + durationSec); osc2.stop(t + durationSec);
+}
+
+// Single bell-like tone (used for the moment the card appears)
+function playBell(freq = 880, durationSec = 2.4) {
+  const ctx = audio(); if (!ctx) return;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = 'sine'; osc.frequency.value = freq;
+  gain.gain.value = 0;
+  osc.connect(gain); gain.connect(ctx.destination);
+  const t = ctx.currentTime;
+  gain.gain.linearRampToValueAtTime(0.32, t + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + durationSec);
+  osc.start(t); osc.stop(t + durationSec);
+}
+
+// Sub kick — "thump" on the long completion haptic
+function playKick() {
+  const ctx = audio(); if (!ctx) return;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(120, ctx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.18);
+  gain.gain.value = 0.5;
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+  osc.connect(gain); gain.connect(ctx.destination);
+  osc.start(); osc.stop(ctx.currentTime + 0.4);
+}
+
+/* ═══════════════════════════════════════
+   ACCOUNT — auto-create a LIVE PASS holder record
+   in localStorage on first NFC tap. Idempotent.
+   ═══════════════════════════════════════ */
+const ACCOUNT_KEY = 'livepass_holder';
+const ED_KEY      = 'livepass_amd_edition';
+
+function getOrCreateHolder() {
+  try {
+    const raw = localStorage.getItem(ACCOUNT_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  // First-time visitor — assign an edition number client-side.
+  // (Real serial-number management will move to KV/D1 post 5/4.)
+  const ed = Math.floor(Math.random() * 100) + 1;
+  const holder = {
+    id: 'lp_' + Math.random().toString(36).slice(2, 10),
+    handle: null,                       // user can set later
+    createdAt: new Date().toISOString(),
+    passes: [{
+      passId:  'amd',
+      event:   'ALL MUST DANCE',
+      venue:   'Club Asia, Tokyo',
+      date:    '2026-05-04',
+      edition: ed,
+      claimedAt: new Date().toISOString(),
+      source:  'nfc',
+    }],
+  };
+  try { localStorage.setItem(ACCOUNT_KEY, JSON.stringify(holder)); } catch(e) {}
+  try { localStorage.setItem(ED_KEY, String(ed)); } catch(e) {}
+  return holder;
+}
+
+// Use the actual edition number on the displayed card
+function applyEditionToDom(ed) {
+  const padded = '#' + String(ed).padStart(3, '0') + ' / 100';
+  document.querySelectorAll('.fb-edition').forEach(el => el.textContent = padded);
+  // Trigger card label too
+  const trigEd = document.querySelector('.te-ed');
+  if (trigEd) trigEd.textContent = padded;
+  // Back-of-card serial in header
+  document.querySelectorAll('.fb-back-header > span:last-child').forEach(s => {
+    s.textContent = padded;
+  });
+}
+
 /* Build waveform bars */
 function buildWaveform() {
   const wf = document.getElementById('fbWaveform');
@@ -250,7 +359,17 @@ function typewriter(el, text, charDur = 0.06) {
 }
 
 function startFlashback() {
-  haptic(20);  // confirm purchase tap
+  haptic(20);  // confirm tap
+
+  // Resume audio context (required after user gesture on iOS/Safari)
+  const ctx = audio();
+  if (ctx && ctx.state === 'suspended') ctx.resume();
+
+  // Auto-create LIVE PASS holder + apply real edition number to the DOM
+  const holder = getOrCreateHolder();
+  const myEdition = (holder.passes && holder.passes[0] && holder.passes[0].edition) || 43;
+  applyEditionToDom(myEdition);
+
   const trigger = document.getElementById('trigger');
   const fb = document.getElementById('flashback');
 
@@ -260,6 +379,9 @@ function startFlashback() {
   // Activate flashback
   fb.classList.add('running');
   gsap.set(fb, { opacity: 1 });
+
+  // Sub drone — sustained through the whole 14-second sequence
+  playDrone(14, 55);
 
   const tl = gsap.timeline({ delay: 0.3 });
 
@@ -335,7 +457,10 @@ function startFlashback() {
     { opacity: 0, y: 120, scale: 0.7, rotationX: 20 },
     { opacity: 1, y: 0, scale: 1, rotationX: 0,
       duration: 1.4, ease: 'power3.out',
-      onStart: () => haptic(30),
+      onStart: () => {
+        haptic(30);
+        playBell(880, 2.4);  // bell on card emergence
+      },
     },
     '-=0.4'
   );
@@ -361,12 +486,18 @@ function startFlashback() {
     ease: 'power2.out',
   }, '+=1.2');
 
-  /* ── Phase 9: "Added to Collection" message ── */
+  /* ── Phase 9: "Added to Collection" message + LONG completion vibe + kick ── */
   tl.to('.fb-added', {
     opacity: 1,
     duration: 0.8,
     ease: 'power2.out',
-    onStart: () => haptic([30, 40, 80]),  // long completion haptic
+    onStart: () => {
+      // Sub kick — drops on the same beat as the long vibe
+      playKick();
+      // Long, punctuated completion haptic (~1.4 sec total)
+      // pattern: vibe, pause, vibe, pause, long-vibe
+      haptic([120, 60, 120, 60, 600]);
+    },
   }, '+=0.3');
 
   /* ── Phase 10: View Collection button ── */
@@ -379,10 +510,65 @@ function startFlashback() {
 
   tl.call(() => {
     document.querySelector('.fb-replay').classList.add('shown');
+
+    // NFC mode → auto-advance to PASS HOLDER screen after a moment of stillness
+    if (isNfcMode()) {
+      setTimeout(() => {
+        // Soft fade to white-ish then redirect
+        gsap.to('#flashback', {
+          opacity: 0,
+          duration: 0.9,
+          ease: 'power2.inOut',
+          onComplete: () => {
+            location.href = 'livepass_collection.html?from=nfc&pass=amd';
+          },
+        });
+      }, 2400);
+    }
   });
 }
 
-/* ── Auto-start on page load if ?auto=1 ── */
+/* ═══════════════════════════════════════
+   NFC ENTRY MODE
+   /p/amd  →  skip the trigger button → autoStart on first user gesture
+   ═══════════════════════════════════════ */
+function isNfcMode() {
+  const path = (location.pathname || '').toLowerCase();
+  const qs   = new URLSearchParams(location.search);
+  return path === '/p/amd' || path.endsWith('/p/amd') || qs.get('nfc') === '1' || qs.get('auto') === '1';
+}
+
+(function initNfcMode() {
+  if (!isNfcMode()) return;
+
+  // Re-label the trigger so it reads as a TAP card detection, not a purchase
+  const trigLabel = document.querySelector('.trigger-label');
+  const trigBtn   = document.querySelector('.trigger-btn');
+  if (trigLabel) trigLabel.textContent = 'NFC Tap Detected';
+  if (trigBtn)   trigBtn.textContent   = 'Tap to Begin';
+
+  // The "View Collection" link in the flashback overlay becomes "Enter Pass Holder"
+  const view = document.querySelector('.fb-view');
+  if (view) {
+    view.textContent = 'Enter Pass Holder →';
+    view.setAttribute('href', 'livepass_collection.html?from=nfc&pass=amd');
+  }
+
+  // Apply edition number immediately so the trigger card shows the right number
+  // (account is created here, before the user even taps Begin)
+  try {
+    const holder = getOrCreateHolder();
+    const myEdition = (holder.passes && holder.passes[0] && holder.passes[0].edition) || 43;
+    applyEditionToDom(myEdition);
+  } catch(e) {}
+
+  // We can't autoplay audio without a user gesture on iOS.
+  // So show the trigger card and let the user tap Begin → that gesture
+  // unlocks the audio context AND starts the cinematic at the same time.
+  // (No silent black screen — they always see the AMD card first.)
+})();
+
+/* ── Auto-start on page load if ?auto=1 (legacy dev shortcut) ── */
 if (new URLSearchParams(location.search).get('auto') === '1') {
   setTimeout(startFlashback, 400);
 }

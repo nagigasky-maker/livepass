@@ -87,68 +87,6 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer;-we
 }
 
 /* ═══════════════════════════════════
-   NFC INTRO — overlay shown when arriving via NFC tap (/p/amd)
-   ═══════════════════════════════════ */
-#nfcIntro{
-  position:fixed;inset:0;z-index:200;
-  background:#000;
-  display:none;
-  align-items:center;justify-content:center;
-  flex-direction:column;gap:18px;
-  opacity:0;transition:opacity 0.6s ease;
-  pointer-events:all;
-}
-#nfcIntro.show{display:flex;opacity:1}
-#nfcIntro.fade{opacity:0;pointer-events:none}
-.nfc-ring{
-  width:84px;height:84px;border-radius:50%;
-  border:1px solid rgba(237,235,230,0.18);
-  display:flex;align-items:center;justify-content:center;
-  position:relative;
-}
-.nfc-ring::before,
-.nfc-ring::after{
-  content:'';position:absolute;inset:0;border-radius:50%;
-  border:1px solid rgba(237,235,230,0.22);
-  animation:nfcPulse 2.2s ease-out infinite;
-}
-.nfc-ring::after{animation-delay:1.1s}
-@keyframes nfcPulse{
-  0%  {transform:scale(1);opacity:0.6}
-  80% {transform:scale(1.9);opacity:0}
-  100%{transform:scale(1.9);opacity:0}
-}
-.nfc-check{
-  width:36px;height:36px;border-radius:50%;
-  background:rgba(237,235,230,0.06);
-  display:flex;align-items:center;justify-content:center;
-  color:#edebe6;font-size:18px;
-  opacity:0;transform:scale(0.6);
-  transition:opacity 0.4s ease, transform 0.4s ease;
-}
-.nfc-check.show{opacity:1;transform:scale(1)}
-#nfcIntro .nfc-label{
-  font-family:'IBM Plex Mono',monospace;
-  font-size:9px;letter-spacing:0.52em;text-transform:uppercase;
-  color:rgba(237,235,230,0.55);
-}
-#nfcIntro .nfc-title{
-  font-family:'Helvetica Neue',Arial,sans-serif;
-  font-weight:200;font-size:22px;letter-spacing:0.18em;
-  color:#edebe6;text-transform:uppercase;
-  opacity:0;transform:translateY(8px);
-  transition:opacity 0.6s ease, transform 0.6s ease;
-}
-#nfcIntro .nfc-title.show{opacity:1;transform:translateY(0)}
-#nfcIntro .nfc-sub{
-  font-family:'IBM Plex Mono',monospace;
-  font-size:8px;letter-spacing:0.42em;text-transform:uppercase;
-  color:rgba(237,235,230,0.32);
-  opacity:0;transition:opacity 0.6s ease 0.2s;
-}
-#nfcIntro .nfc-sub.show{opacity:1}
-
-/* ═══════════════════════════════════
    FLASHBACK — cinematic zoom
    ═══════════════════════════════════ */
 #flashback{
@@ -401,14 +339,6 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer;-we
   </div>
 </div>
 
-<!-- ═══ NFC INTRO (shown only on /p/amd) ═══ -->
-<div id="nfcIntro" aria-hidden="true">
-  <div class="nfc-label">NFC Tap Detected</div>
-  <div class="nfc-ring"><div class="nfc-check" id="nfcCheck">✓</div></div>
-  <div class="nfc-title" id="nfcTitle">All Must Dance</div>
-  <div class="nfc-sub" id="nfcSub">May 4 · Club Asia · Tokyo</div>
-</div>
-
 <script>
 /* ═════════════════════════════════
    PASS DATA
@@ -591,72 +521,6 @@ let nftDragged = false;
   startTick();
 
   window.addEventListener('resize', calcMax);
-})();
-
-/* ═════════════════════════════════
-   NFC ENTRY MODE
-   /p/amd  →  show TAP DETECTED intro → auto-launch AMD flashback
-   ═════════════════════════════════ */
-(function initNfcMode() {
-  // Path-based detection (Vercel rewrites /p/amd → this file, URL bar stays /p/amd).
-  // Also accept ?nfc=amd as a fallback for local file:// testing.
-  const path = (location.pathname || '').toLowerCase();
-  const qs   = new URLSearchParams(location.search);
-  const isNfcAmd = path === '/p/amd' || path.endsWith('/p/amd') || qs.get('nfc') === 'amd';
-  if (!isNfcAmd) return;
-
-  // Find the AMD pass + its card element
-  const amdPass = PASSES.find(p => p.id === 'amd');
-  const amdCard = document.querySelector('#nft-track .card[data-id="amd"]');
-  if (!amdPass || !amdCard) return;
-
-  // Hide the landing chrome (header / hint) so the intro feels clean,
-  // but keep the cards mounted so openFlashback can read AMD's bounding rect.
-  document.body.style.background = '#000';
-  const landing = document.getElementById('landing');
-  if (landing) {
-    landing.style.opacity = '0';
-    landing.style.pointerEvents = 'none';
-  }
-
-  // Show the NFC intro overlay
-  const intro = document.getElementById('nfcIntro');
-  intro.classList.add('show');
-
-  // Sequence the intro reveal
-  setTimeout(() => document.getElementById('nfcCheck').classList.add('show'), 300);
-  setTimeout(() => document.getElementById('nfcTitle').classList.add('show'), 700);
-  setTimeout(() => document.getElementById('nfcSub').classList.add('show'),  1000);
-  setTimeout(() => haptic(15), 320);
-  setTimeout(() => haptic(8),  720);
-
-  // After ~1.9s, fade the intro and auto-trigger the AMD flashback
-  setTimeout(() => {
-    intro.classList.add('fade');
-    // Re-position AMD card to viewport center via temporary fixed positioning
-    // so its bounding rect is centered when openFlashback measures it.
-    const vw = window.innerWidth, vh = window.innerHeight;
-    const cw = amdCard.offsetWidth || 220;
-    const ch = amdCard.offsetHeight || 320;
-    amdCard.style.cssText += `
-      position:fixed !important;
-      left:${(vw - cw) / 2}px !important;
-      top:${(vh - ch) / 2}px !important;
-      transform:none !important;
-      transition:none !important;
-      z-index:150;
-    `;
-    // Hide siblings so they don't peek through during the lift
-    document.querySelectorAll('#nft-track .card').forEach(c => {
-      if (c !== amdCard) c.style.opacity = '0';
-    });
-
-    setTimeout(() => {
-      openFlashback(amdPass, amdCard);
-      // Remove the intro from layout once flashback is firmly active
-      setTimeout(() => { intro.style.display = 'none'; }, 600);
-    }, 250);
-  }, 1900);
 })();
 
 /* ═════════════════════════════════
