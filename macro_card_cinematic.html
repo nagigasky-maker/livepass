@@ -532,28 +532,42 @@ const TEX = {
 };
 
 /* ── AMD MEDIA ── */
+/* Inline SVG placeholder generator — guaranteed to load (no network required) */
+function makeFrame(colors, label) {
+  const [c1, c2, c3] = colors;
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 720 960' preserveAspectRatio='xMidYMid slice'>
+    <defs>
+      <radialGradient id='g' cx='50%' cy='50%' r='75%'>
+        <stop offset='0' stop-color='${c1}' stop-opacity='1'/>
+        <stop offset='0.5' stop-color='${c2}' stop-opacity='1'/>
+        <stop offset='1' stop-color='${c3}' stop-opacity='1'/>
+      </radialGradient>
+      <filter id='blur'><feGaussianBlur stdDeviation='28'/></filter>
+    </defs>
+    <rect width='720' height='960' fill='url(%23g)'/>
+    <circle cx='${200 + Math.floor(Math.random()*320)}' cy='${200 + Math.floor(Math.random()*560)}' r='120' fill='${c1}' opacity='0.7' filter='url(%23blur)'/>
+    <circle cx='${200 + Math.floor(Math.random()*320)}' cy='${200 + Math.floor(Math.random()*560)}' r='160' fill='${c2}' opacity='0.5' filter='url(%23blur)'/>
+    <text x='360' y='490' text-anchor='middle' fill='rgba(255,255,255,0.12)' font-size='72' font-weight='900' font-family='Arial,sans-serif' letter-spacing='8'>${label}</text>
+  </svg>`;
+  return 'data:image/svg+xml;utf8,' + svg.replace(/#/g, '%23').replace(/\n/g, '').replace(/\s+/g, ' ');
+}
+
 const IMAGES = [
-  'https://allmustdance.com/wp-content/uploads/2025/12/IMG_5024.gif',
-  'https://allmustdance.com/wp-content/uploads/2025/12/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88-2024-07-19-3.34.41.png',
-  'https://allmustdance.com/wp-content/uploads/2025/12/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88-2024-07-02-20.13.45.png',
-  'https://allmustdance.com/wp-content/uploads/2025/12/Photoroom_20250919_224352.png',
-  'https://allmustdance.com/wp-content/uploads/2026/01/BB79BE60-5047-49AD-A98E-DE0D30474546.jpg',
-  'https://allmustdance.com/wp-content/uploads/2026/01/IMG_4533-scaled-e1769346779732.jpeg',
-  'https://allmustdance.com/wp-content/uploads/2026/01/IMG_6289-scaled-e1769346275211.jpeg',
-  'https://allmustdance.com/wp-content/uploads/2026/01/20260111_112119-1.gif',
-  // Atmospheric fillers — dark moody abstracts from picsum
-  'https://picsum.photos/seed/amd-night-01/720/960',
-  'https://picsum.photos/seed/amd-laser-02/720/960',
-  'https://picsum.photos/seed/amd-smoke-03/720/960',
-  'https://picsum.photos/seed/amd-crowd-04/720/960',
-  'https://picsum.photos/seed/amd-stage-05/720/960',
-  'https://picsum.photos/seed/amd-beat-06/720/960',
-  'https://picsum.photos/seed/amd-strobe-07/720/960',
-  'https://picsum.photos/seed/amd-bass-08/720/960',
-  'https://picsum.photos/seed/amd-floor-09/720/960',
-  'https://picsum.photos/seed/amd-pulse-10/720/960',
-  'https://picsum.photos/seed/amd-light-11/720/960',
-  'https://picsum.photos/seed/amd-fog-12/720/960',
+  makeFrame(['#e8100a','#2a0000','#000'],      'BEAT'),
+  makeFrame(['#3daaff','#0a1a2a','#000'],      'LIGHT'),
+  makeFrame(['#a8e63d','#0a2000','#000'],      'FLOOR'),
+  makeFrame(['#f5c842','#2a1a00','#000'],      'STAGE'),
+  makeFrame(['#bf5af2','#1a0a2a','#000'],      'PULSE'),
+  makeFrame(['#00e5a0','#002a1a','#000'],      'BASS'),
+  makeFrame(['#ff3b30','#2a0a0a','#000'],      'STROBE'),
+  makeFrame(['#f4c0d1','#2a0a1a','#000'],      'SMOKE'),
+  makeFrame(['#e8100a','#a8e63d','#000'],      'CROWD'),
+  makeFrame(['#3daaff','#bf5af2','#000'],      'NEON'),
+  makeFrame(['#f5c842','#e8100a','#000'],      'FIRE'),
+  makeFrame(['#00e5a0','#3daaff','#000'],      'COLD'),
+  makeFrame(['#a8e63d','#f5c842','#000'],      'BURN'),
+  makeFrame(['#bf5af2','#ff3b30','#000'],      'HAZE'),
+  makeFrame(['#f4c0d1','#3daaff','#000'],      'DUSK'),
 ];
 
 /* illusion also uses the texture images for burst variety */
@@ -686,15 +700,15 @@ function triggerFlashback(cardEl) {
   const cloneContent = document.getElementById('cloneContent');
   const cloneVig = document.getElementById('cloneVig');
 
-  // position clone exactly over tapped card — transform-based for GPU smoothness
+  // position clone exactly over tapped card — GSAP-managed transform for GPU smoothness
   clone.style.cssText = `
     left:${rect.left}px; top:${rect.top}px;
     width:${rect.width}px; height:${rect.height}px;
     border-radius:14px; opacity:1;
-    transform: translate(0,0) scale(1);
-    transform-origin: 50% 50%;
     will-change: transform, opacity;
   `;
+  // Initialize transform cleanly via GSAP (avoids conflicts with cssText transform)
+  gsap.set(clone, { x: 0, y: 0, scale: 1, rotation: 0, transformOrigin: '50% 50%' });
 
   // copy texture from card
   const texKey = cardEl.dataset.texkey;
@@ -742,15 +756,16 @@ function triggerFlashback(cardEl) {
       fb.classList.add('active');
       initIllusion();
       document.getElementById('fbGrain').style.opacity = '0.35';
-      const burst = [3, 2.5, 4, 3, 3.5, 2.5, 2, 1.5];
-      burst.forEach((d,i) => setTimeout(() => { if(deltaTo) deltaTo(d); }, i*80));
+      // Sustained image burst over ~2.5s for atmosphere feel
+      const burst = [3, 2.5, 4, 3, 3.5, 2.5, 3, 4, 3.5, 3, 2.5, 2, 2, 1.5, 1];
+      burst.forEach((d,i) => setTimeout(() => { if(deltaTo) deltaTo(d); }, i*180));
 
       // Main cinematic zoom — pure scale transform, buttery smooth on GPU
-      // Card shape (14px border-radius) preserved throughout
+      // Slower (5s) so the user can feel the atmosphere + image scatter
       gsap.to(clone, {
-        scale: 8,           // from 1.4 to 8 — feels like falling into the card
+        scale: 9,           // from 1.4 to 9 — falling deeper into the card
         opacity: 0,
-        duration: 3.4,
+        duration: 5.0,
         ease: 'power2.inOut',
         onUpdate: function() {
           const p = this.progress();
@@ -764,27 +779,27 @@ function triggerFlashback(cardEl) {
 
       // Slow grain builds as we zoom deeper
       setTimeout(() => {
-        document.getElementById('fbGrain').style.opacity = '0.28';
+        document.getElementById('fbGrain').style.opacity = '0.32';
         document.getElementById('fbLight').style.opacity = '1';
-        if (deltaTo) deltaTo(0.06);
-      }, 1400);
+        if (deltaTo) deltaTo(0.08);
+      }, 2200);
 
-      // Gentle flash as card fully dissolves (~2.8s in)
+      // Gentle flash as card fully dissolves
       setTimeout(() => {
         flashEl('flashWhite', 0, 0.3, 40, 'out');
         setTimeout(() => flashEl('flashWhite', 0.3, 0, 200, 'in'), 40);
-      }, 2600);
+      }, 4600);
 
-      // Content cascade — starts as zoom completes
+      // Content cascade — timed to Phase 2 end (Phase 1 450ms + Phase 2 5000ms = ~5450ms)
       [
-        ['fbEyebrow', 2900], ['fbTitle',   3050], ['fbDate',  3200],
-        ['fbDivider', 3320], ['fbStats',   3420], ['fbActions',3540],
-        ['fbPassBadge',3620],['fbClose',   3620],
+        ['fbEyebrow',  4800], ['fbTitle',    4950], ['fbDate',     5100],
+        ['fbDivider',  5220], ['fbStats',    5320], ['fbActions',  5440],
+        ['fbPassBadge',5520], ['fbClose',    5520],
       ].forEach(([id,delay]) => setTimeout(()=>revealEl(id), delay));
 
-      setTimeout(() => { document.getElementById('fbScrollHint').style.opacity='1'; }, 4200);
+      setTimeout(() => { document.getElementById('fbScrollHint').style.opacity='1'; }, 6200);
       document.getElementById('passCollection').classList.add('hidden');
-      setTimeout(() => { fbBusy=false; }, 3700);
+      setTimeout(() => { fbBusy=false; }, 5600);
     }
   });
 }
