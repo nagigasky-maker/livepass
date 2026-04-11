@@ -1,6 +1,11 @@
 {
   "rewrites": [
-    { "source": "/p/amd", "destination": "/livepass_flashback.html" },
+    { "source": "/p/amd",    "destination": "/livepass_flashback.html" },
+    { "source": "/home",     "destination": "/livepass_home.html" },
+    { "source": "/search",   "destination": "/livepass_search.html" },
+    { "source": "/calendar", "destination": "/livepass_calendar.html" },
+    { "source": "/profile",  "destination": "/livepass_profile.html" },
+    { "source": "/settings", "destination": "/livepass_settings.html" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "headers": [

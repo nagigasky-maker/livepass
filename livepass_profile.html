@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#000000">
+<title>LIVE PASS — Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────────
+   DESIGN TOKENS (shared across all pages)
+   ───────────────────────────────────────────── */
+:root{
+  --black:#000;--bg:#080808;--white:#EDEBE6;
+  --red:#E8100A;--blue:#3DAAFF;--green:#A8E63D;
+  --gold:#F5C842;--mint:#00E5A0;--pink:#F4C0D1;
+  --muted:rgba(237,235,230,.3);--muted2:rgba(237,235,230,.14);
+  --border:rgba(255,255,255,.07);
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+  --nav-h:64px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{
+  width:100%;height:100%;height:100dvh;
+  background:var(--black);color:var(--white);
+  font-family:'Noto Sans JP','Inter',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  user-select:none;-webkit-user-select:none;
+  overflow:hidden;
+}
+a{color:inherit;text-decoration:none}
+button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
+
+/* ─────────────────────────────────────────────
+   TOP BAR
+   ───────────────────────────────────────────── */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:max(12px,calc(var(--safe-top) + 10px)) 18px 12px;
+  display:flex;align-items:center;gap:14px;
+  background:linear-gradient(to bottom,rgba(0,0,0,.95) 70%,transparent);
+}
+.tb-brand{display:flex;align-items:baseline;gap:0;margin-right:auto;white-space:nowrap}
+.tb-brand .l{font-family:'Bebas Neue';font-size:22px;letter-spacing:.16em;color:var(--white)}
+.tb-brand .p{font-family:'Bebas Neue';font-size:22px;letter-spacing:.16em;color:var(--blue)}
+.tb-icon{
+  background:none;border:none;cursor:pointer;position:relative;
+  width:26px;height:26px;display:flex;align-items:center;justify-content:center;
+  color:var(--white);
+}
+.tb-icon svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
+.tb-icon .badge{
+  position:absolute;top:-4px;right:-6px;
+  background:var(--red);color:#fff;font-size:8px;font-weight:700;
+  min-width:14px;height:14px;padding:0 3px;border-radius:99px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Inter',sans-serif;
+}
+.tb-stat{
+  display:flex;flex-direction:column;align-items:center;line-height:1;gap:2px;
+  cursor:pointer;color:var(--blue);
+}
+.tb-stat-n{font-family:'Bebas Neue';font-size:16px;color:var(--white);letter-spacing:.04em}
+.tb-stat-l{font-size:7px;color:var(--blue);letter-spacing:.08em;font-weight:500}
+
+/* ─────────────────────────────────────────────
+   CONTENT AREA
+   ───────────────────────────────────────────── */
+.content{
+  position:fixed;
+  top:0;left:0;right:0;
+  bottom:calc(var(--nav-h) + var(--safe-bot));
+  padding-top:max(66px,calc(var(--safe-top) + 58px));
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.content::-webkit-scrollbar{display:none}
+
+/* ─────────────────────────────────────────────
+   BOTTOM NAV (4 tabs)
+   ───────────────────────────────────────────── */
+.bottomnav{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  height:calc(var(--nav-h) + var(--safe-bot));
+  padding:0 0 var(--safe-bot);
+  display:flex;align-items:center;justify-content:space-around;
+  background:rgba(0,0,0,.96);
+  border-top:0.5px solid var(--border);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+}
+.bn-btn{
+  flex:1;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  color:rgba(237,235,230,.35);
+  text-decoration:none;position:relative;
+}
+.bn-btn svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.8}
+.bn-btn.active{color:var(--white)}
+.bn-avatar{
+  width:30px;height:30px;border-radius:50%;
+  background:linear-gradient(135deg,#1a2030,#0a1020);
+  border:1.5px solid rgba(237,235,230,.25);
+  overflow:hidden;display:flex;align-items:center;justify-content:center;
+}
+.bn-avatar img{width:100%;height:100%;object-fit:cover}
+.bn-btn.active .bn-avatar{border-color:var(--white)}
+
+/* ─────────────────────────────────────────────
+   PROFILE PAGE — specific
+   ───────────────────────────────────────────── */
+.profile-hero{padding:18px 20px 0;display:flex;align-items:center;gap:16px}
+.ph-avatar{
+  width:72px;height:72px;border-radius:50%;
+  background:linear-gradient(135deg,#1a2030,#0a1020);
+  border:1.5px solid rgba(237,235,230,.12);
+  overflow:hidden;position:relative;flex-shrink:0;
+}
+.ph-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.ph-avatar .pro{
+  position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);
+  background:var(--gold);color:#000;
+  font-family:'Bebas Neue';font-size:9px;letter-spacing:.1em;font-weight:700;
+  padding:2px 8px;border-radius:3px;
+}
+.ph-info{flex:1;min-width:0}
+.ph-name{
+  font-family:'Inter',sans-serif;font-weight:900;font-size:24px;
+  letter-spacing:-.01em;color:var(--white);line-height:1;
+}
+.ph-role{
+  font-family:'Inter',sans-serif;font-size:10px;letter-spacing:.24em;
+  color:var(--muted);text-transform:uppercase;margin-top:4px;
+}
+.ph-actions{display:flex;gap:8px;margin-top:10px;align-items:center}
+.ph-follow-btn{
+  background:rgba(61,170,255,.1);
+  border:1px solid rgba(61,170,255,.35);
+  color:var(--blue);
+  font-family:'Noto Sans JP',sans-serif;font-size:11px;font-weight:500;
+  padding:5px 14px;border-radius:99px;letter-spacing:.02em;
+}
+.ph-dm-btn{
+  width:28px;height:28px;display:flex;align-items:center;justify-content:center;
+  color:var(--blue);
+}
+.ph-dm-btn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8}
+
+/* Sub-tab icon row */
+.subtabs{
+  display:flex;align-items:center;justify-content:space-around;
+  padding:24px 32px 18px;
+  border-bottom:0.5px solid var(--border);
+}
+.st-btn{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  color:rgba(237,235,230,.35);padding:6px 4px;position:relative;
+}
+.st-btn.active{color:var(--white)}
+.st-btn svg{width:28px;height:28px;fill:currentColor}
+.st-btn::after{
+  content:'';position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);
+  width:4px;height:4px;border-radius:50%;background:var(--white);
+  opacity:0;transition:opacity .2s;
+}
+.st-btn.active::after{opacity:1}
+
+/* PASS COLLECTION section */
+.pass-section{padding:20px 20px 8px}
+.pass-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px}
+.ph-label-ywt{
+  font-family:'Bebas Neue';font-size:11px;letter-spacing:.22em;
+  color:var(--red);line-height:1;
+}
+.ph-label-pass{
+  font-family:'Bebas Neue';font-size:14px;letter-spacing:.16em;
+  color:rgba(237,235,230,.28);margin-top:3px;
+}
+.ph-count{
+  font-family:'Bebas Neue';font-size:11px;letter-spacing:.18em;
+  color:rgba(237,235,230,.32);
+}
+
+/* Cards placeholder — full implementation in Step 2 */
+.pass-cards-placeholder{
+  padding:0 20px 40px;display:flex;gap:10px;justify-content:center;
+  min-height:240px;align-items:flex-start;
+}
+.pc-ph-card{
+  width:132px;aspect-ratio:1000/1582;border-radius:10px;
+  background:linear-gradient(135deg,#151515,#0a0a0a);
+  border:0.5px solid rgba(255,255,255,.08);
+  flex-shrink:0;
+}
+
+.step1-note{
+  text-align:center;padding:18px 20px;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:9px;letter-spacing:.3em;text-transform:uppercase;
+  color:rgba(237,235,230,.18);
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ TOP BAR ═══ -->
+<div class="topbar">
+  <div class="tb-brand"><span class="l">LIVE&nbsp;</span><span class="p">PASS</span></div>
+
+  <!-- + Create -->
+  <button class="tb-icon" aria-label="Create" title="投稿作成">
+    <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round"/></svg>
+  </button>
+
+  <!-- Messages -->
+  <button class="tb-icon" aria-label="Messages" title="メッセージ">
+    <svg viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><polyline points="3,7 12,13 21,7"/></svg>
+    <span class="badge">9</span>
+  </button>
+
+  <!-- Following -->
+  <a class="tb-stat" href="#followers">
+    <div class="tb-stat-n">25</div>
+    <div class="tb-stat-l">フォロー中</div>
+  </a>
+
+  <!-- Followers -->
+  <a class="tb-stat" href="#followers">
+    <div class="tb-stat-n">25</div>
+    <div class="tb-stat-l">フォロワー</div>
+  </a>
+
+  <!-- Settings (gear) → /settings -->
+  <a class="tb-icon" href="/settings" aria-label="Settings" title="設定">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  </a>
+</div>
+
+<!-- ═══ CONTENT ═══ -->
+<main class="content">
+
+  <!-- Hero: avatar + name + follow button -->
+  <div class="profile-hero">
+    <div class="ph-avatar">
+      <!-- placeholder — real photo in Step 2 -->
+      <span class="pro">PRO</span>
+    </div>
+    <div class="ph-info">
+      <div class="ph-name">NOBBY</div>
+      <div class="ph-role">Dancer / DJ</div>
+      <div class="ph-actions">
+        <button class="ph-follow-btn">フォローする</button>
+        <button class="ph-dm-btn" aria-label="Direct message">
+          <svg viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><polyline points="3,7 12,13 21,7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 sub-tab icons: PASS COLLECTION / SCREEN / SUBSCRIPTION -->
+  <nav class="subtabs" id="subtabs">
+    <button class="st-btn active" data-sub="pass" aria-label="Pass Collection">
+      <svg viewBox="0 0 24 24"><rect x="3" y="5" width="14" height="14" rx="2"/><rect x="7" y="9" width="14" height="14" rx="2" fill="currentColor" fill-opacity="0.3"/></svg>
+    </button>
+    <button class="st-btn" data-sub="screen" aria-label="Screen">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><polygon points="10,9 10,14 15,11.5" fill="currentColor"/><line x1="9" y1="20" x2="15" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <button class="st-btn" data-sub="sub" aria-label="Subscription">
+      <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+    </button>
+  </nav>
+
+  <!-- PASS COLLECTION default sub-section -->
+  <section class="pass-section" id="sub-pass">
+    <div class="pass-header">
+      <div>
+        <div class="ph-label-ywt">YOU WERE THERE</div>
+        <div class="ph-label-pass">PASS HOLDER</div>
+      </div>
+      <div class="ph-count">4 PASSES</div>
+    </div>
+  </section>
+
+  <!-- Placeholder cards — actual fan layout + real cards in Step 2 -->
+  <div class="pass-cards-placeholder">
+    <div class="pc-ph-card"></div>
+    <div class="pc-ph-card"></div>
+    <div class="pc-ph-card"></div>
+  </div>
+
+  <div class="step1-note">Step 1 — profile scaffolding</div>
+
+</main>
+
+<!-- ═══ BOTTOM NAV ═══ -->
+<nav class="bottomnav">
+  <a href="/home" class="bn-btn" aria-label="Home">
+    <svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1v-9.5z" stroke-linejoin="round"/></svg>
+  </a>
+  <a href="/search" class="bn-btn" aria-label="Search">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/></svg>
+  </a>
+  <a href="/calendar" class="bn-btn" aria-label="Calendar">
+    <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7" stroke-linecap="round"/><line x1="16" y1="3" x2="16" y2="7" stroke-linecap="round"/></svg>
+  </a>
+  <a href="/profile" class="bn-btn active" aria-label="Profile">
+    <div class="bn-avatar"><span style="font-family:'Bebas Neue';font-size:13px;color:var(--white)">N</span></div>
+  </a>
+</nav>
+
+<script>
+// Sub-tab toggle (PASS COLLECTION / SCREEN / SUBSCRIPTION)
+document.querySelectorAll('.st-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.st-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    // Content swap will be wired up in Step 2
+  });
+});
+</script>
+
+</body>
+</html>
