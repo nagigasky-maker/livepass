@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/p/amd", "destination": "/livepass_cinematic.html" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "headers": [
