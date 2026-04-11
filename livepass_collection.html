@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>LIVE PASS</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --black:#000;--bg:#080808;--white:#EDEBE6;--red:#E8100A;--blue:#3DAAFF;
+  --green:#A8E63D;--gold:#F5C842;--mint:#00E5A0;--pink:#F4C0D1;
+  --muted:rgba(237,235,230,.3);--muted2:rgba(237,235,230,.14);
+  --border:rgba(255,255,255,.07);
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+}
+html,body{width:100%;height:100%;background:var(--black);overflow:hidden;
+  font-family:'Noto Sans JP','Inter',sans-serif;-webkit-font-smoothing:antialiased;
+  user-select:none;-webkit-user-select:none;color:var(--white)}
+
+/* ═══════════ TOP BAR ═══════════ */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:max(12px,calc(var(--safe-top) + 8px)) 18px 10px;
+  display:flex;align-items:center;gap:0;
+  background:linear-gradient(to bottom,rgba(0,0,0,.92) 70%,transparent)}
+.topbar-brand{display:flex;align-items:baseline;gap:0;margin-right:auto;white-space:nowrap}
+.topbar-brand .l{font-family:'Bebas Neue';font-size:20px;letter-spacing:.16em;color:var(--white)}
+.topbar-brand .p{font-family:'Bebas Neue';font-size:20px;letter-spacing:.16em;color:var(--blue)}
+.topbar-right{display:flex;align-items:center;gap:16px}
+.topbar-right .tb-icon{background:none;border:none;cursor:pointer;position:relative;padding:2px;
+  display:flex;align-items:center;justify-content:center}
+.tb-icon svg{width:20px;height:20px}
+.tb-icon .badge{position:absolute;top:-4px;right:-6px;background:var(--red);color:#fff;font-size:7px;font-weight:700;
+  width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.tb-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1a1a2e,#16213e);
+  border:1.5px solid rgba(255,255,255,.1);overflow:hidden;display:flex;align-items:center;justify-content:center;
+  position:relative;cursor:pointer}
+.tb-avatar svg{width:18px;height:18px}
+.tb-avatar .pro{position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);
+  background:var(--gold);color:#000;font-size:5px;font-weight:800;padding:1px 4px;border-radius:3px;letter-spacing:.06em}
+/* stat pills in topbar */
+.tb-stat{display:flex;flex-direction:column;align-items:center;line-height:1}
+.tb-stat-n{font-family:'Bebas Neue';font-size:16px;color:var(--white)}
+.tb-stat-l{font-size:6px;color:var(--muted);letter-spacing:.1em}
+
+/* ═══════════ PANELS ═══════════ */
+.panel{position:fixed;top:0;left:0;right:0;bottom:0;display:none;flex-direction:column;overflow:hidden}
+.panel.active{display:flex}
+
+/* ═══════════ BOTTOM NAV ═══════════ */
+.bottomnav{position:fixed;bottom:0;left:0;right:0;z-index:100;
+  padding:8px 0 max(8px,var(--safe-bot));
+  display:flex;justify-content:space-around;align-items:center;
+  background:linear-gradient(to top,rgba(0,0,0,.95) 60%,transparent)}
+.bottomnav button{background:none;border:none;cursor:pointer;padding:6px 16px;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  transition:color .2s}
+.bottomnav button .bn-icon{color:rgba(237,235,230,.25);display:flex;align-items:center;justify-content:center}
+.bottomnav button .bn-icon svg{width:22px;height:22px}
+.bottomnav button.active .bn-icon{color:var(--green)}
+.bottomnav button.active .bn-icon svg{fill:var(--green)}
+.bottomnav button .bn-badge{position:absolute;top:-2px;right:-4px;background:var(--red);
+  width:10px;height:10px;border-radius:50%;font-size:6px;color:#fff;
+  display:flex;align-items:center;justify-content:center}
+
+/* ═══════════════════════════════════
+   TAB 1 — HOME / PROFILE
+   ═══════════════════════════════════ */
+#panel-home{padding-top:max(62px,calc(var(--safe-top) + 54px))}
+.home-scroll{flex:1;overflow-y:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.home-scroll::-webkit-scrollbar{display:none}
+
+/* Profile */
+.profile{display:flex;flex-direction:column;align-items:center;padding:28px 0 0}
+.pf-avatar{width:84px;height:84px;border-radius:50%;
+  background:linear-gradient(135deg,#1a1a2e,#16213e);
+  border:2px solid rgba(100,140,255,.15);
+  display:flex;align-items:center;justify-content:center;position:relative}
+.pf-avatar svg{width:44px;height:44px}
+.pf-avatar .pro{position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  background:var(--gold);color:#000;font-size:7px;font-weight:800;padding:2px 7px;border-radius:4px;letter-spacing:.08em}
+.pf-name{font-family:'Bebas Neue';font-size:28px;letter-spacing:.1em;margin-top:8px;color:var(--red)}
+.pf-role{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--blue);margin-top:2px;font-weight:400}
+
+/* Pass section */
+.pass-header{padding:38px 22px 10px;display:flex;justify-content:space-between;align-items:flex-end}
+.pass-header-left{}
+.ph-ywt{font-family:'Bebas Neue';font-size:13px;letter-spacing:.18em;color:var(--red);line-height:1}
+.ph-label{font-size:14px;letter-spacing:.12em;color:rgba(237,235,230,.25);font-weight:400;margin-top:2px}
+.ph-count{font-family:'Bebas Neue';font-size:13px;letter-spacing:.18em;color:rgba(237,235,230,.25)}
+
+/* Fan-spread pass cards */
+.pass-fan{position:relative;width:100%;height:340px;margin-top:0;overflow:visible}
+.pass-fan .pf-card{position:absolute;width:180px;height:260px;border-radius:12px;overflow:hidden;
+  box-shadow:0 8px 32px rgba(0,0,0,.6);cursor:pointer;transition:transform .4s cubic-bezier(.25,.46,.45,.94)}
+.pass-fan .pf-card img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* ═══════════════════════════════════
+   TAB 2 — SCREEN / ARTICLE
+   ═══════════════════════════════════ */
+#panel-screen{padding-top:max(62px,calc(var(--safe-top) + 54px))}
+.screen-scroll{flex:1;overflow-y:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.screen-scroll::-webkit-scrollbar{display:none}
+
+/* Sub banner */
+.sub-banner{display:flex;align-items:center;gap:10px;padding:8px 18px;
+  background:rgba(255,255,255,.03);border-bottom:1px solid var(--border)}
+.sub-heart{font-size:28px;flex-shrink:0}
+.sub-text{font-size:7px;color:rgba(237,235,230,.4);line-height:1.5;letter-spacing:.02em}
+.sub-cta{font-size:7px;color:var(--red);margin-top:1px}
+
+/* Article tab */
+.article-tab{padding:10px 18px 6px;display:flex;align-items:center;gap:12px}
+.article-tab-label{font-family:'Bebas Neue';font-size:14px;letter-spacing:.14em;color:var(--white);
+  border-bottom:2px solid var(--green);padding-bottom:4px}
+.follow-btn{margin-left:auto;font-size:9px;letter-spacing:.08em;padding:5px 14px;
+  border:1px solid rgba(237,235,230,.3);border-radius:6px;background:none;color:var(--white);cursor:pointer}
+
+/* Article card */
+.article-card{position:relative;margin:8px 14px;border-radius:14px;overflow:hidden;
+  aspect-ratio:9/14;background:#111}
+.article-card img{width:100%;height:100%;object-fit:cover;display:block}
+.article-card .ac-num{position:absolute;top:12px;right:16px;font-family:'Bebas Neue';
+  font-size:22px;color:rgba(237,235,230,.18);letter-spacing:.08em}
+.article-card .ac-overlay{position:absolute;bottom:0;left:0;right:0;
+  padding:20px 16px 16px;background:linear-gradient(to top,rgba(0,0,0,.88) 40%,transparent)}
+.ac-cat{font-size:8px;letter-spacing:.24em;color:var(--green);text-transform:uppercase;margin-bottom:6px}
+.ac-title{font-family:'Inter';font-size:22px;font-weight:900;line-height:1.15;color:var(--white);margin-bottom:6px}
+.ac-meta{font-size:8px;color:var(--muted);letter-spacing:.08em}
+.ac-sub-heart{position:absolute;bottom:70px;right:16px;font-size:42px}
+.ac-add{position:absolute;bottom:14px;right:16px;width:42px;height:42px;border-radius:50%;
+  background:var(--green);display:flex;align-items:center;justify-content:center;
+  font-size:22px;color:#000;font-weight:700;cursor:pointer;border:none}
+
+/* ═══════════════════════════════════
+   TAB 3 — SCHEDULE
+   ═══════════════════════════════════ */
+#panel-schedule{padding-top:max(62px,calc(var(--safe-top) + 54px))}
+.sched-scroll{flex:1;overflow-y:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.sched-scroll::-webkit-scrollbar{display:none}
+
+/* Category tabs */
+.sched-tabs{display:flex;align-items:center;gap:0;padding:14px 18px 0;border-bottom:1px solid var(--border)}
+.sched-tab{padding:8px 14px;font-size:9px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(237,235,230,.3);cursor:pointer;border-bottom:2px solid transparent;
+  transition:color .2s,border-color .2s;font-weight:500;white-space:nowrap}
+.sched-tab.active{color:var(--white);border-bottom-color:var(--white)}
+.sched-tab-add{margin-left:auto;width:22px;height:22px;border-radius:50%;
+  border:1px solid rgba(237,235,230,.15);background:none;color:rgba(237,235,230,.3);
+  font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+
+/* Event list */
+.sched-list{padding:8px 0 100px}
+.sched-item{display:flex;padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.04)}
+.si-date{flex-shrink:0;width:52px;text-align:right;margin-right:14px;line-height:1}
+.si-date-month{font-family:'Bebas Neue';font-size:12px;letter-spacing:.12em;color:var(--muted)}
+.si-date-day{font-family:'Bebas Neue';font-size:32px;color:rgba(237,235,230,.2)}
+.si-body{flex:1;min-width:0}
+.si-cat{font-size:8px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;margin-bottom:3px}
+.si-cat.event{color:var(--red)}
+.si-cat.workshop{color:var(--gold)}
+.si-cat.exhibition{color:var(--mint)}
+.si-title{font-family:'Inter';font-size:14px;font-weight:700;color:var(--white);margin-bottom:3px}
+.si-meta{font-size:8px;color:var(--muted);letter-spacing:.04em;line-height:1.4}
+.si-tags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.si-tag{font-size:7px;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;
+  border-radius:4px;border:1px solid;font-weight:500}
+.si-tag.t-dj{color:var(--gold);border-color:rgba(245,200,66,.3)}
+.si-tag.t-house{color:var(--gold);border-color:rgba(245,200,66,.3)}
+.si-tag.t-techno{color:var(--gold);border-color:rgba(245,200,66,.3)}
+.si-tag.t-party{color:var(--red);border-color:rgba(232,16,10,.3)}
+.si-tag.t-fashion{color:var(--pink);border-color:rgba(244,192,209,.3)}
+.si-tag.t-breaking{color:var(--gold);border-color:rgba(245,200,66,.3)}
+.si-tag.t-waacking{color:var(--gold);border-color:rgba(245,200,66,.3)}
+.si-tag.t-all{color:var(--gold);border-color:rgba(245,200,66,.3)}
+.si-tag.t-collab{color:var(--green);border-color:rgba(168,230,61,.3)}
+.si-price{flex-shrink:0;text-align:right;margin-left:10px}
+.si-price-main{font-family:'Inter';font-size:13px;font-weight:600;color:var(--white)}
+.si-price-pass{font-size:9px;color:var(--green);margin-top:2px}
+
+/* ═══════════════════════════════════
+   TAB 4 — SETTINGS (placeholder)
+   ═══════════════════════════════════ */
+#panel-settings{padding-top:max(62px,calc(var(--safe-top) + 54px));
+  display:none;flex-direction:column;align-items:center;justify-content:center}
+#panel-settings .placeholder{font-size:11px;color:var(--muted);letter-spacing:.2em;text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<!-- ═══ TOP BAR ═══ -->
+<div class="topbar" id="topbar">
+  <div class="topbar-brand"><span class="l">LIVE&nbsp;</span><span class="p">PASS</span></div>
+  <div class="topbar-right" id="topbar-right">
+    <!-- dynamic per tab -->
+  </div>
+</div>
+
+<!-- ═══ PANELS ═══ -->
+
+<!-- TAB 1: HOME -->
+<div class="panel active" id="panel-home">
+  <div class="home-scroll">
+    <div class="profile">
+      <div class="pf-avatar"><svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="28" r="10" fill="rgba(100,140,255,.15)"/><circle cx="24" cy="28" r="6" fill="rgba(100,140,255,.25)"/><path d="M16 18c0-6 4-10 8-10s8 4 8 10" stroke="rgba(200,210,255,.3)" stroke-width="1.5" fill="none"/><circle cx="20" cy="26" r="2.5" fill="rgba(80,120,255,.4)"/><circle cx="28" cy="26" r="2.5" fill="rgba(80,120,255,.4)"/></svg><span class="pro">PRO</span></div>
+      <div class="pf-name">NOBBY</div>
+      <div class="pf-role">Dancer / DJ</div>
+    </div>
+    <div class="pass-header">
+      <div class="pass-header-left">
+        <div class="ph-ywt">You Were There</div>
+        <div class="ph-label">PASS HOLDER</div>
+      </div>
+      <div class="ph-count">4 PASSES</div>
+    </div>
+    <div class="pass-fan" id="pass-fan">
+      <!-- JS fills -->
+    </div>
+    <div style="height:120px"></div>
+  </div>
+</div>
+
+<!-- TAB 2: SCREEN -->
+<div class="panel" id="panel-screen">
+  <div class="screen-scroll">
+    <div class="sub-banner">
+      <div class="sub-heart"><svg width="32" height="32" viewBox="0 0 24 24"><defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff6b6b"/><stop offset="1" stop-color="#ee5a24"/></linearGradient></defs><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" fill="url(#hg)"/><text x="12" y="15" text-anchor="middle" font-size="6" font-weight="900" fill="#fff">SUB</text></svg></div>
+      <div>
+        <div class="sub-cta">ハートをTAPすると<br>サブスク登録へ進みます</div>
+        <div class="sub-text">「アーティストを支援する」LIVE PASSでは月額620円でお好きな<br>アーティストやユーザーを支援するシステムを続けています。</div>
+      </div>
+    </div>
+    <div class="article-tab">
+      <div class="article-tab-label">ARTICLE</div>
+      <div style="flex:1"></div>
+      <button class="follow-btn">フォローする</button>
+    </div>
+    <div class="article-card">
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='900'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23001a0a'/%3E%3Cstop offset='.5' stop-color='%230a2a1a'/%3E%3Cstop offset='1' stop-color='%23002a0a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23g)' width='600' height='900'/%3E%3Ctext x='300' y='450' text-anchor='middle' fill='rgba(255,255,255,.06)' font-size='80' font-family='sans-serif'%3EART%3C/text%3E%3C/svg%3E" alt="">
+      <div class="ac-num">002</div>
+      <div class="ac-overlay">
+        <div class="ac-cat">Artwork · Figure</div>
+        <div class="ac-title">FnKMDNS<br>Art Object<br>Series</div>
+        <div class="ac-meta">Artist · DJ · Space Cooking™ · 2025</div>
+      </div>
+      <div class="ac-sub-heart"><svg width="48" height="48" viewBox="0 0 24 24"><defs><linearGradient id="hg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff6b6b"/><stop offset="1" stop-color="#ee5a24"/></linearGradient></defs><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" fill="url(#hg2)"/><text x="12" y="15" text-anchor="middle" font-size="6" font-weight="900" fill="#fff">SUB</text></svg></div>
+      <button class="ac-add">+</button>
+    </div>
+    <div style="height:100px"></div>
+  </div>
+</div>
+
+<!-- TAB 3: SCHEDULE -->
+<div class="panel" id="panel-schedule">
+  <div class="sched-tabs" id="sched-tabs">
+    <div class="sched-tab" data-cat="all">All</div>
+    <div class="sched-tab active" data-cat="event">Event</div>
+    <div class="sched-tab" data-cat="workshop">Workshop</div>
+    <div class="sched-tab" data-cat="exhibition">Exhibition</div>
+    <button class="sched-tab-add">+</button>
+  </div>
+  <div class="sched-scroll" id="sched-scroll">
+    <div class="sched-list" id="sched-list">
+      <!-- JS fills -->
+    </div>
+  </div>
+</div>
+
+<!-- TAB 4: SETTINGS -->
+<div class="panel" id="panel-settings">
+  <div class="placeholder">Settings</div>
+</div>
+
+<!-- ═══ BOTTOM NAV ═══ -->
+<div class="bottomnav">
+  <button class="active" data-tab="home" onclick="switchTab('home')">
+    <span class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg></span>
+  </button>
+  <button data-tab="screen" onclick="switchTab('screen')">
+    <span class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><polyline points="8 21 16 21"/><line x1="12" y1="17" x2="12" y2="21"/><polygon points="10 8 10 12 14 10" fill="currentColor" stroke="none"/></svg></span>
+  </button>
+  <button data-tab="schedule" onclick="switchTab('schedule')">
+    <span class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><rect x="7" y="13" width="3" height="3" rx=".5"/><rect x="14" y="13" width="3" height="3" rx=".5"/><rect x="7" y="17" width="3" height="3" rx=".5"/></svg></span>
+  </button>
+  <button data-tab="settings" onclick="switchTab('settings')">
+    <span class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>
+  </button>
+</div>
+
+<script>
+/* ═══════ TAB SWITCHING ═══════ */
+const panels = ['home','screen','schedule','settings'];
+let currentTab = 'home';
+
+function switchTab(tab) {
+  if (navigator.vibrate) navigator.vibrate(6);
+  currentTab = tab;
+  panels.forEach(p => {
+    document.getElementById('panel-'+p).classList.toggle('active', p===tab);
+  });
+  document.querySelectorAll('.bottomnav button').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab===tab);
+  });
+  updateTopbar(tab);
+}
+
+/* ═══════ TOPBAR per tab ═══════ */
+/* SVG icon templates */
+const IC = {
+  search: `<svg viewBox="0 0 24 24" fill="none" stroke="#3DAAFF" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>`,
+  mail: `<svg viewBox="0 0 24 24" fill="none" stroke="#3DAAFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`,
+  wrench: `<svg viewBox="0 0 24 24" fill="none" stroke="#3DAAFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>`,
+  globe: `<svg viewBox="0 0 24 24" fill="none" stroke="#3DAAFF" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>`,
+  avatar: `<svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="28" r="10" fill="rgba(100,140,255,.15)"/><circle cx="24" cy="28" r="6" fill="rgba(100,140,255,.25)"/><path d="M16 18c0-6 4-10 8-10s8 4 8 10" stroke="rgba(200,210,255,.3)" stroke-width="1.5" fill="none"/><circle cx="20" cy="26" r="2.5" fill="rgba(80,120,255,.4)"/><circle cx="28" cy="26" r="2.5" fill="rgba(80,120,255,.4)"/></svg>`,
+};
+
+function updateTopbar(tab) {
+  const r = document.getElementById('topbar-right');
+  if (tab === 'home') {
+    r.innerHTML = `
+      <button class="tb-icon">${IC.search}</button>
+      <button class="tb-icon" style="position:relative">${IC.mail}<span class="badge">2</span></button>
+      <div class="tb-stat"><div class="tb-stat-n">25</div><div class="tb-stat-l">フォロー中</div></div>
+      <div class="tb-stat"><div class="tb-stat-n">25</div><div class="tb-stat-l">フォロワー</div></div>`;
+  } else if (tab === 'screen' || tab === 'schedule') {
+    r.innerHTML = `
+      <button class="tb-icon">${IC.search}</button>
+      <button class="tb-icon">${IC.wrench}</button>
+      <button class="tb-icon">${IC.globe}</button>
+      <div class="tb-avatar">${IC.avatar}<span class="pro">PRO</span></div>`;
+  } else {
+    r.innerHTML = `
+      <button class="tb-icon">${IC.search}</button>
+      <div class="tb-avatar">${IC.avatar}<span class="pro">PRO</span></div>`;
+  }
+}
+
+/* ═══════ PASS CARDS (fan layout) ═══════ */
+const PASS_CARDS = [
+  { img:'assets/cards/amd-clubasia-2026-05-04.svg' },
+  { color:'linear-gradient(135deg,#d8b4c8,#c4a0b4)', label:'LIVE PASS' },
+  { color:'linear-gradient(135deg,#2a1a0a,#4a2a1a,#8a3a2a)', label:'COLLECTORS LIMITED' },
+  { color:'linear-gradient(135deg,#0a4a2a,#2a8a4a,#0aaa6a)', label:'64BEAT' },
+];
+
+function buildPassFan() {
+  const container = document.getElementById('pass-fan');
+  const vw = window.innerWidth;
+  const cardW = 180, cardH = 260;
+  const centerX = vw / 2 - cardW / 2;
+  const spread = 52;
+  const rotSpread = 12;
+
+  PASS_CARDS.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'pf-card';
+    const offset = i - (PASS_CARDS.length - 1) / 2;
+    const tx = centerX + offset * spread - 10;
+    const rot = offset * rotSpread;
+    const ty = Math.abs(offset) * 8;
+    card.style.left = tx + 'px';
+    card.style.top = (30 + ty) + 'px';
+    card.style.transform = `rotate(${rot}deg)`;
+    card.style.zIndex = 10 - Math.abs(Math.round(offset));
+    if (p.img) {
+      card.innerHTML = `<img src="${p.img}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">`;
+    } else {
+      card.style.background = p.color;
+      card.innerHTML = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+        font-size:8px;letter-spacing:.2em;color:rgba(255,255,255,.15);text-transform:uppercase;writing-mode:vertical-rl;
+        transform:rotate(180deg)">${p.label}</div>`;
+    }
+    container.appendChild(card);
+  });
+}
+
+/* ═══════ SCHEDULE DATA ═══════ */
+const EVENTS = [
+  { month:'MAY',day:'03',cat:'event',title:'All Must Dance Vol.25',
+    meta:'NOBBY · 21:00 — · LIQUIDROOM\nTOKYO',
+    price:'¥3,000',pass:'PASS ¥2,400',tags:[{t:'DJ',c:'t-dj'},{t:'HOUSE',c:'t-house'},{t:'TECHNO',c:'t-techno'}] },
+  { month:'JUN',day:'01',cat:'event',title:'DUBLA® Launch Party',
+    meta:'NOBBY + SACHI · 20:00 — · Shibuya\nWOMB',
+    price:'¥2,500',pass:'PASS ¥2,000',tags:[{t:'PARTY',c:'t-party'},{t:'FASHION',c:'t-fashion'}] },
+  { month:'JUL',day:'05',cat:'event',title:'All Must Dance Vol.26',
+    meta:'NOBBY · 21:00 — · LIQUIDROOM\nTOKYO',
+    price:'¥3,000',pass:'PASS ¥2,400',tags:[{t:'DJ',c:'t-dj'},{t:'HOUSE',c:'t-house'},{t:'TECHNO',c:'t-techno'}] },
+  { month:'MAY',day:'18',cat:'workshop',title:'Waacking Intensive',
+    meta:'SACHI · 13:00 — 17:00 · 代官山スタジオ',
+    price:'¥6,000',pass:'PASS ¥4,800',tags:[{t:'WAACKING',c:'t-waacking'},{t:'ALL LEVELS',c:'t-all'}] },
+  { month:'JUN',day:'01',cat:'workshop',title:'Breaking — Cypher Lab',
+    meta:'CREW NRG · 15:00 — 19:00 · 渋谷\nWOMB 2F',
+    price:'¥5,000',pass:'PASS ¥4,000',tags:[{t:'BREAKING',c:'t-breaking'},{t:'INTERMEDIATE',c:'t-all'}] },
+  { month:'JUN',day:'08',cat:'workshop',title:'House Dance × DJ Lab',
+    meta:'NOBBY + DJ KEITA · 14:00 — 18:00 · 渋\n谷 Studio A',
+    price:'¥7,000',pass:'PASS ¥5,600',tags:[{t:'HOUSE',c:'t-house'},{t:'DJ',c:'t-dj'},{t:'COLLAB',c:'t-collab'}] },
+];
+
+let schedFilter = 'event';
+
+function buildSchedule() {
+  const list = document.getElementById('sched-list');
+  list.innerHTML = '';
+  const filtered = schedFilter === 'all' ? EVENTS : EVENTS.filter(e => e.cat === schedFilter);
+  filtered.forEach(e => {
+    const item = document.createElement('div');
+    item.className = 'sched-item';
+    item.innerHTML = `
+      <div class="si-date">
+        <div class="si-date-month">${e.month}</div>
+        <div class="si-date-day">${e.day}</div>
+      </div>
+      <div class="si-body">
+        <div class="si-cat ${e.cat}">${e.cat.toUpperCase()}</div>
+        <div class="si-title">${e.title}</div>
+        <div class="si-meta">${e.meta.replace(/\n/g,'<br>')}</div>
+        <div class="si-tags">${e.tags.map(t=>`<span class="si-tag ${t.c}">${t.t}</span>`).join('')}</div>
+      </div>
+      <div class="si-price">
+        <div class="si-price-main">${e.price}</div>
+        <div class="si-price-pass">${e.pass}</div>
+      </div>`;
+    list.appendChild(item);
+  });
+}
+
+// Schedule tab clicks
+document.querySelectorAll('.sched-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.sched-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    schedFilter = tab.dataset.cat;
+    buildSchedule();
+    if (navigator.vibrate) navigator.vibrate(6);
+  });
+});
+
+/* ═══════ INIT ═══════ */
+updateTopbar('home');
+buildPassFan();
+buildSchedule();
+window.addEventListener('resize', () => {
+  document.getElementById('pass-fan').innerHTML = '';
+  buildPassFan();
+});
+</script>
+</body>
+</html>

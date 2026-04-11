@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0" stop-color="#1a0a00"/>
+      <stop offset="0.5" stop-color="#2a1000"/>
+      <stop offset="1" stop-color="#0a0500"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="30%" r="60%">
+      <stop offset="0" stop-color="#f5c842" stop-opacity="0.35"/>
+      <stop offset="0.5" stop-color="#e8100a" stop-opacity="0.15"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="600" height="900" fill="url(#bg)"/>
+  <rect width="600" height="900" fill="url(#glow)"/>
+
+  <!-- LIVE PASS COLLECTORS LIMITED -->
+  <g font-family="'Helvetica Neue',Arial,sans-serif" font-weight="800">
+    <text x="300" y="52" text-anchor="middle" font-size="20" fill="#fff" letter-spacing="1.5">LIVE <tspan fill="#e8100a">PASS</tspan></text>
+    <text x="300" y="74" text-anchor="middle" font-size="12" fill="#fff" letter-spacing="2.2">COLLECTORS LIMITED</text>
+  </g>
+
+  <!-- SPACE COOKING title -->
+  <g font-family="'Helvetica Neue','Arial Black',sans-serif" font-weight="900" text-anchor="middle">
+    <text x="300" y="380" font-size="130" fill="#fff">SPACE</text>
+    <text x="300" y="540" font-size="130" fill="#f5c842">COOKING</text>
+  </g>
+
+  <!-- Venue + Date -->
+  <g font-family="'Helvetica Neue',Arial,sans-serif" font-weight="700" text-anchor="middle">
+    <text x="300" y="770" font-size="42" fill="#fff" letter-spacing="0">unit</text>
+    <text x="300" y="820" font-size="26" fill="rgba(255,255,255,0.7)" letter-spacing="1">MAR 21 2025</text>
+  </g>
+
+  <radialGradient id="vignette" cx="50%" cy="50%" r="70%">
+    <stop offset="0.6" stop-color="#000" stop-opacity="0"/>
+    <stop offset="1" stop-color="#000" stop-opacity="0.55"/>
+  </radialGradient>
+  <rect width="600" height="900" fill="url(#vignette)"/>
+</svg>
