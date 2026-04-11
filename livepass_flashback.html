@@ -541,12 +541,6 @@ function isNfcMode() {
 (function initNfcMode() {
   if (!isNfcMode()) return;
 
-  // Re-label the trigger so it reads as a TAP card detection, not a purchase
-  const trigLabel = document.querySelector('.trigger-label');
-  const trigBtn   = document.querySelector('.trigger-btn');
-  if (trigLabel) trigLabel.textContent = 'NFC Tap Detected';
-  if (trigBtn)   trigBtn.textContent   = 'Tap to Begin';
-
   // The "View Collection" link in the flashback overlay becomes "Enter Pass Holder"
   const view = document.querySelector('.fb-view');
   if (view) {
@@ -555,17 +549,23 @@ function isNfcMode() {
   }
 
   // Apply edition number immediately so the trigger card shows the right number
-  // (account is created here, before the user even taps Begin)
+  // (account is created here, before the cinematic auto-starts)
   try {
     const holder = getOrCreateHolder();
     const myEdition = (holder.passes && holder.passes[0] && holder.passes[0].edition) || 43;
     applyEditionToDom(myEdition);
   } catch(e) {}
 
-  // We can't autoplay audio without a user gesture on iOS.
-  // So show the trigger card and let the user tap Begin → that gesture
-  // unlocks the audio context AND starts the cinematic at the same time.
-  // (No silent black screen — they always see the AMD card first.)
+  // FULL AUTO-START — hide the trigger card entirely and fire the cinematic
+  // immediately on page load. iOS will silently block Web Audio (no user
+  // gesture), so audio will not play. Vibration + visuals run normally.
+  const trigger = document.getElementById('trigger');
+  if (trigger) {
+    trigger.style.display = 'none';
+    trigger.classList.add('hidden');
+  }
+  // Brief delay so the page paints black before the sequence begins
+  setTimeout(startFlashback, 250);
 })();
 
 /* ── Auto-start on page load if ?auto=1 (legacy dev shortcut) ── */
