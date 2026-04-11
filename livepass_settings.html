@@ -252,8 +252,8 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   <div class="sec-label">ACCOUNT TYPE</div>
   <div class="plans">
 
-    <!-- FREE -->
-    <div class="plan" data-plan="free">
+    <!-- FREE (active - default plan) -->
+    <div class="plan active" data-plan="free">
       <div class="plan-icon">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>
       </div>
@@ -261,13 +261,13 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
       <div class="plan-price"><strong>FREE</strong> / 月額</div>
     </div>
 
-    <!-- PRO (active) -->
-    <div class="plan active" data-plan="pro">
+    <!-- PRO (locked - upgrade later) -->
+    <div class="plan locked" data-plan="pro">
       <div class="plan-icon">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/><path d="M8 6c0-3 2-4 4-4s4 1 4 4" stroke-width="1.5"/></svg>
+        <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
       </div>
       <div class="plan-pill">PRO</div>
-      <div class="plan-price"><strong>¥980</strong> / 月額</div>
+      <div class="plan-price" style="color:rgba(237,235,230,.5)"><strong style="color:rgba(237,235,230,.7)">¥980</strong> / 月額</div>
     </div>
 
     <!-- BIZ (locked) -->
@@ -288,9 +288,9 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
         <span class="pr-name" id="srName">NOBBY</span>
         <span class="pr-role">DANCER / DJ</span>
       </div>
-      <div class="pr-sub">PRO / ARTIST</div>
+      <div class="pr-sub">FREE / ARTIST</div>
     </div>
-    <div class="pr-badge">PRO</div>
+    <div class="pr-badge" style="background:rgba(237,235,230,.08);color:rgba(237,235,230,.55)">FREE</div>
   </div>
 
   <!-- ═══ ACCOUNT ═══ -->
@@ -310,7 +310,23 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
     </div>
     <div class="field-body">
       <div class="field-label">アカウント名</div>
-      <div class="field-value">NOBBY</div>
+      <div class="field-value" id="srNameValue">NOBBY</div>
+    </div>
+    <div class="field-chevron">›</div>
+  </div>
+
+  <!-- 肩書 (job title / role) -->
+  <div class="field-row">
+    <div class="field-icon teal">
+      <svg viewBox="0 0 24 24"><path d="M20 7h-3V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1z"/><line x1="3" y1="13" x2="21" y2="13"/></svg>
+    </div>
+    <div class="field-body">
+      <div class="field-label">肩書</div>
+      <input type="text" id="srRoleInput" placeholder="例) アーティスト・DJ など"
+        value="DANCER / DJ"
+        style="width:100%;background:none;border:none;color:rgba(237,235,230,.5);
+               font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;
+               letter-spacing:.02em;margin-top:3px;padding:0;outline:none">
     </div>
     <div class="field-chevron">›</div>
   </div>
@@ -351,9 +367,8 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   <!-- ═══ SUBSCRIPTION ═══ -->
   <div class="sec-label">SUBSCRIPTION</div>
   <div style="padding:20px 20px 60px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;color:rgba(237,235,230,.35);letter-spacing:.02em;line-height:1.8">
-    現在のプラン：<strong style="color:var(--gold)">PRO ¥980/月</strong><br>
-    次回更新日：2026年5月11日<br>
-    決済方法 / 解約 / アップグレード → 5/4後アップデート予定
+    現在のプラン：<strong style="color:rgba(237,235,230,.7)">FREE</strong><br>
+    アップグレード / 決済方法 / 解約 → 5/4後アップデート予定
   </div>
 
 </main>
@@ -401,13 +416,24 @@ document.getElementById('avatarUpload').addEventListener('change', (e) => {
   reader.readAsDataURL(file);
 });
 
-/* Plan selection (visual only for now) */
+/* Plan selection (visual only for now, locked plans ignored) */
 document.querySelectorAll('.plan').forEach(p => {
   p.addEventListener('click', () => {
     if (p.classList.contains('locked')) return;
     document.querySelectorAll('.plan').forEach(x => x.classList.remove('active'));
     p.classList.add('active');
   });
+});
+
+/* Role (肩書) — store to localStorage, pick up on profile */
+const ROLE_KEY = 'livepass_role';
+const roleInput = document.getElementById('srRoleInput');
+try {
+  const storedRole = localStorage.getItem(ROLE_KEY);
+  if (storedRole) roleInput.value = storedRole;
+} catch(e) {}
+roleInput.addEventListener('input', () => {
+  try { localStorage.setItem(ROLE_KEY, roleInput.value); } catch(e) {}
 });
 </script>
 
