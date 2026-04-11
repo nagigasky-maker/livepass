@@ -12,7 +12,7 @@
 :root{
   --black:#000;--bg:#080808;--white:#EDEBE6;
   --red:#E8100A;--blue:#3DAAFF;--green:#A8E63D;
-  --gold:#F5C842;--mint:#00E5A0;--pink:#F4C0D1;
+  --gold:#F5C842;--mint:#00E5A0;--pink:#F4C0D1;--purple:#bf5af2;
   --muted:rgba(237,235,230,.3);--muted2:rgba(237,235,230,.14);
   --border:rgba(255,255,255,.07);
   --safe-top:env(safe-area-inset-top,0px);
@@ -21,11 +21,12 @@
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;height:100%;height:100dvh;background:var(--black);color:var(--white);
-  font-family:'Noto Sans JP','Inter',sans-serif;-webkit-font-smoothing:antialiased;
+  font-family:Arial,'Noto Sans JP',sans-serif;-webkit-font-smoothing:antialiased;
   user-select:none;-webkit-user-select:none;overflow:hidden;}
 a{color:inherit;text-decoration:none}
 button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 
+/* TOP BAR ─────────────────────── */
 .topbar{position:fixed;top:0;left:0;right:0;z-index:100;
   padding:max(12px,calc(var(--safe-top) + 10px)) 18px 12px;
   display:flex;align-items:center;gap:14px;
@@ -37,16 +38,18 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .tb-icon svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
 .tb-icon .badge{position:absolute;top:-4px;right:-6px;background:var(--red);color:#fff;
   font-size:8px;font-weight:700;min-width:14px;height:14px;padding:0 3px;border-radius:99px;
-  display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;}
+  display:flex;align-items:center;justify-content:center;font-family:Arial,sans-serif;}
 .tb-stat{display:flex;flex-direction:column;align-items:center;line-height:1;gap:2px;color:var(--blue);}
-.tb-stat-n{font-family:Arial,'Noto Sans JP',sans-serif;font-size:16px;color:var(--white);letter-spacing:.04em}
+.tb-stat-n{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:16px;color:var(--white);letter-spacing:.04em}
 .tb-stat-l{font-size:7px;color:var(--blue);letter-spacing:.08em;font-weight:500}
 
+/* CONTENT ─────────────────────── */
 .content{position:fixed;top:0;left:0;right:0;bottom:calc(var(--nav-h) + var(--safe-bot));
   padding-top:max(66px,calc(var(--safe-top) + 58px));
   overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
 .content::-webkit-scrollbar{display:none}
 
+/* BOTTOM NAV ─────────────────────── */
 .bottomnav{position:fixed;bottom:0;left:0;right:0;z-index:100;
   height:calc(var(--nav-h) + var(--safe-bot));padding:0 0 var(--safe-bot);
   display:flex;align-items:center;justify-content:space-around;
@@ -62,36 +65,166 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   overflow:hidden;display:flex;align-items:center;justify-content:center;}
 .bn-btn.active .bn-avatar{border-color:var(--white)}
 
-/* Home placeholder */
-.placeholder-hero{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  min-height:60vh;padding:40px 24px;text-align:center;gap:18px;
-}
-.ph-label{
+/* FEED HEADER ─────────────────────── */
+.feed-header{padding:14px 20px 14px}
+.fh-label{
   font-family:'IBM Plex Mono',monospace;
-  font-size:9px;letter-spacing:.4em;text-transform:uppercase;
+  font-size:9px;letter-spacing:.34em;text-transform:uppercase;
   color:rgba(237,235,230,.3);
 }
-.ph-title{
-  font-family:Arial,'Noto Sans JP',sans-serif;font-size:42px;letter-spacing:.12em;
-  color:var(--white);line-height:1;
+.fh-title{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:22px;letter-spacing:.02em;color:var(--white);
+  margin-top:4px;
 }
-.ph-desc{
-  font-size:11px;color:rgba(237,235,230,.5);line-height:1.8;max-width:280px;
-  letter-spacing:.02em;
+
+/* MASONRY 2-COLUMN FEED ─────────────────────── */
+.feed-grid{
+  padding:0 10px 40px;
+  column-count:2;column-gap:8px;
 }
-.ph-todo{
-  font-family:'IBM Plex Mono',monospace;
-  font-size:8px;letter-spacing:.3em;text-transform:uppercase;
-  color:rgba(237,235,230,.18);margin-top:16px;
+.feed-card{
+  position:relative;display:block;
+  break-inside:avoid;
+  margin-bottom:8px;
+  border-radius:10px;overflow:hidden;
+  background:#0a0a0a;
+  border:0.5px solid rgba(255,255,255,.06);
+  cursor:pointer;
+  -webkit-column-break-inside:avoid;
+  page-break-inside:avoid;
 }
+.feed-card .fc-img{
+  position:relative;width:100%;display:block;overflow:hidden;background:#111;
+}
+.feed-card .fc-img svg,
+.feed-card .fc-img img{
+  width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;
+}
+.feed-card.poster .fc-img{aspect-ratio:9/14}
+.feed-card.square .fc-img{aspect-ratio:1/1}
+.feed-card.wide .fc-img{aspect-ratio:16/10}
+.feed-card .fc-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(0,0,0,.88) 0%,rgba(0,0,0,.15) 45%,transparent 70%);
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:14px 12px 12px;
+}
+.feed-card .fc-num{
+  position:absolute;top:10px;right:12px;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:14px;color:rgba(237,235,230,.35);letter-spacing:.04em;
+}
+.feed-card .fc-cat{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
+  font-size:7px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--cat,var(--green));margin-bottom:4px;
+}
+.feed-card .fc-title{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:13px;line-height:1.15;color:var(--white);
+}
+.feed-card .fc-title small{font-size:10px;font-weight:700;display:block;margin-top:1px}
+.feed-card .fc-author{
+  display:flex;align-items:center;gap:6px;margin-top:8px;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
+  font-size:7px;color:rgba(237,235,230,.45);letter-spacing:.02em;
+}
+.feed-card .fc-author-av{
+  width:14px;height:14px;border-radius:50%;
+  background:linear-gradient(135deg,#3DAAFF,#1a2030);flex-shrink:0;
+}
+
+/* ARTICLE DETAIL MODAL ───────────────────── */
+#detailModal{
+  position:fixed;inset:0;z-index:1200;
+  background:var(--black);
+  display:none;flex-direction:column;
+  opacity:0;transition:opacity .3s ease;
+}
+#detailModal.active{display:flex;opacity:1}
+.dm-header{
+  flex-shrink:0;
+  padding:max(14px,calc(var(--safe-top) + 12px)) 18px 12px;
+  display:flex;align-items:center;gap:14px;
+  background:rgba(0,0,0,.96);border-bottom:0.5px solid var(--border);
+}
+.dm-close{
+  width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--white);
+  border:0.5px solid rgba(255,255,255,.15);
+}
+.dm-close svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
+.dm-label{
+  font-family:'IBM Plex Mono',monospace;font-size:8px;
+  letter-spacing:.32em;text-transform:uppercase;
+  color:rgba(237,235,230,.3);margin-left:auto;
+}
+.dm-body{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.dm-body::-webkit-scrollbar{display:none}
+.dm-hero{position:relative;width:100%;aspect-ratio:9/14;background:#0a0a0a;overflow:hidden}
+.dm-hero svg,.dm-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.dm-hero::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(0,0,0,.92) 0%,transparent 40%);
+}
+.dm-hero-text{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:32px 22px 28px;z-index:2;
+}
+.dm-cat{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
+  font-size:9px;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--pink);margin-bottom:8px;
+}
+.dm-title{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:28px;line-height:1.1;color:var(--white);
+  margin-bottom:14px;
+}
+.dm-by{
+  display:flex;align-items:center;gap:10px;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
+  font-size:10px;color:rgba(237,235,230,.55);letter-spacing:.02em;
+}
+.dm-by .av{
+  width:24px;height:24px;border-radius:50%;
+  background:linear-gradient(135deg,#3DAAFF,#1a2030);
+  border:1px solid rgba(237,235,230,.12);flex-shrink:0;
+}
+.dm-content{padding:24px 22px 40px}
+.dm-p{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
+  font-size:13px;line-height:1.9;color:rgba(237,235,230,.78);
+  letter-spacing:.01em;margin-bottom:18px;
+}
+.dm-actions{
+  padding:16px 22px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-top:0.5px solid var(--border);
+}
+.dm-act{
+  display:flex;align-items:center;gap:6px;
+  color:rgba(237,235,230,.55);
+  font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;
+  font-weight:500;
+}
+.dm-act svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8}
+.dm-act.liked{color:var(--red)}
+.dm-act.liked svg{fill:var(--red);stroke:var(--red)}
+.dm-act.saved{color:var(--gold)}
+.dm-act.saved svg{fill:var(--gold);stroke:var(--gold)}
 </style>
 </head>
 <body>
 
 <div class="topbar">
   <a class="tb-brand" href="/home" aria-label="LIVE PASS"><img src="/livepasslogo.png" alt="LIVE PASS"></a>
-  <button class="tb-icon" aria-label="Create"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round"/></svg></button>
+  <button class="tb-icon" id="tbCreate" aria-label="Create"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round"/></svg></button>
   <button class="tb-icon" aria-label="Messages"><svg viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><polyline points="3,7 12,13 21,7"/></svg><span class="badge">9</span></button>
   <a class="tb-stat" href="#"><div class="tb-stat-n">25</div><div class="tb-stat-l">フォロー中</div></a>
   <a class="tb-stat" href="#"><div class="tb-stat-n">25</div><div class="tb-stat-l">フォロワー</div></a>
@@ -99,20 +232,156 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 </div>
 
 <main class="content">
-  <div class="placeholder-hero">
-    <div class="ph-label">You Were There — Feed</div>
-    <div class="ph-title">HOME</div>
-    <div class="ph-desc">フォロー中アカウントの ARTICLE 投稿がここに流れます。タップしたくなる見せ方で。</div>
-    <div class="ph-todo">— Step 4 で実装 —</div>
-  </div>
+  <header class="feed-header">
+    <div class="fh-label">Following · Random Feed</div>
+    <div class="fh-title">HOME</div>
+  </header>
+
+  <div class="feed-grid" id="feedGrid"></div>
 </main>
+
+<!-- ═══ ARTICLE DETAIL MODAL ═══ -->
+<div id="detailModal" aria-hidden="true">
+  <header class="dm-header">
+    <button class="dm-close" id="dmClose" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18" stroke-linecap="round"/><line x1="6" y1="18" x2="18" y2="6" stroke-linecap="round"/></svg></button>
+    <div class="dm-label">Article</div>
+  </header>
+  <div class="dm-body" id="dmBody"></div>
+</div>
 
 <nav class="bottomnav">
   <a href="/home" class="bn-btn active" aria-label="Home"><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1v-9.5z" stroke-linejoin="round"/></svg></a>
   <a href="/search" class="bn-btn" aria-label="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/></svg></a>
   <a href="/calendar" class="bn-btn" aria-label="Calendar"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7" stroke-linecap="round"/><line x1="16" y1="3" x2="16" y2="7" stroke-linecap="round"/></svg></a>
-  <a href="/profile" class="bn-btn" aria-label="Profile"><div class="bn-avatar"><span style="font-family:Arial,'Noto Sans JP',sans-serif;font-size:13px;color:var(--white)">N</span></div></a>
+  <a href="/profile" class="bn-btn" aria-label="Profile"><div class="bn-avatar"><span style="font-family:Arial,sans-serif;font-weight:900;font-size:13px;color:var(--white)">N</span></div></a>
 </nav>
+
+<script>
+/* Sample article data — 3 layouts mixed (poster / square / wide) */
+const ARTICLES = [
+  { id:'a001', layout:'poster', num:'002', cat:'Artwork · Figure', catColor:'#F4C0D1',
+    title:'FnKMDNS', subtitle:'Art Object Series',
+    author:'SPACE COOKING™', bgHue:'115,40,20' },
+  { id:'a002', layout:'square', num:'001', cat:'DJ · Live Set', catColor:'#A8E63D',
+    title:'All Must Dance', subtitle:'Vol.25 Rewind',
+    author:'NOBBY', bgHue:'0,70,40' },
+  { id:'a003', layout:'wide', num:'003', cat:'Review', catColor:'#F5C842',
+    title:'Shibuya Dance Week', subtitle:null,
+    author:'DUBLA®', bgHue:'45,60,30' },
+  { id:'a004', layout:'poster', num:'004', cat:'Workshop', catColor:'#F5C842',
+    title:'Breaking', subtitle:'Cypher Lab Notes',
+    author:'CREW NRG', bgHue:'25,80,40' },
+  { id:'a005', layout:'square', num:'005', cat:'Fashion', catColor:'#bf5af2',
+    title:'DUBLA® SS26', subtitle:null,
+    author:'DUBLA®', bgHue:'280,60,30' },
+  { id:'a006', layout:'wide', num:'006', cat:'Article', catColor:'#A8E63D',
+    title:'Space Cooking™ Manifesto', subtitle:null,
+    author:'NOBBY', bgHue:'220,70,20' },
+  { id:'a007', layout:'poster', num:'007', cat:'Dance', catColor:'#00E5A0',
+    title:'Waacking', subtitle:'Body as Language',
+    author:'SACHI', bgHue:'320,60,30' },
+  { id:'a008', layout:'square', num:'008', cat:'Music', catColor:'#3DAAFF',
+    title:'Mixtape #042', subtitle:null,
+    author:'NOBBY', bgHue:'200,80,25' },
+  { id:'a009', layout:'wide', num:'009', cat:'Interview', catColor:'#E8100A',
+    title:'ALI on House Culture', subtitle:null,
+    author:'LIVE PASS', bgHue:'0,80,25' },
+  { id:'a010', layout:'poster', num:'010', cat:'Event', catColor:'#E8100A',
+    title:'Liquidroom', subtitle:'May 4 Preview',
+    author:'NOBBY', bgHue:'10,70,30' },
+];
+
+const grid = document.getElementById('feedGrid');
+
+/* SVG placeholder generator (no external images needed) */
+function placeholderSVG(article) {
+  const h = article.bgHue;
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 600' preserveAspectRatio='xMidYMid slice'>
+    <defs><linearGradient id='g${article.id}' x1='0' y1='0' x2='1' y2='1'>
+      <stop offset='0' stop-color='hsla(${h},.4)'/>
+      <stop offset='1' stop-color='hsla(${h},.1)'/>
+    </linearGradient></defs>
+    <rect width='400' height='600' fill='url(%23g${article.id})'/>
+    <text x='200' y='320' text-anchor='middle' font-family='Arial' font-weight='900' font-size='100' fill='rgba(255,255,255,.06)'>${article.num}</text>
+  </svg>`.replace(/\s+/g,' ').replace(/</g,'%3C').replace(/>/g,'%3E').replace(/#/g,'%23').replace(/"/g,"'");
+  return 'data:image/svg+xml;charset=utf-8,' + svg;
+}
+
+/* Render feed */
+ARTICLES.forEach(a => {
+  const card = document.createElement('div');
+  card.className = 'feed-card ' + a.layout;
+  card.style.setProperty('--cat', a.catColor);
+  card.dataset.id = a.id;
+  const subHtml = a.subtitle ? `<small>${a.subtitle}</small>` : '';
+  card.innerHTML = `
+    <div class="fc-img">
+      <img src="${placeholderSVG(a)}" alt="">
+    </div>
+    <div class="fc-num">${a.num}</div>
+    <div class="fc-overlay">
+      <div class="fc-cat">${a.cat}</div>
+      <div class="fc-title">${a.title}${subHtml}</div>
+      <div class="fc-author"><div class="fc-author-av"></div>${a.author}</div>
+    </div>
+  `;
+  card.addEventListener('click', () => openDetail(a));
+  grid.appendChild(card);
+});
+
+/* Detail modal */
+const modal = document.getElementById('detailModal');
+const dmBody = document.getElementById('dmBody');
+const dmClose = document.getElementById('dmClose');
+function openDetail(a) {
+  if (navigator.vibrate) navigator.vibrate(8);
+  dmBody.innerHTML = `
+    <div class="dm-hero">
+      <img src="${placeholderSVG(a)}" alt="">
+      <div class="dm-hero-text">
+        <div class="dm-cat" style="color:${a.catColor}">${a.cat}</div>
+        <div class="dm-title">${a.title}${a.subtitle ? '<br><span style="font-size:20px;font-weight:700">'+a.subtitle+'</span>' : ''}</div>
+        <div class="dm-by"><div class="av"></div>${a.author} · 2026.04.11</div>
+      </div>
+    </div>
+    <div class="dm-content">
+      <p class="dm-p">LIVE PASS上の投稿は、フォロー中のアーティストから流れてくる「読みたくなる」コンテンツを中心に設計されています。ARTICLEタイプの投稿は、タイトル・カテゴリ・カバー画像・本文で構成され、縦長 / 正方形 / 横長の3種類のレイアウトから選べます。</p>
+      <p class="dm-p">この記事はサンプルデータで表示されています。実際の投稿機能は / 投稿ボタン（＋アイコン）から ARTICLE を選択して作成できます。投稿後は Home フィードにランダムに表示される仕組みです。</p>
+      <p class="dm-p">アーティスト自身が発信することを前提として、中間搾取を減らし、ファンとの距離を縮めます。投稿にはコメント・いいね・保存・SNS共有の4つのアクションが用意されています。</p>
+    </div>
+    <div class="dm-actions">
+      <button class="dm-act" data-act="comment"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>12</button>
+      <button class="dm-act" data-act="like"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>48</button>
+      <button class="dm-act" data-act="save"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>保存</button>
+      <button class="dm-act" data-act="share"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>共有</button>
+    </div>
+  `;
+  modal.classList.add('active');
+  modal.setAttribute('aria-hidden','false');
+  // wire up act buttons
+  dmBody.querySelectorAll('.dm-act').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const act = btn.dataset.act;
+      if (act === 'like') btn.classList.toggle('liked');
+      else if (act === 'save') btn.classList.toggle('saved');
+      if (navigator.vibrate) navigator.vibrate(6);
+    });
+  });
+}
+dmClose.addEventListener('click', () => {
+  modal.classList.remove('active');
+  modal.setAttribute('aria-hidden','true');
+  setTimeout(() => { dmBody.innerHTML = ''; }, 300);
+});
+window.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && modal.classList.contains('active')) dmClose.click();
+});
+
+/* + create button → stub for Step 4b compose selector */
+document.getElementById('tbCreate').addEventListener('click', () => {
+  alert('投稿作成 — Step 4b で実装予定');
+});
+</script>
 
 </body>
 </html>

@@ -368,53 +368,9 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   color:rgba(237,235,230,.5);margin-bottom:12px;display:block;text-transform:none;
 }
 
-/* ─────────────────────────────────────────────
-   CARD ZOOM — in-place cinema trigger
-   Tap a card → clone lifts + scales to fullscreen
-   ───────────────────────────────────────────── */
-#zoomOverlay{
-  position:fixed;inset:0;z-index:1000;
-  background:rgba(0,0,0,0);
-  pointer-events:none;opacity:0;
-  transition:background .4s ease, opacity .2s ease;
-}
-#zoomOverlay.active{
-  background:rgba(0,0,0,.94);
-  pointer-events:all;opacity:1;
-}
-#zoomClone{
-  position:fixed;
-  border-radius:14px;overflow:hidden;
-  box-shadow:0 24px 80px rgba(0,0,0,.9),
-             0 0 40px rgba(61,170,255,.12);
-  transition:left .6s cubic-bezier(.2,.8,.2,1),
-             top .6s cubic-bezier(.2,.8,.2,1),
-             width .6s cubic-bezier(.2,.8,.2,1),
-             height .6s cubic-bezier(.2,.8,.2,1);
-  will-change:left,top,width,height;
-}
-#zoomClone img{width:100%;height:100%;object-fit:cover;display:block}
-#zoomClose{
-  position:fixed;top:max(18px,calc(var(--safe-top) + 12px));right:18px;
-  z-index:1002;
-  width:38px;height:38px;border-radius:50%;
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.15);
-  color:#fff;font-size:18px;line-height:1;
-  display:flex;align-items:center;justify-content:center;
-  opacity:0;transition:opacity .3s ease .25s;
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-}
-#zoomOverlay.active #zoomClose{opacity:1}
-#zoomCaption{
-  position:fixed;left:0;right:0;bottom:max(30px,calc(var(--safe-bot) + 24px));
-  z-index:1001;text-align:center;
-  font-family:'IBM Plex Mono',monospace;
-  font-size:9px;letter-spacing:.42em;text-transform:uppercase;
-  color:rgba(237,235,230,.45);
-  opacity:0;transition:opacity .4s ease .3s;
-}
-#zoomOverlay.active #zoomCaption{opacity:1}
+/* Card tap → navigates to the cinematic → memory room flow
+   (no in-place zoom modal). Quick press-down feedback only. */
+.pf-card:active{filter:brightness(1.1)}
 </style>
 </head>
 <body>
@@ -459,15 +415,17 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   <div class="profile-hero">
     <div class="ph-avatar" id="phAvatar">
       <div class="ph-avatar-inner"></div>
-      <span class="pro">PRO</span>
+      <span class="pro" id="phPlanBadge">FREE</span>
     </div>
     <div class="ph-name-block">
       <div class="ph-name">NOBBY</div>
       <div class="ph-role">Dancer / DJ</div>
     </div>
-    <div class="ph-actions">
-      <button class="ph-follow-btn">フォローする</button>
-      <button class="ph-dm-btn" aria-label="Direct message">
+    <!-- Own profile: follow button is hidden (can't follow yourself).
+         Still shows DM icon as a future "messages" shortcut. -->
+    <div class="ph-actions" id="phActions">
+      <button class="ph-follow-btn" id="phFollowBtn" style="display:none">フォローする</button>
+      <button class="ph-dm-btn" aria-label="Messages">
         <svg viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><polyline points="3,7 12,13 21,7"/></svg>
       </button>
     </div>
@@ -653,13 +611,6 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 
 </main>
 
-<!-- ═══ CARD ZOOM OVERLAY ═══ -->
-<div id="zoomOverlay" aria-hidden="true">
-  <div id="zoomClone"></div>
-  <button id="zoomClose" aria-label="Close">✕</button>
-  <div id="zoomCaption">Tap to close</div>
-</div>
-
 <!-- ═══ BOTTOM NAV ═══ -->
 <nav class="bottomnav">
   <a href="/home" class="bn-btn" aria-label="Home">
@@ -707,90 +658,28 @@ document.querySelectorAll('.sst-btn').forEach(btn => {
 });
 
 /* ─────────────────────────────────────────────
-   PASS CARD TAP — in-place zoom animation
-   Clone the tapped card, animate from its real
-   position to near-fullscreen, fade dim background.
-   No navigation — everything runs in place on /profile.
-   ───────────────────────────────────────────────*/
+   PASS CARD TAP — launch cinematic → memory room
+   Navigates to /livepass_cinematic.html?auto=<id>
+   which auto-triggers the card and plays the zoom
+   animation that leads into the memory room.
+   ───────────────────────────────────────────── */
 function haptic(ms){ if (navigator.vibrate) navigator.vibrate(ms); }
-
-const zoomOverlay = document.getElementById('zoomOverlay');
-const zoomClone   = document.getElementById('zoomClone');
-const zoomClose   = document.getElementById('zoomClose');
-let zoomOpen = false;
-
-function openCardZoom(cardEl) {
-  if (zoomOpen) return;
-  if (cardEl.classList.contains('empty')) return;
-  const img = cardEl.querySelector('img');
-  if (!img) return;
-
-  zoomOpen = true;
-  haptic(12);
-
-  // Measure the tapped card's actual on-screen rect
-  const rect = cardEl.getBoundingClientRect();
-
-  // Seed the clone at the exact source position + size
-  zoomClone.innerHTML = `<img src="${img.src}" alt="">`;
-  zoomClone.style.left   = rect.left + 'px';
-  zoomClone.style.top    = rect.top + 'px';
-  zoomClone.style.width  = rect.width + 'px';
-  zoomClone.style.height = rect.height + 'px';
-  zoomClone.style.borderRadius = '12px';
-
-  // Activate overlay (fade in)
-  zoomOverlay.classList.add('active');
-  zoomOverlay.setAttribute('aria-hidden', 'false');
-
-  // Force paint, then animate to target rect (near fullscreen centered)
-  requestAnimationFrame(() => {
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    const ratio = 1000 / 1582;
-    // Target: fill 86% of viewport width, maintain card aspect
-    let targetW = Math.min(vw * 0.86, 340);
-    let targetH = targetW / ratio;
-    // If too tall, scale down to 78% of viewport height
-    if (targetH > vh * 0.78) {
-      targetH = vh * 0.78;
-      targetW = targetH * ratio;
-    }
-    const targetLeft = (vw - targetW) / 2;
-    const targetTop  = (vh - targetH) / 2;
-    zoomClone.style.left   = targetLeft + 'px';
-    zoomClone.style.top    = targetTop + 'px';
-    zoomClone.style.width  = targetW + 'px';
-    zoomClone.style.height = targetH + 'px';
-    setTimeout(() => haptic(8), 400); // soft haptic mid-zoom
-  });
-}
-
-function closeCardZoom() {
-  if (!zoomOpen) return;
-  zoomOverlay.classList.remove('active');
-  zoomOverlay.setAttribute('aria-hidden', 'true');
-  setTimeout(() => {
-    zoomClone.innerHTML = '';
-    zoomClone.style.cssText = '';
-    zoomOpen = false;
-  }, 600);
-}
-
 document.querySelectorAll('.pf-card').forEach(card => {
-  card.addEventListener('click', () => openCardZoom(card));
-});
-zoomClose.addEventListener('click', closeCardZoom);
-zoomOverlay.addEventListener('click', (e) => {
-  if (e.target === zoomOverlay) closeCardZoom();
-});
-// ESC to close on desktop
-window.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeCardZoom();
+  card.addEventListener('click', () => {
+    if (card.classList.contains('empty')) return;
+    haptic(10);
+    const id = card.dataset.card;
+    // All populated cards route into the cinematic → memory room flow.
+    // The cinematic page reads ?auto=<id> and auto-triggers the matching card.
+    if (id === 'amd' || id === 'card01' || id === 'card02') {
+      location.href = '/livepass_cinematic.html?auto=' + id;
+    }
+  });
 });
 
 /* ─────────────────────────────────────────────
-   AVATAR + ROLE — read from localStorage (set in /settings)
+   AVATAR + ROLE + PLAN — read from localStorage (set in /settings)
+   Everything stored by /settings shows up here automatically.
    ───────────────────────────────────────────── */
 (function loadProfileData(){
   try {
@@ -803,6 +692,17 @@ window.addEventListener('keydown', (e) => {
     if (role) {
       const el = document.querySelector('.ph-role');
       if (el) el.textContent = role;
+    }
+    // Plan badge (FREE / PRO / BIZ) — default FREE
+    const plan = (localStorage.getItem('livepass_plan') || 'FREE').toUpperCase();
+    const badge = document.getElementById('phPlanBadge');
+    if (badge) {
+      badge.textContent = plan;
+      // FREE gets a neutral look; PRO/BIZ keep the gold chip
+      if (plan === 'FREE') {
+        badge.style.background = 'rgba(237,235,230,.12)';
+        badge.style.color = 'rgba(237,235,230,.75)';
+      }
     }
   } catch(e) {}
 })();

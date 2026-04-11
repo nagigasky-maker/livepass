@@ -346,36 +346,36 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer;-we
    ═════════════════════════════════ */
 const PASSES = [
   {
-    id:'sc',
-    image:'assets/cards/sc-unit-2025-03-21.svg',
-    event:'SPACE COOKING',
-    date:'MAR 21 2025 · UNIT',
-    venue:'Daikanyama, Tokyo',
-    pass:'LP-0318',
-    duration:'5H',
-    artists:'8',
+    id:'card01',
+    image:'/livepass_card01-01.jpg',
+    event:'LIVE PASS',
+    date:'COLLECTORS LIMITED',
+    venue:'—',
+    pass:'LP-0001',
+    duration:'—',
+    artists:'—',
     position:'c-left',
   },
   {
+    id:'card02',
+    image:'/livepass_card02.jpg',
+    event:'LIVE PASS',
+    date:'COLLECTORS LIMITED',
+    venue:'—',
+    pass:'LP-0002',
+    duration:'—',
+    artists:'—',
+    position:'c-center',
+  },
+  {
     id:'amd',
-    image:'assets/cards/amd-clubasia-2026-05-04.jpg',
+    image:'/assets/cards/amd-clubasia-2026-05-04.jpg',
     event:'ALL MUST DANCE',
     date:'MAY 4 2026 · CLUB ASIA',
     venue:'Shibuya, Tokyo',
     pass:'LP-0421',
     duration:'6H',
     artists:'12',
-    position:'c-center',
-  },
-  {
-    id:'ws',
-    image:'assets/cards/ws-noah-2025-04-01.svg',
-    event:'64BEAT WORKSHOP',
-    date:'APR 1 2025 · NOAH STUDIO',
-    venue:'Nakano, Tokyo',
-    pass:'LP-0401',
-    duration:'3H',
-    artists:'4',
     position:'c-right',
   },
 ];
@@ -522,6 +522,24 @@ let nftDragged = false;
   startTick();
 
   window.addEventListener('resize', calcMax);
+})();
+
+/* ═════════════════════════════════
+   AUTO-TRIGGER (from /profile card tap)
+   /livepass_cinematic.html?auto=amd → auto-fires openFlashback
+   for the matching card after init.
+   ═════════════════════════════════ */
+(function initAutoTrigger(){
+  const id = new URLSearchParams(location.search).get('auto');
+  if (!id) return;
+  // Give the effect001 init a beat to settle, then trigger
+  setTimeout(() => {
+    const card = document.querySelector(`#nft-track .card[data-id="${id}"]`);
+    const pass = PASSES.find(p => p.id === id);
+    if (card && pass && !isBusy) {
+      openFlashback(pass, card);
+    }
+  }, 350);
 })();
 
 /* ═════════════════════════════════
