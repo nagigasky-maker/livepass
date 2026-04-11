@@ -178,23 +178,186 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   color:rgba(237,235,230,.32);
 }
 
-/* Cards placeholder — full implementation in Step 2 */
-.pass-cards-placeholder{
-  padding:0 20px 40px;display:flex;gap:10px;justify-content:center;
-  min-height:240px;align-items:flex-start;
+/* ─────────────────────────────────────────────
+   SUB-PANELS (PASS / SCREEN / SUB)
+   ───────────────────────────────────────────── */
+.sub-panel{display:none}
+.sub-panel.active{display:block}
+
+/* PASS COLLECTION ───────────────────────────── */
+.pass-section{padding:22px 20px 8px}
+.pass-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px}
+.ph-label-ywt{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:11px;letter-spacing:.22em;color:var(--red);line-height:1;
+  text-transform:uppercase;
 }
-.pc-ph-card{
-  width:132px;aspect-ratio:1000/1582;border-radius:10px;
-  background:linear-gradient(135deg,#151515,#0a0a0a);
-  border:0.5px solid rgba(255,255,255,.08);
-  flex-shrink:0;
+.ph-label-pass{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
+  font-size:15px;letter-spacing:.16em;
+  color:rgba(237,235,230,.28);margin-top:3px;text-transform:uppercase;
+}
+.ph-count{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:11px;letter-spacing:.18em;color:rgba(237,235,230,.32);
+  text-transform:uppercase;
 }
 
-.step1-note{
-  text-align:center;padding:18px 20px;
+/* Fan-spread pass cards */
+.pass-fan{
+  position:relative;width:100%;height:300px;
+  margin:0 auto 30px;overflow:visible;
+  display:flex;justify-content:center;align-items:flex-start;
+}
+.pf-card{
+  position:absolute;top:0;left:50%;
+  width:40vw;max-width:160px;
+  aspect-ratio:1000 / 1582;
+  border-radius:12px;overflow:hidden;
+  background:#0a0a0a;
+  border:0.5px solid rgba(255,255,255,.08);
+  box-shadow:0 14px 40px rgba(0,0,0,.8),0 2px 10px rgba(0,0,0,.6);
+  transform-origin:50% 50%;
+  transition:transform .3s cubic-bezier(.25,.46,.45,.94);
+  cursor:pointer;
+}
+.pf-card img{
+  width:100%;height:100%;object-fit:cover;display:block;
+}
+.pf-card.empty{
+  background:linear-gradient(135deg,#151515,#0a0a0a);
+}
+/* Fan positions — left to right, rotated progressively */
+.pf-card[data-pos="0"]{transform:translate(-150%,0) rotate(-10deg)}
+.pf-card[data-pos="1"]{transform:translate(-68%,8px) rotate(-3deg)}
+.pf-card[data-pos="2"]{transform:translate(-16%,12px) rotate(3deg)}
+.pf-card[data-pos="3"]{transform:translate(60%,6px) rotate(10deg)}
+.pf-card:active{transform:translate(var(--tx,-50%),-6px) scale(1.02)}
+
+/* SCREEN sub-sub-tabs ─────────────────────────── */
+.screen-wrap{padding-top:6px}
+.sstabs{
+  display:flex;align-items:center;gap:0;
+  padding:0 20px 2px;
+  border-bottom:0.5px solid var(--border);
+  overflow-x:auto;scrollbar-width:none;
+}
+.sstabs::-webkit-scrollbar{display:none}
+.sst-btn{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:13px;letter-spacing:.18em;
+  color:rgba(237,235,230,.3);
+  padding:14px 16px 12px;white-space:nowrap;
+  border-bottom:2px solid transparent;
+  text-transform:uppercase;
+  background:none;border-top:none;border-left:none;border-right:none;
+}
+.sst-btn.active{color:var(--white)}
+.sst-btn[data-tab="article"].active{border-bottom-color:var(--green)}
+.sst-btn[data-tab="event"].active{border-bottom-color:var(--red)}
+.sst-btn[data-tab="workshop"].active{border-bottom-color:var(--gold)}
+.sst-btn[data-tab="exhibition"].active{border-bottom-color:var(--mint)}
+
+.sstab-panel{display:none}
+.sstab-panel.active{display:block}
+
+/* ARTICLE panel — big card preview */
+.article-card{
+  position:relative;margin:14px 14px;border-radius:14px;overflow:hidden;
+  aspect-ratio:9/14;background:#111;
+}
+.article-card img{width:100%;height:100%;object-fit:cover;display:block}
+.ac-num{
+  position:absolute;top:14px;right:16px;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:22px;color:rgba(237,235,230,.25);letter-spacing:.06em;
+}
+.ac-overlay{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:24px 18px 18px;
+  background:linear-gradient(to top,rgba(0,0,0,.92) 40%,transparent);
+}
+.ac-cat{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
+  font-size:8px;letter-spacing:.28em;color:var(--pink);
+  text-transform:uppercase;margin-bottom:6px;
+}
+.ac-title{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:24px;line-height:1.1;color:var(--white);margin-bottom:0;
+}
+.ac-title small{font-size:18px;display:block;font-weight:900}
+
+/* EVENT / WORKSHOP / EXHIBITION list */
+.ev-list{padding:4px 0 20px}
+.ev-item{
+  display:flex;padding:18px 20px;gap:14px;
+  border-bottom:0.5px solid rgba(255,255,255,.04);
+  position:relative;
+}
+.ev-item::before{
+  content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;
+  background:var(--cat-color,var(--muted));opacity:.7;
+}
+.ev-date{flex-shrink:0;width:48px;text-align:left;line-height:1}
+.ev-date .m{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:11px;letter-spacing:.12em;
+  color:var(--cat-color,var(--muted));text-transform:uppercase;
+}
+.ev-date .d{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:36px;color:var(--white);margin-top:2px;
+}
+.ev-body{flex:1;min-width:0}
+.ev-cat{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:10px;letter-spacing:.22em;
+  color:var(--cat-color,var(--muted));text-transform:uppercase;margin-bottom:3px;
+}
+.ev-title{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:14px;color:var(--white);margin-bottom:3px;line-height:1.2;
+}
+.ev-meta{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
+  font-size:9px;color:rgba(237,235,230,.45);letter-spacing:.02em;line-height:1.5;
+}
+.ev-tags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.ev-tag{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
+  font-size:8px;letter-spacing:.12em;
+  padding:3px 10px;border-radius:99px;
+  border:1px solid var(--cat-color,var(--muted));
+  color:var(--cat-color,var(--muted));
+  text-transform:uppercase;
+}
+.ev-right{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.ev-price{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:14px;color:var(--white);
+}
+.ev-thumb{
+  width:60px;height:40px;border-radius:4px;background:#0a0a0a;
+  border:0.5px solid rgba(255,255,255,.06);
+}
+.ev-item.event{--cat-color:var(--red)}
+.ev-item.event-party{--cat-color:#bf5af2}
+.ev-item.workshop-waacking{--cat-color:var(--pink)}
+.ev-item.workshop-breaking{--cat-color:var(--gold)}
+.ev-item.workshop-house{--cat-color:var(--mint)}
+
+/* SUBSCRIPTION panel placeholder */
+.sub-placeholder{
+  text-align:center;padding:80px 20px;
   font-family:'IBM Plex Mono',monospace;
   font-size:9px;letter-spacing:.3em;text-transform:uppercase;
-  color:rgba(237,235,230,.18);
+  color:rgba(237,235,230,.22);line-height:2;
+}
+.sub-placeholder .big{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:24px;letter-spacing:.06em;
+  color:rgba(237,235,230,.5);margin-bottom:12px;display:block;text-transform:none;
 }
 </style>
 </head>
@@ -238,8 +401,7 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 
   <!-- Hero: avatar + name + follow button -->
   <div class="profile-hero">
-    <div class="ph-avatar">
-      <!-- placeholder — real photo in Step 2 -->
+    <div class="ph-avatar" id="phAvatar">
       <span class="pro">PRO</span>
     </div>
     <div class="ph-info">
@@ -267,25 +429,170 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
     </button>
   </nav>
 
-  <!-- PASS COLLECTION default sub-section -->
-  <section class="pass-section" id="sub-pass">
-    <div class="pass-header">
-      <div>
-        <div class="ph-label-ywt">YOU WERE THERE</div>
-        <div class="ph-label-pass">PASS HOLDER</div>
+  <!-- ═══ PASS COLLECTION panel ═══ -->
+  <section class="sub-panel active" id="panel-pass">
+    <div class="pass-section">
+      <div class="pass-header">
+        <div>
+          <div class="ph-label-ywt">YOU WERE THERE</div>
+          <div class="ph-label-pass">PASS HOLDER</div>
+        </div>
+        <div class="ph-count">4 PASSES</div>
       </div>
-      <div class="ph-count">4 PASSES</div>
+    </div>
+
+    <div class="pass-fan" id="passFan">
+      <div class="pf-card" data-pos="0" data-card="card01">
+        <img src="/livepass_card01-01.jpg" alt="LIVE PASS Card 01">
+      </div>
+      <div class="pf-card" data-pos="1" data-card="card02">
+        <img src="/livepass_card02.jpg" alt="LIVE PASS Card 02">
+      </div>
+      <div class="pf-card" data-pos="2" data-card="amd">
+        <img src="/assets/cards/amd-clubasia-2026-05-04.jpg" alt="ALL MUST DANCE">
+      </div>
+      <div class="pf-card empty" data-pos="3" data-card="placeholder"></div>
     </div>
   </section>
 
-  <!-- Placeholder cards — actual fan layout + real cards in Step 2 -->
-  <div class="pass-cards-placeholder">
-    <div class="pc-ph-card"></div>
-    <div class="pc-ph-card"></div>
-    <div class="pc-ph-card"></div>
-  </div>
+  <!-- ═══ SCREEN panel ═══ -->
+  <section class="sub-panel" id="panel-screen">
+    <div class="screen-wrap">
+      <nav class="sstabs">
+        <button class="sst-btn active" data-tab="article">ARTICLE</button>
+        <button class="sst-btn" data-tab="event">EVENT</button>
+        <button class="sst-btn" data-tab="workshop">WORKSHOP</button>
+        <button class="sst-btn" data-tab="exhibition">EXHIBITION</button>
+      </nav>
 
-  <div class="step1-note">Step 1 — profile scaffolding</div>
+      <!-- ARTICLE -->
+      <div class="sstab-panel active" id="sstab-article">
+        <div class="article-card">
+          <img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 900'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23001a0a'/%3E%3Cstop offset='.5' stop-color='%230a2a1a'/%3E%3Cstop offset='1' stop-color='%23002a0a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23g)' width='600' height='900'/%3E%3Ctext x='300' y='500' text-anchor='middle' fill='rgba(255,255,255,.06)' font-size='140' font-family='sans-serif' font-weight='900'%3EART%3C/text%3E%3C/svg%3E" alt="">
+          <div class="ac-num">002</div>
+          <div class="ac-overlay">
+            <div class="ac-cat">Artwork · Figure</div>
+            <div class="ac-title">FnKMDNS<br><small>Art Object<br>Series</small></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EVENT -->
+      <div class="sstab-panel" id="sstab-event">
+        <div class="ev-list">
+          <div class="ev-item event">
+            <div class="ev-date"><div class="m">MAY</div><div class="d">03</div></div>
+            <div class="ev-body">
+              <div class="ev-cat">EVENT</div>
+              <div class="ev-title">All Must Dance Vol.25</div>
+              <div class="ev-meta">NOBBY · 21:00 — · LIQUIDROOM TOKYO</div>
+              <div class="ev-tags">
+                <div class="ev-tag">DJ</div>
+                <div class="ev-tag">HOUSE</div>
+                <div class="ev-tag">TECHNO</div>
+              </div>
+            </div>
+            <div class="ev-right"><div class="ev-price">¥3,000</div><div class="ev-thumb"></div></div>
+          </div>
+
+          <div class="ev-item event-party">
+            <div class="ev-date"><div class="m">JUN</div><div class="d">01</div></div>
+            <div class="ev-body">
+              <div class="ev-cat">EVENT</div>
+              <div class="ev-title">DUBLA® Launch Party</div>
+              <div class="ev-meta">NOBBY + SACHI · 20:00 — · Shibuya WOMB</div>
+              <div class="ev-tags">
+                <div class="ev-tag">PARTY</div>
+                <div class="ev-tag">FASHION</div>
+              </div>
+            </div>
+            <div class="ev-right"><div class="ev-price">¥2,500</div><div class="ev-thumb"></div></div>
+          </div>
+
+          <div class="ev-item event">
+            <div class="ev-date"><div class="m">JUL</div><div class="d">05</div></div>
+            <div class="ev-body">
+              <div class="ev-cat">EVENT</div>
+              <div class="ev-title">All Must Dance Vol.26</div>
+              <div class="ev-meta">NOBBY · 21:00 — · LIQUIDROOM TOKYO</div>
+              <div class="ev-tags">
+                <div class="ev-tag">DJ</div>
+                <div class="ev-tag">HOUSE</div>
+                <div class="ev-tag">TECHNO</div>
+              </div>
+            </div>
+            <div class="ev-right"><div class="ev-price">¥3,000</div><div class="ev-thumb"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WORKSHOP -->
+      <div class="sstab-panel" id="sstab-workshop">
+        <div class="ev-list">
+          <div class="ev-item workshop-waacking">
+            <div class="ev-date"><div class="m">MAY</div><div class="d">18</div></div>
+            <div class="ev-body">
+              <div class="ev-cat">WORKSHOP</div>
+              <div class="ev-title">Waacking Intensive</div>
+              <div class="ev-meta">SACHI · 13:00 — 17:00 · 代官山スタジオ</div>
+              <div class="ev-tags">
+                <div class="ev-tag">WAACKING</div>
+                <div class="ev-tag">ALL LEVELS</div>
+              </div>
+            </div>
+            <div class="ev-right"><div class="ev-price">¥6,000</div><div class="ev-thumb"></div></div>
+          </div>
+
+          <div class="ev-item workshop-breaking">
+            <div class="ev-date"><div class="m">JUN</div><div class="d">01</div></div>
+            <div class="ev-body">
+              <div class="ev-cat">WORKSHOP</div>
+              <div class="ev-title">Breaking — Cypher Lab</div>
+              <div class="ev-meta">CREW NRG · 15:00 — 19:00 · 渋谷 WOMB 2F</div>
+              <div class="ev-tags">
+                <div class="ev-tag">BREAKING</div>
+                <div class="ev-tag">INTERMEDIATE</div>
+              </div>
+            </div>
+            <div class="ev-right"><div class="ev-price">¥5,000</div><div class="ev-thumb"></div></div>
+          </div>
+
+          <div class="ev-item workshop-house">
+            <div class="ev-date"><div class="m">JUN</div><div class="d">08</div></div>
+            <div class="ev-body">
+              <div class="ev-cat">WORKSHOP</div>
+              <div class="ev-title">House Dance × DJ Lab</div>
+              <div class="ev-meta">NOBBY + DJ KEITA · 14:00 — 18:00 · 渋谷 Studio A</div>
+              <div class="ev-tags">
+                <div class="ev-tag">HOUSE</div>
+                <div class="ev-tag">DJ</div>
+                <div class="ev-tag">COLLAB</div>
+              </div>
+            </div>
+            <div class="ev-right"><div class="ev-price">¥7,000</div><div class="ev-thumb"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EXHIBITION -->
+      <div class="sstab-panel" id="sstab-exhibition">
+        <div class="sub-placeholder">
+          <span class="big">Exhibition</span>
+          展示スケジュールはまだありません<br>
+          投稿画面から追加可能
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SUBSCRIPTION panel ═══ -->
+  <section class="sub-panel" id="panel-sub">
+    <div class="sub-placeholder">
+      <span class="big">Subscription</span>
+      サブスク設定と投げ銭機能<br>
+      5/4後アップデート予定
+    </div>
+  </section>
 
 </main>
 
@@ -306,14 +613,90 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 </nav>
 
 <script>
-// Sub-tab toggle (PASS COLLECTION / SCREEN / SUBSCRIPTION)
+/* ─────────────────────────────────────────────
+   SUB-TAB SWAP (PASS / SCREEN / SUB)
+   ───────────────────────────────────────────── */
+const SUB_PANEL = { pass:'panel-pass', screen:'panel-screen', sub:'panel-sub' };
 document.querySelectorAll('.st-btn').forEach(btn => {
   btn.addEventListener('click', () => {
+    const sub = btn.dataset.sub;
     document.querySelectorAll('.st-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    // Content swap will be wired up in Step 2
+    document.querySelectorAll('.sub-panel').forEach(p => p.classList.remove('active'));
+    const target = document.getElementById(SUB_PANEL[sub]);
+    if (target) target.classList.add('active');
   });
 });
+
+/* ─────────────────────────────────────────────
+   SCREEN SUB-SUB-TAB SWAP (ARTICLE/EVENT/WORKSHOP/EXHIBITION)
+   ───────────────────────────────────────────── */
+document.querySelectorAll('.sst-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    document.querySelectorAll('.sst-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.sstab-panel').forEach(p => p.classList.remove('active'));
+    const target = document.getElementById('sstab-' + tab);
+    if (target) target.classList.add('active');
+  });
+});
+
+/* ─────────────────────────────────────────────
+   PASS CARD TAP — owner only (self profile)
+   Will launch cinema + memory room in Step 2.5
+   For now: soft haptic + quick placeholder
+   ───────────────────────────────────────────── */
+function haptic(ms){ if (navigator.vibrate) navigator.vibrate(ms); }
+document.querySelectorAll('.pf-card').forEach(card => {
+  card.addEventListener('click', () => {
+    if (card.classList.contains('empty')) return;
+    haptic(10);
+    const id = card.dataset.card;
+    // Map card → /p/<id> cinema route (only AMD exists for now)
+    if (id === 'amd') {
+      location.href = '/p/amd';
+    } else {
+      // other cards don't have a cinematic yet
+      console.log('[LIVE PASS] tap card:', id, '— cinema not wired up yet');
+    }
+  });
+});
+
+/* ─────────────────────────────────────────────
+   AVATAR — read from localStorage (set in /settings)
+   ───────────────────────────────────────────── */
+(function loadAvatar(){
+  try {
+    const dataUrl = localStorage.getItem('livepass_avatar');
+    if (!dataUrl) return;
+    const el = document.getElementById('phAvatar');
+    if (!el) return;
+    // Keep the PRO badge, insert the img before it
+    const pro = el.querySelector('.pro');
+    el.innerHTML = `<img src="${dataUrl}" alt="avatar">`;
+    if (pro) el.appendChild(pro);
+  } catch(e) {}
+})();
+
+/* ─────────────────────────────────────────────
+   NFC ENTRY HINT
+   If we arrived via /profile?from=nfc&pass=amd,
+   quickly scroll to the fan and highlight the matching card.
+   ───────────────────────────────────────────── */
+(function handleNfcEntry(){
+  const qs = new URLSearchParams(location.search);
+  if (qs.get('from') !== 'nfc') return;
+  const passId = qs.get('pass') || 'amd';
+  const targetCard = document.querySelector(`.pf-card[data-card="${passId}"]`);
+  if (!targetCard) return;
+  setTimeout(() => {
+    targetCard.animate(
+      [{ filter:'brightness(1)' }, { filter:'brightness(1.8) drop-shadow(0 0 20px rgba(232,16,10,.8))' }, { filter:'brightness(1)' }],
+      { duration:1800, iterations:2 }
+    );
+  }, 400);
+})();
 </script>
 
 </body>

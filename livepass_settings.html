@@ -65,37 +65,160 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 /* Settings header */
 .settings-header{
   display:flex;align-items:center;justify-content:space-between;gap:16px;
-  padding:14px 20px 18px;
+  padding:16px 20px 20px;
 }
-.sh-left{display:flex;align-items:baseline;gap:16px}
+.sh-left{display:flex;align-items:baseline;gap:18px}
 .sh-label{
   font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.32em;
   text-transform:uppercase;color:rgba(237,235,230,.22);
 }
 .sh-title{
-  font-family:'Noto Sans JP',sans-serif;font-weight:300;font-style:italic;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:300;font-style:italic;
   font-size:22px;color:var(--white);letter-spacing:.02em;
 }
 .sh-tabicons{display:flex;gap:14px;align-items:center;margin-left:auto}
 .sh-ticon{color:rgba(237,235,230,.2);padding:4px}
 .sh-ticon svg{width:22px;height:22px;fill:currentColor}
 .sh-back{
-  font-family:'Inter',sans-serif;font-size:10px;font-weight:400;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;font-weight:400;
   color:rgba(237,235,230,.55);
   padding:6px 14px;border:0.5px solid rgba(237,235,230,.15);
   border-radius:99px;letter-spacing:.02em;
 }
 
-.step1-note{
-  text-align:center;padding:60px 20px;
+/* Section headers */
+.sec-label{
   font-family:'IBM Plex Mono',monospace;
-  font-size:9px;letter-spacing:.3em;text-transform:uppercase;
-  color:rgba(237,235,230,.18);
+  font-size:8px;letter-spacing:.34em;
+  text-transform:uppercase;color:rgba(237,235,230,.22);
+  padding:22px 20px 12px;
 }
-.step1-note .big{
-  font-family:Arial,'Noto Sans JP',sans-serif;font-size:32px;letter-spacing:.12em;
-  color:rgba(237,235,230,.4);margin-bottom:14px;display:block;
+
+/* ACCOUNT TYPE — 3 plan cards */
+.plans{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;
+  padding:0 20px 36px;
 }
+.plan{
+  position:relative;aspect-ratio:0.86;
+  border-radius:10px;overflow:hidden;background:#0a0a0a;
+  border:0.5px solid rgba(255,255,255,.08);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:8px;padding:14px 8px;cursor:pointer;
+}
+.plan.active{
+  background:linear-gradient(180deg,#111 0%,#000 100%);
+  border:1.5px solid var(--gold);
+  box-shadow:0 0 0 0.5px rgba(245,200,66,.25),
+             0 6px 22px rgba(245,200,66,.08);
+}
+.plan.locked{opacity:.65}
+.plan-icon{
+  width:44px;height:44px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;color:var(--mint);
+}
+.plan.active .plan-icon{color:var(--gold)}
+.plan.locked .plan-icon{color:var(--gold)}
+.plan-icon svg{width:30px;height:30px;stroke:currentColor;fill:none;stroke-width:1.8}
+.plan-pill{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:9px;letter-spacing:.18em;
+  padding:3px 10px;border-radius:99px;text-transform:uppercase;
+  background:rgba(237,235,230,.08);color:rgba(237,235,230,.5);
+}
+.plan.active .plan-pill{background:var(--gold);color:#000}
+.plan.locked .plan-pill{background:rgba(245,200,66,.18);color:var(--gold)}
+.plan-price{
+  position:absolute;bottom:-26px;left:0;right:0;text-align:center;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
+  font-size:11px;letter-spacing:.08em;color:rgba(237,235,230,.7);
+}
+.plan-price strong{font-weight:900;color:var(--white)}
+
+/* Profile row */
+.profile-row{
+  display:flex;align-items:center;gap:14px;
+  padding:10px 20px 20px;
+  border-bottom:0.5px solid var(--border);
+}
+.pr-avatar{
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,#1a2030,#0a1020);
+  border:1.5px solid rgba(237,235,230,.15);
+  overflow:hidden;position:relative;flex-shrink:0;
+}
+.pr-avatar img{width:100%;height:100%;object-fit:cover}
+.pr-info{flex:1;min-width:0}
+.pr-line1{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.pr-name{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:22px;letter-spacing:.02em;color:var(--blue);line-height:1;
+}
+.pr-role{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
+  font-size:10px;letter-spacing:.22em;
+  color:var(--blue);text-transform:uppercase;
+}
+.pr-sub{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
+  font-size:9px;letter-spacing:.22em;
+  color:rgba(237,235,230,.4);text-transform:uppercase;margin-top:6px;
+}
+.pr-badge{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:10px;letter-spacing:.18em;
+  padding:5px 14px;border-radius:99px;
+  background:var(--gold);color:#000;flex-shrink:0;
+}
+
+/* ACCOUNT field list */
+.field-row{
+  display:flex;align-items:center;gap:14px;
+  padding:18px 20px;
+  border-bottom:0.5px solid rgba(255,255,255,.04);
+  cursor:pointer;
+}
+.field-icon{
+  width:28px;height:28px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.field-icon svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8}
+.field-icon.teal{color:var(--mint)}
+.field-icon.red{color:var(--red)}
+.field-icon.gold{color:var(--gold)}
+.field-body{flex:1;min-width:0;line-height:1.3}
+.field-label{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
+  font-size:13px;color:var(--white);
+}
+.field-value{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
+  font-size:10px;color:rgba(237,235,230,.4);margin-top:3px;letter-spacing:.02em;
+}
+.field-chevron{color:rgba(237,235,230,.25);font-size:16px}
+
+/* Photo upload row */
+.photo-row{
+  display:flex;align-items:center;gap:14px;
+  padding:18px 20px;
+  border-bottom:0.5px solid rgba(255,255,255,.04);
+}
+.photo-row .pr-av{
+  width:44px;height:44px;border-radius:50%;overflow:hidden;flex-shrink:0;
+  background:linear-gradient(135deg,#1a2030,#0a1020);
+  border:1.5px solid rgba(237,235,230,.15);
+}
+.photo-row .pr-av img{width:100%;height:100%;object-fit:cover}
+.photo-row .pr-label{
+  flex:1;font-family:Arial,'Noto Sans JP',sans-serif;
+  font-weight:500;font-size:13px;color:var(--white);
+}
+.photo-row label.upload{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
+  font-size:11px;letter-spacing:.02em;color:var(--blue);cursor:pointer;
+  padding:6px 14px;border:0.5px solid var(--blue);border-radius:99px;
+}
+.photo-row input{display:none}
 </style>
 </head>
 <body>
@@ -125,13 +248,168 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
     <a href="/profile" class="sh-back">← Back</a>
   </header>
 
-  <div class="step1-note">
-    <span class="big">管理画面</span>
-    Step 2.5 で実装<br>
-    ACCOUNT TYPE (FREE / PRO / BIZ)<br>
-    ACCOUNT 情報 / SUBSCRIPTION
+  <!-- ═══ ACCOUNT TYPE ═══ -->
+  <div class="sec-label">ACCOUNT TYPE</div>
+  <div class="plans">
+
+    <!-- FREE -->
+    <div class="plan" data-plan="free">
+      <div class="plan-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>
+      </div>
+      <div class="plan-pill">FREE</div>
+      <div class="plan-price"><strong>FREE</strong> / 月額</div>
+    </div>
+
+    <!-- PRO (active) -->
+    <div class="plan active" data-plan="pro">
+      <div class="plan-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/><path d="M8 6c0-3 2-4 4-4s4 1 4 4" stroke-width="1.5"/></svg>
+      </div>
+      <div class="plan-pill">PRO</div>
+      <div class="plan-price"><strong>¥980</strong> / 月額</div>
+    </div>
+
+    <!-- BIZ (locked) -->
+    <div class="plan locked" data-plan="biz">
+      <div class="plan-icon">
+        <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+      </div>
+      <div class="plan-pill">BIZ</div>
+      <div class="plan-price" style="color:rgba(237,235,230,.3)">準備中</div>
+    </div>
   </div>
+
+  <!-- Profile row -->
+  <div class="profile-row">
+    <div class="pr-avatar" id="srAvatar"></div>
+    <div class="pr-info">
+      <div class="pr-line1">
+        <span class="pr-name" id="srName">NOBBY</span>
+        <span class="pr-role">DANCER / DJ</span>
+      </div>
+      <div class="pr-sub">PRO / ARTIST</div>
+    </div>
+    <div class="pr-badge">PRO</div>
+  </div>
+
+  <!-- ═══ ACCOUNT ═══ -->
+  <div class="sec-label">ACCOUNT</div>
+
+  <!-- Profile photo upload -->
+  <div class="photo-row">
+    <div class="pr-av" id="photoPreview"></div>
+    <div class="pr-label">プロフィール写真</div>
+    <label class="upload" for="avatarUpload">変更</label>
+    <input id="avatarUpload" type="file" accept="image/*">
+  </div>
+
+  <div class="field-row">
+    <div class="field-icon teal">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>
+    </div>
+    <div class="field-body">
+      <div class="field-label">アカウント名</div>
+      <div class="field-value">NOBBY</div>
+    </div>
+    <div class="field-chevron">›</div>
+  </div>
+
+  <div class="field-row">
+    <div class="field-icon red">
+      <svg viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><polyline points="3,7 12,13 21,7"/></svg>
+    </div>
+    <div class="field-body">
+      <div class="field-label">メールアドレス</div>
+      <div class="field-value">nobby@spacecooking.studio</div>
+    </div>
+    <div class="field-chevron">›</div>
+  </div>
+
+  <div class="field-row">
+    <div class="field-icon red">
+      <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    </div>
+    <div class="field-body">
+      <div class="field-label">電話番号</div>
+      <div class="field-value">未設定</div>
+    </div>
+    <div class="field-chevron">›</div>
+  </div>
+
+  <div class="field-row">
+    <div class="field-icon gold">
+      <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+    </div>
+    <div class="field-body">
+      <div class="field-label">パスワード変更</div>
+      <div class="field-value">•••••••••</div>
+    </div>
+    <div class="field-chevron">›</div>
+  </div>
+
+  <!-- ═══ SUBSCRIPTION ═══ -->
+  <div class="sec-label">SUBSCRIPTION</div>
+  <div style="padding:20px 20px 60px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;color:rgba(237,235,230,.35);letter-spacing:.02em;line-height:1.8">
+    現在のプラン：<strong style="color:var(--gold)">PRO ¥980/月</strong><br>
+    次回更新日：2026年5月11日<br>
+    決済方法 / 解約 / アップグレード → 5/4後アップデート予定
+  </div>
+
 </main>
+
+<script>
+/* ─────────────────────────────────────────────
+   AVATAR UPLOAD → localStorage
+   All pages read livepass_avatar on load and
+   show the latest stored photo in their avatar slots.
+   ───────────────────────────────────────────── */
+const AVATAR_KEY = 'livepass_avatar';
+
+function renderAvatar(dataUrl){
+  const preview = document.getElementById('photoPreview');
+  const srAv = document.getElementById('srAvatar');
+  if (dataUrl) {
+    preview.innerHTML = `<img src="${dataUrl}" alt="avatar">`;
+    srAv.innerHTML = `<img src="${dataUrl}" alt="avatar">`;
+  } else {
+    preview.innerHTML = `<svg viewBox="0 0 44 44" style="width:100%;height:100%;opacity:.3"><circle cx="22" cy="17" r="8" fill="#3DAAFF"/><path d="M6 38c0-8 7-14 16-14s16 6 16 14" fill="#3DAAFF"/></svg>`;
+    srAv.innerHTML = preview.innerHTML;
+  }
+}
+
+// Load existing avatar on page load
+try {
+  const stored = localStorage.getItem(AVATAR_KEY);
+  renderAvatar(stored);
+} catch(e) { renderAvatar(null); }
+
+// Handle file upload
+document.getElementById('avatarUpload').addEventListener('change', (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const dataUrl = ev.target.result;
+    try { localStorage.setItem(AVATAR_KEY, dataUrl); } catch(err) {
+      alert('画像が大きすぎます。2MB以下にしてください。');
+      return;
+    }
+    renderAvatar(dataUrl);
+    if (navigator.vibrate) navigator.vibrate(12);
+  };
+  reader.readAsDataURL(file);
+});
+
+/* Plan selection (visual only for now) */
+document.querySelectorAll('.plan').forEach(p => {
+  p.addEventListener('click', () => {
+    if (p.classList.contains('locked')) return;
+    document.querySelectorAll('.plan').forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+  });
+});
+</script>
 
 <nav class="bottomnav">
   <a href="/home" class="bn-btn" aria-label="Home"><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1v-9.5z" stroke-linejoin="round"/></svg></a>
