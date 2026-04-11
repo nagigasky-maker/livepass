@@ -360,6 +360,13 @@ function hideSplash() {
 
 // ── INIT ──
 window.addEventListener('load', () => {
+  // Coming from the NFC cinematic — skip the splash so we don't replay
+  // YOU WERE THERE on top of an experience that already showed it.
+  const qs = new URLSearchParams(location.search);
+  if (qs.get('from') === 'nfc') {
+    document.getElementById('splash').style.display = 'none';
+    return;
+  }
   runSplash();
 });
 
