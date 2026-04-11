@@ -63,10 +63,10 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer;-we
   background:linear-gradient(135deg,rgba(255,255,255,0.12) 0%,transparent 42%);
 }
 
-/* Fan positions */
-.card.c-left  { transform: rotate(-13deg) translate(-90px, 26px); z-index:1; }
-.card.c-center{ transform: rotate(-1deg)  translate(0px,    0px); z-index:3; }
-.card.c-right { transform: rotate(13deg)  translate(90px,  22px); z-index:2; }
+/* Fan positions — initial values applied by JS, then driven by drag */
+.card.c-left  { z-index:1; }
+.card.c-center{ z-index:3; }
+.card.c-right { z-index:2; }
 
 /* Landing hint */
 .lh-hint{
@@ -389,10 +389,101 @@ PASSES.forEach((p) => {
     <img src="${p.image}" alt="${p.event}">
     <div class="card-shine"></div>
   `;
-  card.addEventListener('click', () => openFlashback(p, card));
+  card.addEventListener('click', () => {
+    // Only open if drag was minimal (distinguish tap from drag)
+    if (cardDragMoved < 10) openFlashback(p, card);
+  });
   fan.appendChild(card);
 });
 document.getElementById('landingCount').textContent = PASSES.length + ' Passes';
+
+/* ═════════════════════════════════
+   CARD DRAG SYSTEM — effect 001 style
+   3 cards respond to swipe with variation,
+   spring back to natural fan position on release
+   ═════════════════════════════════ */
+// Natural fan position per card (matches previous CSS)
+const CARD_NATURAL = [
+  { x: -90, y: 26, rot: -13 },  // c-left   (SPACE COOKING)
+  { x:   0, y:  0, rot:  -1 },  // c-center (ALL MUST DANCE)
+  { x:  90, y: 22, rot:  13 },  // c-right  (64BEAT)
+];
+// Drag variation per card — randomized once, stable after
+const CARD_VAR = CARD_NATURAL.map(() => ({
+  rotF: (Math.random() - 0.5) * 28,   // ±14°
+  xF:   (Math.random() - 0.5) * 60,   // ±30px
+  yF:   (Math.random() - 0.5) * 24,   // ±12px
+}));
+
+let cardDragProgress = 0;             // -1.5 to +1.5
+let cardDragMoved = 0;                // movement distance (for tap detection)
+let cardDragging = false;
+let cardStartX = 0, cardStartProgress = 0;
+let cardSpringTween = null;
+
+function applyCardDrag(p) {
+  const cards = document.querySelectorAll('#fan .card');
+  cards.forEach((card, i) => {
+    const n = CARD_NATURAL[i];
+    const v = CARD_VAR[i];
+    const x   = n.x   + v.xF   * p;
+    const y   = n.y   + v.yF   * p;
+    const rot = n.rot + v.rotF * p;
+    card.style.transform = `translate(${x}px, ${y}px) rotate(${rot}deg)`;
+  });
+}
+
+// Initial natural pose
+applyCardDrag(0);
+
+function cardDragStart(e) {
+  if (isBusy) return;
+  if (cardSpringTween) { cardSpringTween.kill(); cardSpringTween = null; }
+  cardDragging = true;
+  const pt = e.touches ? e.touches[0] : e;
+  cardStartX = pt.clientX;
+  cardStartProgress = cardDragProgress;
+  cardDragMoved = 0;
+}
+
+function cardDragMove(e) {
+  if (!cardDragging) return;
+  const pt = e.touches ? e.touches[0] : e;
+  const dx = pt.clientX - cardStartX;
+  cardDragMoved = Math.abs(dx);
+  // Convert pixel delta → progress (full drag = half viewport width)
+  cardDragProgress = cardStartProgress + dx / (window.innerWidth * 0.5);
+  cardDragProgress = Math.max(-1.5, Math.min(1.5, cardDragProgress));
+  applyCardDrag(cardDragProgress);
+}
+
+function cardDragEnd() {
+  if (!cardDragging) return;
+  cardDragging = false;
+  // Spring back to natural position with elastic ease
+  const obj = { p: cardDragProgress };
+  cardSpringTween = gsap.to(obj, {
+    p: 0,
+    duration: 1.1,
+    ease: 'elastic.out(1, 0.45)',
+    onUpdate: () => {
+      cardDragProgress = obj.p;
+      applyCardDrag(cardDragProgress);
+    },
+    onComplete: () => { cardSpringTween = null; },
+  });
+  // Reset movement after a tick so click handler can read it
+  setTimeout(() => { cardDragMoved = 0; }, 50);
+}
+
+// Bind to fan container (captures all card interactions)
+fan.addEventListener('touchstart', cardDragStart, { passive: true });
+fan.addEventListener('touchmove',  cardDragMove,  { passive: true });
+fan.addEventListener('touchend',   cardDragEnd);
+fan.addEventListener('touchcancel',cardDragEnd);
+fan.addEventListener('mousedown',  cardDragStart);
+window.addEventListener('mousemove', cardDragMove);
+window.addEventListener('mouseup',   cardDragEnd);
 
 /* ═════════════════════════════════
    FLASHBACK
@@ -464,9 +555,9 @@ function openFlashback(pass, cardEl) {
     },
   });
 
-  // Fade landing cards
+  // Fade landing cards (opacity only — avoid conflict with drag transforms)
   document.querySelectorAll('#fan .card').forEach(c => {
-    if (c !== cardEl) gsap.to(c, { opacity: 0.25, scale: 0.82, duration: 0.5, ease: 'power2.out' });
+    if (c !== cardEl) gsap.to(c, { opacity: 0.15, duration: 0.5, ease: 'power2.out' });
   });
 
   // PHASE 2 — cinematic scale zoom (5s) + illusion + atmosphere
@@ -740,10 +831,12 @@ function closeFlashback() {
   gsap.to('#lights',   { opacity: 0, duration: 0.6 });
   gsap.to('#vignette', { opacity: 0, duration: 0.6 });
 
-  // Restore landing cards
+  // Restore landing cards to natural fan position (via drag system)
+  cardDragProgress = 0;
   document.querySelectorAll('#fan .card').forEach(c => {
-    gsap.to(c, { opacity: 1, scale: 1, duration: 0.5 });
+    gsap.to(c, { opacity: 1, duration: 0.5 });
   });
+  applyCardDrag(0);
 
   // Clear clone + scatter
   setTimeout(() => {
