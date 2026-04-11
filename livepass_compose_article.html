@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#000000">
+<title>LIVE PASS — 記事作成</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#000;--bg:#080808;--white:#EDEBE6;
+  --red:#E8100A;--blue:#3DAAFF;--green:#A8E63D;
+  --gold:#F5C842;--mint:#00E5A0;--pink:#F4C0D1;--purple:#bf5af2;
+  --muted:rgba(237,235,230,.3);--muted2:rgba(237,235,230,.14);
+  --border:rgba(255,255,255,.07);
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;height:100dvh;background:var(--black);color:var(--white);
+  font-family:Arial,'Noto Sans JP',sans-serif;-webkit-font-smoothing:antialiased;
+  user-select:none;-webkit-user-select:none;overflow:hidden;}
+a{color:inherit;text-decoration:none}
+button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
+input,textarea{color:inherit;font:inherit}
+
+/* HEADER ─────────────────────── */
+.hdr{
+  position:fixed;top:0;left:0;right:0;z-index:10;
+  padding:max(14px,calc(var(--safe-top) + 12px)) 18px 12px;
+  display:flex;align-items:center;gap:14px;
+  background:rgba(0,0,0,.96);
+  border-bottom:0.5px solid var(--border);
+}
+.hdr-back{
+  background:none;border:0.5px solid rgba(255,255,255,.18);
+  color:rgba(237,235,230,.65);
+  font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;
+  font-weight:500;letter-spacing:.08em;
+  padding:7px 14px;border-radius:99px;
+}
+.hdr-title{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;letter-spacing:.32em;text-transform:uppercase;
+  color:rgba(237,235,230,.35);margin-left:auto;margin-right:auto;
+  padding-right:60px;
+}
+
+/* FORM ─────────────────────── */
+.form{
+  position:fixed;top:0;left:0;right:0;
+  bottom:calc(72px + var(--safe-bot));
+  padding-top:calc(var(--safe-top) + 64px);
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.form::-webkit-scrollbar{display:none}
+.form-section{padding:18px 20px 4px}
+.form-label{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:8px;letter-spacing:.34em;text-transform:uppercase;
+  color:rgba(237,235,230,.3);margin-bottom:10px;
+}
+
+/* Layout picker ─────────────────────── */
+.layout-row{display:flex;gap:10px}
+.lay-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:16px 8px 12px;
+  background:rgba(255,255,255,.02);
+  border:0.5px solid rgba(255,255,255,.08);
+  border-radius:10px;color:rgba(237,235,230,.5);
+  transition:background .2s, border-color .2s, color .2s;
+}
+.lay-btn.active{
+  background:rgba(61,170,255,.08);
+  border-color:var(--blue);color:var(--blue);
+}
+.lay-box{border:1.5px solid currentColor;border-radius:3px}
+.lay-btn[data-layout="poster"] .lay-box{width:28px;height:42px}
+.lay-btn[data-layout="square"] .lay-box{width:34px;height:34px}
+.lay-btn[data-layout="wide"]   .lay-box{width:48px;height:28px}
+.lay-name{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
+  font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+}
+
+/* Input ─────────────────────── */
+.input-box{
+  width:100%;
+  background:rgba(255,255,255,.04);
+  border:0.5px solid rgba(255,255,255,.08);
+  border-radius:8px;
+  padding:14px 16px;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-size:14px;
+  color:var(--white);outline:none;
+  transition:border-color .2s;
+}
+.input-box:focus{border-color:var(--blue)}
+textarea.input-box{resize:vertical;min-height:160px;line-height:1.8;font-size:13px}
+
+/* Pill row ─────────────────────── */
+.pill-row{display:flex;flex-wrap:wrap;gap:8px}
+.pill{
+  padding:7px 14px;border-radius:99px;
+  background:rgba(255,255,255,.04);
+  border:0.5px solid rgba(237,235,230,.15);
+  color:rgba(237,235,230,.55);
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
+  font-size:10px;letter-spacing:.08em;
+}
+.pill.active{
+  background:rgba(61,170,255,.1);
+  border-color:var(--blue);color:var(--blue);
+}
+
+/* Cover upload ─────────────────────── */
+.cover-upload{
+  width:100%;
+  border:1px dashed rgba(255,255,255,.14);
+  border-radius:10px;
+  background:rgba(255,255,255,.02);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;cursor:pointer;
+  transition:border-color .2s;
+}
+.cover-upload:hover,.cover-upload:active{border-color:var(--blue)}
+.cover-upload.has-image{border-style:solid;border-color:transparent}
+.cover-upload[data-layout="poster"]{aspect-ratio:9/14}
+.cover-upload[data-layout="square"]{aspect-ratio:1/1}
+.cover-upload[data-layout="wide"]  {aspect-ratio:16/10}
+.cover-placeholder{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  color:rgba(237,235,230,.3);
+}
+.cover-placeholder svg{width:32px;height:32px;stroke:currentColor;fill:none;stroke-width:1.5}
+.cover-placeholder span{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;
+  letter-spacing:.12em;
+}
+.cover-preview-img{width:100%;height:100%;object-fit:cover;display:block}
+#coverInput{display:none}
+
+/* Access toggle ─────────────────────── */
+.access-row{display:flex;gap:8px}
+.access-btn{
+  flex:1;padding:12px 16px;border-radius:10px;
+  background:rgba(255,255,255,.04);
+  border:0.5px solid rgba(237,235,230,.15);
+  color:rgba(237,235,230,.55);
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.access-btn.active{
+  background:rgba(168,230,61,.08);
+  border-color:var(--green);color:var(--green);
+}
+.access-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+
+/* Bottom submit bar ─────────────────────── */
+.submit-bar{
+  position:fixed;left:0;right:0;bottom:0;z-index:10;
+  padding:14px 18px calc(14px + var(--safe-bot));
+  background:rgba(0,0,0,.96);
+  border-top:0.5px solid var(--border);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+}
+.submit-btn{
+  width:100%;padding:16px;
+  background:var(--green);color:#000;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:13px;letter-spacing:.2em;text-transform:uppercase;
+  border-radius:99px;
+  box-shadow:0 6px 24px rgba(168,230,61,.25);
+}
+.submit-btn:disabled{
+  background:rgba(237,235,230,.08);color:rgba(237,235,230,.25);
+  box-shadow:none;
+}
+
+/* Success toast ─────────────────────── */
+#toast{
+  position:fixed;top:max(20px,calc(var(--safe-top) + 20px));left:50%;
+  transform:translate(-50%,-30px);z-index:20;
+  background:rgba(168,230,61,.15);border:0.5px solid var(--green);
+  color:var(--green);padding:10px 20px;border-radius:99px;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:11px;letter-spacing:.12em;
+  opacity:0;transition:opacity .3s, transform .3s;
+  pointer-events:none;
+}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+.form-bottom-padding{height:28px}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <a href="/home" class="hdr-back">← Back</a>
+  <div class="hdr-title">記事作成</div>
+</header>
+
+<main class="form">
+
+  <!-- Layout ─────────────────────── -->
+  <div class="form-section">
+    <div class="form-label">レイアウト</div>
+    <div class="layout-row" id="layoutRow">
+      <button class="lay-btn active" data-layout="poster">
+        <div class="lay-box"></div>
+        <div class="lay-name">Poster</div>
+      </button>
+      <button class="lay-btn" data-layout="square">
+        <div class="lay-box"></div>
+        <div class="lay-name">Square</div>
+      </button>
+      <button class="lay-btn" data-layout="wide">
+        <div class="lay-box"></div>
+        <div class="lay-name">Wide</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Title ─────────────────────── -->
+  <div class="form-section">
+    <div class="form-label">タイトル</div>
+    <input class="input-box" id="titleInput" placeholder="記事タイトル" maxlength="80">
+  </div>
+
+  <!-- Category ─────────────────────── -->
+  <div class="form-section">
+    <div class="form-label">カテゴリ</div>
+    <div class="pill-row" id="catRow">
+      <button class="pill active" data-cat="Culture">Culture</button>
+      <button class="pill" data-cat="Interview">Interview</button>
+      <button class="pill" data-cat="Fashion">Fashion</button>
+      <button class="pill" data-cat="Dance">Dance</button>
+      <button class="pill" data-cat="Report">Report</button>
+      <button class="pill" data-cat="Photography">Photography</button>
+    </div>
+  </div>
+
+  <!-- Cover image ─────────────────────── -->
+  <div class="form-section">
+    <div class="form-label">カバー画像</div>
+    <div class="cover-upload" id="coverUpload" data-layout="poster">
+      <div class="cover-placeholder" id="coverPh">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>
+        <span>タップして画像を選択</span>
+      </div>
+    </div>
+    <input type="file" id="coverInput" accept="image/*">
+  </div>
+
+  <!-- Body ─────────────────────── -->
+  <div class="form-section">
+    <div class="form-label">本文</div>
+    <textarea class="input-box" id="bodyInput" placeholder="記事の本文を入力..." rows="8"></textarea>
+  </div>
+
+  <!-- Access ─────────────────────── -->
+  <div class="form-section">
+    <div class="form-label">アクセス</div>
+    <div class="access-row" id="accessRow">
+      <button class="access-btn active" data-access="free">
+        <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        FREE
+      </button>
+      <button class="access-btn" data-access="pass">
+        <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        LIVE PASS
+      </button>
+    </div>
+  </div>
+
+  <div class="form-bottom-padding"></div>
+</main>
+
+<div class="submit-bar">
+  <button class="submit-btn" id="submitBtn">投稿する →</button>
+</div>
+
+<div id="toast">✓ 投稿しました</div>
+
+<script>
+/* State */
+const state = {
+  layout: 'poster',
+  category: 'Culture',
+  access: 'free',
+  coverDataUrl: null,
+};
+
+/* Layout picker */
+document.querySelectorAll('.lay-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.lay-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.layout = btn.dataset.layout;
+    document.getElementById('coverUpload').dataset.layout = state.layout;
+    if (navigator.vibrate) navigator.vibrate(6);
+  });
+});
+
+/* Category pills */
+document.querySelectorAll('#catRow .pill').forEach(p => {
+  p.addEventListener('click', () => {
+    document.querySelectorAll('#catRow .pill').forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+    state.category = p.dataset.cat;
+  });
+});
+
+/* Access toggle */
+document.querySelectorAll('.access-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.access-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    state.access = b.dataset.access;
+  });
+});
+
+/* Cover upload */
+const coverUpload = document.getElementById('coverUpload');
+const coverInput  = document.getElementById('coverInput');
+const coverPh     = document.getElementById('coverPh');
+coverUpload.addEventListener('click', () => coverInput.click());
+coverInput.addEventListener('change', (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    state.coverDataUrl = ev.target.result;
+    coverUpload.classList.add('has-image');
+    coverUpload.innerHTML = `<img class="cover-preview-img" src="${ev.target.result}" alt="">`;
+    if (navigator.vibrate) navigator.vibrate(8);
+  };
+  reader.readAsDataURL(file);
+});
+
+/* Submit */
+const submitBtn = document.getElementById('submitBtn');
+const titleInput = document.getElementById('titleInput');
+const bodyInput = document.getElementById('bodyInput');
+
+function updateSubmitState(){
+  const valid = titleInput.value.trim().length > 0 && bodyInput.value.trim().length > 0;
+  submitBtn.disabled = !valid;
+}
+titleInput.addEventListener('input', updateSubmitState);
+bodyInput.addEventListener('input', updateSubmitState);
+updateSubmitState();
+
+submitBtn.addEventListener('click', () => {
+  if (submitBtn.disabled) return;
+  const article = {
+    id:       'a' + Date.now(),
+    layout:   state.layout,
+    category: state.category,
+    access:   state.access,
+    cover:    state.coverDataUrl,
+    title:    titleInput.value.trim(),
+    body:     bodyInput.value.trim(),
+    author:   localStorage.getItem('livepass_account_name') || 'NOBBY',
+    createdAt:new Date().toISOString(),
+  };
+  try {
+    const raw = localStorage.getItem('livepass_articles');
+    const list = raw ? JSON.parse(raw) : [];
+    list.unshift(article); // newest first
+    localStorage.setItem('livepass_articles', JSON.stringify(list));
+  } catch(e) {
+    alert('投稿の保存に失敗しました: ' + e.message);
+    return;
+  }
+  if (navigator.vibrate) navigator.vibrate([18, 40, 18]);
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => {
+    location.href = '/home';
+  }, 900);
+});
+</script>
+
+</body>
+</html>

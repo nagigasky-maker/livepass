@@ -6,6 +6,7 @@
     { "source": "/calendar", "destination": "/livepass_calendar.html" },
     { "source": "/profile",  "destination": "/livepass_profile.html" },
     { "source": "/settings", "destination": "/livepass_settings.html" },
+    { "source": "/compose/article", "destination": "/livepass_compose_article.html" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "headers": [
