@@ -368,9 +368,68 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   color:rgba(237,235,230,.5);margin-bottom:12px;display:block;text-transform:none;
 }
 
-/* Card tap → navigates to the cinematic → memory room flow
-   (no in-place zoom modal). Quick press-down feedback only. */
+/* ─────────────────────────────────────────────
+   CARD ZOOM — in-place first step
+   Tap a card → clone lifts to near-fullscreen + dim bg.
+   A "MEMORY OPEN" button appears below the clone — tapping
+   it navigates to /livepass_cinematic.html?auto=<id> which
+   plays the cinematic and lands in the memory room.
+   ───────────────────────────────────────────── */
 .pf-card:active{filter:brightness(1.1)}
+#zoomOverlay{
+  position:fixed;inset:0;z-index:1000;
+  background:rgba(0,0,0,0);
+  pointer-events:none;opacity:0;
+  transition:background .4s ease, opacity .2s ease;
+}
+#zoomOverlay.active{
+  background:rgba(0,0,0,.94);
+  pointer-events:all;opacity:1;
+}
+#zoomClone{
+  position:fixed;
+  border-radius:14px;overflow:hidden;
+  box-shadow:0 24px 80px rgba(0,0,0,.9),
+             0 0 40px rgba(61,170,255,.12);
+  transition:left .55s cubic-bezier(.2,.8,.2,1),
+             top .55s cubic-bezier(.2,.8,.2,1),
+             width .55s cubic-bezier(.2,.8,.2,1),
+             height .55s cubic-bezier(.2,.8,.2,1);
+  will-change:left,top,width,height;
+}
+#zoomClone img{width:100%;height:100%;object-fit:cover;display:block}
+#zoomClose{
+  position:fixed;top:max(18px,calc(var(--safe-top) + 12px));right:18px;
+  z-index:1002;width:38px;height:38px;border-radius:50%;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.15);
+  color:#fff;font-size:18px;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity .3s ease .25s;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+}
+#zoomOverlay.active #zoomClose{opacity:1}
+#memoryOpenBtn{
+  position:fixed;left:50%;transform:translateX(-50%);
+  bottom:max(36px,calc(var(--safe-bot) + 30px));
+  z-index:1002;
+  padding:15px 36px;
+  background:var(--blue);
+  color:#fff;
+  font-family:Arial,'Noto Sans JP',sans-serif;
+  font-weight:900;font-size:12px;letter-spacing:.28em;
+  text-transform:uppercase;
+  border-radius:99px;
+  box-shadow:0 8px 30px rgba(61,170,255,.45),
+             0 0 0 0.5px rgba(255,255,255,.15);
+  opacity:0;transform:translate(-50%,10px);
+  transition:opacity .4s ease .35s, transform .4s ease .35s;
+  display:flex;align-items:center;gap:10px;
+}
+#memoryOpenBtn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+#zoomOverlay.active #memoryOpenBtn{
+  opacity:1;transform:translate(-50%,0);
+}
 </style>
 </head>
 <body>
@@ -611,6 +670,16 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 
 </main>
 
+<!-- ═══ CARD ZOOM OVERLAY ═══ -->
+<div id="zoomOverlay" aria-hidden="true">
+  <div id="zoomClone"></div>
+  <button id="zoomClose" aria-label="Close">✕</button>
+  <button id="memoryOpenBtn" aria-label="Memory Open">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8" stroke-linecap="round"/></svg>
+    MEMORY OPEN
+  </button>
+</div>
+
 <!-- ═══ BOTTOM NAV ═══ -->
 <nav class="bottomnav">
   <a href="/home" class="bn-btn" aria-label="Home">
@@ -658,23 +727,101 @@ document.querySelectorAll('.sst-btn').forEach(btn => {
 });
 
 /* ─────────────────────────────────────────────
-   PASS CARD TAP — launch cinematic → memory room
-   Navigates to /livepass_cinematic.html?auto=<id>
-   which auto-triggers the card and plays the zoom
-   animation that leads into the memory room.
+   PASS CARD TAP — 2-step flow:
+   1. Tap card → in-place zoom (clone + dim bg)
+      A "MEMORY OPEN" button appears below the zoomed card
+   2. Tap MEMORY OPEN → /livepass_cinematic.html?auto=<id>
+      → full cinematic → memory room
+   ✕ / overlay tap / ESC → close the zoom, stay on /profile
    ───────────────────────────────────────────── */
 function haptic(ms){ if (navigator.vibrate) navigator.vibrate(ms); }
-document.querySelectorAll('.pf-card').forEach(card => {
-  card.addEventListener('click', () => {
-    if (card.classList.contains('empty')) return;
-    haptic(10);
-    const id = card.dataset.card;
-    // All populated cards route into the cinematic → memory room flow.
-    // The cinematic page reads ?auto=<id> and auto-triggers the matching card.
-    if (id === 'amd' || id === 'card01' || id === 'card02') {
-      location.href = '/livepass_cinematic.html?auto=' + id;
+
+const zoomOverlay  = document.getElementById('zoomOverlay');
+const zoomClone    = document.getElementById('zoomClone');
+const zoomClose    = document.getElementById('zoomClose');
+const memoryOpenBtn = document.getElementById('memoryOpenBtn');
+let zoomOpen = false;
+let zoomCardId = null;
+
+function openCardZoom(cardEl) {
+  if (zoomOpen) return;
+  if (cardEl.classList.contains('empty')) return;
+  const img = cardEl.querySelector('img');
+  if (!img) return;
+
+  zoomOpen = true;
+  zoomCardId = cardEl.dataset.card;
+  haptic(12);
+
+  const rect = cardEl.getBoundingClientRect();
+
+  // Seed the clone at the card's actual position/size
+  zoomClone.innerHTML = `<img src="${img.src}" alt="">`;
+  zoomClone.style.left   = rect.left + 'px';
+  zoomClone.style.top    = rect.top + 'px';
+  zoomClone.style.width  = rect.width + 'px';
+  zoomClone.style.height = rect.height + 'px';
+  zoomClone.style.borderRadius = '12px';
+
+  zoomOverlay.classList.add('active');
+  zoomOverlay.setAttribute('aria-hidden', 'false');
+
+  // rAF → animate clone to a centered, near-fullscreen rect
+  requestAnimationFrame(() => {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const ratio = 1000 / 1582;
+    // Leave room at the bottom for the MEMORY OPEN button
+    let targetW = Math.min(vw * 0.82, 320);
+    let targetH = targetW / ratio;
+    const maxH = vh * 0.68; // save ~32% of viewport for bg + button
+    if (targetH > maxH) {
+      targetH = maxH;
+      targetW = targetH * ratio;
     }
+    const targetLeft = (vw - targetW) / 2;
+    const targetTop  = (vh - targetH) / 2 - 30; // nudge up to balance with button
+    zoomClone.style.left   = targetLeft + 'px';
+    zoomClone.style.top    = targetTop + 'px';
+    zoomClone.style.width  = targetW + 'px';
+    zoomClone.style.height = targetH + 'px';
+    setTimeout(() => haptic(8), 380);
   });
+}
+
+function closeCardZoom() {
+  if (!zoomOpen) return;
+  zoomOverlay.classList.remove('active');
+  zoomOverlay.setAttribute('aria-hidden', 'true');
+  setTimeout(() => {
+    zoomClone.innerHTML = '';
+    zoomClone.style.cssText = '';
+    zoomOpen = false;
+    zoomCardId = null;
+  }, 600);
+}
+
+// Card taps open the zoom (step 1)
+document.querySelectorAll('.pf-card').forEach(card => {
+  card.addEventListener('click', () => openCardZoom(card));
+});
+
+// MEMORY OPEN button navigates to cinematic (step 2)
+memoryOpenBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (!zoomCardId) return;
+  haptic(16);
+  location.href = '/livepass_cinematic.html?auto=' + zoomCardId;
+});
+
+// Close interactions
+zoomClose.addEventListener('click', (e) => { e.stopPropagation(); closeCardZoom(); });
+zoomOverlay.addEventListener('click', (e) => {
+  // Only close if background was tapped (not the clone or button)
+  if (e.target === zoomOverlay) closeCardZoom();
+});
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && zoomOpen) closeCardZoom();
 });
 
 /* ─────────────────────────────────────────────
