@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>YOU WERE THERE — LIVE PASS</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --black:#080808;--white:#EDEBE6;--red:#E8100A;--blue:#3DAAFF;
+  --green:#A8E63D;--gold:#F5C842;--mint:#00E5A0;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+}
+html,body{
+  width:100%;height:100%;
+  background:var(--black);color:var(--white);
+  font-family:'Noto Sans JP','Inter',sans-serif;-webkit-font-smoothing:antialiased;
+  user-select:none;-webkit-user-select:none;
+  overflow:hidden;touch-action:manipulation;
+}
+button{background:none;border:none;color:inherit;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+
+/* ═══════════════════════════════════
+   LANDING — Passes Collection
+   ═══════════════════════════════════ */
+#landing{
+  position:fixed;inset:0;z-index:10;
+  display:flex;flex-direction:column;
+  padding:max(48px,calc(var(--safe-top) + 40px)) 24px max(60px,calc(var(--safe-bot) + 40px));
+  transition:opacity 0.5s ease;
+}
+#landing.gone{opacity:0;pointer-events:none}
+
+.landing-header{margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-start}
+.lh-label{font-size:9px;letter-spacing:0.44em;text-transform:uppercase;color:rgba(237,235,230,0.35);line-height:1;margin-bottom:4px}
+.lh-sub{font-family:'Bebas Neue';font-size:12px;letter-spacing:0.32em;text-transform:uppercase;color:rgba(237,235,230,0.18)}
+.lh-count{font-family:'Bebas Neue';font-size:13px;letter-spacing:0.2em;color:rgba(237,235,230,0.25)}
+
+/* Fan of cards — centered */
+.fan{
+  flex:1;
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+}
+.card{
+  position:absolute;
+  width:210px;height:290px;
+  border-radius:14px;
+  overflow:hidden;
+  cursor:pointer;
+  will-change:transform;
+  transform-origin:50% 85%;
+  box-shadow:0 16px 48px rgba(0,0,0,0.7),0 2px 10px rgba(0,0,0,0.5);
+  border:1px solid rgba(255,255,255,0.06);
+}
+.card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.card-shine{
+  position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,0.12) 0%,transparent 42%);
+}
+
+/* Fan positions */
+.card.c-left  { transform: rotate(-13deg) translate(-90px, 26px); z-index:1; }
+.card.c-center{ transform: rotate(-1deg)  translate(0px,    0px); z-index:3; }
+.card.c-right { transform: rotate(13deg)  translate(90px,  22px); z-index:2; }
+
+/* Landing hint */
+.lh-hint{
+  text-align:center;font-size:8px;letter-spacing:0.42em;text-transform:uppercase;
+  color:rgba(237,235,230,0.28);margin-top:20px;
+}
+
+/* ═══════════════════════════════════
+   FLASHBACK — cinematic zoom
+   ═══════════════════════════════════ */
+#flashback{
+  position:fixed;inset:0;z-index:50;
+  background:var(--black);
+  opacity:0;pointer-events:none;
+  transition:opacity 0.5s ease;
+}
+#flashback.active{opacity:1;pointer-events:all}
+
+/* Clone — copy of tapped card that scales up */
+#clone{
+  position:fixed;z-index:60;
+  border-radius:14px;overflow:hidden;
+  opacity:0;pointer-events:none;
+  will-change:transform,opacity;
+  box-shadow:0 24px 80px rgba(0,0,0,0.9);
+  border:1px solid rgba(255,255,255,0.06);
+}
+#clone img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+
+/* Scatter — random gradient frames during zoom */
+#scatter{
+  position:absolute;inset:0;z-index:55;
+  pointer-events:none;
+}
+.scatter-frame{
+  position:absolute;
+  width:60vw;height:80vw;max-height:80vh;
+  border-radius:10px;
+  transform:scale(0.08);opacity:0;
+  will-change:transform,opacity;
+  mix-blend-mode:screen;
+  filter:blur(8px);
+}
+
+/* Grain + vignette */
+#grain{
+  position:absolute;inset:-50%;width:200%;height:200%;
+  z-index:70;pointer-events:none;opacity:0;
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  background-size:128px 128px;mix-blend-mode:overlay;
+  animation:grainShift 0.08s steps(1) infinite;
+  transition:opacity 1.2s ease;
+}
+@keyframes grainShift{
+  0%{transform:translate(0,0)} 20%{transform:translate(-3%,-2%)}
+  40%{transform:translate(2%,-3%)} 60%{transform:translate(-2%,2%)}
+  80%{transform:translate(3%,3%)} 100%{transform:translate(-1%,-1%)}
+}
+
+#vignette{
+  position:absolute;inset:0;z-index:71;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 50%,transparent 30%,rgba(0,0,0,0.85) 100%);
+  opacity:0;transition:opacity 1s ease;
+}
+
+/* Stage light pools */
+#lights{
+  position:absolute;inset:0;z-index:69;pointer-events:none;opacity:0;
+  background:
+    radial-gradient(ellipse at 18% 18%,rgba(232,16,10,0.1) 0%,transparent 45%),
+    radial-gradient(ellipse at 82% 82%,rgba(61,170,255,0.07) 0%,transparent 45%),
+    radial-gradient(ellipse at 50% 60%,rgba(168,230,61,0.05) 0%,transparent 55%);
+  mix-blend-mode:screen;
+  transition:opacity 1.5s ease;
+}
+
+/* ═══════════════════════════════════
+   CONTENT — the reveal after zoom
+   ═══════════════════════════════════ */
+#content{
+  position:absolute;inset:0;z-index:80;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:0 28px max(80px,calc(var(--safe-bot) + 60px));
+  pointer-events:none;
+}
+#content > * { pointer-events:auto; }
+
+#eyebrow{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:9px;letter-spacing:0.52em;text-transform:uppercase;
+  color:rgba(237,235,230,0.55);
+  opacity:0;transform:translateY(10px);
+  transition:opacity 0.6s ease,transform 0.7s cubic-bezier(0.22,1,0.36,1);
+  margin-bottom:12px;
+}
+#eyebrow.show{opacity:1;transform:translateY(0)}
+
+#title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(48px,13vw,84px);
+  line-height:0.92;letter-spacing:0.03em;
+  color:var(--white);
+  opacity:0;transform:translateY(18px);
+  text-shadow:0 2px 40px rgba(0,0,0,0.95);
+  transition:opacity 0.5s ease,transform 0.7s cubic-bezier(0.22,1,0.36,1);
+  margin-bottom:8px;min-height:1em;
+}
+#title.show{opacity:1;transform:translateY(0)}
+#title.typing::after{
+  content:'|';color:var(--red);margin-left:8px;font-weight:300;
+  animation:tw-blink 0.55s steps(1) infinite;
+}
+@keyframes tw-blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+
+#date{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;letter-spacing:0.3em;text-transform:uppercase;
+  color:rgba(237,235,230,0.55);
+  opacity:0;transform:translateY(10px);
+  transition:opacity 0.5s ease,transform 0.6s cubic-bezier(0.22,1,0.36,1);
+  margin-top:8px;
+}
+#date.show{opacity:1;transform:translateY(0)}
+
+.divider{
+  width:36px;height:1px;background:var(--red);
+  opacity:0;margin:18px 0 20px;transform:scaleX(0);transform-origin:left;
+  transition:opacity 0.4s ease,transform 0.7s cubic-bezier(0.22,1,0.36,1);
+}
+.divider.show{opacity:1;transform:scaleX(1)}
+
+#stats{display:flex;gap:28px;opacity:0;transform:translateY(10px);
+  transition:opacity 0.5s ease,transform 0.6s cubic-bezier(0.22,1,0.36,1)}
+#stats.show{opacity:1;transform:translateY(0)}
+.stat-v{font-family:'Bebas Neue';font-size:30px;line-height:1;color:var(--white);letter-spacing:0.04em}
+.stat-l{font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:0.38em;text-transform:uppercase;
+  color:rgba(237,235,230,0.38);margin-top:4px}
+
+#actions{
+  display:flex;gap:12px;margin-top:28px;
+  opacity:0;transform:translateY(10px);
+  transition:opacity 0.5s ease,transform 0.6s cubic-bezier(0.22,1,0.36,1);
+}
+#actions.show{opacity:1;transform:translateY(0)}
+.btn{
+  padding:13px 24px;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;letter-spacing:0.24em;text-transform:uppercase;
+  border-radius:99px;
+  transition:transform 0.15s;
+}
+.btn:active{transform:scale(0.96)}
+.btn-primary{background:var(--red);color:var(--white)}
+.btn-ghost{background:rgba(0,0,0,0.4);border:1px solid rgba(237,235,230,0.3);
+  color:var(--white);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+
+/* Close X */
+#close{
+  position:absolute;top:max(16px,calc(var(--safe-top) + 10px));right:16px;z-index:85;
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(0,0,0,0.55);border:1px solid rgba(255,255,255,0.12);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  display:flex;align-items:center;justify-content:center;
+  color:rgba(237,235,230,0.7);font-size:16px;
+  opacity:0;transform:scale(0.6);pointer-events:none;
+  transition:opacity 0.4s ease,transform 0.4s cubic-bezier(0.22,1,0.36,1);
+}
+#close.show{opacity:1;transform:scale(1);pointer-events:all}
+
+/* Pass badge top-left */
+#passBadge{
+  position:absolute;top:max(18px,calc(var(--safe-top) + 12px));left:24px;z-index:85;
+  font-family:'Bebas Neue';font-size:11px;letter-spacing:0.3em;
+  color:rgba(237,235,230,0.35);
+  opacity:0;transition:opacity 0.5s ease;
+}
+#passBadge.show{opacity:1}
+</style>
+</head>
+<body>
+
+<!-- ═══ LANDING ═══ -->
+<div id="landing">
+  <div class="landing-header">
+    <div>
+      <div class="lh-label">Passes Collection</div>
+      <div class="lh-sub">You Were There</div>
+    </div>
+    <div class="lh-count" id="landingCount">3 Passes</div>
+  </div>
+  <div class="fan" id="fan">
+    <!-- JS fills -->
+  </div>
+  <div class="lh-hint">Tap a pass to open memory</div>
+</div>
+
+<!-- ═══ FLASHBACK ═══ -->
+<div id="flashback">
+  <div id="lights"></div>
+  <div id="scatter"></div>
+  <div id="clone"></div>
+  <div id="grain"></div>
+  <div id="vignette"></div>
+
+  <div id="passBadge">Pass · —</div>
+  <button id="close" onclick="closeFlashback()">✕</button>
+
+  <div id="content">
+    <div id="eyebrow">You Were There</div>
+    <h1 id="title"></h1>
+    <p id="date"></p>
+    <div class="divider" id="divider"></div>
+    <div id="stats">
+      <div><div class="stat-v" id="statPass">—</div><div class="stat-l">Pass No.</div></div>
+      <div><div class="stat-v" id="statDur">—</div><div class="stat-l">Duration</div></div>
+      <div><div class="stat-v" id="statArt">—</div><div class="stat-l">Artists</div></div>
+    </div>
+    <div id="actions">
+      <button class="btn btn-primary" onclick="enterMemoryRoom()">Enter Memory Room</button>
+      <button class="btn btn-ghost" onclick="closeFlashback()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═════════════════════════════════
+   PASS DATA
+   ═════════════════════════════════ */
+const PASSES = [
+  {
+    id:'sc',
+    image:'assets/cards/sc-unit-2025-03-21.svg',
+    event:'SPACE COOKING',
+    date:'MAR 21 2025 · UNIT',
+    venue:'Daikanyama, Tokyo',
+    pass:'LP-0318',
+    duration:'5H',
+    artists:'8',
+    position:'c-left',
+  },
+  {
+    id:'amd',
+    image:'assets/cards/amd-clubasia-2026-05-04.svg',
+    event:'ALL MUST DANCE',
+    date:'MAY 4 2026 · CLUB ASIA',
+    venue:'Shibuya, Tokyo',
+    pass:'LP-0421',
+    duration:'6H',
+    artists:'12',
+    position:'c-center',
+  },
+  {
+    id:'ws',
+    image:'assets/cards/ws-noah-2025-04-01.svg',
+    event:'64BEAT WORKSHOP',
+    date:'APR 1 2025 · NOAH STUDIO',
+    venue:'Nakano, Tokyo',
+    pass:'LP-0401',
+    duration:'3H',
+    artists:'4',
+    position:'c-right',
+  },
+];
+
+/* ═════════════════════════════════
+   SCATTER FRAME COLORS — 15 tonal variants
+   (pure CSS gradients, zero network)
+   ═════════════════════════════════ */
+const SCATTER_COLORS = [
+  ['#e8100a','#2a0000'], ['#3daaff','#0a1a2a'], ['#a8e63d','#0a2000'],
+  ['#f5c842','#2a1a00'], ['#bf5af2','#1a0a2a'], ['#00e5a0','#002a1a'],
+  ['#ff3b30','#2a0a0a'], ['#f4c0d1','#2a0a1a'], ['#e8100a','#a8e63d'],
+  ['#3daaff','#bf5af2'], ['#f5c842','#e8100a'], ['#00e5a0','#3daaff'],
+  ['#a8e63d','#f5c842'], ['#bf5af2','#ff3b30'], ['#f4c0d1','#3daaff'],
+];
+
+/* ═════════════════════════════════
+   BUILD LANDING CARDS
+   ═════════════════════════════════ */
+const fan = document.getElementById('fan');
+PASSES.forEach((p) => {
+  const card = document.createElement('div');
+  card.className = 'card ' + p.position;
+  card.dataset.id = p.id;
+  card.innerHTML = `
+    <img src="${p.image}" alt="${p.event}">
+    <div class="card-shine"></div>
+  `;
+  card.addEventListener('click', () => openFlashback(p, card));
+  fan.appendChild(card);
+});
+document.getElementById('landingCount').textContent = PASSES.length + ' Passes';
+
+/* ═════════════════════════════════
+   FLASHBACK
+   ═════════════════════════════════ */
+let isBusy = false;
+
+function haptic(ms) { if (navigator.vibrate) navigator.vibrate(ms); }
+
+function openFlashback(pass, cardEl) {
+  if (isBusy) return;
+  isBusy = true;
+  haptic(12);
+
+  // Populate content
+  document.getElementById('passBadge').textContent = 'Pass · ' + pass.pass;
+  document.getElementById('statPass').textContent = pass.pass.replace('LP-', '');
+  document.getElementById('statDur').textContent  = pass.duration;
+  document.getElementById('statArt').textContent  = pass.artists;
+  document.getElementById('date').textContent     = pass.date;
+
+  // Title starts empty — typewriter fills it at cascade time
+  const titleEl = document.getElementById('title');
+  titleEl.dataset.fullText = pass.event;
+  titleEl.textContent = '';
+
+  // Reset reveal states
+  ['eyebrow','title','date','divider','stats','actions','close','passBadge']
+    .forEach(id => document.getElementById(id).classList.remove('show','typing'));
+
+  // Measure tapped card
+  const rect = cardEl.getBoundingClientRect();
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const cx = vw / 2, cy = vh / 2;
+
+  // Set up clone
+  const clone = document.getElementById('clone');
+  clone.innerHTML = `<img src="${pass.image}" alt="">`;
+  clone.style.cssText = `
+    left:${rect.left}px; top:${rect.top}px;
+    width:${rect.width}px; height:${rect.height}px;
+    border-radius:14px; opacity:1;
+    box-shadow:0 24px 80px rgba(0,0,0,0.9);
+  `;
+  gsap.set(clone, { x:0, y:0, scale:1, rotation:0, transformOrigin:'50% 50%' });
+
+  // Translation to center the card via pure transform
+  const toCenterX = cx - (rect.left + rect.width / 2);
+  const toCenterY = cy - (rect.top + rect.height / 2);
+
+  // Activate flashback overlay
+  document.getElementById('flashback').classList.add('active');
+
+  // Hide landing (fade)
+  setTimeout(() => document.getElementById('landing').classList.add('gone'), 100);
+
+  // Master timeline
+  const tl = gsap.timeline();
+
+  // PHASE 1 — lift to center + scale 1.4 (0.6s)
+  tl.to(clone, {
+    x: toCenterX,
+    y: toCenterY,
+    scale: 1.4,
+    duration: 0.6,
+    ease: 'power3.out',
+    onStart: () => haptic(20),
+  });
+
+  // Fade landing cards
+  document.querySelectorAll('#fan .card').forEach(c => {
+    if (c !== cardEl) gsap.to(c, { opacity: 0.25, scale: 0.82, duration: 0.5, ease: 'power2.out' });
+  });
+
+  // PHASE 2 — cinematic scale zoom (5s) + scatter + atmosphere
+  tl.to(clone, {
+    scale: 9,
+    opacity: 0,
+    duration: 5.0,
+    ease: 'power2.inOut',
+    onStart: () => {
+      // Show atmosphere layers
+      gsap.to('#grain',    { opacity: 0.35, duration: 1.2 });
+      gsap.to('#lights',   { opacity: 1,    duration: 1.5 });
+      gsap.to('#vignette', { opacity: 1,    duration: 1.8 });
+      // Start scatter
+      startScatter();
+    },
+  }, '-=0.05');
+
+  // PHASE 3 — content cascade (starts ~4.8s, overlapping with end of zoom)
+  tl.call(() => revealContent(), null, 4.8);
+
+  // Release busy lock after full sequence
+  tl.call(() => { isBusy = false; }, null, 7.5);
+}
+
+/* ═════════════════════════════════
+   SCATTER — random gradient frames fly in
+   during the Phase 2 zoom
+   ═════════════════════════════════ */
+let scatterActive = false;
+function startScatter() {
+  const container = document.getElementById('scatter');
+  container.innerHTML = '';
+  scatterActive = true;
+
+  const COUNT = 15;
+  for (let i = 0; i < COUNT; i++) {
+    const frame = document.createElement('div');
+    frame.className = 'scatter-frame';
+    const [c1, c2] = SCATTER_COLORS[i % SCATTER_COLORS.length];
+    frame.style.background = `linear-gradient(135deg, ${c1} 0%, ${c2} 100%)`;
+
+    // Random position (20-80% range to keep on-screen)
+    const randX = 20 + Math.random() * 60;
+    const randY = 15 + Math.random() * 70;
+    const randR = -25 + Math.random() * 50;
+    frame.style.left = randX + '%';
+    frame.style.top = randY + '%';
+    frame.style.transform = `translate(-50%, -50%) rotate(${randR}deg) scale(0.08)`;
+
+    container.appendChild(frame);
+
+    // Animate each frame in a loop with stagger
+    const delay = i * 0.18;   // 180ms stagger
+    gsap.fromTo(frame,
+      { scale: 0.08, opacity: 0 },
+      {
+        scale: 1,
+        opacity: 0.85,
+        duration: 1.4,
+        delay: delay,
+        ease: 'power2.out',
+        onComplete: () => {
+          gsap.to(frame, {
+            scale: 2,
+            opacity: 0,
+            duration: 1.2,
+            ease: 'power2.in',
+          });
+        },
+      }
+    );
+  }
+}
+
+/* ═════════════════════════════════
+   TYPEWRITER — reveals title char-by-char
+   ═════════════════════════════════ */
+function typewriter(el, text, duration) {
+  el.textContent = '';
+  el.classList.add('show', 'typing');
+  const chars = Array.from(text);
+  const step = duration / Math.max(1, chars.length);
+  let i = 0;
+  const tick = () => {
+    if (i >= chars.length) {
+      setTimeout(() => el.classList.remove('typing'), 800);
+      return;
+    }
+    el.textContent += chars[i];
+    i++;
+    if (i % 2 === 0) haptic(3);
+    setTimeout(tick, step);
+  };
+  tick();
+}
+
+/* ═════════════════════════════════
+   REVEAL CONTENT CASCADE
+   ═════════════════════════════════ */
+function revealContent() {
+  const show = (id, delay) => setTimeout(() => {
+    document.getElementById(id).classList.add('show');
+  }, delay);
+
+  show('eyebrow', 0);
+  setTimeout(() => {
+    const titleEl = document.getElementById('title');
+    typewriter(titleEl, titleEl.dataset.fullText, 1500);
+  }, 180);
+  show('date',      400);
+  show('divider',   700);
+  show('stats',     850);
+  show('actions',  1100);
+  show('passBadge',1200);
+  show('close',    1200);
+  setTimeout(() => haptic([30, 40, 60]), 1200);
+}
+
+/* ═════════════════════════════════
+   CLOSE & RESET
+   ═════════════════════════════════ */
+function closeFlashback() {
+  haptic(10);
+  const fb = document.getElementById('flashback');
+  fb.classList.remove('active');
+  document.getElementById('landing').classList.remove('gone');
+
+  // Reset all reveal states
+  ['eyebrow','title','date','divider','stats','actions','close','passBadge']
+    .forEach(id => document.getElementById(id).classList.remove('show','typing'));
+
+  // Fade atmosphere back
+  gsap.to('#grain',    { opacity: 0, duration: 0.6 });
+  gsap.to('#lights',   { opacity: 0, duration: 0.6 });
+  gsap.to('#vignette', { opacity: 0, duration: 0.6 });
+
+  // Restore landing cards
+  document.querySelectorAll('#fan .card').forEach(c => {
+    gsap.to(c, { opacity: 1, scale: 1, duration: 0.5 });
+  });
+
+  // Clear scatter
+  setTimeout(() => {
+    document.getElementById('scatter').innerHTML = '';
+    document.getElementById('clone').innerHTML = '';
+    document.getElementById('clone').style.opacity = '0';
+  }, 600);
+
+  isBusy = false;
+}
+
+/* ═════════════════════════════════
+   ENTER MEMORY ROOM
+   ═════════════════════════════════ */
+function enterMemoryRoom() {
+  haptic(20);
+  location.href = 'livepass_memoryroom.html';
+}
+
+/* ═════════════════════════════════
+   KEYBOARD
+   ═════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeFlashback();
+});
+</script>
+</body>
+</html>
