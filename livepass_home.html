@@ -78,21 +78,21 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   margin-top:4px;
 }
 
-/* MASONRY 2-COLUMN FEED ─────────────────────── */
+/* MIXED GRID FEED — 2 columns + full-width (span 2) ─── */
 .feed-grid{
   padding:0 10px 40px;
-  column-count:2;column-gap:8px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  grid-auto-flow:dense; /* fill gaps left by full-width rows */
 }
 .feed-card{
   position:relative;display:block;
-  break-inside:avoid;
-  margin-bottom:8px;
   border-radius:10px;overflow:hidden;
   background:#0a0a0a;
   border:0.5px solid rgba(255,255,255,.06);
   cursor:pointer;
-  -webkit-column-break-inside:avoid;
-  page-break-inside:avoid;
+  min-width:0; /* prevent grid item overflow */
 }
 .feed-card .fc-img{
   position:relative;width:100%;display:block;overflow:hidden;background:#111;
@@ -103,7 +103,12 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 }
 .feed-card.poster .fc-img{aspect-ratio:9/14}
 .feed-card.square .fc-img{aspect-ratio:1/1}
-.feed-card.wide .fc-img{aspect-ratio:16/10}
+/* wide cards span both columns → full-width row */
+.feed-card.wide{grid-column:1 / -1}
+.feed-card.wide .fc-img{aspect-ratio:16/9}
+.feed-card.wide .fc-title{font-size:18px}
+.feed-card.wide .fc-cat{font-size:9px}
+.feed-card.wide .fc-overlay{padding:18px 20px 18px}
 .feed-card .fc-overlay{
   position:absolute;inset:0;
   background:linear-gradient(to top,rgba(0,0,0,.88) 0%,rgba(0,0,0,.15) 45%,transparent 70%);
@@ -218,6 +223,47 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .dm-act.liked svg{fill:var(--red);stroke:var(--red)}
 .dm-act.saved{color:var(--gold)}
 .dm-act.saved svg{fill:var(--gold);stroke:var(--gold)}
+
+/* ─────────────────────────────────────────────
+   COMPOSE SELECTOR BOTTOM SHEET (shared)
+   ───────────────────────────────────────────── */
+#composeSheetOverlay{
+  position:fixed;inset:0;z-index:1100;
+  background:rgba(0,0,0,0);
+  pointer-events:none;opacity:0;
+  transition:background .3s ease, opacity .2s ease;
+}
+#composeSheetOverlay.active{
+  background:rgba(0,0,0,.7);pointer-events:all;opacity:1;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+}
+#composeSheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:1101;
+  background:#0a0a0a;
+  border-top:0.5px solid var(--border);
+  border-top-left-radius:20px;border-top-right-radius:20px;
+  padding:20px 20px calc(24px + var(--safe-bot));
+  transform:translateY(100%);
+  transition:transform .35s cubic-bezier(.2,.8,.2,1);
+  box-shadow:0 -12px 40px rgba(0,0,0,.7);
+}
+#composeSheetOverlay.active #composeSheet{transform:translateY(0)}
+.cs-handle{width:40px;height:4px;border-radius:99px;background:rgba(237,235,230,.2);margin:0 auto 20px}
+.cs-title{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.34em;text-transform:uppercase;color:rgba(237,235,230,.35);text-align:center;margin-bottom:18px}
+.cs-options{display:flex;flex-direction:column;gap:10px}
+.cs-opt{display:flex;align-items:center;gap:16px;padding:18px 18px;width:100%;background:rgba(255,255,255,.03);border:0.5px solid rgba(237,235,230,.08);border-radius:14px;color:var(--white);transition:background .2s}
+.cs-opt:active{background:rgba(255,255,255,.06)}
+.cs-opt svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.8;flex-shrink:0}
+.cs-opt-body{flex:1;text-align:left}
+.cs-opt-title{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;font-size:15px;color:var(--white);margin-bottom:2px}
+.cs-opt-sub{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;font-size:10px;letter-spacing:.04em;color:rgba(237,235,230,.4)}
+.cs-opt.article{border-left:3px solid var(--green)}
+.cs-opt.event{border-left:3px solid var(--red)}
+.cs-opt.workshop{border-left:3px solid var(--gold)}
+.cs-opt.article svg{color:var(--green)}
+.cs-opt.event svg{color:var(--red)}
+.cs-opt.workshop svg{color:var(--gold)}
+.cs-close{display:block;width:100%;padding:14px;background:none;border:0.5px solid rgba(237,235,230,.12);border-radius:99px;margin-top:16px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;color:rgba(237,235,230,.5)}
 </style>
 </head>
 <body>
@@ -247,6 +293,29 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
     <div class="dm-label">Article</div>
   </header>
   <div class="dm-body" id="dmBody"></div>
+</div>
+
+<!-- ═══ COMPOSE SELECTOR BOTTOM SHEET (shared) ═══ -->
+<div id="composeSheetOverlay" aria-hidden="true">
+  <div id="composeSheet" role="dialog" aria-label="投稿作成">
+    <div class="cs-handle"></div>
+    <div class="cs-title">Create Post</div>
+    <div class="cs-options">
+      <button class="cs-opt article" data-type="article">
+        <svg viewBox="0 0 24 24"><path d="M4 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><line x1="6" y1="9" x2="18" y2="9"/><line x1="6" y1="13" x2="18" y2="13"/><line x1="6" y1="17" x2="14" y2="17"/></svg>
+        <div class="cs-opt-body"><div class="cs-opt-title">ARTICLE</div><div class="cs-opt-sub">記事 · 縦長/正方形/横長レイアウト</div></div>
+      </button>
+      <button class="cs-opt event" data-type="event">
+        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7" stroke-linecap="round"/><line x1="16" y1="3" x2="16" y2="7" stroke-linecap="round"/></svg>
+        <div class="cs-opt-body"><div class="cs-opt-title">EVENT</div><div class="cs-opt-sub">イベント · ライブ · パーティ</div></div>
+      </button>
+      <button class="cs-opt workshop" data-type="workshop">
+        <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6a6 6 0 1 0 6 6"/><circle cx="12" cy="12" r="2"/></svg>
+        <div class="cs-opt-body"><div class="cs-opt-title">WORKSHOP</div><div class="cs-opt-sub">ワークショップ · レッスン</div></div>
+      </button>
+    </div>
+    <button class="cs-close" id="csClose">キャンセル</button>
+  </div>
 </div>
 
 <nav class="bottomnav">
@@ -377,10 +446,38 @@ window.addEventListener('keydown', e => {
   if (e.key === 'Escape' && modal.classList.contains('active')) dmClose.click();
 });
 
-/* + create button → stub for Step 4b compose selector */
-document.getElementById('tbCreate').addEventListener('click', () => {
-  alert('投稿作成 — Step 4b で実装予定');
-});
+/* ─────────────────────────────────────────────
+   COMPOSE SELECTOR — shared bottom sheet
+   ───────────────────────────────────────────── */
+(function initComposeSheet(){
+  const btn = document.getElementById('tbCreate');
+  const overlay = document.getElementById('composeSheetOverlay');
+  const closeBtn = document.getElementById('csClose');
+  if (!btn || !overlay) return;
+  const open = () => {
+    overlay.classList.add('active');
+    overlay.setAttribute('aria-hidden','false');
+    if (navigator.vibrate) navigator.vibrate(8);
+  };
+  const dismiss = () => {
+    overlay.classList.remove('active');
+    overlay.setAttribute('aria-hidden','true');
+  };
+  btn.addEventListener('click', open);
+  closeBtn.addEventListener('click', dismiss);
+  overlay.addEventListener('click', e => { if (e.target === overlay) dismiss(); });
+  document.querySelectorAll('.cs-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      const t = opt.dataset.type;
+      if (navigator.vibrate) navigator.vibrate(12);
+      if (t === 'article') location.href = '/compose/article';
+      else { alert(t.toUpperCase() + ' 投稿画面は準備中です (5/4後に実装予定)'); dismiss(); }
+    });
+  });
+  window.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && overlay.classList.contains('active')) dismiss();
+  });
+})();
 </script>
 
 </body>
