@@ -34,7 +34,7 @@ html,body{width:100%;height:100%;background:var(--black);overflow:hidden;
   background:#000;
   box-shadow:0 12px 40px rgba(0,0,0,.8),0 0 40px rgba(232,16,10,.08);
   margin-bottom:40px}
-.trigger-card img{width:100%;height:100%;object-fit:contain;display:block}
+.trigger-card img{width:100%;height:100%;object-fit:cover;display:block}
 .trigger-edition-line{display:flex;align-items:center;gap:10px;margin-bottom:24px;
   font-family:'Bebas Neue';letter-spacing:.18em}
 .te-ed{color:var(--gold);font-size:12px}
@@ -99,7 +99,7 @@ html,body{width:100%;height:100%;background:var(--black);overflow:hidden;
   backface-visibility:hidden;-webkit-backface-visibility:hidden;
   box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 40px rgba(232,16,10,.18)}
 .fb-face.front{background:#000}
-.fb-face.front img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block}
+.fb-face.front img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .fb-face.back{background:#0a0a0a;
   border:1px solid rgba(237,235,230,.12);padding:14px 12px 12px;transform:rotateY(180deg);
   display:flex;flex-direction:column;gap:6px}
@@ -162,7 +162,7 @@ html,body{width:100%;height:100%;background:var(--black);overflow:hidden;
   <div class="trigger-title">ALL MUST DANCE</div>
   <div class="trigger-venue">May 4, 2026 · Club Asia Tokyo</div>
   <div class="trigger-card">
-    <img src="assets/cards/amd-clubasia-2026-05-04.jpg" alt="ALL MUST DANCE">
+    <img src="/assets/cards/amd-clubasia-2026-05-04.jpg" alt="ALL MUST DANCE">
   </div>
   <div class="trigger-edition-line">
     <span class="te-ed">#043 / 100</span>
@@ -184,7 +184,7 @@ html,body{width:100%;height:100%;background:var(--black);overflow:hidden;
   <div class="fb-card-wrap">
     <div class="fb-card" id="fbCard">
       <div class="fb-face front">
-        <img src="assets/cards/amd-clubasia-2026-05-04.jpg" alt="ALL MUST DANCE">
+        <img src="/assets/cards/amd-clubasia-2026-05-04.jpg" alt="ALL MUST DANCE">
         <div class="fb-holo"></div>
       </div>
       <div class="fb-face back">
@@ -225,7 +225,7 @@ html,body{width:100%;height:100%;background:var(--black);overflow:hidden;
   </div>
   <div class="fb-edition">#043 / 100</div>
   <div class="fb-added">Added to Your Collection</div>
-  <a href="livepass_collection.html" class="fb-view">View Collection →</a>
+  <a href="/livepass_collection.html" class="fb-view">View Collection →</a>
 </div>
 
 <button class="fb-replay" onclick="location.reload()">Replay</button>
@@ -529,7 +529,7 @@ function startFlashback() {
           duration: 0.9,
           ease: 'power2.inOut',
           onComplete: () => {
-            location.href = 'livepass_collection.html?from=nfc&pass=amd';
+            location.href = '/livepass_collection.html?from=nfc&pass=amd';
           },
         });
       }, 2400);
@@ -554,7 +554,7 @@ function isNfcMode() {
   const view = document.querySelector('.fb-view');
   if (view) {
     view.textContent = 'Enter Pass Holder →';
-    view.setAttribute('href', 'livepass_collection.html?from=nfc&pass=amd');
+    view.setAttribute('href', '/livepass_collection.html?from=nfc&pass=amd');
   }
 
   // Apply edition number immediately so the trigger card shows the right number
