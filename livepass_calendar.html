@@ -12,7 +12,7 @@
 :root{
   --black:#000;--bg:#080808;--white:#EDEBE6;
   --red:#E8100A;--blue:#3DAAFF;--green:#A8E63D;
-  --gold:#F5C842;--mint:#00E5A0;--pink:#F4C0D1;
+  --gold:#F5C842;--mint:#00E5A0;--pink:#F4C0D1;--purple:#bf5af2;
   --muted:rgba(237,235,230,.3);--muted2:rgba(237,235,230,.14);
   --border:rgba(255,255,255,.07);
   --safe-top:env(safe-area-inset-top,0px);
@@ -21,7 +21,7 @@
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;height:100%;height:100dvh;background:var(--black);color:var(--white);
-  font-family:'Noto Sans JP','Inter',sans-serif;-webkit-font-smoothing:antialiased;
+  font-family:Arial,'Noto Sans JP',sans-serif;-webkit-font-smoothing:antialiased;
   user-select:none;-webkit-user-select:none;overflow:hidden;}
 a{color:inherit;text-decoration:none}
 button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
@@ -37,9 +37,9 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .tb-icon svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
 .tb-icon .badge{position:absolute;top:-4px;right:-6px;background:var(--red);color:#fff;
   font-size:8px;font-weight:700;min-width:14px;height:14px;padding:0 3px;border-radius:99px;
-  display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;}
+  display:flex;align-items:center;justify-content:center;font-family:Arial,sans-serif;}
 .tb-stat{display:flex;flex-direction:column;align-items:center;line-height:1;gap:2px;color:var(--blue);}
-.tb-stat-n{font-family:Arial,'Noto Sans JP',sans-serif;font-size:16px;color:var(--white);letter-spacing:.04em}
+.tb-stat-n{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:16px;color:var(--white);letter-spacing:.04em}
 .tb-stat-l{font-size:7px;color:var(--blue);letter-spacing:.08em;font-weight:500}
 
 .content{position:fixed;top:0;left:0;right:0;bottom:calc(var(--nav-h) + var(--safe-bot));
@@ -62,23 +62,149 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   overflow:hidden;display:flex;align-items:center;justify-content:center;}
 .bn-btn.active .bn-avatar{border-color:var(--white)}
 
-.placeholder-hero{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  min-height:60vh;padding:40px 24px;text-align:center;gap:18px;
-}
-.ph-label{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.4em;
+/* Calendar header */
+.cal-header{padding:14px 20px 10px}
+.ch-label{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.34em;
   text-transform:uppercase;color:rgba(237,235,230,.3);}
-.ph-title{font-family:Arial,'Noto Sans JP',sans-serif;font-size:42px;letter-spacing:.12em;color:var(--white);line-height:1;}
-.ph-desc{font-size:11px;color:rgba(237,235,230,.5);line-height:1.8;max-width:280px;letter-spacing:.02em;}
-.ph-todo{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.3em;
-  text-transform:uppercase;color:rgba(237,235,230,.18);margin-top:16px;}
+.ch-title{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:22px;letter-spacing:.02em;color:var(--white);margin-top:4px;}
+
+/* Calendar tabs (Following / AI Search) */
+.cal-tabs{display:flex;align-items:stretch;padding:0 20px;
+  border-bottom:0.5px solid var(--border);}
+.ctb{flex:1;font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(237,235,230,.3);padding:14px 0 12px;
+  border-bottom:2px solid transparent;}
+.ctb.active{color:var(--white);border-bottom-color:var(--green)}
+
+.cal-panel{display:none;padding-bottom:20px}
+.cal-panel.active{display:block}
+
+/* AI Search bar */
+.ai-search-bar{
+  margin:16px 18px;padding:12px 16px;
+  background:rgba(255,255,255,.04);border:0.5px solid rgba(255,255,255,.08);
+  border-radius:12px;display:flex;align-items:center;gap:10px;
+}
+.ai-search-bar svg{width:18px;height:18px;stroke:var(--mint);fill:none;stroke-width:1.8;flex-shrink:0}
+.ai-search-bar input{
+  flex:1;background:none;border:none;outline:none;color:var(--white);
+  font-family:Arial,'Noto Sans JP',sans-serif;font-size:12px;
+  font-weight:400;letter-spacing:.02em;
+}
+.ai-search-bar input::placeholder{color:rgba(237,235,230,.35)}
+.ai-hint{padding:0 18px 6px;
+  font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.24em;
+  text-transform:uppercase;color:rgba(168,230,61,.4);}
+
+/* Event list — shared with Profile SCREEN */
+.ev-list{padding:4px 0 30px}
+.ev-item{
+  display:flex;padding:18px 20px;gap:14px;
+  border-bottom:0.5px solid rgba(255,255,255,.04);
+  position:relative;cursor:pointer;
+}
+.ev-item::before{
+  content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;
+  background:var(--cat-color,var(--muted));opacity:.7;
+}
+.ev-date{flex-shrink:0;width:50px;text-align:left;line-height:1}
+.ev-date .m{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:11px;letter-spacing:.12em;
+  color:var(--cat-color,var(--muted));text-transform:uppercase;}
+.ev-date .d{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:34px;color:var(--white);margin-top:2px;}
+.ev-body{flex:1;min-width:0}
+.ev-cat{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:10px;letter-spacing:.22em;
+  color:var(--cat-color,var(--muted));text-transform:uppercase;margin-bottom:3px;}
+.ev-title{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:14px;color:var(--white);margin-bottom:3px;line-height:1.2;}
+.ev-meta{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
+  font-size:9px;color:rgba(237,235,230,.45);letter-spacing:.02em;line-height:1.5;}
+.ev-tags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.ev-tag{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
+  font-size:8px;letter-spacing:.12em;
+  padding:3px 10px;border-radius:99px;
+  border:1px solid var(--cat-color,var(--muted));
+  color:var(--cat-color,var(--muted));text-transform:uppercase;}
+.ev-right{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.ev-price{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:14px;color:var(--white);}
+
+/* EVENT DETAIL MODAL */
+#eventModal{
+  position:fixed;inset:0;z-index:1200;
+  background:var(--black);
+  display:none;flex-direction:column;opacity:0;transition:opacity .3s ease;
+}
+#eventModal.active{display:flex;opacity:1}
+.em-header{flex-shrink:0;
+  padding:max(14px,calc(var(--safe-top) + 12px)) 18px 12px;
+  display:flex;align-items:center;gap:14px;
+  background:rgba(0,0,0,.96);border-bottom:0.5px solid var(--border);}
+.em-close{width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;color:var(--white);
+  border:0.5px solid rgba(255,255,255,.15);}
+.em-close svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
+.em-label{font-family:'IBM Plex Mono',monospace;font-size:8px;
+  letter-spacing:.32em;text-transform:uppercase;
+  color:rgba(237,235,230,.3);margin-left:auto;}
+.em-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.em-body::-webkit-scrollbar{display:none}
+
+.em-hero{position:relative;padding:40px 22px 30px;
+  background:linear-gradient(180deg,var(--cat-color-soft,rgba(232,16,10,.08)) 0%,transparent 100%);}
+.em-date-big{display:flex;align-items:baseline;gap:10px;margin-bottom:18px}
+.em-date-m{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:16px;letter-spacing:.14em;color:var(--cat-color,var(--red));text-transform:uppercase;}
+.em-date-d{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:72px;line-height:.85;color:var(--white);letter-spacing:-.02em;}
+.em-weekday{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
+  font-size:11px;color:rgba(237,235,230,.45);letter-spacing:.2em;
+  text-transform:uppercase;}
+.em-cat{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:11px;letter-spacing:.22em;
+  color:var(--cat-color,var(--red));text-transform:uppercase;margin-bottom:10px;}
+.em-title{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:30px;line-height:1.1;color:var(--white);margin-bottom:14px;}
+.em-venue{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
+  font-size:13px;color:var(--white);margin-bottom:4px;}
+.em-time{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
+  font-size:11px;color:rgba(237,235,230,.55);letter-spacing:.04em;}
+.em-tags{display:flex;gap:6px;margin-top:16px;flex-wrap:wrap}
+.em-tags .ev-tag{padding:4px 12px;font-size:9px}
+
+.em-section{padding:22px 22px 0;}
+.em-sec-label{font-family:'IBM Plex Mono',monospace;font-size:8px;
+  letter-spacing:.34em;text-transform:uppercase;
+  color:rgba(237,235,230,.22);margin-bottom:12px;}
+.em-sec-body{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
+  font-size:12px;line-height:1.8;color:rgba(237,235,230,.75);letter-spacing:.02em;}
+
+.em-cta{padding:22px;margin-top:8px}
+.em-buy-btn{display:block;width:100%;padding:18px;
+  background:var(--cat-color,var(--red));color:#fff;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:14px;letter-spacing:.1em;text-transform:uppercase;
+  border-radius:99px;text-align:center;}
+.em-buy-price{display:inline-block;margin-left:8px;opacity:.85}
+.em-sub-actions{
+  display:flex;gap:8px;margin-top:12px;
+}
+.em-sub-btn{flex:1;padding:12px;
+  background:none;border:1px solid rgba(237,235,230,.15);
+  color:rgba(237,235,230,.6);
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
+  font-size:11px;border-radius:99px;letter-spacing:.02em;}
 </style>
 </head>
 <body>
 
 <div class="topbar">
   <a class="tb-brand" href="/home" aria-label="LIVE PASS"><img src="/livepasslogo.png" alt="LIVE PASS"></a>
-  <button class="tb-icon" aria-label="Create"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round"/></svg></button>
+  <button class="tb-icon" id="tbCreate" aria-label="Create"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round"/></svg></button>
   <button class="tb-icon" aria-label="Messages"><svg viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><polyline points="3,7 12,13 21,7"/></svg><span class="badge">9</span></button>
   <a class="tb-stat" href="#"><div class="tb-stat-n">25</div><div class="tb-stat-l">フォロー中</div></a>
   <a class="tb-stat" href="#"><div class="tb-stat-n">25</div><div class="tb-stat-l">フォロワー</div></a>
@@ -86,20 +212,219 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 </div>
 
 <main class="content">
-  <div class="placeholder-hero">
-    <div class="ph-label">Following · AI Search</div>
-    <div class="ph-title">CALENDAR</div>
-    <div class="ph-desc">フォロー中アーティストのスケジュールと、自然言語AI検索 ("今夜池袋でハウスのイベントある?") の2タブ構成。</div>
-    <div class="ph-todo">— Step 6 で実装 —</div>
+  <header class="cal-header">
+    <div class="ch-label">Schedule · Your Following + AI</div>
+    <div class="ch-title">CALENDAR</div>
+  </header>
+
+  <nav class="cal-tabs">
+    <button class="ctb active" data-tab="following">FOLLOWING</button>
+    <button class="ctb" data-tab="ai">AI SEARCH</button>
+  </nav>
+
+  <!-- FOLLOWING tab -->
+  <div class="cal-panel active" id="cal-following">
+    <div class="ev-list" id="followingList"></div>
+  </div>
+
+  <!-- AI SEARCH tab -->
+  <div class="cal-panel" id="cal-ai">
+    <div class="ai-search-bar">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="今夜池袋でハウスのイベントある?" id="aiInput">
+    </div>
+    <div class="ai-hint">AI が自然言語でスケジュールを検索します</div>
+    <div class="ev-list" id="aiList"></div>
   </div>
 </main>
+
+<!-- EVENT DETAIL MODAL -->
+<div id="eventModal" aria-hidden="true">
+  <header class="em-header">
+    <button class="em-close" id="emClose" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18" stroke-linecap="round"/><line x1="6" y1="18" x2="18" y2="6" stroke-linecap="round"/></svg></button>
+    <div class="em-label" id="emLabel">Event</div>
+  </header>
+  <div class="em-body" id="emBody"></div>
+</div>
 
 <nav class="bottomnav">
   <a href="/home" class="bn-btn" aria-label="Home"><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1v-9.5z" stroke-linejoin="round"/></svg></a>
   <a href="/search" class="bn-btn" aria-label="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/></svg></a>
   <a href="/calendar" class="bn-btn active" aria-label="Calendar"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7" stroke-linecap="round"/><line x1="16" y1="3" x2="16" y2="7" stroke-linecap="round"/></svg></a>
-  <a href="/profile" class="bn-btn" aria-label="Profile"><div class="bn-avatar"><span style="font-family:Arial,'Noto Sans JP',sans-serif;font-size:13px;color:var(--white)">N</span></div></a>
+  <a href="/profile" class="bn-btn" aria-label="Profile"><div class="bn-avatar"><span style="font-family:Arial,sans-serif;font-weight:900;font-size:13px;color:var(--white)">N</span></div></a>
 </nav>
+
+<script>
+/* Sample schedule data — mix of events & workshops from following */
+const SCHEDULE = [
+  { id:'e1', type:'event', cat:'EVENT', catColor:'#E8100A',
+    m:'MAY', d:'03', weekday:'SAT', title:'All Must Dance Vol.25',
+    venue:'LIQUIDROOM TOKYO', time:'2026.05.03 21:00 — 28:00',
+    by:'NOBBY / SPACE COOKING™', meta:'NOBBY · 21:00 — · LIQUIDROOM TOKYO',
+    price:'¥3,000',
+    tags:['DJ','HOUSE','TECHNO'],
+    desc:'東京・恵比寿 LIQUIDROOM で開催される NOBBY 主催の定番パーティ第25回。フロアは2階構成、LIVE PASS ホルダーは専用エントランス。' },
+  { id:'e2', type:'workshop', cat:'WORKSHOP', catColor:'#F4C0D1',
+    m:'MAY', d:'18', weekday:'SUN', title:'Waacking Intensive',
+    venue:'代官山スタジオ', time:'2026.05.18 13:00 — 17:00',
+    by:'SACHI', meta:'SACHI · 13:00 — 17:00 · 代官山スタジオ',
+    price:'¥6,000',
+    tags:['WAACKING','ALL LEVELS'],
+    desc:'SACHI が指導する Waacking 集中講座。基礎技法から振付まで4時間で完結。全レベル対応・見学可。' },
+  { id:'e3', type:'event', cat:'EVENT', catColor:'#bf5af2',
+    m:'JUN', d:'01', weekday:'MON', title:'DUBLA® Launch Party',
+    venue:'Shibuya WOMB', time:'2026.06.01 20:00 — 26:00',
+    by:'NOBBY + SACHI', meta:'NOBBY + SACHI · 20:00 — · Shibuya WOMB',
+    price:'¥2,500',
+    tags:['PARTY','FASHION'],
+    desc:'DUBLA® ブランドローンチパーティ。限定アイテム販売 + ライブセット。' },
+  { id:'e4', type:'workshop', cat:'WORKSHOP', catColor:'#F5C842',
+    m:'JUN', d:'01', weekday:'MON', title:'Breaking — Cypher Lab',
+    venue:'渋谷 WOMB 2F', time:'2026.06.01 15:00 — 19:00',
+    by:'CREW NRG', meta:'CREW NRG · 15:00 — 19:00 · 渋谷 WOMB 2F',
+    price:'¥5,000',
+    tags:['BREAKING','INTERMEDIATE'],
+    desc:'CREW NRG によるブレイキン中級者向け Cypher Lab。ムーブの質を高める実践型セッション。' },
+  { id:'e5', type:'workshop', cat:'WORKSHOP', catColor:'#00E5A0',
+    m:'JUN', d:'08', weekday:'MON', title:'House Dance × DJ Lab',
+    venue:'渋谷 Studio A', time:'2026.06.08 14:00 — 18:00',
+    by:'NOBBY + DJ KEITA', meta:'NOBBY + DJ KEITA · 14:00 — 18:00',
+    price:'¥7,000',
+    tags:['HOUSE','DJ','COLLAB'],
+    desc:'NOBBY と DJ KEITA によるハウスダンス × DJ コラボレーション・ラボ。踊る側と選曲側の対話を体感する実験的ワークショップ。' },
+  { id:'e6', type:'event', cat:'EVENT', catColor:'#E8100A',
+    m:'JUL', d:'05', weekday:'SAT', title:'All Must Dance Vol.26',
+    venue:'LIQUIDROOM TOKYO', time:'2026.07.05 21:00 — 28:00',
+    by:'NOBBY', meta:'NOBBY · 21:00 — · LIQUIDROOM TOKYO',
+    price:'¥3,000',
+    tags:['DJ','HOUSE','TECHNO'],
+    desc:'All Must Dance 夏の陣。Vol.26 はゲスト DJ 陣を拡大、朝6時まで開催。' },
+];
+
+/* Populate following list */
+const followingList = document.getElementById('followingList');
+SCHEDULE.forEach(e => followingList.appendChild(renderEvent(e)));
+
+/* AI list — starts empty, fills on input */
+const aiList = document.getElementById('aiList');
+const aiInput = document.getElementById('aiInput');
+function aiSearch(q) {
+  aiList.innerHTML = '';
+  const matches = q
+    ? SCHEDULE.filter(e =>
+        (e.title + ' ' + e.venue + ' ' + e.meta + ' ' + e.tags.join(' '))
+          .toLowerCase().includes(q.toLowerCase()))
+    : SCHEDULE.slice(0,3);
+  matches.forEach(e => aiList.appendChild(renderEvent(e)));
+}
+aiSearch('');
+aiInput.addEventListener('input', (e) => aiSearch(e.target.value));
+
+function renderEvent(e) {
+  const div = document.createElement('div');
+  div.className = 'ev-item';
+  div.style.setProperty('--cat-color', e.catColor);
+  div.innerHTML = `
+    <div class="ev-date"><div class="m">${e.m}</div><div class="d">${e.d}</div></div>
+    <div class="ev-body">
+      <div class="ev-cat">${e.cat}</div>
+      <div class="ev-title">${e.title}</div>
+      <div class="ev-meta">${e.meta}</div>
+      <div class="ev-tags">${e.tags.map(t => `<div class="ev-tag">${t}</div>`).join('')}</div>
+    </div>
+    <div class="ev-right"><div class="ev-price">${e.price}</div></div>
+  `;
+  div.addEventListener('click', () => openEventDetail(e));
+  return div;
+}
+
+/* Tab swap */
+document.querySelectorAll('.ctb').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    document.querySelectorAll('.ctb').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.cal-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('cal-' + tab).classList.add('active');
+  });
+});
+
+/* Event detail modal */
+const eventModal = document.getElementById('eventModal');
+const emBody = document.getElementById('emBody');
+const emLabel = document.getElementById('emLabel');
+const emClose = document.getElementById('emClose');
+
+function openEventDetail(e) {
+  if (navigator.vibrate) navigator.vibrate(8);
+  emLabel.textContent = e.cat;
+  // Category-soft background for hero
+  const soft = hexToRgba(e.catColor, 0.08);
+  emBody.innerHTML = `
+    <div class="em-hero" style="--cat-color:${e.catColor};--cat-color-soft:${soft}">
+      <div class="em-date-big">
+        <div>
+          <div class="em-date-m">${e.m}</div>
+          <div class="em-date-d">${e.d}</div>
+        </div>
+        <div class="em-weekday">${e.weekday}</div>
+      </div>
+      <div class="em-cat" style="color:${e.catColor}">${e.cat}</div>
+      <div class="em-title">${e.title}</div>
+      <div class="em-venue">${e.venue}</div>
+      <div class="em-time">${e.time}</div>
+      <div class="em-tags" style="--cat-color:${e.catColor}">
+        ${e.tags.map(t => `<div class="ev-tag">${t}</div>`).join('')}
+      </div>
+    </div>
+
+    <div class="em-section">
+      <div class="em-sec-label">About</div>
+      <div class="em-sec-body">${e.desc}</div>
+    </div>
+
+    <div class="em-section">
+      <div class="em-sec-label">By</div>
+      <div class="em-sec-body">${e.by}</div>
+    </div>
+
+    <div class="em-cta">
+      <button class="em-buy-btn" style="background:${e.catColor}">
+        ${e.type === 'workshop' ? '参加申込' : 'PASS を購入'}
+        <span class="em-buy-price">${e.price}</span>
+      </button>
+      <div class="em-sub-actions">
+        <button class="em-sub-btn">🔖 保存</button>
+        <button class="em-sub-btn">📤 共有</button>
+      </div>
+    </div>
+  `;
+  eventModal.classList.add('active');
+  eventModal.setAttribute('aria-hidden','false');
+}
+
+function hexToRgba(hex, a) {
+  const h = hex.replace('#','');
+  const r = parseInt(h.substring(0,2), 16);
+  const g = parseInt(h.substring(2,4), 16);
+  const b = parseInt(h.substring(4,6), 16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+emClose.addEventListener('click', () => {
+  eventModal.classList.remove('active');
+  eventModal.setAttribute('aria-hidden','true');
+  setTimeout(() => { emBody.innerHTML = ''; }, 300);
+});
+window.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && eventModal.classList.contains('active')) emClose.click();
+});
+
+/* + create */
+document.getElementById('tbCreate').addEventListener('click', () => {
+  alert('投稿作成 — Step 4b で実装予定');
+});
+</script>
 
 </body>
 </html>
