@@ -96,7 +96,7 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer;-we
 }
 #clone img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 
-/* Illusion stage — GSAP 050 style infinite scroll reveal */
+/* Illusion stage — GSAP 050 style infinite scroll reveal (FULLSCREEN) */
 #illusion{
   position:absolute;inset:0;z-index:55;
   overflow:hidden;
@@ -104,13 +104,27 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer;-we
 }
 .ifr{
   position:absolute;top:50%;left:50%;
-  width:72vw;height:96vw;max-height:72vh;
-  border-radius:12px;
+  width:100vw;height:100vh;
   transform-origin:50% 50%;
   transform:translate(-50%,-50%) scale(0.08);
   opacity:0;
   will-change:transform,opacity;
-  box-shadow:0 24px 60px rgba(0,0,0,0.8);
+}
+
+/* Scatter — colorful cards burst on tap (separate layer, on top of illusion) */
+#scatter{
+  position:absolute;inset:0;z-index:57;
+  pointer-events:none;
+}
+.sfr{
+  position:absolute;
+  width:62vw;height:82vw;max-height:80vh;
+  border-radius:12px;
+  transform:scale(0.08);opacity:0;
+  will-change:transform,opacity;
+  mix-blend-mode:screen;
+  filter:blur(6px);
+  box-shadow:0 20px 60px rgba(0,0,0,0.7);
 }
 
 /* Scroll hint below reveal */
@@ -284,6 +298,7 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer;-we
 <div id="flashback">
   <div id="lights"></div>
   <div id="illusion"></div>
+  <div id="scatter"></div>
   <div id="clone"></div>
   <div id="grain"></div>
   <div id="vignette"></div>
@@ -436,14 +451,17 @@ function openFlashback(pass, cardEl) {
   // Master timeline
   const tl = gsap.timeline();
 
-  // PHASE 1 — lift to center + scale 1.4 (0.6s)
+  // PHASE 1 — lift to center + scale 1.4 (0.6s) + colorful scatter burst
   tl.to(clone, {
     x: toCenterX,
     y: toCenterY,
     scale: 1.4,
     duration: 0.6,
     ease: 'power3.out',
-    onStart: () => haptic(20),
+    onStart: () => {
+      haptic(20);
+      startScatter();  // colorful cards fly in immediately on tap
+    },
   });
 
   // Fade landing cards
@@ -472,6 +490,58 @@ function openFlashback(pass, cardEl) {
 
   // Release busy lock after full sequence
   tl.call(() => { isBusy = false; }, null, 7.5);
+}
+
+/* ═════════════════════════════════
+   SCATTER — colorful cards burst
+   (fires immediately on tap, one-shot)
+   ═════════════════════════════════ */
+function startScatter() {
+  const container = document.getElementById('scatter');
+  container.innerHTML = '';
+
+  const COUNT = 15;
+  for (let i = 0; i < COUNT; i++) {
+    const frame = document.createElement('div');
+    frame.className = 'sfr';
+    const [c1, c2] = SCATTER_COLORS[i % SCATTER_COLORS.length];
+    frame.style.background = `linear-gradient(135deg, ${c1} 0%, ${c2} 100%)`;
+
+    // Random position across screen
+    const randX = 10 + Math.random() * 80;
+    const randY = 10 + Math.random() * 80;
+    const randR = -30 + Math.random() * 60;
+    frame.style.left = randX + '%';
+    frame.style.top = randY + '%';
+    frame.style.transform = `translate(-50%, -50%) rotate(${randR}deg) scale(0.08)`;
+
+    container.appendChild(frame);
+
+    // Burst in → expand out → fade
+    gsap.fromTo(frame,
+      { scale: 0.08, opacity: 0 },
+      {
+        scale: 1,
+        opacity: 0.9,
+        duration: 1.2,
+        delay: i * 0.09,  // quick stagger — all 15 in ~1.35s
+        ease: 'power2.out',
+        onComplete: () => {
+          gsap.to(frame, {
+            scale: 2.4,
+            opacity: 0,
+            rotation: randR + (Math.random() * 30 - 15),
+            duration: 1.4,
+            ease: 'power2.in',
+          });
+        },
+      }
+    );
+  }
+}
+
+function clearScatter() {
+  document.getElementById('scatter').innerHTML = '';
 }
 
 /* ═════════════════════════════════
@@ -675,10 +745,11 @@ function closeFlashback() {
     gsap.to(c, { opacity: 1, scale: 1, duration: 0.5 });
   });
 
-  // Clear clone
+  // Clear clone + scatter
   setTimeout(() => {
     document.getElementById('clone').innerHTML = '';
     document.getElementById('clone').style.opacity = '0';
+    clearScatter();
   }, 600);
 
   isBusy = false;
