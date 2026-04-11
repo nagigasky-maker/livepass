@@ -91,10 +91,11 @@ html,body{width:100%;height:100%;background:var(--black);overflow:hidden;
 .ph-count{font-family:'Bebas Neue';font-size:13px;letter-spacing:.18em;color:rgba(237,235,230,.25)}
 
 /* Fan-spread pass cards */
-.pass-fan{position:relative;width:100%;height:340px;margin-top:0;overflow:visible}
-.pass-fan .pf-card{position:absolute;width:180px;height:260px;border-radius:12px;overflow:hidden;
+.pass-fan{position:relative;width:100%;height:360px;margin-top:0;overflow:visible}
+.pass-fan .pf-card{position:absolute;width:180px;height:285px;border-radius:12px;overflow:hidden;
+  background:#000;
   box-shadow:0 8px 32px rgba(0,0,0,.6);cursor:pointer;transition:transform .4s cubic-bezier(.25,.46,.45,.94)}
-.pass-fan .pf-card img{width:100%;height:100%;object-fit:contain;display:block}
+.pass-fan .pf-card img{width:100%;height:100%;object-fit:cover;display:block}
 
 /* ═══════════════════════════════════
    TAB 2 — SCREEN / ARTICLE
@@ -364,7 +365,7 @@ function buildPassFan() {
     card.style.transform = `rotate(${rot}deg)`;
     card.style.zIndex = 10 - Math.abs(Math.round(offset));
     if (p.img) {
-      card.innerHTML = `<img src="${p.img}" alt="" style="width:100%;height:100%;object-fit:contain;display:block">`;
+      card.innerHTML = `<img src="${p.img}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">`;
     } else {
       card.style.background = p.color;
       card.innerHTML = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
