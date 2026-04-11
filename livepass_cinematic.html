@@ -6,6 +6,7 @@
 <title>YOU WERE THERE — LIVE PASS</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Observer.min.js"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -95,20 +96,37 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer;-we
 }
 #clone img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 
-/* Scatter — random gradient frames during zoom */
-#scatter{
+/* Illusion stage — GSAP 050 style infinite scroll reveal */
+#illusion{
   position:absolute;inset:0;z-index:55;
+  overflow:hidden;
   pointer-events:none;
 }
-.scatter-frame{
-  position:absolute;
-  width:60vw;height:80vw;max-height:80vh;
-  border-radius:10px;
-  transform:scale(0.08);opacity:0;
+.ifr{
+  position:absolute;top:50%;left:50%;
+  width:72vw;height:96vw;max-height:72vh;
+  border-radius:12px;
+  transform-origin:50% 50%;
+  transform:translate(-50%,-50%) scale(0.08);
+  opacity:0;
   will-change:transform,opacity;
-  mix-blend-mode:screen;
-  filter:blur(8px);
+  box-shadow:0 24px 60px rgba(0,0,0,0.8);
 }
+
+/* Scroll hint below reveal */
+#scrollHint{
+  position:absolute;bottom:max(24px,calc(var(--safe-bot) + 16px));
+  left:50%;transform:translateX(-50%);z-index:86;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:8px;letter-spacing:0.42em;text-transform:uppercase;
+  color:rgba(237,235,230,0.3);white-space:nowrap;pointer-events:none;
+  opacity:0;transition:opacity 1s ease;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+}
+#scrollHint.show{opacity:1}
+.sh-line{width:1px;height:22px;background:rgba(237,235,230,0.35);
+  transform-origin:top;animation:shPulse 1.7s ease-in-out infinite}
+@keyframes shPulse{0%{transform:scaleY(0);opacity:0}35%{opacity:1}100%{transform:scaleY(1);opacity:0.15}}
 
 /* Grain + vignette */
 #grain{
@@ -265,13 +283,15 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer;-we
 <!-- ═══ FLASHBACK ═══ -->
 <div id="flashback">
   <div id="lights"></div>
-  <div id="scatter"></div>
+  <div id="illusion"></div>
   <div id="clone"></div>
   <div id="grain"></div>
   <div id="vignette"></div>
 
   <div id="passBadge">Pass · —</div>
   <button id="close" onclick="closeFlashback()">✕</button>
+
+  <div id="scrollHint"><div class="sh-line"></div>Scroll to explore</div>
 
   <div id="content">
     <div id="eyebrow">You Were There</div>
@@ -431,7 +451,7 @@ function openFlashback(pass, cardEl) {
     if (c !== cardEl) gsap.to(c, { opacity: 0.25, scale: 0.82, duration: 0.5, ease: 'power2.out' });
   });
 
-  // PHASE 2 — cinematic scale zoom (5s) + scatter + atmosphere
+  // PHASE 2 — cinematic scale zoom (5s) + illusion + atmosphere
   tl.to(clone, {
     scale: 9,
     opacity: 0,
@@ -442,8 +462,8 @@ function openFlashback(pass, cardEl) {
       gsap.to('#grain',    { opacity: 0.35, duration: 1.2 });
       gsap.to('#lights',   { opacity: 1,    duration: 1.5 });
       gsap.to('#vignette', { opacity: 1,    duration: 1.8 });
-      // Start scatter
-      startScatter();
+      // Start the infinite illusion loop (effect 050 style)
+      startIllusion();
     },
   }, '-=0.05');
 
@@ -455,53 +475,132 @@ function openFlashback(pass, cardEl) {
 }
 
 /* ═════════════════════════════════
-   SCATTER — random gradient frames fly in
-   during the Phase 2 zoom
+   ILLUSION — effect 050 style
+   Infinite image reveal, scroll-driven
    ═════════════════════════════════ */
-let scatterActive = false;
-function startScatter() {
-  const container = document.getElementById('scatter');
-  container.innerHTML = '';
-  scatterActive = true;
+gsap.registerPlugin(Observer);
 
-  const COUNT = 15;
-  for (let i = 0; i < COUNT; i++) {
-    const frame = document.createElement('div');
-    frame.className = 'scatter-frame';
-    const [c1, c2] = SCATTER_COLORS[i % SCATTER_COLORS.length];
-    frame.style.background = `linear-gradient(135deg, ${c1} 0%, ${c2} 100%)`;
+const NUM_FRAMES = 8;
+const CYCLE_DUR  = 18;    // total loop duration (seconds)
+const STAGGER    = 2.25;  // seconds between each frame's start
+let ifrEls = [];
+let illusionTl = null;
+let illusionIncr = 800;   // current scrub position on timeline
+const deltaCfg = { delta: 0 };
+let deltaTo = null;
+let illusionReady = false;
+let colorIdx = 0;
+let zIdx = 0;
+const mod = (n, m) => ((n % m) + m) % m;
 
-    // Random position (20-80% range to keep on-screen)
-    const randX = 20 + Math.random() * 60;
-    const randY = 15 + Math.random() * 70;
-    const randR = -25 + Math.random() * 50;
-    frame.style.left = randX + '%';
-    frame.style.top = randY + '%';
-    frame.style.transform = `translate(-50%, -50%) rotate(${randR}deg) scale(0.08)`;
+function gradientFor(i) {
+  const [c1, c2] = SCATTER_COLORS[mod(i, SCATTER_COLORS.length)];
+  return `linear-gradient(135deg, ${c1} 0%, ${c2} 50%, #000 100%)`;
+}
 
-    container.appendChild(frame);
-
-    // Animate each frame in a loop with stagger
-    const delay = i * 0.18;   // 180ms stagger
-    gsap.fromTo(frame,
-      { scale: 0.08, opacity: 0 },
-      {
-        scale: 1,
-        opacity: 0.85,
-        duration: 1.4,
-        delay: delay,
-        ease: 'power2.out',
-        onComplete: () => {
-          gsap.to(frame, {
-            scale: 2,
-            opacity: 0,
-            duration: 1.2,
-            ease: 'power2.in',
-          });
-        },
-      }
-    );
+function initIllusion() {
+  if (illusionReady) {
+    // reset state for re-entry
+    illusionIncr = 800;
+    colorIdx = 0;
+    zIdx = NUM_FRAMES;
+    ifrEls.forEach((el, i) => {
+      el.style.background = gradientFor(i);
+      el.style.zIndex = i;
+      el.dataset.index = i;
+    });
+    illusionTl.time(illusionIncr);
+    return;
   }
+  illusionReady = true;
+
+  const stage = document.getElementById('illusion');
+  stage.innerHTML = '';
+  ifrEls = [];
+
+  for (let i = 0; i < NUM_FRAMES; i++) {
+    const el = document.createElement('div');
+    el.className = 'ifr';
+    el.style.zIndex = i;
+    el.dataset.index = i;
+    el.style.background = gradientFor(i);
+    stage.appendChild(el);
+    ifrEls.push(el);
+  }
+  zIdx = NUM_FRAMES;
+  colorIdx = NUM_FRAMES - 1;
+
+  // deltaTo smooths scroll velocity into the timeline
+  deltaTo = gsap.quickTo(deltaCfg, 'delta', {
+    duration: 0.4,
+    ease: 'none',
+    onUpdate: () => { illusionIncr += deltaCfg.delta; illusionTl.time(illusionIncr); }
+  });
+
+  // Main timeline — each frame flies from far to close, forever
+  illusionTl = gsap.timeline({ paused: true });
+  illusionTl.fromTo(ifrEls,
+    { scale: 0.08, opacity: 0 },
+    {
+      scale: 1.05,
+      opacity: 1,
+      ease: 'expo.inOut',
+      duration: CYCLE_DUR,
+      stagger: {
+        each: STAGGER,
+        repeat: -1,
+        onRepeat() {
+          const target = this.targets()[0];
+          const forward = deltaCfg.delta >= 0;
+          zIdx += forward ? 1 : -1;
+          target.style.zIndex = forward ? zIdx : zIdx - (ifrEls.length - 1);
+          // Cycle the gradient so each repeat shows a new color
+          colorIdx = mod(colorIdx + (forward ? 1 : -1), SCATTER_COLORS.length);
+          target.dataset.index = colorIdx;
+          target.style.background = gradientFor(colorIdx);
+          gsap.set(target, { scale: 0.08, opacity: 0 });
+        }
+      }
+    }
+  ).time(illusionIncr);
+
+  // Observer — wheel/touch/drag all advance the timeline
+  Observer.create({
+    target: document.getElementById('flashback'),
+    type: 'wheel,touch',
+    onChange: (e) => {
+      const divisor = e.event.type === 'touchmove' ? 300 : 1400;
+      deltaTo(-e.deltaY / divisor);
+      revealScrollHint();
+    },
+    onStop: () => {
+      // Coast slowly after user stops
+      gsap.to(deltaCfg, {
+        delta: 0.06,
+        duration: 1.4,
+        ease: 'power2.out',
+        onUpdate: () => { illusionIncr += deltaCfg.delta; illusionTl.time(illusionIncr); }
+      });
+    }
+  });
+}
+
+function startIllusion() {
+  initIllusion();
+  illusionTl.play();
+  // Boost with initial burst so user immediately sees movement
+  const burst = [3, 2.5, 4, 3, 3.5, 2.5, 3, 4, 3.5, 3, 2.5, 2, 1.8, 1.5, 1];
+  burst.forEach((d, i) => setTimeout(() => deltaTo && deltaTo(d), i * 180));
+  // Settle into gentle auto-drift
+  setTimeout(() => deltaTo && deltaTo(0.08), 3200);
+}
+
+function stopIllusion() {
+  if (illusionTl) illusionTl.pause();
+}
+
+function revealScrollHint() {
+  document.getElementById('scrollHint').classList.remove('show');
 }
 
 /* ═════════════════════════════════
@@ -546,6 +645,8 @@ function revealContent() {
   show('passBadge',1200);
   show('close',    1200);
   setTimeout(() => haptic([30, 40, 60]), 1200);
+  // Show scroll hint after the cascade settles
+  setTimeout(() => document.getElementById('scrollHint').classList.add('show'), 1800);
 }
 
 /* ═════════════════════════════════
@@ -558,8 +659,11 @@ function closeFlashback() {
   document.getElementById('landing').classList.remove('gone');
 
   // Reset all reveal states
-  ['eyebrow','title','date','divider','stats','actions','close','passBadge']
+  ['eyebrow','title','date','divider','stats','actions','close','passBadge','scrollHint']
     .forEach(id => document.getElementById(id).classList.remove('show','typing'));
+
+  // Stop illusion loop (paused so it can restart next time)
+  stopIllusion();
 
   // Fade atmosphere back
   gsap.to('#grain',    { opacity: 0, duration: 0.6 });
@@ -571,9 +675,8 @@ function closeFlashback() {
     gsap.to(c, { opacity: 1, scale: 1, duration: 0.5 });
   });
 
-  // Clear scatter
+  // Clear clone
   setTimeout(() => {
-    document.getElementById('scatter').innerHTML = '';
     document.getElementById('clone').innerHTML = '';
     document.getElementById('clone').style.opacity = '0';
   }, 600);
