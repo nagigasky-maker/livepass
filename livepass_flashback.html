@@ -171,7 +171,6 @@ html,body{width:100%;height:100%;background:var(--black);overflow:hidden;
   <div class="fb-pulse r1"></div>
   <div class="fb-pulse r2"></div>
   <div class="fb-pulse r3"></div>
-  <div class="fb-ywt">You Were There</div>
   <div class="fb-venue"></div>
   <div class="fb-date"></div>
   <div class="fb-card-wrap">
@@ -224,6 +223,17 @@ const BEAT = 60 / BPM;  // seconds per beat ≈ 0.469s
 
 function haptic(pattern) {
   if (navigator.vibrate) navigator.vibrate(pattern);
+}
+
+// Long completion vibration. Patterned arrays are sometimes silently
+// truncated; chained simple long calls feel more reliable. The second
+// call is delayed past the first so it doesn't cancel mid-vibe.
+function longCompletionHaptic() {
+  if (!navigator.vibrate) return;
+  // First sustained pulse — ~700ms
+  navigator.vibrate(700);
+  // After it finishes, fire a second long pulse — ~900ms
+  setTimeout(() => { if (navigator.vibrate) navigator.vibrate(900); }, 800);
 }
 
 /* ═══════════════════════════════════════
@@ -423,21 +433,13 @@ function startFlashback() {
     ease: 'sine.inOut',
   }, `-=${BEAT * 4}`);
 
-  /* ── Phase 4: YOU WERE THERE text fade in ── */
-  tl.to('.fb-ywt', {
-    opacity: 1,
-    duration: 1.2,
-    ease: 'power2.out',
-    onStart: () => haptic(15),
-  }, '+=0.2');
+  /* ── Phase 4: Typewriter venue + date (slower for readability) ── */
+  tl.add(typewriter(document.querySelector('.fb-venue'), 'ALL MUST DANCE', 0.09), '+=0.5');
+  tl.add(typewriter(document.querySelector('.fb-date'), 'MAY 4, 2026 · CLUB ASIA TOKYO', 0.055), '-=0.4');
 
-  /* ── Phase 5: Typewriter venue + date ── */
-  tl.add(typewriter(document.querySelector('.fb-venue'), 'ALL MUST DANCE', 0.045), '+=0.3');
-  tl.add(typewriter(document.querySelector('.fb-date'), 'MAY 4, 2026 · CLUB ASIA TOKYO', 0.028), '-=0.3');
-
-  /* ── Phase 6: Card rises with holo shimmer ── */
+  /* ── Phase 5: Card rises with holo shimmer ── */
   // Fade out text elements as card takes over
-  tl.to(['.fb-ywt', '.fb-venue', '.fb-date'], {
+  tl.to(['.fb-venue', '.fb-date'], {
     y: -40,
     opacity: 0.2,
     duration: 0.8,
@@ -494,9 +496,11 @@ function startFlashback() {
     onStart: () => {
       // Sub kick — drops on the same beat as the long vibe
       playKick();
-      // Long, punctuated completion haptic (~1.4 sec total)
-      // pattern: vibe, pause, vibe, pause, long-vibe
-      haptic([120, 60, 120, 60, 600]);
+      // Long completion haptic — use simple long durations because patterned
+      // arrays are silently truncated by some browsers (and on iOS Safari
+      // navigator.vibrate is a no-op altogether). Two staged calls maximise
+      // the chance of being felt.
+      longCompletionHaptic();
     },
   }, '+=0.3');
 
