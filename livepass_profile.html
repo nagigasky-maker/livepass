@@ -43,9 +43,8 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   display:flex;align-items:center;gap:14px;
   background:linear-gradient(to bottom,rgba(0,0,0,.95) 70%,transparent);
 }
-.tb-brand{display:flex;align-items:baseline;gap:0;margin-right:auto;white-space:nowrap}
-.tb-brand .l{font-family:'Bebas Neue';font-size:22px;letter-spacing:.16em;color:var(--white)}
-.tb-brand .p{font-family:'Bebas Neue';font-size:22px;letter-spacing:.16em;color:var(--blue)}
+.tb-brand{display:flex;align-items:center;margin-right:auto;height:22px;flex-shrink:0}
+.tb-brand img{height:100%;width:auto;display:block;image-rendering:-webkit-optimize-contrast}
 .tb-icon{
   background:none;border:none;cursor:pointer;position:relative;
   width:26px;height:26px;display:flex;align-items:center;justify-content:center;
@@ -207,7 +206,7 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 
 <!-- ═══ TOP BAR ═══ -->
 <div class="topbar">
-  <div class="tb-brand"><span class="l">LIVE&nbsp;</span><span class="p">PASS</span></div>
+  <a class="tb-brand" href="/home" aria-label="LIVE PASS"><img src="/livepasslogo.png" alt="LIVE PASS"></a>
 
   <!-- + Create -->
   <button class="tb-icon" aria-label="Create" title="投稿作成">
