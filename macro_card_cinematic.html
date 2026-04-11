@@ -535,21 +535,25 @@ const TEX = {
 /* Inline SVG placeholder generator — guaranteed to load (no network required) */
 function makeFrame(colors, label) {
   const [c1, c2, c3] = colors;
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 720 960' preserveAspectRatio='xMidYMid slice'>
-    <defs>
-      <radialGradient id='g' cx='50%' cy='50%' r='75%'>
-        <stop offset='0' stop-color='${c1}' stop-opacity='1'/>
-        <stop offset='0.5' stop-color='${c2}' stop-opacity='1'/>
-        <stop offset='1' stop-color='${c3}' stop-opacity='1'/>
-      </radialGradient>
-      <filter id='blur'><feGaussianBlur stdDeviation='28'/></filter>
-    </defs>
-    <rect width='720' height='960' fill='url(%23g)'/>
-    <circle cx='${200 + Math.floor(Math.random()*320)}' cy='${200 + Math.floor(Math.random()*560)}' r='120' fill='${c1}' opacity='0.7' filter='url(%23blur)'/>
-    <circle cx='${200 + Math.floor(Math.random()*320)}' cy='${200 + Math.floor(Math.random()*560)}' r='160' fill='${c2}' opacity='0.5' filter='url(%23blur)'/>
-    <text x='360' y='490' text-anchor='middle' fill='rgba(255,255,255,0.12)' font-size='72' font-weight='900' font-family='Arial,sans-serif' letter-spacing='8'>${label}</text>
-  </svg>`;
-  return 'data:image/svg+xml;utf8,' + svg.replace(/#/g, '%23').replace(/\n/g, '').replace(/\s+/g, ' ');
+  const cx1 = 200 + Math.floor(Math.random()*320);
+  const cy1 = 200 + Math.floor(Math.random()*560);
+  const cx2 = 200 + Math.floor(Math.random()*320);
+  const cy2 = 200 + Math.floor(Math.random()*560);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 960" preserveAspectRatio="xMidYMid slice">
+<defs>
+<radialGradient id="g" cx="50%" cy="50%" r="75%">
+<stop offset="0" stop-color="${c1}" stop-opacity="1"/>
+<stop offset="0.5" stop-color="${c2}" stop-opacity="1"/>
+<stop offset="1" stop-color="${c3}" stop-opacity="1"/>
+</radialGradient>
+<filter id="blur"><feGaussianBlur stdDeviation="28"/></filter>
+</defs>
+<rect width="720" height="960" fill="url(#g)"/>
+<circle cx="${cx1}" cy="${cy1}" r="120" fill="${c1}" opacity="0.7" filter="url(#blur)"/>
+<circle cx="${cx2}" cy="${cy2}" r="160" fill="${c2}" opacity="0.5" filter="url(#blur)"/>
+<text x="360" y="490" text-anchor="middle" fill="rgba(255,255,255,0.12)" font-size="72" font-weight="900" font-family="Arial,sans-serif" letter-spacing="8">${label}</text>
+</svg>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
 }
 
 const IMAGES = [
