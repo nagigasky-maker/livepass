@@ -128,12 +128,12 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .ph-name{
   font-family:Arial,'Noto Sans JP',sans-serif;
   font-weight:900;font-size:26px;
-  letter-spacing:.02em;color:var(--white);line-height:1;
+  letter-spacing:.02em;color:var(--blue);line-height:1;
 }
 .ph-role{
   font-family:Arial,'Noto Sans JP',sans-serif;
   font-weight:500;font-size:11px;letter-spacing:.26em;
-  color:var(--muted);text-transform:uppercase;margin-top:6px;
+  color:var(--blue);text-transform:uppercase;margin-top:6px;
 }
 .ph-actions{display:flex;gap:8px;margin-top:10px;align-items:center}
 .ph-follow-btn{
@@ -159,14 +159,8 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   display:flex;flex-direction:column;align-items:center;gap:4px;
   color:rgba(237,235,230,.35);padding:6px 4px;position:relative;
 }
-.st-btn.active{color:var(--white)}
+.st-btn.active{color:var(--green)}
 .st-btn svg{width:28px;height:28px;fill:currentColor}
-.st-btn::after{
-  content:'';position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);
-  width:4px;height:4px;border-radius:50%;background:var(--white);
-  opacity:0;transition:opacity .2s;
-}
-.st-btn.active::after{opacity:1}
 
 /* PASS COLLECTION section */
 .pass-section{padding:20px 20px 8px}
