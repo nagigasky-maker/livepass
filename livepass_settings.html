@@ -416,12 +416,21 @@ document.getElementById('avatarUpload').addEventListener('change', (e) => {
   reader.readAsDataURL(file);
 });
 
-/* Plan selection (visual only for now, locked plans ignored) */
+/* Plan selection — writes to localStorage so profile can react */
+const PLAN_KEY = 'livepass_plan';
+// Initial sync from storage (if stored)
+try {
+  const stored = (localStorage.getItem(PLAN_KEY) || 'free').toLowerCase();
+  document.querySelectorAll('.plan').forEach(x => x.classList.remove('active'));
+  const match = document.querySelector(`.plan[data-plan="${stored}"]`);
+  if (match && !match.classList.contains('locked')) match.classList.add('active');
+} catch(e) {}
 document.querySelectorAll('.plan').forEach(p => {
   p.addEventListener('click', () => {
     if (p.classList.contains('locked')) return;
     document.querySelectorAll('.plan').forEach(x => x.classList.remove('active'));
     p.classList.add('active');
+    try { localStorage.setItem(PLAN_KEY, p.dataset.plan); } catch(e) {}
   });
 });
 
