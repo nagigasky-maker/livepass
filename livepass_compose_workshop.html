@@ -89,7 +89,7 @@ textarea.input-box{resize:vertical;min-height:120px;line-height:1.8;font-size:13
   background:var(--accent);color:#000;
   font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
   font-size:13px;letter-spacing:.2em;text-transform:uppercase;
-  border-radius:99px;box-shadow:0 6px 24px rgba(245,200,66,.25);}
+  border-radius:99px;box-shadow:0 6px 24px rgba(245,200,66,.25);color:#000}
 .submit-btn:disabled{background:rgba(237,235,230,.08);color:rgba(237,235,230,.25);box-shadow:none;}
 
 #toast{position:fixed;top:max(20px,calc(var(--safe-top) + 20px));left:50%;
@@ -101,13 +101,253 @@ textarea.input-box{resize:vertical;min-height:120px;line-height:1.8;font-size:13
   opacity:0;transition:opacity .3s, transform .3s;pointer-events:none;}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 .form-bottom-padding{height:28px}
+
+/* Description format templates */
+.tmpl-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.tmpl-chip{
+  padding:8px 13px;border-radius:99px;
+  background:rgba(255,255,255,.04);
+  border:0.5px solid rgba(237,235,230,.14);
+  color:rgba(237,235,230,.7);
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:600;
+  font-size:10px;letter-spacing:.04em;
+  display:flex;align-items:center;gap:6px;
+}
+.tmpl-chip:active{background:rgba(245,200,66,.12);border-color:var(--accent);color:var(--accent)}
+.tmpl-chip svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2}
+.tmpl-hint{
+  font-family:'IBM Plex Mono',monospace;font-size:8px;
+  letter-spacing:.28em;text-transform:uppercase;
+  color:rgba(237,235,230,.22);margin:-4px 0 8px;
+}
+
+/* Add-on toggle buttons (reservation / subscriber price) */
+.addon-row{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.addon-btn{
+  width:100%;padding:14px 16px;
+  background:rgba(255,255,255,.03);
+  border:0.5px dashed rgba(255,255,255,.18);
+  border-radius:10px;
+  display:flex;align-items:center;gap:12px;text-align:left;
+  font-family:Arial,'Noto Sans JP',sans-serif;
+  color:rgba(237,235,230,.7);
+}
+.addon-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0}
+.addon-btn-title{font-weight:700;font-size:12px;color:var(--white)}
+.addon-btn-sub{font-weight:400;font-size:10px;color:rgba(237,235,230,.4);margin-top:2px;letter-spacing:.02em}
+.addon-btn.active{
+  background:rgba(245,200,66,.08);
+  border-style:solid;border-color:var(--accent);
+  color:var(--accent);
+}
+.addon-btn.active .addon-btn-title{color:var(--accent)}
+.addon-body{display:none;margin-top:10px}
+.addon-body.open{display:block}
+.addon-btn-body{flex:1}
+.addon-check{
+  width:20px;height:20px;border-radius:50%;
+  border:0.5px solid rgba(237,235,230,.25);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.addon-btn.active .addon-check{border-color:var(--accent);background:var(--accent)}
+.addon-btn.active .addon-check svg{stroke:#fff;display:block}
+.addon-check svg{width:11px;height:11px;display:none;stroke-width:3}
+
+/* Artist account search + chips */
+.artist-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.artist-chips:empty{display:none}
+.artist-chip{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 8px 6px 6px;border-radius:99px;
+  background:rgba(61,170,255,.08);
+  border:0.5px solid rgba(61,170,255,.4);
+  color:var(--white);
+}
+.artist-chip-avatar{
+  width:22px;height:22px;border-radius:50%;
+  background:linear-gradient(135deg,#3DAAFF,#bf5af2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:Arial,sans-serif;font-weight:900;font-size:9px;color:#000;
+  flex-shrink:0;
+}
+.artist-chip-name{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:600;
+  font-size:11px;letter-spacing:.02em;
+}
+.artist-chip-remove{
+  width:18px;height:18px;border-radius:50%;
+  background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,.75);
+}
+.artist-chip-remove svg{width:9px;height:9px;stroke:currentColor;fill:none;stroke-width:2.4}
+.artist-search-wrap{position:relative}
+.artist-suggest{
+  position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:6;
+  background:#0c0c0c;border:0.5px solid rgba(255,255,255,.14);
+  border-radius:10px;
+  max-height:240px;overflow-y:auto;
+  box-shadow:0 12px 36px rgba(0,0,0,.55);
+  display:none;
+}
+.artist-suggest.open{display:block}
+.artist-suggest-item{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 14px;cursor:pointer;
+  border-bottom:0.5px solid rgba(255,255,255,.04);
+}
+.artist-suggest-item:last-child{border-bottom:0}
+.artist-suggest-item:active{background:rgba(255,255,255,.05)}
+.artist-suggest-avatar{
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,#3DAAFF,#bf5af2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:Arial,sans-serif;font-weight:900;font-size:10px;color:#000;
+  flex-shrink:0;
+}
+.artist-suggest-name{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:13px;color:var(--white);
+}
+.artist-suggest-role{
+  font-family:'IBM Plex Mono',monospace;font-size:8px;
+  letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(237,235,230,.4);margin-top:2px;
+}
+.artist-suggest-add{
+  margin-left:auto;padding:5px 11px;border-radius:99px;
+  background:rgba(61,170,255,.12);border:0.5px solid rgba(61,170,255,.4);
+  color:#8fcaff;font-family:Arial,sans-serif;font-weight:700;
+  font-size:9px;letter-spacing:.1em;
+}
+.artist-suggest-empty{
+  padding:14px;text-align:center;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;
+  color:rgba(237,235,230,.4);
+}
+
+/* ───── TEAM CREDIT section (映画クレジット風) ───── */
+.team-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.team-list:empty{display:none}
+.team-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px 10px 8px;border-radius:10px;
+  background:rgba(255,255,255,.03);
+  border:0.5px solid rgba(255,255,255,.08);
+}
+.team-row.private{
+  background:rgba(245,200,66,.05);
+  border-color:rgba(245,200,66,.3);
+}
+.team-row-av{
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,#3DAAFF,#bf5af2);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-family:Arial,sans-serif;font-weight:900;font-size:10px;color:#000;
+}
+.team-row-info{flex:1;min-width:0}
+.team-row-name{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:13px;color:var(--white);margin-bottom:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.team-row-role{
+  background:none;border:none;outline:none;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;
+  color:rgba(237,235,230,.6);width:100%;padding:2px 0;
+  border-bottom:0.5px dashed rgba(237,235,230,.15);
+}
+.team-row-role:focus{border-bottom-color:var(--accent)}
+.team-row-private{
+  flex-shrink:0;padding:6px 10px;border-radius:99px;
+  background:none;border:0.5px solid rgba(237,235,230,.2);
+  color:rgba(237,235,230,.55);
+  font-family:Arial,sans-serif;font-weight:700;font-size:9px;
+  letter-spacing:.06em;display:flex;align-items:center;gap:4px;
+}
+.team-row-private svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2}
+.team-row-private.on{
+  background:rgba(245,200,66,.12);border-color:var(--gold);color:var(--gold);
+}
+.team-row-remove{
+  width:22px;height:22px;border-radius:50%;
+  background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,.75);flex-shrink:0;
+}
+.team-row-remove svg{width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2.4}
+.team-role-presets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.team-preset{
+  padding:5px 10px;border-radius:99px;
+  background:rgba(255,255,255,.03);
+  border:0.5px solid rgba(237,235,230,.1);
+  color:rgba(237,235,230,.55);
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
+  font-size:9px;letter-spacing:.04em;
+}
+.team-preset:active{background:rgba(245,200,66,.08);border-color:var(--accent);color:var(--accent)}
+
+/* ───── COLLABORATION section ───── */
+.collab-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.collab-list:empty{display:none}
+.collab-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px 10px 8px;border-radius:10px;
+  background:rgba(191,90,242,.06);
+  border:0.5px solid rgba(191,90,242,.35);
+}
+.collab-row-av{
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,#bf5af2,#F4C0D1);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-family:Arial,sans-serif;font-weight:900;font-size:10px;color:#000;
+}
+.collab-row-name{
+  flex:1;min-width:0;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:13px;color:var(--white);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.collab-row-share{
+  flex-shrink:0;width:72px;
+  display:flex;align-items:center;gap:4px;
+  background:rgba(0,0,0,.35);border:0.5px solid rgba(191,90,242,.35);
+  border-radius:99px;padding:4px 12px;
+}
+.collab-row-share input{
+  background:none;border:none;outline:none;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:13px;color:var(--white);width:34px;text-align:right;
+  -moz-appearance:textfield;
+}
+.collab-row-share input::-webkit-outer-spin-button,
+.collab-row-share input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.collab-row-share span{
+  font-family:Arial,sans-serif;font-weight:700;font-size:11px;color:#d4a8ff;
+}
+.collab-row-remove{
+  width:22px;height:22px;border-radius:50%;
+  background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,.75);flex-shrink:0;
+}
+.collab-row-remove svg{width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2.4}
+.collab-total{
+  margin-top:10px;padding:12px 14px;border-radius:10px;
+  background:rgba(255,255,255,.02);
+  border:0.5px solid rgba(255,255,255,.08);
+  font-family:'IBM Plex Mono',monospace;font-size:9px;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(237,235,230,.5);line-height:1.9;
+}
+.collab-total b{color:var(--white);font-weight:800}
+.collab-total.error{background:rgba(245,200,66,.06);border-color:rgba(245,200,66,.4);color:#ff8a86}
+.collab-total .me{color:#8fcaff}
+.collab-total .them{color:#d4a8ff}
 </style>
 </head>
 <body>
 
 <header class="hdr">
   <a href="/calendar" class="hdr-back">← Back</a>
-  <div class="hdr-title">ワークショップ作成</div>
+  <div class="hdr-title" id="hdrTitle">ワークショップ作成</div>
 </header>
 
 <main class="form">
@@ -129,17 +369,7 @@ textarea.input-box{resize:vertical;min-height:120px;line-height:1.8;font-size:13
   </div>
 
   <div class="form-section">
-    <div class="form-label">レベル</div>
-    <div class="pill-row" id="levelRow">
-      <button class="pill active" data-level="ALL LEVELS">ALL LEVELS</button>
-      <button class="pill" data-level="BEGINNER">BEGINNER</button>
-      <button class="pill" data-level="INTERMEDIATE">INTERMEDIATE</button>
-      <button class="pill" data-level="ADVANCED">ADVANCED</button>
-    </div>
-  </div>
-
-  <div class="form-section">
-    <div class="form-label">会場 / スタジオ</div>
+    <div class="form-label">会場</div>
     <input class="input-box" id="venueInput" placeholder="代官山 Studio A / 渋谷 WOMB 2F など">
   </div>
 
@@ -152,20 +382,103 @@ textarea.input-box{resize:vertical;min-height:120px;line-height:1.8;font-size:13
       <div class="form-label">開始</div>
       <input class="input-box" type="time" id="timeInput">
     </div>
-    <div class="form-section">
-      <div class="form-label">終了</div>
-      <input class="input-box" type="time" id="endInput">
+  </div>
+
+  <div class="form-section">
+    <div class="form-label">価格 (円)</div>
+    <input class="input-box" type="number" id="priceInput" placeholder="3000" min="0" step="100">
+
+    <div class="addon-row">
+      <!-- Reservation toggle -->
+      <button type="button" class="addon-btn" id="reservationToggle" aria-pressed="false">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M9 16l2 2 4-4"/></svg>
+        <div class="addon-btn-body">
+          <div class="addon-btn-title">予約受付を追加</div>
+          <div class="addon-btn-sub">予約者にクレジット登録を要求・当日キャンセル料を請求可</div>
+        </div>
+        <div class="addon-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      </button>
+      <div class="addon-body" id="reservationBody">
+        <div style="display:flex;gap:10px">
+          <div style="flex:1">
+            <div class="form-label" style="margin-bottom:6px">キャンセル料 (円)</div>
+            <input class="input-box" type="number" id="cancelFeeInput" placeholder="例: 2000" min="0" step="100">
+          </div>
+          <div style="flex:1">
+            <div class="form-label" style="margin-bottom:6px">無料キャンセル期限</div>
+            <select class="input-box" id="cancelDeadlineInput" style="appearance:none;-webkit-appearance:none">
+              <option value="24">開催24時間前まで</option>
+              <option value="48">開催48時間前まで</option>
+              <option value="72">開催72時間前まで</option>
+              <option value="168">開催1週間前まで</option>
+              <option value="0">キャンセル不可</option>
+            </select>
+          </div>
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:rgba(237,235,230,.35);margin-top:10px;line-height:1.7">
+          ※ 期限後のキャンセル / 無連絡欠席 はここで設定した金額を<br>自動請求できます
+        </div>
+      </div>
+
+      <!-- Subscriber-only price toggle -->
+      <button type="button" class="addon-btn" id="subscriberToggle" aria-pressed="false">
+        <svg viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7l3-7z"/></svg>
+        <div class="addon-btn-body">
+          <div class="addon-btn-title">サブスク加入者限定価格</div>
+          <div class="addon-btn-sub">アーティストのサブスク加入者限定の特別価格</div>
+        </div>
+        <div class="addon-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      </button>
+      <div class="addon-body" id="subscriberBody">
+        <input class="input-box" type="number" id="subscriberPriceInput" placeholder="サブスク加入者価格 (例: 1500)" min="0" step="100">
+      </div>
     </div>
   </div>
 
   <div class="form-section">
-    <div class="form-label">参加費 (円)</div>
-    <input class="input-box" type="number" id="priceInput" placeholder="5000" min="0" step="500">
+    <div class="form-label">出演アーティスト</div>
+    <div class="artist-chips" id="artistChips"></div>
+    <div class="artist-search-wrap">
+      <input class="input-box" id="artistSearchInput" placeholder="アカウントを検索して追加" autocomplete="off">
+      <div class="artist-suggest" id="artistSuggest"></div>
+    </div>
   </div>
 
   <div class="form-section">
-    <div class="form-label">講師</div>
-    <input class="input-box" id="instructorInput" placeholder="SACHI / NOBBY など">
+    <div class="form-label">EVENT PROJECT TEAM / クレジット</div>
+    <div class="team-role-presets">
+      <button type="button" class="team-preset">Lighting</button>
+      <button type="button" class="team-preset">Sound</button>
+      <button type="button" class="team-preset">Stage Manager</button>
+      <button type="button" class="team-preset">VJ</button>
+      <button type="button" class="team-preset">Photo</button>
+      <button type="button" class="team-preset">Video</button>
+      <button type="button" class="team-preset">Production</button>
+      <button type="button" class="team-preset">Curation</button>
+      <button type="button" class="team-preset">Security</button>
+      <button type="button" class="team-preset">Catering</button>
+    </div>
+    <div class="team-list" id="teamList"></div>
+    <div class="artist-search-wrap">
+      <input class="input-box" id="teamSearchInput" placeholder="チームメンバーのアカウントを検索して追加" autocomplete="off">
+      <div class="artist-suggest" id="teamSuggest"></div>
+    </div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:rgba(237,235,230,.3);margin-top:8px;line-height:1.7">
+      ※ 役割を直接入力 or プリセットタップで設定 / 非公開は所有者のみ閲覧可
+    </div>
+  </div>
+
+  <div class="form-section">
+    <div class="form-label">COLLABORATION / 収益分配</div>
+    <div class="collab-list" id="collabList"></div>
+    <div class="artist-search-wrap">
+      <input class="input-box" id="collabSearchInput" placeholder="コラボアーティストのアカウントを検索" autocomplete="off">
+      <div class="artist-suggest" id="collabSuggest"></div>
+    </div>
+    <div class="collab-total" id="collabTotal" style="display:none">
+      <div><b>自分の取り分</b> <span class="me" id="collabMyShare">100%</span></div>
+      <div><b>コラボ合計</b> <span class="them" id="collabThemShare">0%</span></div>
+    </div>
   </div>
 
   <div class="form-section">
@@ -180,8 +493,28 @@ textarea.input-box{resize:vertical;min-height:120px;line-height:1.8;font-size:13
   </div>
 
   <div class="form-section">
-    <div class="form-label">内容説明</div>
-    <textarea class="input-box" id="bodyInput" placeholder="ワークショップの内容、持ち物など..." rows="6"></textarea>
+    <div class="form-label">説明</div>
+    <div class="tmpl-hint">Format Templates</div>
+    <div class="tmpl-row">
+      <button type="button" class="tmpl-chip" data-tmpl="club">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/></svg>
+        CLUB / DJ
+      </button>
+      <button type="button" class="tmpl-chip" data-tmpl="live">
+        <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        LIVE
+      </button>
+      <button type="button" class="tmpl-chip" data-tmpl="exhibition">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>
+        EXHIBITION
+      </button>
+    </div>
+    <textarea class="input-box" id="bodyInput" placeholder="ワークショップの詳細... 上のテンプレートから選択できます" rows="8"></textarea>
+  </div>
+
+  <div class="form-section">
+    <div class="form-label">タグ (カンマ区切り)</div>
+    <input class="input-box" id="tagsInput" placeholder="HOUSE, TECHNO, PARTY">
   </div>
 
   <div class="form-bottom-padding"></div>
@@ -191,10 +524,49 @@ textarea.input-box{resize:vertical;min-height:120px;line-height:1.8;font-size:13
   <button class="submit-btn" id="submitBtn">ワークショップを投稿 →</button>
 </div>
 
-<div id="toast">✓ ワークショップを投稿しました</div>
+<div id="toast">✓ 保存しました</div>
 
 <script>
-const state = { category:'HOUSE', level:'ALL LEVELS', coverDataUrl:null };
+const state = {
+  category: 'HOUSE',
+  coverDataUrl: null,
+  reservation: false,
+  subscriberEnabled: false,
+  artists: [],        // [{ name, role }]
+  team:     [],       // [{ name, role, hidden }]
+  collaborators: [],  // [{ name, share }]
+  editingId: null,    // if set, we're editing an existing event
+};
+// Default cancellation policy (editable in the reservation body when enabled)
+const DEFAULT_CANCEL_FEE = 2000;
+const DEFAULT_CANCEL_DEADLINE_H = 24;
+
+// ─────────────────────────────────────────────
+// Edit mode: detect ?edit=<id> and prefill from localStorage
+// ─────────────────────────────────────────────
+const editId = new URLSearchParams(location.search).get('edit');
+let editingEvent = null;
+if (editId) {
+  try {
+    const raw = localStorage.getItem('livepass_workshops');
+    const list = raw ? JSON.parse(raw) : [];
+    editingEvent = list.find(e => e.id === editId) || null;
+    if (editingEvent) {
+      state.editingId = editingEvent.id;
+      const currentUser = localStorage.getItem('livepass_account_name') || 'NOBBY';
+      if ((editingEvent.author || 'NOBBY') !== currentUser) {
+        alert('このイベントを編集する権限がありません');
+        location.href = '/profile';
+      }
+    }
+  } catch (e) {}
+}
+
+// Update header and submit button when in edit mode
+if (editingEvent) {
+  document.getElementById('hdrTitle').textContent = 'ワークショップ編集';
+  document.getElementById('submitBtn').textContent = '変更を保存 →';
+}
 
 document.querySelectorAll('#catRow .pill').forEach(p => {
   p.addEventListener('click', () => {
@@ -203,12 +575,532 @@ document.querySelectorAll('#catRow .pill').forEach(p => {
     state.category = p.dataset.cat;
   });
 });
-document.querySelectorAll('#levelRow .pill').forEach(p => {
-  p.addEventListener('click', () => {
-    document.querySelectorAll('#levelRow .pill').forEach(x => x.classList.remove('active'));
-    p.classList.add('active');
-    state.level = p.dataset.level;
+
+// ─────────────────────────────────────────────
+// Description format templates (3 patterns)
+// ─────────────────────────────────────────────
+const TEMPLATES = {
+  club:
+`🎧 CLUB / DJ NIGHT
+
+■ LINEUP
+・DJ 1
+・DJ 2
+・DJ 3
+
+■ OPEN / START
+OPEN 22:00 / START 23:00
+
+■ ENTRANCE
+¥3,000 (1D付き)
+※ID必須 / 20歳未満入場不可
+
+■ MUSIC
+HOUSE / TECHNO / DISCO
+
+■ VENUE
+会場名・アクセス
+
+※当日は混雑が予想されます。お早めのご来場をおすすめします。`,
+
+  live:
+`🎤 LIVE PERFORMANCE
+
+■ ARTIST
+メインアーティスト名
+
+■ SUPPORT ACT
+・Support 1
+・Support 2
+
+■ SCHEDULE
+OPEN 18:00 / START 19:00
+
+■ TICKET
+前売 ¥4,000 / 当日 ¥4,500
+(+1 Drink ¥600)
+
+■ SET LIST
+- Track 1
+- Track 2
+- Track 3
+
+■ 注意事項
+撮影・録音は禁止です。`,
+
+  exhibition:
+`🎨 EXHIBITION
+
+■ THEME
+展示テーマ・コンセプト
+
+■ ARTISTS
+・Artist 1
+・Artist 2
+・Artist 3
+
+■ 会期
+2026.04.15 - 2026.04.30
+
+■ 開館時間
+12:00 - 20:00 (最終入場 19:30)
+定休日: 月曜
+
+■ INPUT
+入場無料 / オープニング招待制
+
+■ COLLABORATION
+コラボブランド・スポンサー
+
+お問い合わせは DM まで。`,
+};
+
+const bodyInput = document.getElementById('bodyInput');
+
+// Substitute placeholder artist slots in a template with real artist names from state.artists
+function applyArtistsToTemplate(tmpl) {
+  const names = state.artists.map(a => a.name).filter(Boolean);
+  if (names.length === 0) return tmpl;
+
+  // CLUB: LINEUP bullets "・DJ 1" / "・DJ 2" / "・DJ 3"
+  // LIVE: "メインアーティスト名" + "・Support 1" / "・Support 2"
+  // EXHIBITION: "・Artist 1" / "・Artist 2" / "・Artist 3"
+  const djSlots      = ['DJ 1', 'DJ 2', 'DJ 3'];
+  const supportSlots = ['Support 1', 'Support 2'];
+  const artistSlots  = ['Artist 1', 'Artist 2', 'Artist 3'];
+
+  let out = tmpl;
+
+  // LIVE: first artist → main, rest → support
+  if (out.includes('メインアーティスト名')) {
+    out = out.replace('メインアーティスト名', names[0]);
+    // Remaining names fill support slots; unused slots get removed
+    const rest = names.slice(1);
+    supportSlots.forEach((slot, i) => {
+      if (rest[i]) {
+        out = out.replace(slot, rest[i]);
+      } else {
+        // Remove the whole "・Support N\n" line
+        const re = new RegExp('・' + slot.replace(/\s/g, '\\s') + '\\n?', 'g');
+        out = out.replace(re, '');
+      }
+    });
+  }
+
+  // CLUB: DJ 1..3
+  djSlots.forEach((slot, i) => {
+    if (names[i]) {
+      out = out.replace(slot, names[i]);
+    } else if (out.includes(slot)) {
+      const re = new RegExp('・' + slot.replace(/\s/g, '\\s') + '\\n?', 'g');
+      out = out.replace(re, '');
+    }
   });
+
+  // EXHIBITION: Artist 1..3
+  artistSlots.forEach((slot, i) => {
+    if (names[i]) {
+      out = out.replace(slot, names[i]);
+    } else if (out.includes(slot)) {
+      const re = new RegExp('・' + slot.replace(/\s/g, '\\s') + '\\n?', 'g');
+      out = out.replace(re, '');
+    }
+  });
+
+  return out;
+}
+
+document.querySelectorAll('.tmpl-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    const key = chip.dataset.tmpl;
+    const tmpl = TEMPLATES[key];
+    if (!tmpl) return;
+    // Only overwrite if empty or user confirms
+    if (bodyInput.value.trim() && !confirm('既に入力された説明を置き換えますか？')) return;
+    bodyInput.value = applyArtistsToTemplate(tmpl);
+    bodyInput.focus();
+    if (navigator.vibrate) navigator.vibrate(8);
+  });
+});
+
+// ─────────────────────────────────────────────
+// Reservation + subscriber-only price toggles
+// ─────────────────────────────────────────────
+const reservationToggle = document.getElementById('reservationToggle');
+const reservationBody   = document.getElementById('reservationBody');
+const cancelFeeInput    = document.getElementById('cancelFeeInput');
+const cancelDeadlineInput = document.getElementById('cancelDeadlineInput');
+// Seed defaults so first-time users don't stare at empty fields
+cancelFeeInput.value = DEFAULT_CANCEL_FEE;
+cancelDeadlineInput.value = String(DEFAULT_CANCEL_DEADLINE_H);
+reservationToggle.addEventListener('click', () => {
+  state.reservation = !state.reservation;
+  reservationToggle.classList.toggle('active', state.reservation);
+  reservationToggle.setAttribute('aria-pressed', String(state.reservation));
+  reservationBody.classList.toggle('open', state.reservation);
+  if (state.reservation && !cancelFeeInput.value) cancelFeeInput.value = DEFAULT_CANCEL_FEE;
+  if (navigator.vibrate) navigator.vibrate(8);
+});
+
+const subscriberToggle = document.getElementById('subscriberToggle');
+const subscriberBody   = document.getElementById('subscriberBody');
+const subscriberInput  = document.getElementById('subscriberPriceInput');
+subscriberToggle.addEventListener('click', () => {
+  state.subscriberEnabled = !state.subscriberEnabled;
+  subscriberToggle.classList.toggle('active', state.subscriberEnabled);
+  subscriberToggle.setAttribute('aria-pressed', String(state.subscriberEnabled));
+  subscriberBody.classList.toggle('open', state.subscriberEnabled);
+  if (state.subscriberEnabled) setTimeout(() => subscriberInput.focus(), 120);
+  if (navigator.vibrate) navigator.vibrate(8);
+});
+
+// ─────────────────────────────────────────────
+// Featured artists — account search + chips
+// ─────────────────────────────────────────────
+// Curated directory of known accounts (mirrors profile.html MOCK_USERS)
+const KNOWN_ACCOUNTS = [
+  { name: 'NOBBY',       role: 'Founder / DJ' },
+  { name: 'MOZYSKYE',    role: 'Artist / Illustrator' },
+  { name: 'KENJI',       role: 'DJ / Producer' },
+  { name: 'SAKURA',      role: 'Dancer / Choreographer' },
+  { name: 'YUKI',        role: 'Photographer' },
+  { name: 'TAKUYA',      role: 'DJ / House' },
+  { name: 'MARI',        role: 'VJ / Visual Artist' },
+  { name: 'REN',         role: 'DJ / Techno' },
+  { name: 'AMI',         role: 'Vocalist' },
+  { name: 'KOTA',        role: 'Live Band' },
+  { name: 'HARUKA',      role: 'DJ / Disco' },
+  { name: 'RYO',         role: 'Producer' },
+  { name: 'SPACE COOKING', role: 'Collective' },
+];
+
+// Augment directory with followers/following + past post authors in localStorage
+function loadDynamicAccounts() {
+  const set = new Map();
+  KNOWN_ACCOUNTS.forEach(a => set.set(a.name, a));
+  const tryLoad = (key) => {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return [];
+      return JSON.parse(raw);
+    } catch (e) { return []; }
+  };
+  const following = tryLoad('livepass_following');
+  const followers = tryLoad('livepass_followers');
+  [...following, ...followers].forEach(u => {
+    const name = typeof u === 'string' ? u : (u && u.name);
+    if (name && !set.has(name)) set.set(name, { name, role: 'Follower/Following' });
+  });
+  // Past events authors (for quick re-add)
+  const events = tryLoad('livepass_workshops');
+  events.forEach(e => {
+    if (e.author && !set.has(e.author)) set.set(e.author, { name: e.author, role: 'Previous Author' });
+    if (Array.isArray(e.artists)) {
+      e.artists.forEach(a => {
+        const n = typeof a === 'string' ? a : (a && a.name);
+        if (n && !set.has(n)) set.set(n, { name: n, role: 'Featured Artist' });
+      });
+    }
+  });
+  return Array.from(set.values());
+}
+const ALL_ACCOUNTS = loadDynamicAccounts();
+
+const artistChips     = document.getElementById('artistChips');
+const artistSearchIn  = document.getElementById('artistSearchInput');
+const artistSuggest   = document.getElementById('artistSuggest');
+
+function initialsOf(name) {
+  return (name || '?').replace(/[^A-Za-z0-9\u3040-\u30FF\u4E00-\u9FFF]/g, '').slice(0, 2).toUpperCase();
+}
+
+function renderArtistChips() {
+  artistChips.innerHTML = state.artists.map((a, i) => `
+    <div class="artist-chip" data-i="${i}">
+      <div class="artist-chip-avatar">${initialsOf(a.name)}</div>
+      <div class="artist-chip-name">${a.name}</div>
+      <button type="button" class="artist-chip-remove" data-remove="${i}" aria-label="Remove">
+        <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+      </button>
+    </div>
+  `).join('');
+}
+artistChips.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-remove]');
+  if (!btn) return;
+  const idx = Number(btn.dataset.remove);
+  state.artists.splice(idx, 1);
+  renderArtistChips();
+});
+
+function renderSuggest(query) {
+  const q = (query || '').trim().toLowerCase();
+  // Exclude already-added artists
+  const added = new Set(state.artists.map(a => a.name));
+  let matches = ALL_ACCOUNTS.filter(a => !added.has(a.name));
+  if (q) {
+    matches = matches.filter(a => a.name.toLowerCase().includes(q));
+  }
+  matches = matches.slice(0, 8);
+  if (matches.length === 0) {
+    // Allow adding free-text account name even if not in directory
+    if (q) {
+      artistSuggest.innerHTML = `
+        <div class="artist-suggest-item" data-add-new="${q.toUpperCase()}">
+          <div class="artist-suggest-avatar">${initialsOf(q)}</div>
+          <div>
+            <div class="artist-suggest-name">${q.toUpperCase()}</div>
+            <div class="artist-suggest-role">新しいアカウントとして追加</div>
+          </div>
+          <div class="artist-suggest-add">+ ADD</div>
+        </div>
+      `;
+    } else {
+      artistSuggest.innerHTML = `<div class="artist-suggest-empty">候補なし</div>`;
+    }
+    artistSuggest.classList.add('open');
+    return;
+  }
+  artistSuggest.innerHTML = matches.map(a => `
+    <div class="artist-suggest-item" data-add="${a.name}">
+      <div class="artist-suggest-avatar">${initialsOf(a.name)}</div>
+      <div>
+        <div class="artist-suggest-name">${a.name}</div>
+        <div class="artist-suggest-role">${a.role || ''}</div>
+      </div>
+      <div class="artist-suggest-add">+ ADD</div>
+    </div>
+  `).join('');
+  artistSuggest.classList.add('open');
+}
+artistSearchIn.addEventListener('focus', () => renderSuggest(artistSearchIn.value));
+artistSearchIn.addEventListener('input', () => renderSuggest(artistSearchIn.value));
+artistSearchIn.addEventListener('blur', () => {
+  // Delay to allow click on suggest item to register
+  setTimeout(() => artistSuggest.classList.remove('open'), 180);
+});
+artistSuggest.addEventListener('mousedown', (e) => {
+  const item = e.target.closest('[data-add], [data-add-new]');
+  if (!item) return;
+  e.preventDefault();
+  const name = item.dataset.add || item.dataset.addNew;
+  if (!name) return;
+  const directory = ALL_ACCOUNTS.find(a => a.name === name);
+  state.artists.push(directory || { name, role: '' });
+  renderArtistChips();
+  artistSearchIn.value = '';
+  renderSuggest('');
+  artistSearchIn.focus();
+});
+
+// ─────────────────────────────────────────────
+// EVENT PROJECT TEAM — credits-style contributor list
+// ─────────────────────────────────────────────
+const teamList        = document.getElementById('teamList');
+const teamSearchIn    = document.getElementById('teamSearchInput');
+const teamSuggest     = document.getElementById('teamSuggest');
+
+function renderTeamList() {
+  teamList.innerHTML = state.team.map((t, i) => `
+    <div class="team-row${t.hidden ? ' private' : ''}" data-i="${i}">
+      <div class="team-row-av">${initialsOf(t.name)}</div>
+      <div class="team-row-info">
+        <div class="team-row-name">${t.name}</div>
+        <input class="team-row-role" data-i="${i}" placeholder="役割 (例: Lighting)" value="${t.role || ''}">
+      </div>
+      <button type="button" class="team-row-private ${t.hidden ? 'on' : ''}" data-toggle-private="${i}">
+        <svg viewBox="0 0 24 24">${t.hidden
+          ? '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>'
+          : '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>'}</svg>
+        ${t.hidden ? '非公開' : '公開'}
+      </button>
+      <button type="button" class="team-row-remove" data-remove-team="${i}" aria-label="Remove">
+        <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+      </button>
+    </div>
+  `).join('');
+}
+teamList.addEventListener('click', (e) => {
+  const removeBtn = e.target.closest('[data-remove-team]');
+  if (removeBtn) {
+    state.team.splice(Number(removeBtn.dataset.removeTeam), 1);
+    renderTeamList();
+    return;
+  }
+  const privBtn = e.target.closest('[data-toggle-private]');
+  if (privBtn) {
+    const idx = Number(privBtn.dataset.togglePrivate);
+    state.team[idx].hidden = !state.team[idx].hidden;
+    renderTeamList();
+    return;
+  }
+});
+teamList.addEventListener('input', (e) => {
+  const roleInput = e.target.closest('.team-row-role');
+  if (!roleInput) return;
+  state.team[Number(roleInput.dataset.i)].role = roleInput.value;
+});
+// Preset chips populate the LAST added team row's role (or create-tip)
+document.querySelectorAll('.team-preset').forEach(chip => {
+  chip.addEventListener('click', () => {
+    if (state.team.length === 0) {
+      alert('先にチームメンバーを追加してください。追加後にプリセットで役割を設定できます。');
+      return;
+    }
+    const last = state.team[state.team.length - 1];
+    last.role = chip.textContent.trim();
+    renderTeamList();
+  });
+});
+
+function renderTeamSuggest(query) {
+  const q = (query || '').trim().toLowerCase();
+  const added = new Set(state.team.map(t => t.name));
+  let matches = ALL_ACCOUNTS.filter(a => !added.has(a.name));
+  if (q) matches = matches.filter(a => a.name.toLowerCase().includes(q));
+  matches = matches.slice(0, 8);
+  if (matches.length === 0) {
+    if (q) {
+      teamSuggest.innerHTML = `
+        <div class="artist-suggest-item" data-team-add-new="${q.toUpperCase()}">
+          <div class="artist-suggest-avatar">${initialsOf(q)}</div>
+          <div>
+            <div class="artist-suggest-name">${q.toUpperCase()}</div>
+            <div class="artist-suggest-role">新しいメンバーとして追加</div>
+          </div>
+          <div class="artist-suggest-add">+ ADD</div>
+        </div>`;
+    } else {
+      teamSuggest.innerHTML = `<div class="artist-suggest-empty">候補なし</div>`;
+    }
+    teamSuggest.classList.add('open');
+    return;
+  }
+  teamSuggest.innerHTML = matches.map(a => `
+    <div class="artist-suggest-item" data-team-add="${a.name}">
+      <div class="artist-suggest-avatar">${initialsOf(a.name)}</div>
+      <div>
+        <div class="artist-suggest-name">${a.name}</div>
+        <div class="artist-suggest-role">${a.role || ''}</div>
+      </div>
+      <div class="artist-suggest-add">+ ADD</div>
+    </div>
+  `).join('');
+  teamSuggest.classList.add('open');
+}
+teamSearchIn.addEventListener('focus', () => renderTeamSuggest(teamSearchIn.value));
+teamSearchIn.addEventListener('input', () => renderTeamSuggest(teamSearchIn.value));
+teamSearchIn.addEventListener('blur', () => setTimeout(() => teamSuggest.classList.remove('open'), 180));
+teamSuggest.addEventListener('mousedown', (e) => {
+  const item = e.target.closest('[data-team-add], [data-team-add-new]');
+  if (!item) return;
+  e.preventDefault();
+  const name = item.dataset.teamAdd || item.dataset.teamAddNew;
+  state.team.push({ name, role: '', hidden: false });
+  renderTeamList();
+  teamSearchIn.value = '';
+  renderTeamSuggest('');
+  teamSearchIn.focus();
+});
+
+// ─────────────────────────────────────────────
+// COLLABORATION — revenue split
+// ─────────────────────────────────────────────
+const collabList     = document.getElementById('collabList');
+const collabSearchIn = document.getElementById('collabSearchInput');
+const collabSuggest  = document.getElementById('collabSuggest');
+const collabTotal    = document.getElementById('collabTotal');
+const collabMyShare  = document.getElementById('collabMyShare');
+const collabThemShare= document.getElementById('collabThemShare');
+
+function updateCollabTotals() {
+  const them = state.collaborators.reduce((s, c) => s + (Number(c.share) || 0), 0);
+  const me = 100 - them;
+  collabMyShare.textContent = me + '%';
+  collabThemShare.textContent = them + '%';
+  collabTotal.style.display = state.collaborators.length > 0 ? 'block' : 'none';
+  collabTotal.classList.toggle('error', them > 100 || me < 0);
+}
+function renderCollabList() {
+  collabList.innerHTML = state.collaborators.map((c, i) => `
+    <div class="collab-row" data-i="${i}">
+      <div class="collab-row-av">${initialsOf(c.name)}</div>
+      <div class="collab-row-name">${c.name}</div>
+      <div class="collab-row-share">
+        <input type="number" min="0" max="100" step="5" value="${c.share}" data-i="${i}">
+        <span>%</span>
+      </div>
+      <button type="button" class="collab-row-remove" data-remove-collab="${i}" aria-label="Remove">
+        <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+      </button>
+    </div>
+  `).join('');
+  updateCollabTotals();
+}
+collabList.addEventListener('click', (e) => {
+  const removeBtn = e.target.closest('[data-remove-collab]');
+  if (!removeBtn) return;
+  state.collaborators.splice(Number(removeBtn.dataset.removeCollab), 1);
+  renderCollabList();
+});
+collabList.addEventListener('input', (e) => {
+  if (e.target.tagName !== 'INPUT') return;
+  const i = Number(e.target.dataset.i);
+  state.collaborators[i].share = Math.max(0, Math.min(100, parseInt(e.target.value, 10) || 0));
+  updateCollabTotals();
+});
+
+function renderCollabSuggest(query) {
+  const q = (query || '').trim().toLowerCase();
+  const added = new Set(state.collaborators.map(c => c.name));
+  let matches = ALL_ACCOUNTS.filter(a => !added.has(a.name));
+  if (q) matches = matches.filter(a => a.name.toLowerCase().includes(q));
+  matches = matches.slice(0, 8);
+  if (matches.length === 0) {
+    if (q) {
+      collabSuggest.innerHTML = `
+        <div class="artist-suggest-item" data-collab-add-new="${q.toUpperCase()}">
+          <div class="artist-suggest-avatar">${initialsOf(q)}</div>
+          <div>
+            <div class="artist-suggest-name">${q.toUpperCase()}</div>
+            <div class="artist-suggest-role">新しいコラボ先として追加</div>
+          </div>
+          <div class="artist-suggest-add">+ ADD</div>
+        </div>`;
+    } else {
+      collabSuggest.innerHTML = `<div class="artist-suggest-empty">候補なし</div>`;
+    }
+    collabSuggest.classList.add('open');
+    return;
+  }
+  collabSuggest.innerHTML = matches.map(a => `
+    <div class="artist-suggest-item" data-collab-add="${a.name}">
+      <div class="artist-suggest-avatar">${initialsOf(a.name)}</div>
+      <div>
+        <div class="artist-suggest-name">${a.name}</div>
+        <div class="artist-suggest-role">${a.role || ''}</div>
+      </div>
+      <div class="artist-suggest-add">+ ADD</div>
+    </div>
+  `).join('');
+  collabSuggest.classList.add('open');
+}
+collabSearchIn.addEventListener('focus', () => renderCollabSuggest(collabSearchIn.value));
+collabSearchIn.addEventListener('input', () => renderCollabSuggest(collabSearchIn.value));
+collabSearchIn.addEventListener('blur', () => setTimeout(() => collabSuggest.classList.remove('open'), 180));
+collabSuggest.addEventListener('mousedown', (e) => {
+  const item = e.target.closest('[data-collab-add], [data-collab-add-new]');
+  if (!item) return;
+  e.preventDefault();
+  const name = item.dataset.collabAdd || item.dataset.collabAddNew;
+  // Default share: split remaining evenly among collaborators + 1 new
+  const remaining = Math.max(0, 100 - state.collaborators.reduce((s, c) => s + (Number(c.share)||0), 0));
+  const defaultShare = remaining > 0 ? Math.min(remaining, 20) : 0;
+  state.collaborators.push({ name, share: defaultShare });
+  renderCollabList();
+  collabSearchIn.value = '';
+  renderCollabSuggest('');
+  collabSearchIn.focus();
 });
 
 function downscaleImageFile(file, maxDim = 1280, quality = 0.82) {
@@ -252,6 +1144,7 @@ const submitBtn = document.getElementById('submitBtn');
 const titleInput = document.getElementById('titleInput');
 const venueInput = document.getElementById('venueInput');
 const dateInput = document.getElementById('dateInput');
+// bodyInput declared earlier in template-chip section
 
 function updateSubmitState(){
   const valid = titleInput.value.trim() && venueInput.value.trim() && dateInput.value;
@@ -264,50 +1157,68 @@ function updateSubmitState(){
   i.addEventListener('change', updateSubmitState);
   i.addEventListener('blur',   updateSubmitState);
 });
-document.querySelector('.form').addEventListener('change', updateSubmitState);
 updateSubmitState();
+
+// Also run on any interaction inside the form as a safety net
+document.querySelector('.form').addEventListener('change', updateSubmitState);
 
 submitBtn.addEventListener('click', () => {
   updateSubmitState();
   if (submitBtn.disabled) {
     const missing = [];
-    if (!titleInput.value.trim()) missing.push('タイトル');
-    if (!venueInput.value.trim()) missing.push('会場 / スタジオ');
-    if (!dateInput.value)         missing.push('日付');
+    if (!titleInput.value.trim())  missing.push('タイトル');
+    if (!venueInput.value.trim())  missing.push('会場');
+    if (!dateInput.value)          missing.push('日付');
     alert('以下を入力してください：\n・' + missing.join('\n・'));
     return;
   }
-  const workshop = {
-    id:         'w' + Date.now(),
-    type:       'workshop',
-    category:   state.category,
-    level:      state.level,
-    cover:      state.coverDataUrl,
-    title:      titleInput.value.trim(),
-    venue:      venueInput.value.trim(),
-    date:       dateInput.value,
-    time:       document.getElementById('timeInput').value || '',
-    endTime:    document.getElementById('endInput').value || '',
-    price:      document.getElementById('priceInput').value || '0',
-    instructor: document.getElementById('instructorInput').value.trim(),
-    body:       document.getElementById('bodyInput').value.trim(),
-    author:     localStorage.getItem('livepass_account_name') || 'NOBBY',
-    createdAt:  new Date().toISOString(),
+  const event = {
+    id:              state.editingId || ('w' + Date.now()),
+    type:            'workshop',
+    category:        state.category,
+    cover:           state.coverDataUrl,
+    title:           titleInput.value.trim(),
+    venue:           venueInput.value.trim(),
+    date:            dateInput.value,
+    time:            document.getElementById('timeInput').value || '',
+    price:           document.getElementById('priceInput').value || '0',
+    reservation:     !!state.reservation,
+    cancelFee:       state.reservation ? (parseInt(cancelFeeInput.value, 10) || 0) : 0,
+    cancelDeadlineH: state.reservation ? (parseInt(cancelDeadlineInput.value, 10) || 0) : 0,
+    subscriberPrice: state.subscriberEnabled ? (subscriberInput.value || '') : '',
+    artists:         state.artists.slice(),
+    team:            state.team.slice(),
+    collaborators:   state.collaborators.slice(),
+    body:            bodyInput.value.trim(),
+    tags:            document.getElementById('tagsInput').value.split(',').map(t => t.trim()).filter(Boolean),
+    author:          (editingEvent && editingEvent.author) || localStorage.getItem('livepass_account_name') || 'NOBBY',
+    createdAt:       (editingEvent && editingEvent.createdAt) || new Date().toISOString(),
+    updatedAt:       state.editingId ? new Date().toISOString() : undefined,
   };
-  try {
-    const raw = localStorage.getItem('livepass_workshops');
+
+  const saveList = (withCover) => {
+    if (!withCover) event.cover = null;
+    const raw  = localStorage.getItem('livepass_workshops');
     const list = raw ? JSON.parse(raw) : [];
-    list.unshift(workshop);
+    if (state.editingId) {
+      // Replace existing entry in place (preserve original position)
+      const idx = list.findIndex(e => e.id === state.editingId);
+      if (idx >= 0) list[idx] = event;
+      else list.unshift(event);
+    } else {
+      list.unshift(event);
+    }
     localStorage.setItem('livepass_workshops', JSON.stringify(list));
+  };
+
+  try {
+    saveList(true);
   } catch(err) {
+    // Storage quota: retry WITHOUT the cover image (most likely culprit)
     if (err && /quota/i.test(err.name + ' ' + err.message)) {
       try {
-        workshop.cover = null;
-        const raw = localStorage.getItem('livepass_workshops');
-        const list = raw ? JSON.parse(raw) : [];
-        list.unshift(workshop);
-        localStorage.setItem('livepass_workshops', JSON.stringify(list));
-        alert('カバー画像が大きすぎたので画像なしで投稿しました。小さい画像で投稿し直すと保存できます。');
+        saveList(false);
+        alert('カバー画像が大きすぎたので画像なしで保存しました。小さい画像で保存し直すと保存できます。');
       } catch(err2) {
         alert('保存に失敗しました: ' + err2.message);
         return;
@@ -319,8 +1230,85 @@ submitBtn.addEventListener('click', () => {
   }
   if (navigator.vibrate) navigator.vibrate([18, 40, 18]);
   document.getElementById('toast').classList.add('show');
-  setTimeout(() => { location.href = '/calendar'; }, 900);
+  setTimeout(() => {
+    location.href = state.editingId ? '/profile' : '/calendar';
+  }, 900);
 });
+
+// ─────────────────────────────────────────────
+// Prefill all fields if editing an existing event
+// ─────────────────────────────────────────────
+if (editingEvent) {
+  titleInput.value = editingEvent.title || '';
+  venueInput.value = editingEvent.venue || '';
+  dateInput.value  = editingEvent.date  || '';
+  document.getElementById('timeInput').value  = editingEvent.time  || '';
+  document.getElementById('priceInput').value = editingEvent.price || '';
+  bodyInput.value = editingEvent.body || '';
+  document.getElementById('tagsInput').value = (editingEvent.tags || []).join(', ');
+
+  // Category pill
+  const cat = editingEvent.category || 'DJ';
+  state.category = cat;
+  document.querySelectorAll('#catRow .pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.cat === cat);
+  });
+
+  // Cover preview
+  if (editingEvent.cover) {
+    state.coverDataUrl = editingEvent.cover;
+    coverUpload.classList.add('has-image');
+    coverUpload.innerHTML = `<img class="cover-preview-img" src="${editingEvent.cover}" alt="">`;
+  }
+
+  // Reservation toggle + cancel policy
+  if (editingEvent.reservation) {
+    state.reservation = true;
+    reservationToggle.classList.add('active');
+    reservationToggle.setAttribute('aria-pressed', 'true');
+    reservationBody.classList.add('open');
+    if (editingEvent.cancelFee != null)       cancelFeeInput.value       = editingEvent.cancelFee;
+    if (editingEvent.cancelDeadlineH != null) cancelDeadlineInput.value  = String(editingEvent.cancelDeadlineH);
+  }
+
+  // Subscriber price
+  if (editingEvent.subscriberPrice) {
+    state.subscriberEnabled = true;
+    subscriberToggle.classList.add('active');
+    subscriberToggle.setAttribute('aria-pressed', 'true');
+    subscriberBody.classList.add('open');
+    subscriberInput.value = editingEvent.subscriberPrice;
+  }
+
+  // Featured artists
+  if (Array.isArray(editingEvent.artists)) {
+    state.artists = editingEvent.artists.map(a =>
+      typeof a === 'string' ? { name: a, role: '' } : a
+    );
+    renderArtistChips();
+  }
+
+  // Team
+  if (Array.isArray(editingEvent.team)) {
+    state.team = editingEvent.team.map(t => ({
+      name: t.name || t,
+      role: t.role || '',
+      hidden: !!t.hidden,
+    }));
+    renderTeamList();
+  }
+
+  // Collaborators
+  if (Array.isArray(editingEvent.collaborators)) {
+    state.collaborators = editingEvent.collaborators.map(c => ({
+      name: c.name || c,
+      share: Number(c.share) || 0,
+    }));
+    renderCollabList();
+  }
+
+  updateSubmitState();
+}
 </script>
 </body>
 </html>

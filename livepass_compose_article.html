@@ -220,19 +220,109 @@ textarea.input-box{resize:vertical;min-height:160px;line-height:1.8;font-size:13
 /* Access toggle ─────────────────────── */
 .access-row{display:flex;gap:8px}
 .access-btn{
-  flex:1;padding:12px 16px;border-radius:10px;
+  flex:1;padding:14px 12px;border-radius:10px;
   background:rgba(255,255,255,.04);
   border:0.5px solid rgba(237,235,230,.15);
   color:rgba(237,235,230,.55);
   font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
-  font-size:11px;letter-spacing:.12em;text-transform:uppercase;
-  display:flex;align-items:center;justify-content:center;gap:6px;
+  font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  text-align:center;min-height:68px;
 }
-.access-btn.active{
-  background:rgba(168,230,61,.08);
-  border-color:var(--green);color:var(--green);
+.access-btn .ab-sub{
+  font-family:Arial,'Noto Sans JP',sans-serif;
+  font-size:9px;font-weight:400;letter-spacing:.02em;
+  text-transform:none;opacity:.75;
+}
+.access-btn[data-access="free"].active{
+  background:rgba(168,230,61,.08);border-color:var(--green);color:var(--green);
+}
+.access-btn[data-access="pass"].active{
+  background:rgba(191,90,242,.08);border-color:var(--purple);color:#d4a8ff;
 }
 .access-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+
+/* Collaboration section ─────────────────────── */
+.collab-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.collab-list:empty{display:none}
+.collab-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px 10px 8px;border-radius:10px;
+  background:rgba(191,90,242,.06);
+  border:0.5px solid rgba(191,90,242,.35);
+}
+.collab-row-av{
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,#bf5af2,#F4C0D1);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-family:Arial,sans-serif;font-weight:900;font-size:10px;color:#000;
+}
+.collab-row-name{
+  flex:1;min-width:0;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:13px;color:var(--white);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.collab-row-share{
+  flex-shrink:0;display:flex;align-items:center;gap:4px;
+  background:rgba(0,0,0,.35);border:0.5px solid rgba(191,90,242,.35);
+  border-radius:99px;padding:4px 12px;
+}
+.collab-row-share input{
+  background:none;border:none;outline:none;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:13px;color:var(--white);width:34px;text-align:right;
+  -moz-appearance:textfield;
+}
+.collab-row-share input::-webkit-outer-spin-button,
+.collab-row-share input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.collab-row-share span{font-family:Arial,sans-serif;font-weight:700;font-size:11px;color:#d4a8ff}
+.collab-row-remove{
+  width:22px;height:22px;border-radius:50%;
+  background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,.75);flex-shrink:0;
+}
+.collab-row-remove svg{width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2.4}
+.collab-search-wrap{position:relative}
+.collab-suggest{
+  position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:6;
+  background:#0c0c0c;border:0.5px solid rgba(255,255,255,.14);
+  border-radius:10px;max-height:240px;overflow-y:auto;
+  box-shadow:0 12px 36px rgba(0,0,0,.55);display:none;
+}
+.collab-suggest.open{display:block}
+.collab-suggest-item{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 14px;cursor:pointer;
+  border-bottom:0.5px solid rgba(255,255,255,.04);
+}
+.collab-suggest-item:last-child{border-bottom:0}
+.collab-suggest-item:active{background:rgba(255,255,255,.05)}
+.collab-suggest-avatar{
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,#bf5af2,#F4C0D1);
+  display:flex;align-items:center;justify-content:center;
+  font-family:Arial,sans-serif;font-weight:900;font-size:10px;color:#000;
+  flex-shrink:0;
+}
+.collab-suggest-name{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;font-size:13px;color:var(--white)}
+.collab-suggest-add{
+  margin-left:auto;padding:5px 11px;border-radius:99px;
+  background:rgba(191,90,242,.12);border:0.5px solid rgba(191,90,242,.4);
+  color:#d4a8ff;font-family:Arial,sans-serif;font-weight:700;
+  font-size:9px;letter-spacing:.1em;
+}
+.collab-total{
+  margin-top:10px;padding:12px 14px;border-radius:10px;
+  background:rgba(255,255,255,.02);border:0.5px solid rgba(255,255,255,.08);
+  font-family:'IBM Plex Mono',monospace;font-size:9px;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(237,235,230,.5);line-height:1.9;
+}
+.collab-total b{color:var(--white);font-weight:800}
+.collab-total.error{background:rgba(232,16,10,.06);border-color:rgba(232,16,10,.4);color:#ff8a86}
+.collab-total .me{color:#8fcaff}
+.collab-total .them{color:#d4a8ff}
 
 /* Bottom submit bar ─────────────────────── */
 .submit-bar{
@@ -350,16 +440,35 @@ textarea.input-box{resize:vertical;min-height:160px;line-height:1.8;font-size:13
 
   <!-- Access ─────────────────────── -->
   <div class="form-section">
-    <div class="form-label">アクセス</div>
+    <div class="form-label">公開範囲</div>
     <div class="access-row" id="accessRow">
-      <button class="access-btn active" data-access="free">
-        <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+      <button class="access-btn active" data-access="free" type="button">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M7 12h10M12 7v10" stroke-linecap="round"/></svg>
         FREE
+        <span class="ab-sub">誰でも閲覧可能</span>
       </button>
-      <button class="access-btn" data-access="pass">
+      <button class="access-btn" data-access="pass" type="button">
         <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
-        LIVE PASS
+        SUBSCRIBERS
+        <span class="ab-sub">サブスク登録者のみ</span>
       </button>
+    </div>
+  </div>
+
+  <!-- Collaboration ─────────────────────── -->
+  <div class="form-section">
+    <div class="form-label">COLLABORATION / 収益分配</div>
+    <div class="collab-list" id="collabList"></div>
+    <div class="collab-search-wrap">
+      <input class="input-box" id="collabSearchInput" placeholder="コラボするアーティストを検索" autocomplete="off">
+      <div class="collab-suggest" id="collabSuggest"></div>
+    </div>
+    <div class="collab-total" id="collabTotal" style="display:none">
+      <div><b>自分の取り分</b> <span class="me" id="collabMyShare">100%</span></div>
+      <div><b>コラボ合計</b> <span class="them" id="collabThemShare">0%</span></div>
+    </div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:rgba(237,235,230,.3);margin-top:8px;line-height:1.7">
+      ※ コラボアーティストを追加すると、収益が指定の割合で自動分配されます
     </div>
   </div>
 
@@ -390,7 +499,28 @@ const state = {
   category: 'Culture',
   access: 'free',
   coverDataUrl: null,
+  collaborators: [], // [{ name, share }]
 };
+
+// ─── Account directory (mirrors compose_event) ───
+const KNOWN_ACCOUNTS = [
+  { name: 'NOBBY' }, { name: 'MOZYSKYE' }, { name: 'KENJI' }, { name: 'SAKURA' },
+  { name: 'YUKI' }, { name: 'TAKUYA' }, { name: 'MARI' }, { name: 'REN' },
+  { name: 'AMI' }, { name: 'KOTA' }, { name: 'HARUKA' }, { name: 'RYO' },
+  { name: 'SPACE COOKING' }, { name: 'DUBLA®' }, { name: 'LIVE PASS' },
+];
+function loadDynamicAccounts() {
+  const set = new Map();
+  KNOWN_ACCOUNTS.forEach(a => set.set(a.name, a));
+  const tryLoad = (key) => { try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : []; } catch(e) { return []; } };
+  [...tryLoad('livepass_following'), ...tryLoad('livepass_followers')].forEach(u => {
+    const n = typeof u === 'string' ? u : (u && u.name);
+    if (n && !set.has(n)) set.set(n, { name: n });
+  });
+  return Array.from(set.values());
+}
+const ALL_ACCOUNTS = loadDynamicAccounts();
+const initialsOf = (n) => (n || '?').replace(/[^A-Za-z0-9\u3040-\u30FF\u4E00-\u9FFF]/g, '').slice(0, 2).toUpperCase();
 
 /* Layout picker */
 document.querySelectorAll('.lay-btn').forEach(btn => {
@@ -419,6 +549,96 @@ document.querySelectorAll('.access-btn').forEach(b => {
     b.classList.add('active');
     state.access = b.dataset.access;
   });
+});
+
+/* ─── Collaboration ─── */
+const collabList     = document.getElementById('collabList');
+const collabSearchIn = document.getElementById('collabSearchInput');
+const collabSuggest  = document.getElementById('collabSuggest');
+const collabTotal    = document.getElementById('collabTotal');
+const collabMyShare  = document.getElementById('collabMyShare');
+const collabThemShare= document.getElementById('collabThemShare');
+
+function updateCollabTotals() {
+  const them = state.collaborators.reduce((s, c) => s + (Number(c.share)||0), 0);
+  const me = 100 - them;
+  collabMyShare.textContent = me + '%';
+  collabThemShare.textContent = them + '%';
+  collabTotal.style.display = state.collaborators.length > 0 ? 'block' : 'none';
+  collabTotal.classList.toggle('error', them > 100 || me < 0);
+}
+function renderCollabList() {
+  collabList.innerHTML = state.collaborators.map((c, i) => `
+    <div class="collab-row" data-i="${i}">
+      <div class="collab-row-av">${initialsOf(c.name)}</div>
+      <div class="collab-row-name">${c.name}</div>
+      <div class="collab-row-share">
+        <input type="number" min="0" max="100" step="5" value="${c.share}" data-i="${i}">
+        <span>%</span>
+      </div>
+      <button type="button" class="collab-row-remove" data-remove-collab="${i}" aria-label="Remove">
+        <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+      </button>
+    </div>
+  `).join('');
+  updateCollabTotals();
+}
+collabList.addEventListener('click', (e) => {
+  const removeBtn = e.target.closest('[data-remove-collab]');
+  if (!removeBtn) return;
+  state.collaborators.splice(Number(removeBtn.dataset.removeCollab), 1);
+  renderCollabList();
+});
+collabList.addEventListener('input', (e) => {
+  if (e.target.tagName !== 'INPUT') return;
+  const i = Number(e.target.dataset.i);
+  state.collaborators[i].share = Math.max(0, Math.min(100, parseInt(e.target.value, 10) || 0));
+  updateCollabTotals();
+});
+function renderCollabSuggest(query) {
+  const q = (query || '').trim().toLowerCase();
+  const added = new Set(state.collaborators.map(c => c.name));
+  let matches = ALL_ACCOUNTS.filter(a => !added.has(a.name));
+  if (q) matches = matches.filter(a => a.name.toLowerCase().includes(q));
+  matches = matches.slice(0, 8);
+  if (matches.length === 0) {
+    if (q) {
+      collabSuggest.innerHTML = `
+        <div class="collab-suggest-item" data-collab-add-new="${q.toUpperCase()}">
+          <div class="collab-suggest-avatar">${initialsOf(q)}</div>
+          <div class="collab-suggest-name">${q.toUpperCase()}</div>
+          <div class="collab-suggest-add">+ ADD</div>
+        </div>`;
+    } else {
+      collabSuggest.innerHTML = `<div class="collab-suggest-item" style="justify-content:center;color:rgba(237,235,230,.4);font-size:11px">候補なし</div>`;
+    }
+    collabSuggest.classList.add('open');
+    return;
+  }
+  collabSuggest.innerHTML = matches.map(a => `
+    <div class="collab-suggest-item" data-collab-add="${a.name}">
+      <div class="collab-suggest-avatar">${initialsOf(a.name)}</div>
+      <div class="collab-suggest-name">${a.name}</div>
+      <div class="collab-suggest-add">+ ADD</div>
+    </div>
+  `).join('');
+  collabSuggest.classList.add('open');
+}
+collabSearchIn.addEventListener('focus', () => renderCollabSuggest(collabSearchIn.value));
+collabSearchIn.addEventListener('input', () => renderCollabSuggest(collabSearchIn.value));
+collabSearchIn.addEventListener('blur', () => setTimeout(() => collabSuggest.classList.remove('open'), 180));
+collabSuggest.addEventListener('mousedown', (e) => {
+  const item = e.target.closest('[data-collab-add], [data-collab-add-new]');
+  if (!item) return;
+  e.preventDefault();
+  const name = item.dataset.collabAdd || item.dataset.collabAddNew;
+  const remaining = Math.max(0, 100 - state.collaborators.reduce((s, c) => s + (Number(c.share)||0), 0));
+  const defaultShare = remaining > 0 ? Math.min(remaining, 20) : 0;
+  state.collaborators.push({ name, share: defaultShare });
+  renderCollabList();
+  collabSearchIn.value = '';
+  renderCollabSuggest('');
+  collabSearchIn.focus();
 });
 
 /* Cover upload — downscale to max 1280px before storing so the Data URL
@@ -590,12 +810,14 @@ submitBtn.addEventListener('click', () => {
   if (submitBtn.disabled) return;
   const article = {
     id:       'a' + Date.now(),
+    type:     'article',
     layout:   state.layout,
     category: state.category,
     access:   state.access,
     cover:    state.coverDataUrl,
     title:    titleInput.value.trim(),
     body:     bodyInput.value.trim(),
+    collaborators: state.collaborators.slice(),
     author:   localStorage.getItem('livepass_account_name') || 'NOBBY',
     createdAt:new Date().toISOString(),
   };
