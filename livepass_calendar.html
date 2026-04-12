@@ -183,21 +183,35 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .em-sec-body{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
   font-size:12px;line-height:1.8;color:rgba(237,235,230,.75);letter-spacing:.02em;}
 
-/* Event cover hero — no-crop (object-fit:contain) with blurred bg letterbox */
+/* Event cover hero — poster-style layout: hero info overlaid on cover image */
 .em-cover{
-  position:relative;width:100%;min-height:200px;max-height:70vh;
+  position:relative;width:100%;
+  height:min(80vh, 720px);min-height:480px;
   background:#0a0a0a;overflow:hidden;
-  display:flex;align-items:center;justify-content:center;
 }
 .em-cover-bg{
   position:absolute;inset:0;width:100%;height:100%;
   object-fit:cover;filter:blur(40px) brightness(.35);
-  transform:scale(1.15);opacity:.7;
+  transform:scale(1.15);opacity:.7;z-index:0;
 }
 .em-cover img.em-cover-fg{
-  position:relative;z-index:1;display:block;width:100%;height:auto;
-  max-height:70vh;object-fit:contain;
+  position:absolute;inset:0;z-index:1;
+  display:block;width:100%;height:100%;object-fit:contain;
 }
+/* Hero info overlaid on the cover at bottom */
+.em-hero.over-cover{
+  position:absolute;left:0;right:0;bottom:0;z-index:2;
+  padding:100px 22px 24px;
+  background:linear-gradient(to top,
+    rgba(0,0,0,.96) 0%,
+    rgba(0,0,0,.85) 30%,
+    rgba(0,0,0,.45) 65%,
+    transparent 100%);
+}
+.em-hero.over-cover .em-date-big{margin-bottom:12px}
+.em-hero.over-cover .em-title{font-size:28px;text-shadow:0 2px 20px rgba(0,0,0,.8)}
+.em-hero.over-cover .em-venue{text-shadow:0 1px 10px rgba(0,0,0,.8)}
+.em-hero.over-cover .em-time{text-shadow:0 1px 10px rgba(0,0,0,.8)}
 
 /* Featured artist account chips */
 .em-artists{display:flex;flex-wrap:wrap;gap:8px}
@@ -624,13 +638,39 @@ function openEventDetail(e) {
   emLabel.textContent = e.cat;
   const soft = hexToRgba(e.catColor, 0.08);
 
-  // Cover image (no-crop, letterboxed with blurred bg) — only for events with a cover
-  const coverHtml = e.cover ? `
+  // Hero info content (date/cat/title/venue/time/tags) — reused in both
+  // the "overlay on cover" layout and the standalone-gradient layout
+  const heroContentHtml = `
+    <div class="em-date-big">
+      <div>
+        <div class="em-date-m">${e.m}</div>
+        <div class="em-date-d">${e.d}</div>
+      </div>
+      <div class="em-weekday">${e.weekday}</div>
+    </div>
+    <div class="em-cat" style="color:${e.catColor}">${e.cat}</div>
+    <div class="em-title">${e.title}</div>
+    <div class="em-venue">${e.venue}</div>
+    <div class="em-time">${e.time}</div>
+    <div class="em-tags" style="--cat-color:${e.catColor}">
+      ${e.tags.map(t => `<div class="ev-tag">${t}</div>`).join('')}
+    </div>
+  `;
+
+  // Cover + hero combined layout — poster-style overlay when cover present
+  const coverAndHeroHtml = e.cover ? `
     <div class="em-cover">
       <img class="em-cover-bg" src="${e.cover}" alt="" aria-hidden="true">
       <img class="em-cover-fg" src="${e.cover}" alt="">
+      <div class="em-hero over-cover" style="--cat-color:${e.catColor};--cat-color-soft:${soft}">
+        ${heroContentHtml}
+      </div>
     </div>
-  ` : '';
+  ` : `
+    <div class="em-hero" style="--cat-color:${e.catColor};--cat-color-soft:${soft}">
+      ${heroContentHtml}
+    </div>
+  `;
 
   // Featured artists — clickable chips → /profile?user=NAME
   const artistsList = Array.isArray(e.artists) ? e.artists : [];
@@ -680,23 +720,7 @@ function openEventDetail(e) {
   const isSubscribed = subscribedArtists.includes(eventOwner) || eventOwner === currentUser;
 
   emBody.innerHTML = `
-    ${coverHtml}
-    <div class="em-hero" style="--cat-color:${e.catColor};--cat-color-soft:${soft}">
-      <div class="em-date-big">
-        <div>
-          <div class="em-date-m">${e.m}</div>
-          <div class="em-date-d">${e.d}</div>
-        </div>
-        <div class="em-weekday">${e.weekday}</div>
-      </div>
-      <div class="em-cat" style="color:${e.catColor}">${e.cat}</div>
-      <div class="em-title">${e.title}</div>
-      <div class="em-venue">${e.venue}</div>
-      <div class="em-time">${e.time}</div>
-      <div class="em-tags" style="--cat-color:${e.catColor}">
-        ${e.tags.map(t => `<div class="ev-tag">${t}</div>`).join('')}
-      </div>
-    </div>
+    ${coverAndHeroHtml}
 
     <div class="em-section">
       <div class="em-sec-label">About</div>
