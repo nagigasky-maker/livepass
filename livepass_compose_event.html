@@ -475,6 +475,60 @@ OPEN 18:00 / START 19:00
 };
 
 const bodyInput = document.getElementById('bodyInput');
+
+// Substitute placeholder artist slots in a template with real artist names from state.artists
+function applyArtistsToTemplate(tmpl) {
+  const names = state.artists.map(a => a.name).filter(Boolean);
+  if (names.length === 0) return tmpl;
+
+  // CLUB: LINEUP bullets "・DJ 1" / "・DJ 2" / "・DJ 3"
+  // LIVE: "メインアーティスト名" + "・Support 1" / "・Support 2"
+  // EXHIBITION: "・Artist 1" / "・Artist 2" / "・Artist 3"
+  const djSlots      = ['DJ 1', 'DJ 2', 'DJ 3'];
+  const supportSlots = ['Support 1', 'Support 2'];
+  const artistSlots  = ['Artist 1', 'Artist 2', 'Artist 3'];
+
+  let out = tmpl;
+
+  // LIVE: first artist → main, rest → support
+  if (out.includes('メインアーティスト名')) {
+    out = out.replace('メインアーティスト名', names[0]);
+    // Remaining names fill support slots; unused slots get removed
+    const rest = names.slice(1);
+    supportSlots.forEach((slot, i) => {
+      if (rest[i]) {
+        out = out.replace(slot, rest[i]);
+      } else {
+        // Remove the whole "・Support N\n" line
+        const re = new RegExp('・' + slot.replace(/\s/g, '\\s') + '\\n?', 'g');
+        out = out.replace(re, '');
+      }
+    });
+  }
+
+  // CLUB: DJ 1..3
+  djSlots.forEach((slot, i) => {
+    if (names[i]) {
+      out = out.replace(slot, names[i]);
+    } else if (out.includes(slot)) {
+      const re = new RegExp('・' + slot.replace(/\s/g, '\\s') + '\\n?', 'g');
+      out = out.replace(re, '');
+    }
+  });
+
+  // EXHIBITION: Artist 1..3
+  artistSlots.forEach((slot, i) => {
+    if (names[i]) {
+      out = out.replace(slot, names[i]);
+    } else if (out.includes(slot)) {
+      const re = new RegExp('・' + slot.replace(/\s/g, '\\s') + '\\n?', 'g');
+      out = out.replace(re, '');
+    }
+  });
+
+  return out;
+}
+
 document.querySelectorAll('.tmpl-chip').forEach(chip => {
   chip.addEventListener('click', () => {
     const key = chip.dataset.tmpl;
@@ -482,7 +536,7 @@ document.querySelectorAll('.tmpl-chip').forEach(chip => {
     if (!tmpl) return;
     // Only overwrite if empty or user confirms
     if (bodyInput.value.trim() && !confirm('既に入力された説明を置き換えますか？')) return;
-    bodyInput.value = tmpl;
+    bodyInput.value = applyArtistsToTemplate(tmpl);
     bodyInput.focus();
     if (navigator.vibrate) navigator.vibrate(8);
   });

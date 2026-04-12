@@ -611,18 +611,23 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .pm-tags{display:flex;gap:6px;margin-top:16px;flex-wrap:wrap}
 .pm-tags .ev-tag{padding:4px 12px;font-size:9px}
 
-/* Event/Workshop/Exhibition cover hero (shown above the gradient info hero) */
+/* Event/Workshop/Exhibition cover hero (shown above the gradient info hero)
+   Uses object-fit:contain so the full image is visible without cropping.
+   A blurred-copy background fills any letterbox area for visual polish. */
 .pm-cover{
-  position:relative;width:100%;aspect-ratio:16/10;
+  position:relative;width:100%;min-height:200px;max-height:70vh;
   background:#0a0a0a;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
 }
-.pm-cover img{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
+.pm-cover-bg{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;filter:blur(40px) brightness(.35);
+  transform:scale(1.15);opacity:.7;
 }
-.pm-cover::after{
-  content:'';position:absolute;left:0;right:0;bottom:0;height:40%;
-  background:linear-gradient(to top,rgba(0,0,0,.96) 0%,transparent 100%);
-  pointer-events:none;
+.pm-cover img.pm-cover-fg{
+  position:relative;z-index:1;
+  display:block;width:100%;height:auto;max-height:70vh;
+  object-fit:contain;
 }
 
 /* Author-only re-edit button floating over the hero */
@@ -696,6 +701,72 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
   font-size:12px;letter-spacing:.04em;
 }
+
+/* ─────────────────────────────────────────────
+   CTA section (mirrors calendar's em-cta) — buy/reservation/subscriber
+   ───────────────────────────────────────────── */
+.pm-cta{padding:22px;margin-top:8px}
+.pm-buy-btn{display:block;width:100%;padding:18px;
+  background:var(--cat-color,var(--red));color:#fff;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:14px;letter-spacing:.1em;text-transform:uppercase;
+  border-radius:99px;border:none;
+  box-shadow:0 8px 32px rgba(232,16,10,.25);
+  transition:transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+}
+.pm-buy-btn:active{transform:scale(.98)}
+.pm-buy-btn:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
+.pm-buy-price{display:inline-block;margin-left:8px;opacity:.85;font-weight:700}
+
+.pm-cta-stack{display:flex;flex-direction:column;gap:10px}
+.pm-reserve-btn{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;padding:15px;
+  background:rgba(61,170,255,.1);
+  border:0.5px solid rgba(61,170,255,.5);
+  color:#8fcaff;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:800;
+  font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+  border-radius:99px;
+}
+.pm-reserve-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+.pm-reserve-btn:active{background:rgba(61,170,255,.18)}
+
+.pm-sub-btn{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;padding:15px;
+  background:linear-gradient(135deg,rgba(191,90,242,.12),rgba(191,90,242,.05));
+  border:0.5px solid rgba(191,90,242,.5);
+  color:#d4a8ff;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:800;
+  font-size:12px;letter-spacing:.08em;
+  border-radius:99px;position:relative;
+}
+.pm-sub-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+.pm-sub-btn-price{font-weight:900;font-size:13px;margin-left:4px}
+.pm-sub-btn.locked{
+  background:rgba(255,255,255,.02);
+  border-color:rgba(237,235,230,.15);
+  color:rgba(237,235,230,.45);
+  cursor:not-allowed;
+}
+.pm-sub-btn.locked .pm-sub-btn-lock{display:inline-block}
+.pm-sub-btn-lock{display:none;margin-left:6px}
+.pm-sub-hint{
+  margin-top:8px;text-align:center;
+  font-family:'IBM Plex Mono',monospace;font-size:8px;
+  letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(237,235,230,.4);
+}
+.pm-sub-hint a{color:#d4a8ff;text-decoration:underline;text-underline-offset:2px}
+
+.pm-sub-actions{display:flex;gap:8px;margin-top:12px}
+.pm-sub-action{flex:1;padding:12px;
+  background:none;border:1px solid rgba(237,235,230,.15);
+  color:rgba(237,235,230,.6);
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
+  font-size:11px;letter-spacing:.04em;
+  border-radius:99px;}
 
 /* Compose selector bottom sheet (shared) */
 #composeSheetOverlay{position:fixed;inset:0;z-index:1100;background:rgba(0,0,0,0);pointer-events:none;opacity:0;transition:background .3s ease, opacity .2s ease}
@@ -1381,9 +1452,14 @@ function openPostDetail(type, item) {
       </button>
     ` : '';
 
-    // Cover image (shown above the gradient info hero if present)
+    // Cover image — shown WITHOUT cropping (object-fit:contain), with a
+    // blurred-copy letterbox behind it. Edit button floats on top.
     const coverHtml = item.cover
-      ? `<div class="pm-cover">${editBtnHtml}<img src="${item.cover}" alt=""></div>`
+      ? `<div class="pm-cover">
+           ${editBtnHtml}
+           <img class="pm-cover-bg" src="${item.cover}" alt="" aria-hidden="true">
+           <img class="pm-cover-fg" src="${item.cover}" alt="">
+         </div>`
       : '';
     // If no cover, the edit button floats over the gradient hero instead
     const heroEditBtn = (!item.cover && isOwner) ? editBtnHtml : '';
@@ -1429,6 +1505,60 @@ function openPostDetail(type, item) {
       </div>
     ` : `<div class="pm-sec-body">${byLine}</div>`;
 
+    // ─── CTA: buy button + reservation + subscriber-only (mirrors calendar) ───
+    // Only show the buy CTA for EVENT and WORKSHOP (not article/exhibition)
+    const showBuyCta = (type === 'event' || type === 'workshop');
+    const buyLabel   = type === 'workshop' ? '参加申込' : 'PASS を購入';
+    const priceNum   = parseInt((item.price || '').toString().replace(/[^\d]/g, ''), 10) || 0;
+
+    // Subscription gating: read livepass_subscribed_artists from localStorage
+    let subscribedArtists = [];
+    try { subscribedArtists = JSON.parse(localStorage.getItem('livepass_subscribed_artists') || '[]'); }
+    catch(e) { subscribedArtists = []; }
+    const eventOwner = item.author || 'NOBBY';
+    // A user is subscribed to the artist if the owner's name is in their
+    // subscribed list (or they are the owner themselves)
+    const isSubscribed = subscribedArtists.includes(eventOwner) || eventOwner === currentUser;
+
+    const subPriceNum = item.subscriberPrice && Number(item.subscriberPrice) > 0
+      ? Number(item.subscriberPrice) : 0;
+
+    const ctaHtml = showBuyCta ? `
+      <div class="pm-cta">
+        <div class="pm-cta-stack">
+          <button class="pm-buy-btn" id="pmBuyBtn" type="button"
+            style="--cat-color:${color};background:${color};box-shadow:0 8px 32px ${hexToRgba(color,.25)}">
+            ${buyLabel}
+            <span class="pm-buy-price">${price}</span>
+          </button>
+
+          ${item.reservation ? `
+          <button class="pm-reserve-btn" id="pmReserveBtn" type="button">
+            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M9 16l2 2 4-4"/></svg>
+            予約を受け付ける
+          </button>` : ''}
+
+          ${subPriceNum > 0 ? `
+          <button class="pm-sub-btn ${isSubscribed ? '' : 'locked'}" id="pmSubBtn" type="button"
+            ${isSubscribed ? '' : 'aria-disabled="true"'}>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7l3-7z"/></svg>
+            サブスク限定価格
+            <span class="pm-sub-btn-price">¥${Number(subPriceNum).toLocaleString()}</span>
+            <span class="pm-sub-btn-lock">🔒</span>
+          </button>
+          ${isSubscribed ? '' : `
+          <div class="pm-sub-hint">
+            ${eventOwner} のサブスク加入者限定価格です
+          </div>`}
+          ` : ''}
+        </div>
+        <div class="pm-sub-actions">
+          <button class="pm-sub-action">🔖 保存</button>
+          <button class="pm-sub-action">📤 共有</button>
+        </div>
+      </div>
+    ` : '';
+
     pmBody.innerHTML = `
       ${coverHtml}
       <div class="pm-hero" style="--cat-color:${color};--cat-color-soft:${soft};position:relative">
@@ -1459,6 +1589,7 @@ function openPostDetail(type, item) {
         <div class="pm-sec-label">Price</div>
         ${priceChipsHtml}
       </div>
+      ${ctaHtml}
       <div style="height:40px"></div>
     `;
 
@@ -1478,6 +1609,99 @@ function openPostDetail(type, item) {
         editBtn.addEventListener('click', () => {
           if (navigator.vibrate) navigator.vibrate(10);
           location.href = '/compose/event?edit=' + encodeURIComponent(item.id);
+        });
+      }
+    }
+
+    // Wire up CTA buttons (buy / reservation / subscriber)
+    if (showBuyCta) {
+      const buyBtn     = document.getElementById('pmBuyBtn');
+      const reserveBtn = document.getElementById('pmReserveBtn');
+      const subBtn     = document.getElementById('pmSubBtn');
+
+      const runCheckout = async (amount, opts = {}) => {
+        if (!amount || amount < 1) { alert('価格が未設定です'); return; }
+        const target = opts.button || buyBtn;
+        const originalHtml = target.innerHTML;
+        target.disabled = true;
+        target.innerHTML = '処理中…';
+        try {
+          const r = await fetch('/api/checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              productType: opts.productType || type,
+              productId:   item.id,
+              title:       (opts.titlePrefix ? opts.titlePrefix + ' · ' : '') + (item.title || ''),
+              description: `${item.venue || ''} · ${timeLine}`,
+              amount:      amount,
+              cover:       null,
+              userId:      (function(){
+                try { return JSON.parse(localStorage.getItem('livepass_holder') || '{}').id || ''; }
+                catch(e) { return ''; }
+              })(),
+            }),
+          });
+          const data = await r.json();
+          if (data.stub) {
+            alert(data.message || 'Stripe テストモード未設定');
+            target.disabled = false;
+            target.innerHTML = originalHtml;
+            return;
+          }
+          if (!r.ok || !data.url) throw new Error(data.error || 'checkout failed');
+          if (navigator.vibrate) navigator.vibrate(12);
+          location.href = data.url;
+        } catch (err) {
+          alert('決済ページを開けませんでした: ' + err.message);
+          target.disabled = false;
+          target.innerHTML = originalHtml;
+        }
+      };
+
+      if (buyBtn) {
+        buyBtn.addEventListener('click', () => runCheckout(priceNum));
+      }
+
+      if (reserveBtn) {
+        reserveBtn.addEventListener('click', () => {
+          if (navigator.vibrate) navigator.vibrate(10);
+          // Reservation flow: persist to localStorage as a pending reservation
+          try {
+            const key = 'livepass_reservations';
+            const existing = JSON.parse(localStorage.getItem(key) || '[]');
+            if (existing.find(r => r.id === item.id)) {
+              alert('既に予約済みです');
+              return;
+            }
+            existing.unshift({
+              id: item.id,
+              title: item.title,
+              date: item.date,
+              venue: item.venue,
+              reservedAt: new Date().toISOString(),
+            });
+            localStorage.setItem(key, JSON.stringify(existing));
+            alert('予約を受け付けました。当日は会場でPASSをご提示ください。');
+          } catch (e) {
+            alert('予約に失敗しました: ' + e.message);
+          }
+        });
+      }
+
+      if (subBtn) {
+        subBtn.addEventListener('click', () => {
+          if (!isSubscribed) {
+            if (navigator.vibrate) navigator.vibrate([30, 40, 30]);
+            alert(`${eventOwner} のサブスクに加入するとこの価格で購入できます。\n\nプロフィール → SUBSCRIPTION から加入してください。`);
+            location.href = '/profile?user=' + encodeURIComponent(eventOwner) + '#sub';
+            return;
+          }
+          runCheckout(subPriceNum, {
+            button: subBtn,
+            titlePrefix: 'SUBSCRIBER',
+            productType: type + '-subscriber',
+          });
         });
       }
     }
