@@ -210,36 +210,36 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   text-transform:uppercase;
 }
 
-/* Fan-spread pass cards */
-.pass-fan{
-  position:relative;width:100%;height:300px;
-  margin:0 auto 30px;overflow:visible;
-  display:flex;justify-content:center;align-items:flex-start;
+/* Fan — drag-scroll pass cards (GAP effect ported from cinematic) */
+.pass-fan-viewport{
+  position:relative;width:100%;
+  overflow:hidden;
+  padding:30px 0 24px;
+  touch-action:pan-y pinch-zoom;
+  -webkit-user-select:none;user-select:none;
+  min-height:280px;
+}
+.pass-fan-viewport.dragging{cursor:grabbing}
+.pass-fan-track{
+  display:flex;align-items:center;gap:20px;
+  padding:0 22vw;
+  will-change:transform;
+  transform:translateX(0);
 }
 .pf-card{
-  position:absolute;top:0;left:50%;
-  width:40vw;max-width:160px;
+  flex-shrink:0;
+  width:150px;
   aspect-ratio:1000 / 1582;
   border-radius:12px;overflow:hidden;
   background:#0a0a0a;
   border:0.5px solid rgba(255,255,255,.08);
   box-shadow:0 14px 40px rgba(0,0,0,.8),0 2px 10px rgba(0,0,0,.6);
-  transform-origin:50% 50%;
-  transition:transform .3s cubic-bezier(.25,.46,.45,.94);
   cursor:pointer;
+  transform-origin:50% 50%;
+  will-change:transform;
 }
-.pf-card img{
-  width:100%;height:100%;object-fit:cover;display:block;
-}
-.pf-card.empty{
-  background:linear-gradient(135deg,#151515,#0a0a0a);
-}
-/* Fan positions — left to right, rotated progressively */
-.pf-card[data-pos="0"]{transform:translate(-150%,0) rotate(-10deg)}
-.pf-card[data-pos="1"]{transform:translate(-68%,8px) rotate(-3deg)}
-.pf-card[data-pos="2"]{transform:translate(-16%,12px) rotate(3deg)}
-.pf-card[data-pos="3"]{transform:translate(60%,6px) rotate(10deg)}
-.pf-card:active{transform:translate(var(--tx,-50%),-6px) scale(1.02)}
+.pf-card img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;}
+.pf-card.empty{background:linear-gradient(135deg,#151515,#0a0a0a)}
 
 /* SCREEN sub-sub-tabs ─────────────────────────── */
 .screen-wrap{padding-top:6px}
@@ -366,6 +366,59 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
   font-size:24px;letter-spacing:.06em;
   color:rgba(237,235,230,.5);margin-bottom:12px;display:block;text-transform:none;
+}
+
+/* SAVED panel — likes + saved articles grid */
+.saved-tabs{
+  display:flex;padding:14px 20px 0;
+  border-bottom:0.5px solid var(--border);
+}
+.saved-tab{
+  flex:1;padding:12px 0 10px;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(237,235,230,.3);
+  border-bottom:2px solid transparent;
+}
+.saved-tab.active{color:var(--white)}
+.saved-tab[data-saved-tab="liked"].active{border-bottom-color:var(--red)}
+.saved-tab[data-saved-tab="saved"].active{border-bottom-color:var(--gold)}
+.saved-grid{
+  padding:16px 12px 40px;
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+}
+.saved-card{
+  position:relative;border-radius:10px;overflow:hidden;
+  background:#0a0a0a;
+  border:0.5px solid rgba(255,255,255,.06);
+  aspect-ratio:9/14;cursor:pointer;
+}
+.saved-card img{width:100%;height:100%;object-fit:cover;display:block}
+.saved-card .sc-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(0,0,0,.88) 0%,transparent 60%);
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:12px 12px 10px;
+}
+.saved-card .sc-cat{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
+  font-size:7px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--sc-color,var(--mint));margin-bottom:3px;
+}
+.saved-card .sc-title{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:12px;line-height:1.15;color:var(--white);
+}
+.saved-empty{
+  grid-column:1/-1;text-align:center;padding:60px 20px;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:9px;letter-spacing:.28em;text-transform:uppercase;
+  color:rgba(237,235,230,.25);line-height:2;
+}
+.saved-empty .big{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:22px;letter-spacing:.06em;
+  color:rgba(237,235,230,.35);margin-bottom:10px;display:block;text-transform:none;
 }
 
 /* ─────────────────────────────────────────────
@@ -512,7 +565,7 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
     </div>
   </div>
 
-  <!-- 3 sub-tab icons: PASS COLLECTION / SCREEN / SUBSCRIPTION -->
+  <!-- 4 sub-tab icons: PASS COLLECTION / SCREEN / SUBSCRIPTION / SAVED -->
   <nav class="subtabs" id="subtabs">
     <button class="st-btn active" data-sub="pass" aria-label="Pass Collection">
       <svg viewBox="0 0 24 24"><rect x="3" y="5" width="14" height="14" rx="2"/><rect x="7" y="9" width="14" height="14" rx="2" fill="currentColor" fill-opacity="0.3"/></svg>
@@ -522,6 +575,9 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
     </button>
     <button class="st-btn" data-sub="sub" aria-label="Subscription">
       <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+    </button>
+    <button class="st-btn" data-sub="saved" aria-label="Saved / Liked">
+      <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
     </button>
   </nav>
 
@@ -537,17 +593,19 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
       </div>
     </div>
 
-    <div class="pass-fan" id="passFan">
-      <div class="pf-card" data-pos="0" data-card="card01">
-        <img src="/livepass_card01-01.jpg" alt="LIVE PASS Card 01">
+    <div class="pass-fan-viewport" id="passFanViewport">
+      <div class="pass-fan-track" id="passFanTrack">
+        <div class="pf-card" data-card="card01">
+          <img src="/livepass_card01-01.jpg" alt="LIVE PASS Card 01">
+        </div>
+        <div class="pf-card" data-card="card02">
+          <img src="/livepass_card02.jpg" alt="LIVE PASS Card 02">
+        </div>
+        <div class="pf-card" data-card="amd">
+          <img src="/assets/cards/amd-clubasia-2026-05-04.jpg" alt="ALL MUST DANCE">
+        </div>
+        <div class="pf-card empty" data-card="placeholder"></div>
       </div>
-      <div class="pf-card" data-pos="1" data-card="card02">
-        <img src="/livepass_card02.jpg" alt="LIVE PASS Card 02">
-      </div>
-      <div class="pf-card" data-pos="2" data-card="amd">
-        <img src="/assets/cards/amd-clubasia-2026-05-04.jpg" alt="ALL MUST DANCE">
-      </div>
-      <div class="pf-card empty" data-pos="3" data-card="placeholder"></div>
     </div>
   </section>
 
@@ -690,6 +748,15 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
     </div>
   </section>
 
+  <!-- ═══ SAVED panel (likes + bookmarks) ═══ -->
+  <section class="sub-panel" id="panel-saved">
+    <nav class="saved-tabs">
+      <button class="saved-tab active" data-saved-tab="saved">保存済み</button>
+      <button class="saved-tab" data-saved-tab="liked">いいね</button>
+    </nav>
+    <div class="saved-grid" id="savedGrid"></div>
+  </section>
+
 </main>
 
 <!-- ═══ COMPOSE SELECTOR BOTTOM SHEET (shared) ═══ -->
@@ -743,9 +810,14 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 
 <script>
 /* ─────────────────────────────────────────────
-   SUB-TAB SWAP (PASS / SCREEN / SUB)
+   SUB-TAB SWAP (PASS / SCREEN / SUB / SAVED)
    ───────────────────────────────────────────── */
-const SUB_PANEL = { pass:'panel-pass', screen:'panel-screen', sub:'panel-sub' };
+const SUB_PANEL = {
+  pass:   'panel-pass',
+  screen: 'panel-screen',
+  sub:    'panel-sub',
+  saved:  'panel-saved',
+};
 document.querySelectorAll('.st-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     const sub = btn.dataset.sub;
@@ -754,8 +826,64 @@ document.querySelectorAll('.st-btn').forEach(btn => {
     document.querySelectorAll('.sub-panel').forEach(p => p.classList.remove('active'));
     const target = document.getElementById(SUB_PANEL[sub]);
     if (target) target.classList.add('active');
+    if (sub === 'saved') renderSavedGrid();
   });
 });
+
+/* ─────────────────────────────────────────────
+   SAVED PANEL — read likes/saves from localStorage
+   ───────────────────────────────────────────── */
+let savedSubTab = 'saved'; // 'saved' | 'liked'
+document.querySelectorAll('.saved-tab').forEach(t => {
+  t.addEventListener('click', () => {
+    savedSubTab = t.dataset.savedTab;
+    document.querySelectorAll('.saved-tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    renderSavedGrid();
+  });
+});
+function getStoredIds(key){
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+function getArticleMap(){
+  try {
+    const raw = localStorage.getItem('livepass_article_meta');
+    return raw ? JSON.parse(raw) : {};
+  } catch(e) { return {}; }
+}
+function renderSavedGrid(){
+  const grid = document.getElementById('savedGrid');
+  const key = savedSubTab === 'liked' ? 'livepass_likes' : 'livepass_saves';
+  const ids = getStoredIds(key);
+  const meta = getArticleMap();
+  if (ids.length === 0) {
+    const label = savedSubTab === 'liked' ? 'No likes yet' : 'No saves yet';
+    const sub   = savedSubTab === 'liked'
+      ? 'Home フィードで♡を押すとここに溜まります'
+      : 'Home フィードで🔖を押すとここに溜まります';
+    grid.innerHTML = `<div class="saved-empty"><span class="big">${label}</span>${sub}</div>`;
+    return;
+  }
+  grid.innerHTML = '';
+  ids.forEach(id => {
+    const a = meta[id];
+    if (!a) return;
+    const card = document.createElement('div');
+    card.className = 'saved-card';
+    card.style.setProperty('--sc-color', a.catColor || '#A8E63D');
+    card.innerHTML = `
+      ${a.cover ? `<img src="${a.cover}" alt="">` : ''}
+      <div class="sc-overlay">
+        <div class="sc-cat">${a.cat || ''}</div>
+        <div class="sc-title">${a.title || ''}</div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
 
 /* ─────────────────────────────────────────────
    SCREEN SUB-SUB-TAB SWAP (ARTICLE/EVENT/WORKSHOP/EXHIBITION)
@@ -846,9 +974,96 @@ function closeCardZoom() {
   }, 600);
 }
 
-// Card taps open the zoom (step 1)
+/* ─────────────────────────────────────────────
+   GAP DRAG SCROLL — ported from livepass_cinematic.html
+   (which ports it from livepass_v5.html initEffect001).
+   Horizontal drag moves the track; each card interpolates
+   its rotation/offset based on drag progress. Click is
+   suppressed if the drag distance exceeded 8px.
+   ───────────────────────────────────────────── */
+let nftDragged = false;
+(function initFanDrag(){
+  const viewport = document.getElementById('passFanViewport');
+  const track    = document.getElementById('passFanTrack');
+  if (!viewport || !track) return;
+  const cards = Array.from(track.querySelectorAll('.pf-card'));
+
+  // Per-card random params (fromTo style — cards rotate/offset progressively)
+  const cardParams = cards.map(() => ({
+    x:   (Math.random() * 20 + 30) * (Math.random() < .5 ? 1 : -1),
+    y:   (Math.random() * 6  + 10) * (Math.random() < .5 ? 1 : -1),
+    rot: (Math.random() * 10 + 10) * (Math.random() < .5 ? 1 : -1),
+  }));
+
+  let trackX = 0, targetX = 0, maxDrag = 0, rafId = null;
+  let isDrag = false, startX = 0, velX = 0, lastX = 0, lastT = 0, dragStartX = 0;
+
+  function calcMax(){ maxDrag = Math.max(0, track.scrollWidth - viewport.clientWidth); }
+
+  function applyCardTransforms(progress){
+    cards.forEach((card, i) => {
+      const p = cardParams[i];
+      const rot = p.rot - progress * p.rot * 2;
+      const xp  = p.x   - progress * p.x   * 2;
+      const yp  = p.y   - progress * p.y   * 2;
+      card.style.transform = `rotate(${rot}deg) translate(${xp}%, ${yp}%)`;
+    });
+  }
+  function tick(){
+    trackX += (targetX - trackX) * 0.08;
+    if (Math.abs(targetX - trackX) < 0.1) trackX = targetX;
+    track.style.transform = `translateX(${-trackX}px)`;
+    const progress = maxDrag > 0 ? trackX / maxDrag : 0;
+    applyCardTransforms(Math.min(1, Math.max(0, progress)));
+    rafId = requestAnimationFrame(tick);
+  }
+  function startTick(){ if (!rafId) rafId = requestAnimationFrame(tick); }
+
+  function onDragStart(clientX){
+    isDrag = true; nftDragged = false;
+    dragStartX = clientX; startX = clientX;
+    lastX = clientX; lastT = Date.now(); velX = 0;
+    viewport.classList.add('dragging');
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    calcMax(); startTick();
+  }
+  function onDragMove(clientX){
+    if (!isDrag) return;
+    if (Math.abs(clientX - dragStartX) > 8) nftDragged = true;
+    const now = Date.now();
+    velX = (clientX - lastX) / Math.max(1, now - lastT) * 16;
+    lastX = clientX; lastT = now;
+    targetX = Math.min(maxDrag, Math.max(0, targetX - (clientX - startX)));
+    startX = clientX;
+  }
+  function onDragEnd(){
+    if (!isDrag) return;
+    isDrag = false;
+    viewport.classList.remove('dragging');
+    const momentum = -velX * 12;
+    targetX = Math.min(maxDrag, Math.max(0, targetX + momentum));
+  }
+
+  viewport.addEventListener('mousedown',  e => onDragStart(e.clientX));
+  window.addEventListener('mousemove',    e => onDragMove(e.clientX));
+  window.addEventListener('mouseup',      ()  => onDragEnd());
+  viewport.addEventListener('touchstart', e => onDragStart(e.touches[0].clientX), { passive: true });
+  viewport.addEventListener('touchmove',  e => onDragMove(e.touches[0].clientX),  { passive: true });
+  viewport.addEventListener('touchend',   ()  => onDragEnd());
+  viewport.addEventListener('touchcancel',()  => onDragEnd());
+
+  calcMax();
+  applyCardTransforms(0);
+  startTick();
+  window.addEventListener('resize', calcMax);
+})();
+
+// Card taps open the zoom (step 1) — but only if not coming out of a drag
 document.querySelectorAll('.pf-card').forEach(card => {
-  card.addEventListener('click', () => openCardZoom(card));
+  card.addEventListener('click', () => {
+    if (nftDragged) return;
+    openCardZoom(card);
+  });
 });
 
 // MEMORY OPEN button navigates to cinematic (step 2)
