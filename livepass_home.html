@@ -376,63 +376,153 @@ function placeholderSVG(article) {
   return 'data:image/svg+xml;charset=utf-8,' + svg;
 }
 
+/* Merge user-posted articles from localStorage with the sample feed.
+   User posts are prepended (newest first) so they show up at the top. */
+function getUserArticles(){
+  try {
+    const raw = localStorage.getItem('livepass_articles');
+    if (!raw) return [];
+    const list = JSON.parse(raw);
+    // Normalize to the same shape used by the renderer
+    return list.map((u, i) => ({
+      id:       u.id,
+      layout:   u.layout || 'square',
+      num:      String(900 + i).padStart(3, '0'),
+      cat:      u.category || 'Article',
+      catColor: '#A8E63D',
+      title:    u.title,
+      subtitle: null,
+      author:   u.author || 'NOBBY',
+      body:     u.body,
+      cover:    u.cover,      // Data URL from compose upload (may be null)
+      bgHue:    '140,60,20',
+      createdAt:u.createdAt,
+      userPost: true,
+    }));
+  } catch(e) { return []; }
+}
+
+const FEED = [...getUserArticles(), ...ARTICLES];
+
+/* Remember article metadata so the /profile SAVED tab can render them */
+(function writeArticleMeta(){
+  try {
+    const map = {};
+    FEED.forEach(a => {
+      map[a.id] = {
+        title: a.title,
+        cat:   a.cat,
+        catColor: a.catColor,
+        cover: a.cover || null, // sample items don't have a cover so SAVED will fall back to gradient bg
+      };
+    });
+    localStorage.setItem('livepass_article_meta', JSON.stringify(map));
+  } catch(e) {}
+})();
+
 /* Render feed */
-ARTICLES.forEach(a => {
+FEED.forEach(a => {
   const card = document.createElement('div');
   card.className = 'feed-card ' + a.layout;
   card.style.setProperty('--cat', a.catColor);
   card.dataset.id = a.id;
   const subHtml = a.subtitle ? `<small>${a.subtitle}</small>` : '';
+  const imgSrc = a.cover || placeholderSVG(a);
   card.innerHTML = `
     <div class="fc-img">
-      <img src="${placeholderSVG(a)}" alt="">
+      <img src="${imgSrc}" alt="">
     </div>
     <div class="fc-num">${a.num}</div>
     <div class="fc-overlay">
       <div class="fc-cat">${a.cat}</div>
       <div class="fc-title">${a.title}${subHtml}</div>
-      <div class="fc-author"><div class="fc-author-av"></div>${a.author}</div>
+      <div class="fc-author"><div class="fc-author-av"></div>${a.author}${a.userPost ? ' · あなたの投稿' : ''}</div>
     </div>
   `;
   card.addEventListener('click', () => openDetail(a));
   grid.appendChild(card);
 });
 
+/* ─────────────────────────────────────────────
+   LIKES / SAVES — persisted in localStorage
+   so the /profile SAVED sub-tab can read them.
+   ───────────────────────────────────────────── */
+function getIds(key){
+  try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) { return []; }
+}
+function setIds(key, arr){
+  try { localStorage.setItem(key, JSON.stringify(arr)); } catch(e) {}
+}
+function toggleId(key, id){
+  const arr = getIds(key);
+  const idx = arr.indexOf(id);
+  if (idx >= 0) arr.splice(idx, 1);
+  else arr.unshift(id);
+  setIds(key, arr);
+  return idx < 0; // true if now present
+}
+
 /* Detail modal */
 const modal = document.getElementById('detailModal');
 const dmBody = document.getElementById('dmBody');
 const dmClose = document.getElementById('dmClose');
+
+/* Default paragraphs for sample articles (user posts render their own body) */
+const SAMPLE_BODY = `
+  <p class="dm-p">LIVE PASS上の投稿は、フォロー中のアーティストから流れてくる「読みたくなる」コンテンツを中心に設計されています。ARTICLEタイプの投稿は、タイトル・カテゴリ・カバー画像・本文で構成され、縦長 / 正方形 / 横長の3種類のレイアウトから選べます。</p>
+  <p class="dm-p">この記事はサンプルデータで表示されています。実際の投稿機能は / 投稿ボタン（＋アイコン）から ARTICLE を選択して作成できます。投稿後は Home フィードに表示されます。</p>
+  <p class="dm-p">アーティスト自身が発信することを前提として、中間搾取を減らし、ファンとの距離を縮めます。投稿にはコメント・いいね・保存・SNS共有の4つのアクションが用意されています。</p>
+`;
+
 function openDetail(a) {
   if (navigator.vibrate) navigator.vibrate(8);
+
+  // Convert user body text to HTML paragraphs
+  const bodyHtml = a.userPost && a.body
+    ? a.body.split(/\n\n+/).map(p => `<p class="dm-p">${p.replace(/\n/g,'<br>')}</p>`).join('')
+    : SAMPLE_BODY;
+
+  const heroSrc = a.cover || placeholderSVG(a);
+  const dateStr = a.createdAt
+    ? new Date(a.createdAt).toLocaleDateString('ja-JP')
+    : '2026.04.11';
+
+  const liked = getIds('livepass_likes').includes(a.id);
+  const saved = getIds('livepass_saves').includes(a.id);
+
   dmBody.innerHTML = `
     <div class="dm-hero">
-      <img src="${placeholderSVG(a)}" alt="">
+      <img src="${heroSrc}" alt="">
       <div class="dm-hero-text">
         <div class="dm-cat" style="color:${a.catColor}">${a.cat}</div>
         <div class="dm-title">${a.title}${a.subtitle ? '<br><span style="font-size:20px;font-weight:700">'+a.subtitle+'</span>' : ''}</div>
-        <div class="dm-by"><div class="av"></div>${a.author} · 2026.04.11</div>
+        <a class="dm-by" href="/profile?user=${encodeURIComponent(a.author)}" style="cursor:pointer">
+          <div class="av"></div>${a.author} · ${dateStr}
+        </a>
       </div>
     </div>
-    <div class="dm-content">
-      <p class="dm-p">LIVE PASS上の投稿は、フォロー中のアーティストから流れてくる「読みたくなる」コンテンツを中心に設計されています。ARTICLEタイプの投稿は、タイトル・カテゴリ・カバー画像・本文で構成され、縦長 / 正方形 / 横長の3種類のレイアウトから選べます。</p>
-      <p class="dm-p">この記事はサンプルデータで表示されています。実際の投稿機能は / 投稿ボタン（＋アイコン）から ARTICLE を選択して作成できます。投稿後は Home フィードにランダムに表示される仕組みです。</p>
-      <p class="dm-p">アーティスト自身が発信することを前提として、中間搾取を減らし、ファンとの距離を縮めます。投稿にはコメント・いいね・保存・SNS共有の4つのアクションが用意されています。</p>
-    </div>
+    <div class="dm-content">${bodyHtml}</div>
     <div class="dm-actions">
       <button class="dm-act" data-act="comment"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>12</button>
-      <button class="dm-act" data-act="like"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>48</button>
-      <button class="dm-act" data-act="save"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>保存</button>
+      <button class="dm-act ${liked ? 'liked' : ''}" data-act="like"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>48</button>
+      <button class="dm-act ${saved ? 'saved' : ''}" data-act="save"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>保存</button>
       <button class="dm-act" data-act="share"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>共有</button>
     </div>
   `;
   modal.classList.add('active');
   modal.setAttribute('aria-hidden','false');
-  // wire up act buttons
+
+  // Wire up act buttons with localStorage persistence
   dmBody.querySelectorAll('.dm-act').forEach(btn => {
     btn.addEventListener('click', () => {
       const act = btn.dataset.act;
-      if (act === 'like') btn.classList.toggle('liked');
-      else if (act === 'save') btn.classList.toggle('saved');
+      if (act === 'like') {
+        const now = toggleId('livepass_likes', a.id);
+        btn.classList.toggle('liked', now);
+      } else if (act === 'save') {
+        const now = toggleId('livepass_saves', a.id);
+        btn.classList.toggle('saved', now);
+      }
       if (navigator.vibrate) navigator.vibrate(6);
     });
   });
