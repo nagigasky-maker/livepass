@@ -183,13 +183,121 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .em-sec-body{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
   font-size:12px;line-height:1.8;color:rgba(237,235,230,.75);letter-spacing:.02em;}
 
+/* Event cover hero — no-crop (object-fit:contain) with blurred bg letterbox */
+.em-cover{
+  position:relative;width:100%;min-height:200px;max-height:70vh;
+  background:#0a0a0a;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.em-cover-bg{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;filter:blur(40px) brightness(.35);
+  transform:scale(1.15);opacity:.7;
+}
+.em-cover img.em-cover-fg{
+  position:relative;z-index:1;display:block;width:100%;height:auto;
+  max-height:70vh;object-fit:contain;
+}
+
+/* Featured artist account chips */
+.em-artists{display:flex;flex-wrap:wrap;gap:8px}
+.em-artist{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 14px 8px 8px;border-radius:99px;
+  background:rgba(61,170,255,.08);
+  border:0.5px solid rgba(61,170,255,.4);
+  color:var(--white);cursor:pointer;
+  transition:background .15s ease, transform .15s ease;
+}
+.em-artist:active{background:rgba(61,170,255,.16);transform:scale(.97)}
+.em-artist-avatar{
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,#3DAAFF,#bf5af2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:Arial,sans-serif;font-weight:900;font-size:10px;color:#000;
+  flex-shrink:0;
+}
+.em-artist-name{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:12px;letter-spacing:.04em;
+}
+
+/* Price tier chips (General / Reservation / Subscriber) */
+.em-price-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.em-price-chip{
+  display:flex;flex-direction:column;gap:4px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(255,255,255,.04);border:0.5px solid rgba(255,255,255,.1);
+  min-width:96px;
+}
+.em-price-chip.subscriber{background:rgba(191,90,242,.08);border-color:rgba(191,90,242,.45)}
+.em-price-chip.reservation{background:rgba(61,170,255,.08);border-color:rgba(61,170,255,.4)}
+.em-price-chip-label{
+  font-family:'IBM Plex Mono',monospace;font-size:8px;
+  letter-spacing:.22em;text-transform:uppercase;color:rgba(237,235,230,.45);
+}
+.em-price-chip.subscriber .em-price-chip-label{color:#d4a8ff}
+.em-price-chip.reservation .em-price-chip-label{color:#8fcaff}
+.em-price-chip-value{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:800;
+  font-size:15px;color:var(--white);
+}
+
 .em-cta{padding:22px;margin-top:8px}
+.em-cta-stack{display:flex;flex-direction:column;gap:10px}
 .em-buy-btn{display:block;width:100%;padding:18px;
   background:var(--cat-color,var(--red));color:#fff;
   font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
   font-size:14px;letter-spacing:.1em;text-transform:uppercase;
-  border-radius:99px;text-align:center;}
-.em-buy-price{display:inline-block;margin-left:8px;opacity:.85}
+  border-radius:99px;text-align:center;border:none;
+  box-shadow:0 8px 32px rgba(232,16,10,.25);
+  transition:transform .15s ease, opacity .15s ease;}
+.em-buy-btn:active{transform:scale(.98)}
+.em-buy-btn:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
+.em-buy-price{display:inline-block;margin-left:8px;opacity:.85;font-weight:700}
+
+/* Reservation button (blue) */
+.em-reserve-btn{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;padding:15px;
+  background:rgba(61,170,255,.1);
+  border:0.5px solid rgba(61,170,255,.5);
+  color:#8fcaff;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:800;
+  font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+  border-radius:99px;
+}
+.em-reserve-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+.em-reserve-btn:active{background:rgba(61,170,255,.18)}
+
+/* Subscriber-only price button (purple, lockable) */
+.em-sub-price-btn{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;padding:15px;
+  background:linear-gradient(135deg,rgba(191,90,242,.12),rgba(191,90,242,.05));
+  border:0.5px solid rgba(191,90,242,.5);
+  color:#d4a8ff;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:800;
+  font-size:12px;letter-spacing:.08em;
+  border-radius:99px;position:relative;
+}
+.em-sub-price-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+.em-sub-price-btn-price{font-weight:900;font-size:13px;margin-left:4px}
+.em-sub-price-btn.locked{
+  background:rgba(255,255,255,.02);
+  border-color:rgba(237,235,230,.15);
+  color:rgba(237,235,230,.45);
+  cursor:not-allowed;
+}
+.em-sub-price-btn.locked .em-sub-price-btn-lock{display:inline-block}
+.em-sub-price-btn-lock{display:none;margin-left:6px}
+.em-sub-hint{
+  margin-top:8px;text-align:center;
+  font-family:'IBM Plex Mono',monospace;font-size:8px;
+  letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(237,235,230,.4);
+}
+
 .em-sub-actions{
   display:flex;gap:8px;margin-top:12px;
 }
@@ -386,11 +494,16 @@ function getUserSchedule(){
         venue: e.venue,
         time: `${e.date} ${e.time || ''}`,
         by: e.author,
+        author: e.author || 'NOBBY',
         meta: `${e.author} · ${e.time || '—'} · ${e.venue}`,
-        price: '¥' + (e.price || '0'),
+        priceRaw: e.price || '0',
+        price: e.price && e.price !== '0' ? '¥' + Number(e.price).toLocaleString() : '無料',
         tags: e.tags && e.tags.length ? e.tags : [cat],
         desc: e.body || '',
         cover: e.cover || null,
+        reservation: !!e.reservation,
+        subscriberPrice: e.subscriberPrice || '',
+        artists: Array.isArray(e.artists) ? e.artists : [],
       });
     });
   } catch(err) {}
@@ -407,11 +520,16 @@ function getUserSchedule(){
         venue: w.venue,
         time: `${w.date} ${w.time || ''}${w.endTime ? ' — '+w.endTime : ''}`,
         by: w.instructor || w.author,
+        author: w.author || w.instructor || 'NOBBY',
         meta: `${w.instructor || w.author} · ${w.time || '—'} · ${w.venue}`,
-        price: '¥' + (w.price || '0'),
+        priceRaw: w.price || '0',
+        price: w.price && w.price !== '0' ? '¥' + Number(w.price).toLocaleString() : '無料',
         tags: [cat, w.level || 'ALL LEVELS'],
         desc: w.body || '',
         cover: w.cover || null,
+        reservation: !!w.reservation,
+        subscriberPrice: w.subscriberPrice || '',
+        artists: Array.isArray(w.artists) ? w.artists : [],
       });
     });
   } catch(err) {}
@@ -429,11 +547,16 @@ function getUserSchedule(){
         venue: x.venue,
         time: x.date + endStr,
         by: x.artist || x.author,
+        author: x.author || x.artist || 'NOBBY',
         meta: `${x.artist || x.author} · ${x.date}${endStr} · ${x.venue}`,
-        price: x.price && x.price !== '0' ? '¥' + x.price : '無料',
+        priceRaw: x.price || '0',
+        price: x.price && x.price !== '0' ? '¥' + Number(x.price).toLocaleString() : '無料',
         tags: [cat],
         desc: x.body || '',
         cover: x.cover || null,
+        reservation: !!x.reservation,
+        subscriberPrice: x.subscriberPrice || '',
+        artists: Array.isArray(x.artists) ? x.artists : [],
       });
     });
   } catch(err) {}
@@ -494,12 +617,70 @@ const emBody = document.getElementById('emBody');
 const emLabel = document.getElementById('emLabel');
 const emClose = document.getElementById('emClose');
 
+const initialsOf = (n) => (n || '?').replace(/[^A-Za-z0-9\u3040-\u30FF\u4E00-\u9FFF]/g, '').slice(0, 2).toUpperCase();
+
 function openEventDetail(e) {
   if (navigator.vibrate) navigator.vibrate(8);
   emLabel.textContent = e.cat;
-  // Category-soft background for hero
   const soft = hexToRgba(e.catColor, 0.08);
+
+  // Cover image (no-crop, letterboxed with blurred bg) — only for events with a cover
+  const coverHtml = e.cover ? `
+    <div class="em-cover">
+      <img class="em-cover-bg" src="${e.cover}" alt="" aria-hidden="true">
+      <img class="em-cover-fg" src="${e.cover}" alt="">
+    </div>
+  ` : '';
+
+  // Featured artists — clickable chips → /profile?user=NAME
+  const artistsList = Array.isArray(e.artists) ? e.artists : [];
+  const artistsHtml = artistsList.length ? `
+    <div class="em-artists">
+      ${artistsList.map(a => {
+        const name = typeof a === 'string' ? a : (a && a.name) || '';
+        if (!name) return '';
+        return `
+          <button type="button" class="em-artist" data-artist="${encodeURIComponent(name)}">
+            <div class="em-artist-avatar">${initialsOf(name)}</div>
+            <div class="em-artist-name">${name}</div>
+          </button>
+        `;
+      }).join('')}
+    </div>
+  ` : `<div class="em-sec-body">${e.by || ''}</div>`;
+
+  // Price chips (General / Reservation / Subscriber)
+  const subPriceNum = e.subscriberPrice && Number(e.subscriberPrice) > 0
+    ? Number(e.subscriberPrice) : 0;
+  const priceChipsHtml = `
+    <div class="em-price-row">
+      <div class="em-price-chip">
+        <div class="em-price-chip-label">General</div>
+        <div class="em-price-chip-value">${e.price}</div>
+      </div>
+      ${e.reservation ? `
+      <div class="em-price-chip reservation">
+        <div class="em-price-chip-label">予約受付</div>
+        <div class="em-price-chip-value">OPEN</div>
+      </div>` : ''}
+      ${subPriceNum > 0 ? `
+      <div class="em-price-chip subscriber">
+        <div class="em-price-chip-label">Subscriber</div>
+        <div class="em-price-chip-value">¥${Number(subPriceNum).toLocaleString()}</div>
+      </div>` : ''}
+    </div>
+  `;
+
+  // Subscription gating for sub-price button
+  let subscribedArtists = [];
+  try { subscribedArtists = JSON.parse(localStorage.getItem('livepass_subscribed_artists') || '[]'); }
+  catch(err) { subscribedArtists = []; }
+  const currentUser = localStorage.getItem('livepass_account_name') || 'NOBBY';
+  const eventOwner  = e.author || e.by || 'NOBBY';
+  const isSubscribed = subscribedArtists.includes(eventOwner) || eventOwner === currentUser;
+
   emBody.innerHTML = `
+    ${coverHtml}
     <div class="em-hero" style="--cat-color:${e.catColor};--cat-color-soft:${soft}">
       <div class="em-date-big">
         <div>
@@ -519,19 +700,45 @@ function openEventDetail(e) {
 
     <div class="em-section">
       <div class="em-sec-label">About</div>
-      <div class="em-sec-body">${e.desc}</div>
+      <div class="em-sec-body">${(e.desc || '').replace(/\n/g,'<br>')}</div>
     </div>
 
     <div class="em-section">
-      <div class="em-sec-label">By</div>
-      <div class="em-sec-body">${e.by}</div>
+      <div class="em-sec-label">${artistsList.length ? 'Featured Artists' : 'By'}</div>
+      ${artistsHtml}
+    </div>
+
+    <div class="em-section">
+      <div class="em-sec-label">Price</div>
+      ${priceChipsHtml}
     </div>
 
     <div class="em-cta">
-      <button class="em-buy-btn" id="emBuyBtn" style="background:${e.catColor}">
-        ${e.type === 'workshop' ? '参加申込' : 'PASS を購入'}
-        <span class="em-buy-price">${e.price}</span>
-      </button>
+      <div class="em-cta-stack">
+        <button class="em-buy-btn" id="emBuyBtn"
+          style="background:${e.catColor};box-shadow:0 8px 32px ${hexToRgba(e.catColor,.25)}">
+          ${e.type === 'workshop' ? '参加申込' : 'PASS を購入'}
+          <span class="em-buy-price">${e.price}</span>
+        </button>
+
+        ${e.reservation ? `
+        <button class="em-reserve-btn" id="emReserveBtn" type="button">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M9 16l2 2 4-4"/></svg>
+          予約を受け付ける
+        </button>` : ''}
+
+        ${subPriceNum > 0 ? `
+        <button class="em-sub-price-btn ${isSubscribed ? '' : 'locked'}" id="emSubBtn" type="button"
+          ${isSubscribed ? '' : 'aria-disabled="true"'}>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7l3-7z"/></svg>
+          サブスク限定価格
+          <span class="em-sub-price-btn-price">¥${Number(subPriceNum).toLocaleString()}</span>
+          <span class="em-sub-price-btn-lock">🔒</span>
+        </button>
+        ${isSubscribed ? '' : `
+        <div class="em-sub-hint">${eventOwner} のサブスク加入者限定価格です</div>`}
+        ` : ''}
+      </div>
       <div class="em-sub-actions">
         <button class="em-sub-btn">🔖 保存</button>
         <button class="em-sub-btn">📤 共有</button>
@@ -541,53 +748,104 @@ function openEventDetail(e) {
   eventModal.classList.add('active');
   eventModal.setAttribute('aria-hidden','false');
 
+  // Artist chips → navigate to that user's profile
+  emBody.querySelectorAll('.em-artist').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (navigator.vibrate) navigator.vibrate(8);
+      const name = decodeURIComponent(btn.dataset.artist || '');
+      if (name) location.href = '/profile?user=' + encodeURIComponent(name);
+    });
+  });
+
+  // Shared checkout runner
+  const runCheckout = async (amount, opts = {}) => {
+    if (!amount || amount < 1) { alert('価格が未設定です'); return; }
+    const target = opts.button;
+    const originalHtml = target.innerHTML;
+    target.disabled = true;
+    target.innerHTML = '処理中…';
+    try {
+      const r = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productType: opts.productType || e.type || 'event',
+          productId:   e.id,
+          title:       (opts.titlePrefix ? opts.titlePrefix + ' · ' : '') + e.title,
+          description: `${e.venue} · ${e.time}`,
+          amount:      amount,
+          cover:       null,
+          userId:      (function(){
+            try { return JSON.parse(localStorage.getItem('livepass_holder') || '{}').id || ''; }
+            catch(err) { return ''; }
+          })(),
+        }),
+      });
+      const data = await r.json();
+      if (data.stub) {
+        alert(data.message || 'Stripe テストモード未設定');
+        target.disabled = false;
+        target.innerHTML = originalHtml;
+        return;
+      }
+      if (!r.ok || !data.url) throw new Error(data.error || 'checkout failed');
+      if (navigator.vibrate) navigator.vibrate(12);
+      location.href = data.url;
+    } catch (err) {
+      alert('決済ページを開けませんでした: ' + err.message);
+      target.disabled = false;
+      target.innerHTML = originalHtml;
+    }
+  };
+
   // Wire up the buy button → Stripe Checkout
   const buyBtn = document.getElementById('emBuyBtn');
   if (buyBtn) {
-    buyBtn.addEventListener('click', async () => {
-      const amount = parseInt((e.price || '').replace(/[^\d]/g, ''), 10);
-      if (!amount || amount < 1) {
-        alert('価格が未設定です');
-        return;
-      }
-      buyBtn.disabled = true;
-      const originalText = buyBtn.innerHTML;
-      buyBtn.innerHTML = '処理中…';
+    buyBtn.addEventListener('click', () => {
+      const amount = parseInt((e.priceRaw || e.price || '').toString().replace(/[^\d]/g, ''), 10);
+      runCheckout(amount, { button: buyBtn });
+    });
+  }
+
+  // Reservation → persist to localStorage
+  const reserveBtn = document.getElementById('emReserveBtn');
+  if (reserveBtn) {
+    reserveBtn.addEventListener('click', () => {
+      if (navigator.vibrate) navigator.vibrate(10);
       try {
-        const r = await fetch('/api/checkout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            productType: e.type || 'event',
-            productId:   e.id,
-            title:       e.title,
-            description: `${e.venue} · ${e.time}`,
-            amount:      amount,
-            cover:       null, // cover images are Data URLs → skip (Stripe needs absolute URL)
-            userId:      (function(){
-              try { return JSON.parse(localStorage.getItem('livepass_holder') || '{}').id || ''; }
-              catch(e) { return ''; }
-            })(),
-          }),
-        });
-        const data = await r.json();
-        if (data.stub) {
-          alert(data.message || 'Stripe テストモード未設定');
-          buyBtn.disabled = false;
-          buyBtn.innerHTML = originalText;
+        const key = 'livepass_reservations';
+        const existing = JSON.parse(localStorage.getItem(key) || '[]');
+        if (existing.find(r => r.id === e.id)) {
+          alert('既に予約済みです');
           return;
         }
-        if (!r.ok || !data.url) {
-          throw new Error(data.error || 'checkout failed');
-        }
-        if (navigator.vibrate) navigator.vibrate(12);
-        // Redirect the whole tab to Stripe's hosted checkout page
-        location.href = data.url;
+        existing.unshift({
+          id: e.id, title: e.title, date: e.time, venue: e.venue,
+          reservedAt: new Date().toISOString(),
+        });
+        localStorage.setItem(key, JSON.stringify(existing));
+        alert('予約を受け付けました。当日は会場でPASSをご提示ください。');
       } catch (err) {
-        alert('決済ページを開けませんでした: ' + err.message);
-        buyBtn.disabled = false;
-        buyBtn.innerHTML = originalText;
+        alert('予約に失敗しました: ' + err.message);
       }
+    });
+  }
+
+  // Subscriber-only price button — gated on subscription to the artist
+  const subBtn = document.getElementById('emSubBtn');
+  if (subBtn) {
+    subBtn.addEventListener('click', () => {
+      if (!isSubscribed) {
+        if (navigator.vibrate) navigator.vibrate([30, 40, 30]);
+        alert(`${eventOwner} のサブスクに加入するとこの価格で購入できます。\n\nプロフィール → SUBSCRIPTION から加入してください。`);
+        location.href = '/profile?user=' + encodeURIComponent(eventOwner) + '#sub';
+        return;
+      }
+      runCheckout(subPriceNum, {
+        button: subBtn,
+        titlePrefix: 'SUBSCRIBER',
+        productType: (e.type || 'event') + '-subscriber',
+      });
     });
   }
 }
