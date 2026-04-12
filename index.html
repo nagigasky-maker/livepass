@@ -44,8 +44,8 @@ html,body{
   transition:opacity .5s,transform .5s;
 }
 #splash.hide{opacity:0;pointer-events:none;transform:scale(1.04)}
-.splash-logo{font-size:13px;font-weight:800;letter-spacing:5px;color:#fff;margin-bottom:4px}
-.splash-logo span{color:var(--red)}
+.splash-logo{margin-bottom:4px;display:flex;align-items:center;justify-content:center}
+.splash-logo img{display:block;height:28px;width:auto;filter:drop-shadow(0 2px 12px rgba(0,0,0,.5))}
 .splash-tagline{font-size:22px;font-weight:300;letter-spacing:8px;color:rgba(255,255,255,.45);line-height:2;text-align:center;text-transform:uppercase;margin-top:32px}
 .splash-bar{width:40px;height:1px;background:rgba(255,255,255,.1);margin:24px auto 0;position:relative;overflow:hidden}
 .splash-bar-fill{position:absolute;left:0;top:0;height:100%;background:var(--lp);width:0;transition:width 2s linear}
@@ -114,7 +114,7 @@ html,body{
 
   <!-- SPLASH -->
   <div id="splash">
-    <div class="splash-logo">LIVE <span>PASS</span></div>
+    <div class="splash-logo"><img src="livepasslogo.png" alt="LIVE PASS"></div>
     <div class="splash-tagline" id="splash-lines">
       <span id="sl1" style="opacity:0;transition:opacity .6s"></span><br>
       <span id="sl2" style="opacity:0;transition:opacity .6s"></span><br>

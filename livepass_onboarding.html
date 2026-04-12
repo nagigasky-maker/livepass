@@ -30,8 +30,8 @@ html,body{height:100%;background:var(--bg);color:var(--fg);font-family:'Inter',s
 /* ── STEP NUMBER ── */
 #step-num{position:absolute;top:18px;left:24px;font-size:9px;letter-spacing:3px;color:var(--muted);z-index:20;display:none}
 #step-num.visible{display:block}
-#logo-mark{position:absolute;top:18px;right:24px;font-size:9px;letter-spacing:4px;color:rgba(237,235,230,.2);z-index:20;font-weight:300}
-#logo-mark span{color:var(--red)}
+#logo-mark{position:absolute;top:18px;right:24px;z-index:20;opacity:.4}
+#logo-mark img{display:block;height:14px;width:auto}
 
 /* ── STEPS ── */
 .step{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .35s,transform .35s;transform:translateX(30px);z-index:10}
@@ -133,7 +133,7 @@ html,body{height:100%;background:var(--bg);color:var(--fg);font-family:'Inter',s
 <body>
 <div id="app">
 
-  <div id="logo-mark">LIVE <span>PASS</span></div>
+  <div id="logo-mark"><img src="livepasslogo.png" alt="LIVE PASS"></div>
   <div id="step-num">— / 04</div>
   <div id="progress-wrap">
     <div class="prog-bars">
