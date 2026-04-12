@@ -1955,7 +1955,7 @@ function renderSavedGrid(){
     // have this field; legacy entries without userId show up as a fallback).
     const list = getReservations().filter(r => !r.userId || r.userId === me);
     if (list.length === 0) {
-      grid.innerHTML = `<div class="saved-empty"><span class="big">No reservations</span>イベント詳細で「予約を受け付ける」を押すとここに表示されます</div>`;
+      grid.innerHTML = `<div class="saved-empty"><span class="big">No reservations</span>イベント詳細で「予約する」を押すとここに表示されます</div>`;
       return;
     }
     grid.innerHTML = '';
@@ -2491,6 +2491,27 @@ function openPostDetail(type, item) {
       </div>
     ` : '';
 
+    // Author-only re-edit button — shown on ALL article layouts
+    // (poster / square / wide) because the .pm-hero.with-cover wrapper
+    // is the absolute-positioned parent. Only articles that actually
+    // exist in livepass_articles can be edited (sample feed articles
+    // don't round-trip through localStorage so there's nothing to update).
+    const articleMe = localStorage.getItem('livepass_account_name') || 'NOBBY';
+    let articleIsOwner = false;
+    try {
+      const owned = JSON.parse(localStorage.getItem('livepass_articles') || '[]');
+      articleIsOwner = (item.author || 'NOBBY') === articleMe
+        && !!owned.find(a => a.id === item.id);
+    } catch(e) {}
+    const articleOwnerActionsHtml = articleIsOwner ? `
+      <div class="pm-owner-actions">
+        <button class="pm-edit-btn" id="pmArticleEditBtn" type="button">
+          <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+          編集
+        </button>
+      </div>
+    ` : '';
+
     // Subscribers-only access badge
     const accessBadgeHtml = item.access === 'pass' ? `
       <div style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:99px;background:rgba(191,90,242,.12);border:0.5px solid rgba(191,90,242,.5);color:#d4a8ff;font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:.22em;text-transform:uppercase;font-weight:700;margin-bottom:8px">
@@ -2536,6 +2557,7 @@ function openPostDetail(type, item) {
     pmBody.innerHTML = `
       <div class="pm-hero with-cover">
         ${coverHtml}
+        ${articleOwnerActionsHtml}
         <div class="pm-hero-text">
           ${sharedByHtml}
           ${accessBadgeHtml}
@@ -2565,6 +2587,17 @@ function openPostDetail(type, item) {
       </div>
       <div style="height:20px"></div>
     `;
+
+    // Wire up the re-edit button for articles
+    if (articleIsOwner) {
+      const articleEditBtn = document.getElementById('pmArticleEditBtn');
+      if (articleEditBtn && item.id) {
+        articleEditBtn.addEventListener('click', () => {
+          if (navigator.vibrate) navigator.vibrate(10);
+          location.href = '/compose/article?edit=' + encodeURIComponent(item.id);
+        });
+      }
+    }
 
     // Wire up the action buttons
     pmBody.querySelectorAll('.pm-act').forEach(btn => {
@@ -2836,7 +2869,7 @@ function openPostDetail(type, item) {
           ${item.reservation ? `
           <button class="pm-reserve-btn" id="pmReserveBtn" type="button">
             <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M9 16l2 2 4-4"/></svg>
-            予約を受け付ける
+            予約する
           </button>` : ''}
 
           ${subPriceNum > 0 ? `

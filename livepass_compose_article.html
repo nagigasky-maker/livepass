@@ -366,7 +366,7 @@ textarea.input-box{resize:vertical;min-height:160px;line-height:1.8;font-size:13
 
 <header class="hdr">
   <a href="/home" class="hdr-back">← Back</a>
-  <div class="hdr-title">記事作成</div>
+  <div class="hdr-title" id="hdrTitle">記事作成</div>
 </header>
 
 <main class="form">
@@ -807,10 +807,77 @@ titleInput.addEventListener('input', updateSubmitState);
 bodyInput.addEventListener('input', updateSubmitState);
 updateSubmitState();
 
+// ─── Edit mode ───
+// ?edit=<id> loads the article, prefills every field, and the submit
+// handler updates the existing entry in place instead of inserting a
+// new one.
+const editId = new URLSearchParams(location.search).get('edit');
+let editingArticle = null;
+if (editId) {
+  try {
+    const raw = localStorage.getItem('livepass_articles');
+    const list = raw ? JSON.parse(raw) : [];
+    editingArticle = list.find(a => a.id === editId) || null;
+    if (editingArticle) {
+      const me = localStorage.getItem('livepass_account_name') || 'NOBBY';
+      if ((editingArticle.author || 'NOBBY') !== me) {
+        alert('この記事を編集する権限がありません');
+        location.href = '/profile';
+      }
+    }
+  } catch(e) {}
+}
+
+if (editingArticle) {
+  document.getElementById('hdrTitle').textContent = '記事編集';
+  submitBtn.textContent = '変更を保存 →';
+
+  // Layout
+  state.layout = editingArticle.layout || 'poster';
+  document.querySelectorAll('.lay-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.layout === state.layout);
+  });
+  document.getElementById('coverUpload').dataset.layout = state.layout;
+
+  // Category
+  state.category = editingArticle.category || 'Culture';
+  document.querySelectorAll('#catRow .pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.cat === state.category);
+  });
+
+  // Access (free / pass)
+  state.access = editingArticle.access || 'free';
+  document.querySelectorAll('.access-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.access === state.access);
+  });
+
+  // Title / body
+  titleInput.value = editingArticle.title || '';
+  bodyInput.value  = editingArticle.body  || '';
+
+  // Cover preview
+  if (editingArticle.cover) {
+    state.coverDataUrl = editingArticle.cover;
+    const coverUpload = document.getElementById('coverUpload');
+    coverUpload.classList.add('has-image');
+    coverUpload.innerHTML = `<img class="cover-preview-img" src="${editingArticle.cover}" alt="">`;
+  }
+
+  // Collaborators
+  if (Array.isArray(editingArticle.collaborators)) {
+    state.collaborators = editingArticle.collaborators.map(c => ({
+      name: c.name || c, share: Number(c.share) || 0,
+    }));
+    renderCollabList();
+  }
+
+  updateSubmitState();
+}
+
 submitBtn.addEventListener('click', () => {
   if (submitBtn.disabled) return;
   const article = {
-    id:       'a' + Date.now(),
+    id:       editingArticle ? editingArticle.id : 'a' + Date.now(),
     type:     'article',
     layout:   state.layout,
     category: state.category,
@@ -819,8 +886,13 @@ submitBtn.addEventListener('click', () => {
     title:    titleInput.value.trim(),
     body:     bodyInput.value.trim(),
     collaborators: state.collaborators.slice(),
-    author:   localStorage.getItem('livepass_account_name') || 'NOBBY',
-    createdAt:new Date().toISOString(),
+    author:   (editingArticle && editingArticle.author) || localStorage.getItem('livepass_account_name') || 'NOBBY',
+    createdAt:(editingArticle && editingArticle.createdAt) || new Date().toISOString(),
+    updatedAt:editingArticle ? new Date().toISOString() : undefined,
+    // Preserve reshare metadata if present
+    sharedBy:         editingArticle ? editingArticle.sharedBy : undefined,
+    sharedFromId:     editingArticle ? editingArticle.sharedFromId : undefined,
+    sharedFromAuthor: editingArticle ? editingArticle.sharedFromAuthor : undefined,
   };
   function saveArticles(list) {
     localStorage.setItem('livepass_articles', JSON.stringify(list));
@@ -828,7 +900,15 @@ submitBtn.addEventListener('click', () => {
   function pushArticle(withCover) {
     const raw = localStorage.getItem('livepass_articles');
     const list = raw ? JSON.parse(raw) : [];
-    list.unshift({ ...article, cover: withCover ? article.cover : null });
+    const payload = { ...article, cover: withCover ? article.cover : null };
+    if (editingArticle) {
+      // Replace the existing entry in place (preserve original position)
+      const idx = list.findIndex(x => x.id === editingArticle.id);
+      if (idx >= 0) list[idx] = payload;
+      else list.unshift(payload);
+    } else {
+      list.unshift(payload);
+    }
     saveArticles(list);
   }
   try {
@@ -853,7 +933,7 @@ submitBtn.addEventListener('click', () => {
   const toast = document.getElementById('toast');
   toast.classList.add('show');
   setTimeout(() => {
-    location.href = '/home';
+    location.href = editingArticle ? '/profile' : '/home';
   }, 900);
 });
 </script>
