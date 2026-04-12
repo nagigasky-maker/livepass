@@ -332,7 +332,11 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
     </div>
     <div class="field-body">
       <div class="field-label">アカウント名</div>
-      <div class="field-value" id="srNameValue">NOBBY</div>
+      <input type="text" id="srNameInput" placeholder="NOBBY"
+        value="NOBBY"
+        style="width:100%;background:none;border:none;color:rgba(237,235,230,.5);
+               font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;
+               letter-spacing:.02em;margin-top:3px;padding:0;outline:none">
     </div>
     <div class="field-chevron">›</div>
   </div>
@@ -456,15 +460,28 @@ document.querySelectorAll('.plan').forEach(p => {
   });
 });
 
-/* Role (肩書) — store to localStorage, pick up on profile */
+/* Role (肩書) + アカウント名 — store to localStorage, pick up on profile + compose */
 const ROLE_KEY = 'livepass_role';
+const NAME_KEY = 'livepass_account_name';
 const roleInput = document.getElementById('srRoleInput');
+const nameInput = document.getElementById('srNameInput');
 try {
   const storedRole = localStorage.getItem(ROLE_KEY);
   if (storedRole) roleInput.value = storedRole;
+  const storedName = localStorage.getItem(NAME_KEY);
+  if (storedName) {
+    nameInput.value = storedName;
+    document.getElementById('srName').textContent = storedName;
+  }
 } catch(e) {}
 roleInput.addEventListener('input', () => {
   try { localStorage.setItem(ROLE_KEY, roleInput.value); } catch(e) {}
+});
+nameInput.addEventListener('input', () => {
+  try {
+    localStorage.setItem(NAME_KEY, nameInput.value);
+    document.getElementById('srName').textContent = nameInput.value || 'NOBBY';
+  } catch(e) {}
 });
 
 /* Compose selector bottom sheet */

@@ -1115,12 +1115,16 @@ window.addEventListener('keydown', (e) => {
       const el = document.querySelector('.ph-role');
       if (el) el.textContent = role;
     }
+    const name = localStorage.getItem('livepass_account_name');
+    if (name) {
+      const el = document.querySelector('.ph-name');
+      if (el) el.textContent = name;
+    }
     // Plan badge (FREE / PRO / BIZ) — default FREE
     const plan = (localStorage.getItem('livepass_plan') || 'FREE').toUpperCase();
     const badge = document.getElementById('phPlanBadge');
     if (badge) {
       badge.textContent = plan;
-      // FREE gets a neutral look; PRO/BIZ keep the gold chip
       if (plan === 'FREE') {
         badge.style.background = 'rgba(237,235,230,.12)';
         badge.style.color = 'rgba(237,235,230,.75)';

@@ -143,6 +143,19 @@ textarea.input-box{resize:vertical;min-height:160px;line-height:1.8;font-size:13
 .cover-preview-img{width:100%;height:100%;object-fit:cover;display:block}
 #coverInput{display:none}
 
+/* AI assist buttons ─────────────────────── */
+.ai-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:99px;
+  background:rgba(168,230,61,.08);
+  border:0.5px solid rgba(168,230,61,.35);
+  color:var(--green);
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:9px;letter-spacing:.08em;text-transform:uppercase;
+}
+.ai-btn:active{background:rgba(168,230,61,.15)}
+.ai-btn:disabled{opacity:.4}
+
 /* Access toggle ─────────────────────── */
 .access-row{display:flex;gap:8px}
 .access-btn{
@@ -258,8 +271,20 @@ textarea.input-box{resize:vertical;min-height:160px;line-height:1.8;font-size:13
 
   <!-- Body ─────────────────────── -->
   <div class="form-section">
-    <div class="form-label">本文</div>
-    <textarea class="input-box" id="bodyInput" placeholder="記事の本文を入力..." rows="8"></textarea>
+    <div class="form-label" style="display:flex;align-items:center;gap:8px">
+      <span>本文</span>
+      <div style="flex:1"></div>
+      <button type="button" class="ai-btn" id="aiWriteBtn" aria-label="AIで書く">
+        <svg viewBox="0 0 24 24" width="12" height="12" style="stroke:currentColor;fill:none;stroke-width:2"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>
+        AIで書く
+      </button>
+      <button type="button" class="ai-btn" id="aiProofBtn" aria-label="校正する">
+        <svg viewBox="0 0 24 24" width="12" height="12" style="stroke:currentColor;fill:none;stroke-width:2"><polyline points="20,6 9,17 4,12"/></svg>
+        校正
+      </button>
+    </div>
+    <textarea class="input-box" id="bodyInput" placeholder="記事の本文を入力... (AIで書くボタンを押すとタイトルから自動生成)" rows="8"></textarea>
+    <div id="aiStatus" style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.24em;text-transform:uppercase;color:rgba(168,230,61,.5);margin-top:8px;display:none">AI thinking…</div>
   </div>
 
   <!-- Access ─────────────────────── -->
@@ -324,23 +349,98 @@ document.querySelectorAll('.access-btn').forEach(b => {
   });
 });
 
-/* Cover upload */
+/* Cover upload — downscale to max 1280px before storing so the Data URL
+   fits comfortably in localStorage (5MB limit per origin). */
+function downscaleImageFile(file, maxDim = 1280, quality = 0.82) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+        const w = Math.round(img.width  * scale);
+        const h = Math.round(img.height * scale);
+        const canvas = document.createElement('canvas');
+        canvas.width  = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 const coverUpload = document.getElementById('coverUpload');
 const coverInput  = document.getElementById('coverInput');
 const coverPh     = document.getElementById('coverPh');
 coverUpload.addEventListener('click', () => coverInput.click());
-coverInput.addEventListener('change', (e) => {
+coverInput.addEventListener('change', async (e) => {
   const file = e.target.files && e.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    state.coverDataUrl = ev.target.result;
+  try {
+    const dataUrl = await downscaleImageFile(file);
+    state.coverDataUrl = dataUrl;
     coverUpload.classList.add('has-image');
-    coverUpload.innerHTML = `<img class="cover-preview-img" src="${ev.target.result}" alt="">`;
+    coverUpload.innerHTML = `<img class="cover-preview-img" src="${dataUrl}" alt="">`;
     if (navigator.vibrate) navigator.vibrate(8);
-  };
-  reader.readAsDataURL(file);
+  } catch (err) {
+    alert('画像の読み込みに失敗しました: ' + err.message);
+  }
 });
+
+/* AI assist — write + proofread via /api/ai-write */
+const aiWriteBtn  = document.getElementById('aiWriteBtn');
+const aiProofBtn  = document.getElementById('aiProofBtn');
+const aiStatus    = document.getElementById('aiStatus');
+
+async function callAI(action){
+  const title = document.getElementById('titleInput').value.trim();
+  const body  = document.getElementById('bodyInput').value.trim();
+  if (action === 'write' && !title) {
+    alert('タイトルを入力してから AI で書くを押してください');
+    return;
+  }
+  if (action === 'proof' && !body) {
+    alert('校正する本文を先に入力してください');
+    return;
+  }
+  aiWriteBtn.disabled = aiProofBtn.disabled = true;
+  aiStatus.style.display = 'block';
+  aiStatus.textContent = action === 'write' ? 'AI writing…' : 'AI proofreading…';
+  try {
+    const r = await fetch('/api/ai-write', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, title, body }),
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'api error');
+    document.getElementById('bodyInput').value = data.text || '';
+    if (data.stub) {
+      aiStatus.textContent = 'AI stub — set ANTHROPIC_API_KEY in Vercel';
+      aiStatus.style.color = 'rgba(245,200,66,.7)';
+    } else {
+      aiStatus.textContent = 'AI ✓ Done';
+      aiStatus.style.color = 'rgba(168,230,61,.7)';
+    }
+    if (navigator.vibrate) navigator.vibrate(12);
+    updateSubmitState();
+    setTimeout(() => { aiStatus.style.display = 'none'; }, 2400);
+  } catch (e) {
+    aiStatus.textContent = 'AI error: ' + e.message;
+    aiStatus.style.color = 'rgba(232,16,10,.8)';
+    setTimeout(() => { aiStatus.style.display = 'none'; }, 3400);
+  } finally {
+    aiWriteBtn.disabled = aiProofBtn.disabled = false;
+  }
+}
+aiWriteBtn.addEventListener('click', () => callAI('write'));
+aiProofBtn.addEventListener('click', () => callAI('proof'));
 
 /* Submit */
 const submitBtn = document.getElementById('submitBtn');
@@ -368,14 +468,32 @@ submitBtn.addEventListener('click', () => {
     author:   localStorage.getItem('livepass_account_name') || 'NOBBY',
     createdAt:new Date().toISOString(),
   };
-  try {
+  function saveArticles(list) {
+    localStorage.setItem('livepass_articles', JSON.stringify(list));
+  }
+  function pushArticle(withCover) {
     const raw = localStorage.getItem('livepass_articles');
     const list = raw ? JSON.parse(raw) : [];
-    list.unshift(article); // newest first
-    localStorage.setItem('livepass_articles', JSON.stringify(list));
+    list.unshift({ ...article, cover: withCover ? article.cover : null });
+    saveArticles(list);
+  }
+  try {
+    pushArticle(true);
   } catch(e) {
-    alert('投稿の保存に失敗しました: ' + e.message);
-    return;
+    // Quota exceeded: try again without the cover image
+    if (e && /quota|QUOTA/i.test(e.name + ' ' + e.message)) {
+      try {
+        pushArticle(false);
+        alert('カバー画像が大きすぎたので画像なしで投稿しました。');
+      } catch(e2) {
+        alert('投稿の保存に失敗しました (localStorage full): ' + e2.message +
+              '\n\nSettings で古い投稿を削除するか、ブラウザのストレージを消去してください。');
+        return;
+      }
+    } else {
+      alert('投稿の保存に失敗しました: ' + e.message);
+      return;
+    }
   }
   if (navigator.vibrate) navigator.vibrate([18, 40, 18]);
   const toast = document.getElementById('toast');

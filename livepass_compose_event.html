@@ -189,19 +189,41 @@ document.querySelectorAll('#catRow .pill').forEach(p => {
   });
 });
 
+function downscaleImageFile(file, maxDim = 1280, quality = 0.82) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+        const w = Math.round(img.width * scale);
+        const h = Math.round(img.height * scale);
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 const coverUpload = document.getElementById('coverUpload');
 const coverInput  = document.getElementById('coverInput');
 coverUpload.addEventListener('click', () => coverInput.click());
-coverInput.addEventListener('change', (e) => {
+coverInput.addEventListener('change', async (e) => {
   const file = e.target.files && e.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    state.coverDataUrl = ev.target.result;
+  try {
+    const dataUrl = await downscaleImageFile(file);
+    state.coverDataUrl = dataUrl;
     coverUpload.classList.add('has-image');
-    coverUpload.innerHTML = `<img class="cover-preview-img" src="${ev.target.result}" alt="">`;
-  };
-  reader.readAsDataURL(file);
+    coverUpload.innerHTML = `<img class="cover-preview-img" src="${dataUrl}" alt="">`;
+  } catch (err) {
+    alert('画像の読み込みに失敗: ' + err.message);
+  }
 });
 
 const submitBtn = document.getElementById('submitBtn');
@@ -213,12 +235,29 @@ const bodyInput = document.getElementById('bodyInput');
 function updateSubmitState(){
   const valid = titleInput.value.trim() && venueInput.value.trim() && dateInput.value;
   submitBtn.disabled = !valid;
+  submitBtn.style.opacity = valid ? '1' : '.55';
 }
-[titleInput, venueInput, dateInput].forEach(i => i.addEventListener('input', updateSubmitState));
+// Listen to BOTH input and change so mobile date/time pickers also fire updates
+[titleInput, venueInput, dateInput].forEach(i => {
+  i.addEventListener('input',  updateSubmitState);
+  i.addEventListener('change', updateSubmitState);
+  i.addEventListener('blur',   updateSubmitState);
+});
 updateSubmitState();
 
+// Also run on any interaction inside the form as a safety net
+document.querySelector('.form').addEventListener('change', updateSubmitState);
+
 submitBtn.addEventListener('click', () => {
-  if (submitBtn.disabled) return;
+  updateSubmitState();
+  if (submitBtn.disabled) {
+    const missing = [];
+    if (!titleInput.value.trim())  missing.push('タイトル');
+    if (!venueInput.value.trim())  missing.push('会場');
+    if (!dateInput.value)          missing.push('日付');
+    alert('以下を入力してください：\n・' + missing.join('\n・'));
+    return;
+  }
   const event = {
     id:       'e' + Date.now(),
     type:     'event',
@@ -239,7 +278,25 @@ submitBtn.addEventListener('click', () => {
     const list = raw ? JSON.parse(raw) : [];
     list.unshift(event);
     localStorage.setItem('livepass_events', JSON.stringify(list));
-  } catch(e) { alert('保存に失敗: ' + e.message); return; }
+  } catch(err) {
+    // Storage quota: retry WITHOUT the cover image (most likely culprit)
+    if (err && /quota/i.test(err.name + ' ' + err.message)) {
+      try {
+        event.cover = null;
+        const raw = localStorage.getItem('livepass_events');
+        const list = raw ? JSON.parse(raw) : [];
+        list.unshift(event);
+        localStorage.setItem('livepass_events', JSON.stringify(list));
+        alert('カバー画像が大きすぎたので画像なしで投稿しました。小さい画像で投稿し直すと保存できます。');
+      } catch(err2) {
+        alert('保存に失敗しました: ' + err2.message);
+        return;
+      }
+    } else {
+      alert('保存に失敗しました: ' + err.message);
+      return;
+    }
+  }
   if (navigator.vibrate) navigator.vibrate([18, 40, 18]);
   document.getElementById('toast').classList.add('show');
   setTimeout(() => { location.href = '/calendar'; }, 900);
