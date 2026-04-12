@@ -320,7 +320,35 @@ const chatSend = document.getElementById('chatSend');
 const chatBack = document.getElementById('chatBack');
 let currentContact = null;
 
+/* ─────────────────────────────────────────────
+   Unread count sync — shared across all pages
+   livepass_unread_count is read by each tab page's
+   top-bar envelope badge. Opening a chat zeros out
+   that contact's unread count and decrements the total.
+   ───────────────────────────────────────────── */
+const UNREAD_KEY = 'livepass_unread_count';
+function getTotalUnread(){
+  return CONTACTS.reduce((sum, c) => sum + (c.unread || 0), 0);
+}
+function saveUnreadCount(){
+  try { localStorage.setItem(UNREAD_KEY, String(getTotalUnread())); } catch(e) {}
+}
+// Seed once on first visit if not set
+(function initUnread(){
+  try {
+    if (localStorage.getItem(UNREAD_KEY) === null) {
+      saveUnreadCount();
+    }
+  } catch(e) {}
+})();
+
 function openChat(c){
+  // Mark this contact as read — zero its unread and update total
+  if (c.unread && c.unread > 0) {
+    c.unread = 0;
+    saveUnreadCount();
+    renderConvList(); // refresh the list (remove unread dot)
+  }
   currentContact = c;
   chatName.textContent = c.name;
   chatView.classList.add('active');
