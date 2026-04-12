@@ -840,15 +840,27 @@ function openEventDetail(e) {
         const key = 'livepass_reservations';
         const existing = JSON.parse(localStorage.getItem(key) || '[]');
         if (existing.find(r => r.id === e.id)) {
-          alert('既に予約済みです');
+          alert('既に予約済みです。\n\n/profile → SAVED → 予約 タブから確認・取り消しができます。');
           return;
         }
+        // Normalize date: store the raw event date if available, else time string
         existing.unshift({
-          id: e.id, title: e.title, date: e.time, venue: e.venue,
+          id: e.id, title: e.title,
+          date: (e.date || e.time || '').match(/\d{4}-\d{2}-\d{2}/)?.[0] || e.time,
+          venue: e.venue,
           reservedAt: new Date().toISOString(),
         });
         localStorage.setItem(key, JSON.stringify(existing));
-        alert('予約を受け付けました。当日は会場でPASSをご提示ください。');
+        // Flip button state visually
+        reserveBtn.disabled = true;
+        reserveBtn.style.opacity = '.6';
+        reserveBtn.innerHTML = `
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          予約済み
+        `;
+        // Show confirmation with link to the reservations list
+        const okToView = confirm(`予約を受け付けました。\n\n${e.title}\n当日は会場でPASSをご提示ください。\n\n今すぐ予約一覧を確認しますか？`);
+        if (okToView) location.href = '/profile#panel-saved';
       } catch (err) {
         alert('予約に失敗しました: ' + err.message);
       }

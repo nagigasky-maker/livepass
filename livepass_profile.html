@@ -477,6 +477,95 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .saved-tab.active{color:var(--white)}
 .saved-tab[data-saved-tab="liked"].active{border-bottom-color:var(--red)}
 .saved-tab[data-saved-tab="saved"].active{border-bottom-color:var(--gold)}
+.saved-tab[data-saved-tab="reserved"].active{border-bottom-color:var(--blue)}
+.saved-tab-badge{
+  display:inline-block;margin-left:6px;padding:1px 6px;min-width:16px;
+  height:16px;line-height:14px;border-radius:99px;
+  background:var(--blue);color:#000;
+  font-family:Arial,sans-serif;font-size:9px;font-weight:900;
+  letter-spacing:0;text-align:center;vertical-align:1px;
+}
+
+/* Reservations list (predominantly different shape than the article grid) */
+.reserved-list{padding:16px 16px 40px;display:flex;flex-direction:column;gap:10px}
+.reserved-item{
+  position:relative;display:flex;align-items:center;gap:14px;
+  padding:16px 16px 16px 18px;border-radius:12px;
+  background:rgba(61,170,255,.06);
+  border:0.5px solid rgba(61,170,255,.35);
+}
+.reserved-item::before{
+  content:'';position:absolute;left:0;top:12px;bottom:12px;width:3px;
+  background:var(--blue);border-radius:99px;
+}
+.reserved-date{
+  flex-shrink:0;width:56px;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+}
+.reserved-date .m{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--blue);
+}
+.reserved-date .d{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:28px;line-height:.9;color:var(--white);letter-spacing:-.02em;
+}
+.reserved-body{flex:1;min-width:0}
+.reserved-title{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:800;
+  font-size:14px;color:var(--white);margin-bottom:4px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.reserved-venue{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
+  font-size:10px;color:rgba(237,235,230,.6);margin-bottom:2px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.reserved-meta{
+  font-family:'IBM Plex Mono',monospace;font-size:8px;
+  letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(237,235,230,.35);
+}
+.reserved-cancel{
+  flex-shrink:0;padding:8px 12px;border-radius:99px;
+  background:rgba(232,16,10,.1);
+  border:0.5px solid rgba(232,16,10,.45);
+  color:#ff6b66;cursor:pointer;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:9px;letter-spacing:.08em;
+}
+.reserved-cancel:active{background:rgba(232,16,10,.2)}
+
+/* Reservation confirmation toast (bottom of screen) */
+#resToast{
+  position:fixed;left:50%;bottom:calc(var(--nav-h,44px) + 40px + var(--safe-bot));
+  transform:translate(-50%,30px);z-index:1500;
+  background:rgba(0,0,0,.92);
+  border:0.5px solid rgba(61,170,255,.6);
+  color:var(--white);padding:14px 20px;border-radius:14px;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
+  font-size:12px;letter-spacing:.02em;
+  box-shadow:0 14px 40px rgba(0,0,0,.7);
+  opacity:0;pointer-events:none;
+  transition:opacity .3s ease, transform .3s ease;
+  display:flex;align-items:center;gap:14px;max-width:calc(100% - 32px);
+}
+#resToast.show{opacity:1;transform:translate(-50%,0);pointer-events:all}
+#resToast .rt-icon{
+  flex-shrink:0;width:32px;height:32px;border-radius:50%;
+  background:rgba(61,170,255,.2);
+  display:flex;align-items:center;justify-content:center;color:var(--blue);
+}
+#resToast .rt-icon svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.4}
+#resToast .rt-text{flex:1}
+#resToast .rt-text b{display:block;font-weight:800;margin-bottom:2px;color:#fff}
+#resToast .rt-text span{font-size:10px;color:rgba(237,235,230,.55)}
+#resToast .rt-view{
+  flex-shrink:0;padding:8px 14px;border-radius:99px;
+  background:var(--blue);color:#000;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:10px;letter-spacing:.08em;border:none;cursor:pointer;
+}
 .saved-grid{
   padding:16px 12px 40px;
   display:grid;grid-template-columns:1fr 1fr;gap:8px;
@@ -1083,6 +1172,7 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
     <nav class="saved-tabs">
       <button class="saved-tab active" data-saved-tab="saved">保存済み</button>
       <button class="saved-tab" data-saved-tab="liked">いいね</button>
+      <button class="saved-tab" data-saved-tab="reserved">予約<span class="saved-tab-badge" id="reservedCount" style="display:none">0</span></button>
     </nav>
     <div class="saved-grid" id="savedGrid"></div>
   </section>
@@ -1096,6 +1186,18 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
     <div class="pm-label" id="pmLabel">Article</div>
   </header>
   <div class="pm-body" id="pmBody"></div>
+</div>
+
+<!-- ═══ RESERVATION CONFIRMATION TOAST ═══ -->
+<div id="resToast" role="status" aria-live="polite">
+  <div class="rt-icon">
+    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+  </div>
+  <div class="rt-text">
+    <b>予約を受け付けました</b>
+    <span id="resToastSub">当日は会場でPASSをご提示ください</span>
+  </div>
+  <button class="rt-view" id="resToastView" type="button">表示</button>
 </div>
 
 <!-- ═══ COMPOSE SELECTOR BOTTOM SHEET (shared) ═══ -->
@@ -1176,7 +1278,7 @@ document.querySelectorAll('.st-btn').forEach(btn => {
 /* ─────────────────────────────────────────────
    SAVED PANEL — read likes/saves from localStorage
    ───────────────────────────────────────────── */
-let savedSubTab = 'saved'; // 'saved' | 'liked'
+let savedSubTab = 'saved'; // 'saved' | 'liked' | 'reserved'
 document.querySelectorAll('.saved-tab').forEach(t => {
   t.addEventListener('click', () => {
     savedSubTab = t.dataset.savedTab;
@@ -1197,8 +1299,125 @@ function getArticleMap(){
     return raw ? JSON.parse(raw) : {};
   } catch(e) { return {}; }
 }
+function getReservations(){
+  try {
+    const raw = localStorage.getItem('livepass_reservations');
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+// Update the 予約 tab badge with the current count
+function syncReservedBadge(){
+  const badge = document.getElementById('reservedCount');
+  if (!badge) return;
+  const n = getReservations().length;
+  badge.textContent = String(n);
+  badge.style.display = n > 0 ? 'inline-block' : 'none';
+}
+syncReservedBadge();
+
+// Bottom toast for reservation confirmation — tapping 表示 jumps to the
+// SUBSCRIPTION→SAVED→予約 tab so the user can see/manage reservations.
+function showReservationToast(titleText){
+  const toast = document.getElementById('resToast');
+  const sub   = document.getElementById('resToastSub');
+  if (!toast) return;
+  if (sub && titleText) sub.textContent = `${titleText} · 当日は会場でPASSをご提示`;
+  toast.classList.add('show');
+  // Auto-hide after 6s unless user interacts
+  clearTimeout(showReservationToast._t);
+  showReservationToast._t = setTimeout(() => toast.classList.remove('show'), 6000);
+}
+function jumpToReservedTab(){
+  // Close the post detail modal if it's open
+  if (postModal.classList.contains('active')) pmClose.click();
+  // Switch main sub-tab to SAVED
+  const savedTabBtn = document.querySelector('.st-btn[data-sub="saved"]');
+  if (savedTabBtn) savedTabBtn.click();
+  // Switch saved sub-tab to 予約
+  const reservedTabBtn = document.querySelector('.saved-tab[data-saved-tab="reserved"]');
+  if (reservedTabBtn) reservedTabBtn.click();
+  // Scroll into view
+  setTimeout(() => {
+    document.getElementById('panel-saved')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+document.getElementById('resToastView')?.addEventListener('click', () => {
+  document.getElementById('resToast').classList.remove('show');
+  jumpToReservedTab();
+});
+
+// Hash navigation: /profile#panel-saved (from calendar 予約完了 confirm)
+if (location.hash === '#panel-saved' || location.hash === '#reserved') {
+  setTimeout(jumpToReservedTab, 150);
+}
+
+function parseISODate(iso){
+  if (!iso) return { m:'—', d:'—' };
+  const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  const d = new Date(iso);
+  return { m: MONTHS[d.getMonth()], d: String(d.getDate()).padStart(2,'0') };
+}
+function formatReservedMeta(r){
+  // Human-readable reservation timestamp
+  if (!r.reservedAt) return '';
+  try {
+    const d = new Date(r.reservedAt);
+    return `予約日時 ${d.toLocaleDateString('ja-JP')} ${d.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })}`;
+  } catch(e) { return ''; }
+}
+
 function renderSavedGrid(){
   const grid = document.getElementById('savedGrid');
+
+  // ─── 予約 (reserved) ───
+  if (savedSubTab === 'reserved') {
+    grid.className = 'reserved-list';  // swap to list layout
+    const list = getReservations();
+    if (list.length === 0) {
+      grid.innerHTML = `<div class="saved-empty"><span class="big">No reservations</span>イベント詳細で「予約を受け付ける」を押すとここに表示されます</div>`;
+      return;
+    }
+    grid.innerHTML = '';
+    list.forEach(r => {
+      // date can be either "YYYY-MM-DD HH:MM" (calendar page shape)
+      // or a raw ISO — try to normalise
+      const dateIso = r.date && /^\d{4}-\d{2}-\d{2}/.test(r.date) ? r.date : null;
+      const pd = dateIso ? parseISODate(dateIso) : { m:'—', d:'—' };
+      const item = document.createElement('div');
+      item.className = 'reserved-item';
+      item.innerHTML = `
+        <div class="reserved-date">
+          <div class="m">${pd.m}</div>
+          <div class="d">${pd.d}</div>
+        </div>
+        <div class="reserved-body">
+          <div class="reserved-title">${r.title || '(no title)'}</div>
+          <div class="reserved-venue">${r.venue || '—'}</div>
+          <div class="reserved-meta">${formatReservedMeta(r)}</div>
+        </div>
+        <button class="reserved-cancel" data-id="${r.id}" type="button">取消</button>
+      `;
+      item.querySelector('.reserved-cancel').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!confirm(`「${r.title}」の予約を取り消しますか？`)) return;
+        try {
+          const cur = getReservations();
+          const next = cur.filter(x => x.id !== r.id);
+          localStorage.setItem('livepass_reservations', JSON.stringify(next));
+          if (navigator.vibrate) navigator.vibrate(10);
+          renderSavedGrid();
+          syncReservedBadge();
+        } catch(err) {
+          alert('取消に失敗しました: ' + err.message);
+        }
+      });
+      grid.appendChild(item);
+    });
+    return;
+  }
+
+  // ─── saved / liked articles ───
+  grid.className = 'saved-grid';  // restore grid layout
   const key = savedSubTab === 'liked' ? 'livepass_likes' : 'livepass_saves';
   const ids = getStoredIds(key);
   const meta = getArticleMap();
@@ -1903,7 +2122,7 @@ function openPostDetail(type, item) {
             const key = 'livepass_reservations';
             const existing = JSON.parse(localStorage.getItem(key) || '[]');
             if (existing.find(r => r.id === item.id)) {
-              alert('既に予約済みです');
+              alert('既に予約済みです。SAVED → 予約 タブから確認できます。');
               return;
             }
             existing.unshift({
@@ -1914,7 +2133,15 @@ function openPostDetail(type, item) {
               reservedAt: new Date().toISOString(),
             });
             localStorage.setItem(key, JSON.stringify(existing));
-            alert('予約を受け付けました。当日は会場でPASSをご提示ください。');
+            // Visual confirmation: button flips to done state + toast with 表示
+            reserveBtn.disabled = true;
+            reserveBtn.style.opacity = '.6';
+            reserveBtn.innerHTML = `
+              <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+              予約済み
+            `;
+            syncReservedBadge();
+            showReservationToast(item.title);
           } catch (e) {
             alert('予約に失敗しました: ' + e.message);
           }
