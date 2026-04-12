@@ -661,7 +661,7 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   <!-- Messages -->
   <a class="tb-icon" href="/messages" aria-label="Messages" title="メッセージ">
     <svg viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><polyline points="3,7 12,13 21,7"/></svg>
-    <span class="badge">3</span>
+    <span class="badge" id="msgBadge">0</span>
   </a>
 
   <!-- Following -->
@@ -1512,13 +1512,19 @@ window.addEventListener('keydown', (e) => {
   window.addEventListener('keydown',e=>{if(e.key==='Escape'&&ov.classList.contains('active'))dismiss()});
 })();
 
-/* Top bar counters — shared pattern */
+/* Top bar counters + unread badge — shared pattern */
 (function syncCounters(){
   try {
     const f1 = JSON.parse(localStorage.getItem('livepass_following') || '[]').length;
     const f2 = JSON.parse(localStorage.getItem('livepass_followers') || '[]').length;
     document.querySelectorAll('[data-count="following"]').forEach(el => el.textContent = f1 || '0');
     document.querySelectorAll('[data-count="followers"]').forEach(el => el.textContent = f2 || '0');
+    const unread = parseInt(localStorage.getItem('livepass_unread_count') || '3', 10);
+    const badge = document.getElementById('msgBadge');
+    if (badge) {
+      if (unread > 0) { badge.textContent = unread > 99 ? '99+' : String(unread); badge.style.display = ''; }
+      else { badge.style.display = 'none'; }
+    }
   } catch(e) {}
 })();
 
