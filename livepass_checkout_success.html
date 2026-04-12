@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#000000">
+<title>LIVE PASS — 購入完了</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#000;--white:#EDEBE6;
+  --green:#A8E63D;--gold:#F5C842;--blue:#3DAAFF;--red:#E8100A;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;height:100dvh;background:var(--black);color:var(--white);
+  font-family:Arial,'Noto Sans JP',sans-serif;-webkit-font-smoothing:antialiased;
+  user-select:none;-webkit-user-select:none;overflow:hidden;}
+
+.wrap{
+  position:fixed;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 24px;text-align:center;
+  padding-top:calc(var(--safe-top) + 40px);
+  padding-bottom:calc(var(--safe-bot) + 40px);
+}
+.ring{
+  width:110px;height:110px;border-radius:50%;
+  border:1.5px solid rgba(168,230,61,.4);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;margin-bottom:30px;
+}
+.ring::before{
+  content:'';position:absolute;inset:-6px;border-radius:50%;
+  border:1px solid rgba(168,230,61,.18);
+  animation:pulse 2s ease-out infinite;
+}
+@keyframes pulse{
+  0%{transform:scale(1);opacity:.6}
+  100%{transform:scale(1.35);opacity:0}
+}
+.check{
+  width:46px;height:46px;stroke:var(--green);
+  fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;
+  animation:draw 0.8s ease-out 0.2s both;
+}
+@keyframes draw{
+  from{stroke-dasharray:60;stroke-dashoffset:60;opacity:0}
+  to{stroke-dasharray:60;stroke-dashoffset:0;opacity:1}
+}
+.label{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;
+  letter-spacing:.4em;text-transform:uppercase;
+  color:var(--green);margin-bottom:16px;
+}
+.title{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:30px;letter-spacing:.02em;color:var(--white);
+  line-height:1.2;margin-bottom:12px;
+}
+.subtitle{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
+  font-size:13px;color:rgba(237,235,230,.6);
+  line-height:1.8;max-width:320px;margin-bottom:36px;letter-spacing:.02em;
+}
+.session-id{
+  font-family:'IBM Plex Mono',monospace;font-size:8px;
+  letter-spacing:.18em;color:rgba(237,235,230,.25);
+  max-width:90vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  margin-bottom:30px;
+}
+.btn{
+  display:inline-block;padding:16px 36px;
+  background:var(--green);color:#000;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:13px;letter-spacing:.2em;text-transform:uppercase;
+  border-radius:99px;text-decoration:none;
+  box-shadow:0 8px 30px rgba(168,230,61,.25);
+}
+.btn-ghost{
+  display:inline-block;padding:14px 30px;
+  background:none;border:0.5px solid rgba(237,235,230,.2);
+  color:rgba(237,235,230,.6);
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
+  font-size:11px;letter-spacing:.08em;
+  border-radius:99px;text-decoration:none;margin-top:12px;
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="ring">
+    <svg class="check" viewBox="0 0 24 24"><polyline points="5,13 10,18 19,7"/></svg>
+  </div>
+  <div class="label">Payment Complete</div>
+  <div class="title">購入完了</div>
+  <div class="subtitle">
+    ありがとうございます！<br>
+    購入した PASS はプロフィール画面の<br>
+    PASS COLLECTION に表示されます。
+  </div>
+  <div class="session-id" id="sessionId">—</div>
+  <a href="/profile" class="btn">PASS を見る →</a>
+  <a href="/home" class="btn-ghost">Home に戻る</a>
+</div>
+
+<script>
+/* Show the Stripe session id for debugging; real fulfillment is handled
+   by the webhook. If we wanted to display the purchased item right away,
+   we could hit a lightweight /api/session?id=... endpoint — for now the
+   success page stays simple. */
+const id = new URLSearchParams(location.search).get('session_id');
+if (id) document.getElementById('sessionId').textContent = id;
+
+if (navigator.vibrate) navigator.vibrate([20, 60, 40, 60, 200]);
+</script>
+
+</body>
+</html>

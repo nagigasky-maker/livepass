@@ -528,7 +528,7 @@ function openEventDetail(e) {
     </div>
 
     <div class="em-cta">
-      <button class="em-buy-btn" style="background:${e.catColor}">
+      <button class="em-buy-btn" id="emBuyBtn" style="background:${e.catColor}">
         ${e.type === 'workshop' ? '参加申込' : 'PASS を購入'}
         <span class="em-buy-price">${e.price}</span>
       </button>
@@ -540,6 +540,56 @@ function openEventDetail(e) {
   `;
   eventModal.classList.add('active');
   eventModal.setAttribute('aria-hidden','false');
+
+  // Wire up the buy button → Stripe Checkout
+  const buyBtn = document.getElementById('emBuyBtn');
+  if (buyBtn) {
+    buyBtn.addEventListener('click', async () => {
+      const amount = parseInt((e.price || '').replace(/[^\d]/g, ''), 10);
+      if (!amount || amount < 1) {
+        alert('価格が未設定です');
+        return;
+      }
+      buyBtn.disabled = true;
+      const originalText = buyBtn.innerHTML;
+      buyBtn.innerHTML = '処理中…';
+      try {
+        const r = await fetch('/api/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            productType: e.type || 'event',
+            productId:   e.id,
+            title:       e.title,
+            description: `${e.venue} · ${e.time}`,
+            amount:      amount,
+            cover:       null, // cover images are Data URLs → skip (Stripe needs absolute URL)
+            userId:      (function(){
+              try { return JSON.parse(localStorage.getItem('livepass_holder') || '{}').id || ''; }
+              catch(e) { return ''; }
+            })(),
+          }),
+        });
+        const data = await r.json();
+        if (data.stub) {
+          alert(data.message || 'Stripe テストモード未設定');
+          buyBtn.disabled = false;
+          buyBtn.innerHTML = originalText;
+          return;
+        }
+        if (!r.ok || !data.url) {
+          throw new Error(data.error || 'checkout failed');
+        }
+        if (navigator.vibrate) navigator.vibrate(12);
+        // Redirect the whole tab to Stripe's hosted checkout page
+        location.href = data.url;
+      } catch (err) {
+        alert('決済ページを開けませんでした: ' + err.message);
+        buyBtn.disabled = false;
+        buyBtn.innerHTML = originalText;
+      }
+    });
+  }
 }
 
 function hexToRgba(hex, a) {

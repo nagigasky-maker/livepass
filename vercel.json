@@ -10,6 +10,8 @@
     { "source": "/compose/event",    "destination": "/livepass_compose_event.html" },
     { "source": "/compose/workshop",   "destination": "/livepass_compose_workshop.html" },
     { "source": "/compose/exhibition", "destination": "/livepass_compose_exhibition.html" },
+    { "source": "/checkout/success",   "destination": "/livepass_checkout_success.html" },
+    { "source": "/checkout/cancel",    "destination": "/livepass_checkout_cancel.html" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "headers": [
