@@ -1087,6 +1087,22 @@ function closeCardZoom() {
   }, 600);
 }
 
+/* Force-close zoom overlay when the page is shown — including
+   bfcache restoration (e.g. user navigated profile → zoom → memory
+   room → back). Without this the overlay stays .active and its
+   rgba(0,0,0,.94) background + pointer-events:all creates an
+   unresponsive black screen. */
+window.addEventListener('pageshow', () => {
+  if (zoomOverlay && zoomOverlay.classList.contains('active')) {
+    zoomOverlay.classList.remove('active');
+    zoomOverlay.setAttribute('aria-hidden', 'true');
+    zoomClone.innerHTML = '';
+    zoomClone.style.cssText = '';
+    zoomOpen = false;
+    zoomCardId = null;
+  }
+});
+
 /* ─────────────────────────────────────────────
    GAP DRAG SCROLL — ported from livepass_cinematic.html
    (which ports it from livepass_v5.html initEffect001).
