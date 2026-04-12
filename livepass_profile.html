@@ -1974,6 +1974,7 @@ function renderSavedGrid(){
         : '';
       const item = document.createElement('div');
       item.className = 'reserved-item' + (r.status && r.status !== 'confirmed' ? ' canceled' : '');
+      item.style.cursor = 'pointer';
       const showCancel = r.status === 'confirmed';
       item.innerHTML = `
         <div class="reserved-date">
@@ -1988,6 +1989,36 @@ function renderSavedGrid(){
         </div>
         ${showCancel ? `<button class="reserved-cancel" data-id="${r.id}" type="button">取消</button>` : ''}
       `;
+
+      // Tap anywhere outside the Cancel button → open the underlying
+      // event/workshop/exhibition detail modal. Look up the original
+      // record from the matching localStorage key; fall back to a
+      // minimal shape if the source was deleted.
+      item.addEventListener('click', (ev) => {
+        if (ev.target.closest('.reserved-cancel')) return;
+        if (navigator.vibrate) navigator.vibrate(8);
+        const type = r.eventType || 'event';
+        const storageKey = type === 'workshop' ? 'livepass_workshops'
+                         : type === 'exhibition' ? 'livepass_exhibitions'
+                         : 'livepass_events';
+        let source = null;
+        try {
+          const list = JSON.parse(localStorage.getItem(storageKey) || '[]');
+          source = list.find(x => x.id === r.eventId);
+        } catch(err) {}
+        const detailItem = source || {
+          id:       r.eventId,
+          type:     type,
+          title:    r.title,
+          venue:    r.venue,
+          date:     r.date,
+          time:     '',
+          author:   r.eventAuthor,
+          body:     '',
+          tags:     [],
+        };
+        openPostDetail(type, detailItem);
+      });
       const cancelBtn = item.querySelector('.reserved-cancel');
       if (cancelBtn) {
         cancelBtn.addEventListener('click', (e) => {
@@ -2060,19 +2091,51 @@ function renderSavedGrid(){
     return;
   }
   grid.innerHTML = '';
+  // Also merge in the user's own posted articles (for articles that the
+  // user liked/saved from their own compose flow)
+  const ownArticles = {};
+  try {
+    const raw = localStorage.getItem('livepass_articles');
+    (raw ? JSON.parse(raw) : []).forEach(a => { ownArticles[a.id] = a; });
+  } catch(e) {}
+
   ids.forEach(id => {
-    const a = meta[id];
+    const fromMeta = meta[id];
+    const fromOwn  = ownArticles[id];
+    const a = fromOwn || fromMeta;
     if (!a) return;
     const card = document.createElement('div');
     card.className = 'saved-card';
+    card.style.cursor = 'pointer';
     card.style.setProperty('--sc-color', a.catColor || '#A8E63D');
     card.innerHTML = `
       ${a.cover ? `<img src="${a.cover}" alt="">` : ''}
       <div class="sc-overlay">
-        <div class="sc-cat">${a.cat || ''}</div>
+        <div class="sc-cat">${a.cat || a.category || ''}</div>
         <div class="sc-title">${a.title || ''}</div>
       </div>
     `;
+    card.addEventListener('click', () => {
+      if (navigator.vibrate) navigator.vibrate(8);
+      // Build an item shape compatible with openPostDetail('article', ...)
+      const item = {
+        id:        a.id || id,
+        type:      'article',
+        title:     a.title || '',
+        subtitle:  a.subtitle || null,
+        category:  a.category || a.cat || 'Article',
+        cover:     a.cover || null,
+        body:      a.body || '',
+        author:    a.author || 'NOBBY',
+        layout:    a.layout || null,
+        createdAt: a.createdAt || null,
+        sharedBy:  a.sharedBy || null,
+        sharedFromAuthor: a.sharedFromAuthor || null,
+        access:    a.access || null,
+        collaborators: a.collaborators || [],
+      };
+      openPostDetail('article', item);
+    });
     grid.appendChild(card);
   });
 }
