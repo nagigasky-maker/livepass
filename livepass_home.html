@@ -513,12 +513,19 @@ function shareArticle(a){
     const existing = list.find(x => x.sharedFromId === a.id && x.sharedBy === me);
     if (existing) return false;
 
+    // Resolve the visual — for sample articles without a real cover,
+    // snapshot the generated SVG placeholder so the reshared entry
+    // always has something to render.
+    const resolvedCover = a.cover || placeholderSVG(a);
+
     const reshare = {
       id:           's' + Date.now(),
       type:         'article',
+      layout:       a.layout || 'square',
       category:     a.cat || a.category || 'Article',
-      cover:        a.cover || null,
+      cover:        resolvedCover,
       title:        a.title || '',
+      subtitle:     a.subtitle || null,
       body:         a.body || '',
       tags:         Array.isArray(a.tags) ? a.tags.slice() : [],
       author:       me,

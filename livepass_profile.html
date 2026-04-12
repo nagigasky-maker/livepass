@@ -320,32 +320,70 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .sstab-panel{display:none}
 .sstab-panel.active{display:block}
 
-/* ARTICLE panel — big card preview */
-.article-card{
-  position:relative;margin:14px 14px;border-radius:14px;overflow:hidden;
-  aspect-ratio:9/14;background:#111;
+/* ARTICLE panel — 3-layout grid mirrors HOME feed (poster/square/wide) */
+#screen-article-list{
+  padding:10px 10px 40px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
 }
-.article-card img{width:100%;height:100%;object-fit:cover;display:block}
+#screen-article-list .sub-placeholder{grid-column:1 / -1}
+.article-card{
+  position:relative;display:block;
+  border-radius:10px;overflow:hidden;
+  background:#111;cursor:pointer;
+}
+.article-card .ac-img{
+  position:relative;width:100%;display:block;overflow:hidden;background:#111;
+}
+.article-card .ac-img img{
+  width:100%;height:100%;object-fit:cover;display:block;
+  position:absolute;inset:0;
+}
+.article-card.poster .ac-img{aspect-ratio:9/14}
+.article-card.square .ac-img{aspect-ratio:1/1}
+/* Wide cards span both columns → full-width row */
+.article-card.wide{grid-column:1 / -1}
+.article-card.wide .ac-img{aspect-ratio:16/9}
+.article-card.wide .ac-title{font-size:18px}
+.article-card.wide .ac-cat{font-size:9px}
+.article-card.wide .ac-overlay{padding:18px 20px 18px}
+
 .ac-num{
-  position:absolute;top:14px;right:16px;
+  position:absolute;top:10px;right:12px;
   font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
-  font-size:22px;color:rgba(237,235,230,.25);letter-spacing:.06em;
+  font-size:16px;color:rgba(237,235,230,.35);letter-spacing:.06em;z-index:2;
 }
 .ac-overlay{
-  position:absolute;bottom:0;left:0;right:0;
-  padding:24px 18px 18px;
-  background:linear-gradient(to top,rgba(0,0,0,.92) 40%,transparent);
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(0,0,0,.88) 0%,rgba(0,0,0,.15) 45%,transparent 70%);
+  padding:14px 14px 14px;
+  display:flex;flex-direction:column;justify-content:flex-end;
 }
 .ac-cat{
   font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
-  font-size:8px;letter-spacing:.28em;color:var(--pink);
+  font-size:7px;letter-spacing:.22em;color:var(--pink);
   text-transform:uppercase;margin-bottom:6px;
 }
 .ac-title{
   font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
-  font-size:24px;line-height:1.1;color:var(--white);margin-bottom:0;
+  font-size:13px;line-height:1.15;color:var(--white);margin-bottom:0;
 }
-.ac-title small{font-size:18px;display:block;font-weight:900}
+.ac-title small{font-size:10px;font-weight:700;display:block;margin-top:1px}
+
+/* Reshare indicator badge on cards (↻ SHARED / 元: AUTHOR) */
+.ac-reshare-badge{
+  position:absolute;top:10px;left:10px;z-index:3;
+  display:flex;align-items:center;gap:4px;
+  padding:4px 8px;border-radius:99px;
+  background:rgba(61,170,255,.18);
+  border:0.5px solid rgba(61,170,255,.55);
+  color:#8fcaff;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  font-family:'IBM Plex Mono',monospace;font-size:7px;
+  letter-spacing:.14em;text-transform:uppercase;font-weight:700;
+  max-width:calc(100% - 56px);
+}
+.ac-reshare-badge svg{width:9px;height:9px;stroke:currentColor;fill:none;stroke-width:2.4;flex-shrink:0}
 
 /* EVENT / WORKSHOP / EXHIBITION list */
 .ev-list{padding:4px 0 20px}
@@ -1461,9 +1499,11 @@ function pmShareArticle(item){
     const reshare = {
       id:           's' + Date.now(),
       type:         'article',
+      layout:       item.layout || 'square',
       category:     item.category || 'Article',
       cover:        item.cover || null,
       title:        item.title || '',
+      subtitle:     item.subtitle || null,
       body:         item.body || '',
       tags:         Array.isArray(item.tags) ? item.tags.slice() : [],
       author:       me,
@@ -1932,25 +1972,33 @@ window.addEventListener('keydown', (e) => {
     </div>`;
   }
 
-  /* ARTICLE — render user articles as large article-card style previews */
+  /* ARTICLE — render as 3-layout grid (poster/square/wide) like HOME */
   const articles = readList('livepass_articles');
   const artList  = document.getElementById('screen-article-list');
   if (articles.length === 0) {
     artList.innerHTML = emptyState('Article');
   } else {
+    artList.innerHTML = '';  // clear placeholder in case of re-render
     articles.forEach((a, i) => {
+      const layout = a.layout || 'square';
       const card = document.createElement('div');
-      card.className = 'article-card';
-      card.style.cursor = 'pointer';
-      const coverHtml = a.cover
-        ? `<img src="${a.cover}" alt="">`
-        : `<img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 900'%3E%3Crect fill='%23001a0a' width='600' height='900'/%3E%3Ctext x='300' y='500' text-anchor='middle' fill='rgba(255,255,255,.08)' font-size='140' font-family='Arial' font-weight='900'%3EART%3C/text%3E%3C/svg%3E" alt="">`;
+      card.className = 'article-card ' + layout;
+      const fallbackSvg = "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 900'%3E%3Crect fill='%23001a0a' width='600' height='900'/%3E%3Ctext x='300' y='500' text-anchor='middle' fill='rgba(255,255,255,.08)' font-size='140' font-family='Arial' font-weight='900'%3EART%3C/text%3E%3C/svg%3E";
+      const imgSrc = a.cover || fallbackSvg;
+      const subHtml = a.subtitle ? `<small>${a.subtitle}</small>` : '';
+      const reshareBadge = a.sharedBy ? `
+        <div class="ac-reshare-badge" title="${a.sharedFromAuthor || ''}">
+          <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          元: ${a.sharedFromAuthor || '—'}
+        </div>
+      ` : '';
       card.innerHTML = `
-        ${coverHtml}
+        <div class="ac-img"><img src="${imgSrc}" alt=""></div>
+        ${reshareBadge}
         <div class="ac-num">${String(i+1).padStart(3,'0')}</div>
         <div class="ac-overlay">
           <div class="ac-cat">${a.category || 'Article'}</div>
-          <div class="ac-title">${a.title || '(no title)'}</div>
+          <div class="ac-title">${a.title || '(no title)'}${subHtml}</div>
         </div>
       `;
       card.addEventListener('click', () => openPostDetail('article', a));
