@@ -347,8 +347,74 @@ const SCHEDULE = [
 ];
 
 /* Populate following list */
+/* Merge user-posted events + workshops from localStorage
+   with the sample schedule. User posts come first (newest). */
+function getUserSchedule(){
+  const out = [];
+  const CAT_COLOR = {
+    DJ:'#E8100A', LIVE:'#E8100A', PARTY:'#bf5af2', EXHIBITION:'#00E5A0', FASHION:'#bf5af2',
+    HOUSE:'#00E5A0', BREAKING:'#F5C842', WAACKING:'#F4C0D1',
+    LOCKING:'#F5C842', POPPING:'#F5C842',
+  };
+  const parseDate = (iso) => {
+    if (!iso) return { m:'—', d:'—', weekday:'—' };
+    const d = new Date(iso);
+    const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+    const WD = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+    return {
+      m: MONTHS[d.getMonth()],
+      d: String(d.getDate()).padStart(2,'0'),
+      weekday: WD[d.getDay()],
+    };
+  };
+  try {
+    const events = JSON.parse(localStorage.getItem('livepass_events') || '[]');
+    events.forEach(e => {
+      const pd = parseDate(e.date);
+      const cat = (e.category || 'EVENT').toUpperCase();
+      out.push({
+        id: e.id, type:'event', cat:'EVENT',
+        catColor: CAT_COLOR[cat] || '#E8100A',
+        m: pd.m, d: pd.d, weekday: pd.weekday,
+        title: e.title,
+        venue: e.venue,
+        time: `${e.date} ${e.time || ''}`,
+        by: e.author,
+        meta: `${e.author} · ${e.time || '—'} · ${e.venue}`,
+        price: '¥' + (e.price || '0'),
+        tags: e.tags && e.tags.length ? e.tags : [cat],
+        desc: e.body || '',
+        cover: e.cover || null,
+      });
+    });
+  } catch(err) {}
+  try {
+    const workshops = JSON.parse(localStorage.getItem('livepass_workshops') || '[]');
+    workshops.forEach(w => {
+      const pd = parseDate(w.date);
+      const cat = (w.category || 'WORKSHOP').toUpperCase();
+      out.push({
+        id: w.id, type:'workshop', cat:'WORKSHOP',
+        catColor: CAT_COLOR[cat] || '#F5C842',
+        m: pd.m, d: pd.d, weekday: pd.weekday,
+        title: w.title,
+        venue: w.venue,
+        time: `${w.date} ${w.time || ''}${w.endTime ? ' — '+w.endTime : ''}`,
+        by: w.instructor || w.author,
+        meta: `${w.instructor || w.author} · ${w.time || '—'} · ${w.venue}`,
+        price: '¥' + (w.price || '0'),
+        tags: [cat, w.level || 'ALL LEVELS'],
+        desc: w.body || '',
+        cover: w.cover || null,
+      });
+    });
+  } catch(err) {}
+  return out;
+}
+
+const MERGED = [...getUserSchedule(), ...SCHEDULE];
 const followingList = document.getElementById('followingList');
-SCHEDULE.forEach(e => followingList.appendChild(renderEvent(e)));
+MERGED.forEach(e => followingList.appendChild(renderEvent(e)));
 
 /* AI list — starts empty, fills on input */
 const aiList = document.getElementById('aiList');
@@ -356,10 +422,10 @@ const aiInput = document.getElementById('aiInput');
 function aiSearch(q) {
   aiList.innerHTML = '';
   const matches = q
-    ? SCHEDULE.filter(e =>
+    ? MERGED.filter(e =>
         (e.title + ' ' + e.venue + ' ' + e.meta + ' ' + e.tags.join(' '))
           .toLowerCase().includes(q.toLowerCase()))
-    : SCHEDULE.slice(0,3);
+    : MERGED.slice(0,3);
   matches.forEach(e => aiList.appendChild(renderEvent(e)));
 }
 aiSearch('');
@@ -475,8 +541,7 @@ window.addEventListener('keydown', e => {
   ov.addEventListener('click',e=>{if(e.target===ov)dismiss()});
   document.querySelectorAll('.cs-opt').forEach(o=>o.addEventListener('click',()=>{
     const t=o.dataset.type;if(navigator.vibrate)navigator.vibrate(12);
-    if(t==='article')location.href='/compose/article';
-    else{alert(t.toUpperCase()+' 投稿画面は準備中です (5/4後に実装予定)');dismiss()}
+    location.href='/compose/'+t;
   }));
   window.addEventListener('keydown',e=>{if(e.key==='Escape'&&ov.classList.contains('active'))dismiss()});
 })();

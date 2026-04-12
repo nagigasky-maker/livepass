@@ -560,8 +560,7 @@ window.addEventListener('keydown', e => {
     opt.addEventListener('click', () => {
       const t = opt.dataset.type;
       if (navigator.vibrate) navigator.vibrate(12);
-      if (t === 'article') location.href = '/compose/article';
-      else { alert(t.toUpperCase() + ' 投稿画面は準備中です (5/4後に実装予定)'); dismiss(); }
+      location.href = '/compose/' + t;
     });
   });
   window.addEventListener('keydown', e => {
