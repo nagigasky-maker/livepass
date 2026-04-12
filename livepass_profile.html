@@ -2488,6 +2488,27 @@ if (isOtherUser) {
       このユーザーの投稿を表示しています（サンプル）
     </div>`;
   });
+
+  // SAVED panel is PRIVATE — the saved/liked/reserved content belongs
+  // to the logged-in user, not to the profile being viewed. Hide the
+  // SAVED sub-tab button entirely and replace the panel content with
+  // a privacy notice in case someone lands on it via hash link.
+  const savedSubTabBtn = document.querySelector('.st-btn[data-sub="saved"]');
+  if (savedSubTabBtn) savedSubTabBtn.style.display = 'none';
+  const panelSaved = document.getElementById('panel-saved');
+  if (panelSaved) {
+    panelSaved.innerHTML = `
+      <div class="sub-placeholder" style="padding-top:120px">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(237,235,230,.35)" stroke-width="1.8" style="margin:0 auto 18px;display:block">
+          <rect x="4" y="11" width="16" height="10" rx="2"/>
+          <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+        </svg>
+        <span class="big">非公開</span>
+        保存済み・いいね・予約 は<br>
+        アカウント所有者のみが閲覧できます
+      </div>
+    `;
+  }
 }
 
 /* ─────────────────────────────────────────────
