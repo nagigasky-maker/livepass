@@ -156,6 +156,67 @@ textarea.input-box{resize:vertical;min-height:160px;line-height:1.8;font-size:13
 .ai-btn:active{background:rgba(168,230,61,.15)}
 .ai-btn:disabled{opacity:.4}
 
+/* AI prompt example bottom sheet */
+#aiPromptOverlay{
+  position:fixed;inset:0;z-index:1200;
+  background:rgba(0,0,0,0);pointer-events:none;opacity:0;
+  transition:background .3s ease, opacity .2s ease;
+}
+#aiPromptOverlay.active{
+  background:rgba(0,0,0,.75);pointer-events:all;opacity:1;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+#aiPromptSheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:1201;
+  background:#0a0a0a;
+  border-top:0.5px solid var(--border);
+  border-top-left-radius:20px;border-top-right-radius:20px;
+  padding:18px 20px calc(24px + var(--safe-bot));
+  transform:translateY(100%);
+  transition:transform .35s cubic-bezier(.2,.8,.2,1);
+  box-shadow:0 -12px 40px rgba(0,0,0,.7);
+  max-height:75vh;overflow-y:auto;scrollbar-width:none;
+}
+#aiPromptSheet::-webkit-scrollbar{display:none}
+#aiPromptOverlay.active #aiPromptSheet{transform:translateY(0)}
+.ap-handle{width:40px;height:4px;border-radius:99px;background:rgba(237,235,230,.2);margin:0 auto 14px}
+.ap-title{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:14px;color:var(--white);text-align:center;margin-bottom:4px;
+}
+.ap-sub{
+  font-family:'IBM Plex Mono',monospace;font-size:8px;
+  letter-spacing:.3em;text-transform:uppercase;
+  color:rgba(168,230,61,.55);text-align:center;margin-bottom:18px;
+}
+.ap-list{display:flex;flex-direction:column;gap:8px}
+.ap-item{
+  display:block;width:100%;text-align:left;
+  padding:14px 16px;border-radius:12px;
+  background:rgba(255,255,255,.03);
+  border:0.5px solid rgba(237,235,230,.08);
+  border-left:3px solid var(--green);
+  color:var(--white);
+  font-family:Arial,'Noto Sans JP',sans-serif;
+}
+.ap-item:active{background:rgba(168,230,61,.06)}
+.ap-cat{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
+  font-size:8px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--green);margin-bottom:4px;
+}
+.ap-text{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
+  font-size:12px;color:var(--white);line-height:1.4;
+}
+.ap-close{
+  display:block;width:100%;padding:13px;margin-top:14px;
+  background:none;border:0.5px solid rgba(237,235,230,.12);
+  border-radius:99px;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;
+  font-weight:500;color:rgba(237,235,230,.5);
+}
+
 /* Access toggle ─────────────────────── */
 .access-row{display:flex;gap:8px}
 .access-btn{
@@ -311,6 +372,17 @@ textarea.input-box{resize:vertical;min-height:160px;line-height:1.8;font-size:13
 
 <div id="toast">✓ 投稿しました</div>
 
+<!-- ═══ AI PROMPT EXAMPLES ═══ -->
+<div id="aiPromptOverlay" aria-hidden="true">
+  <div id="aiPromptSheet" role="dialog" aria-label="AI プロンプト例">
+    <div class="ap-handle"></div>
+    <div class="ap-title">AI で記事を書く</div>
+    <div class="ap-sub">Pick a prompt or write your own</div>
+    <div class="ap-list" id="apList"></div>
+    <button class="ap-close" id="apClose">キャンセル</button>
+  </div>
+</div>
+
 <script>
 /* State */
 const state = {
@@ -394,9 +466,65 @@ coverInput.addEventListener('change', async (e) => {
 });
 
 /* AI assist — write + proofread via /api/ai-write */
-const aiWriteBtn  = document.getElementById('aiWriteBtn');
-const aiProofBtn  = document.getElementById('aiProofBtn');
-const aiStatus    = document.getElementById('aiStatus');
+const aiWriteBtn   = document.getElementById('aiWriteBtn');
+const aiProofBtn   = document.getElementById('aiProofBtn');
+const aiStatus     = document.getElementById('aiStatus');
+const aiPromptOverlay = document.getElementById('aiPromptOverlay');
+const aiPromptClose   = document.getElementById('apClose');
+const apList          = document.getElementById('apList');
+
+/* Example prompts — tapping one fills the title then calls AI write */
+const PROMPT_EXAMPLES = [
+  { cat:'Event Report', text:'昨夜 LIQUIDROOM で開催された All Must Dance Vol.25 のレポート。フロアの熱気、印象的だった曲、ゲスト DJ、朝までの流れを臨場感を持って書く。' },
+  { cat:'Artist Interview', text:'NOBBY へのインタビュー記事。Space Cooking™ の哲学、中間搾取のないプラットフォームを作る理由、ダンスと DJ と生活の関係性について。' },
+  { cat:'Culture',         text:'東京のハウスダンス文化と DJ カルチャーの繋がりについてのエッセイ。90年代からの系譜と、今なぜ LIVE PASS が必要なのか。' },
+  { cat:'Workshop Review', text:'SACHI の Waacking Intensive に参加した感想。技法の解説、SACHI の教え方の特徴、初心者でも楽しめた理由。' },
+  { cat:'Fashion · DUBLA', text:'DUBLA® の最新コレクションについて。ダンサー目線で動きやすさ、シルエット、着こなしのコツを紹介。' },
+  { cat:'Manifesto',       text:'アーティストがプラットフォームに搾取されない仕組みについてのマニフェスト。LIVE PASS が解決する問題と未来像を情熱的に。' },
+  { cat:'Tokyo Scene',     text:'今月の東京ダンスシーンのハイライト。注目イベント、ピックアップアーティスト、これから来る若手について。' },
+  { cat:'Free Topic',      text:'好きなトピックで自由に書く — タイトルから自動で本文を生成する' },
+];
+
+function renderPromptList(){
+  apList.innerHTML = '';
+  PROMPT_EXAMPLES.forEach((p, i) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'ap-item';
+    btn.innerHTML = `<div class="ap-cat">${p.cat}</div><div class="ap-text">${p.text}</div>`;
+    btn.addEventListener('click', () => {
+      // For all except "Free Topic", seed the body textarea with the prompt
+      // as a "memo", then call AI write. Free Topic just uses whatever title
+      // is currently set.
+      if (i < PROMPT_EXAMPLES.length - 1) {
+        document.getElementById('bodyInput').value = p.text;
+        // If title is empty, suggest one based on the category
+        const titleInput = document.getElementById('titleInput');
+        if (!titleInput.value.trim()) {
+          titleInput.value = p.cat;
+        }
+      }
+      closePromptSheet();
+      callAI('write');
+    });
+    apList.appendChild(btn);
+  });
+}
+function openPromptSheet(){
+  renderPromptList();
+  aiPromptOverlay.classList.add('active');
+  aiPromptOverlay.setAttribute('aria-hidden', 'false');
+  if (navigator.vibrate) navigator.vibrate(8);
+}
+function closePromptSheet(){
+  aiPromptOverlay.classList.remove('active');
+  aiPromptOverlay.setAttribute('aria-hidden', 'true');
+}
+aiPromptClose.addEventListener('click', closePromptSheet);
+aiPromptOverlay.addEventListener('click', (e) => { if (e.target === aiPromptOverlay) closePromptSheet(); });
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && aiPromptOverlay.classList.contains('active')) closePromptSheet();
+});
 
 async function callAI(action){
   const title = document.getElementById('titleInput').value.trim();
@@ -439,7 +567,10 @@ async function callAI(action){
     aiWriteBtn.disabled = aiProofBtn.disabled = false;
   }
 }
-aiWriteBtn.addEventListener('click', () => callAI('write'));
+
+// AI write button → show the prompt examples sheet first
+aiWriteBtn.addEventListener('click', openPromptSheet);
+// Proofread goes straight to the API (no picker needed)
 aiProofBtn.addEventListener('click', () => callAI('proof'));
 
 /* Submit */

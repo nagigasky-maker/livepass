@@ -501,9 +501,11 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .cs-opt.article{border-left:3px solid var(--green)}
 .cs-opt.event{border-left:3px solid var(--red)}
 .cs-opt.workshop{border-left:3px solid var(--gold)}
+.cs-opt.exhibition{border-left:3px solid var(--mint)}
 .cs-opt.article svg{color:var(--green)}
 .cs-opt.event svg{color:var(--red)}
 .cs-opt.workshop svg{color:var(--gold)}
+.cs-opt.exhibition svg{color:var(--mint)}
 .cs-close{display:block;width:100%;padding:14px;background:none;border:0.5px solid rgba(237,235,230,.12);border-radius:99px;margin-top:16px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;color:rgba(237,235,230,.5)}
 </style>
 </head>
@@ -619,122 +621,24 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
         <button class="sst-btn" data-tab="exhibition">EXHIBITION</button>
       </nav>
 
-      <!-- ARTICLE -->
+      <!-- ARTICLE (dynamic — reads localStorage.livepass_articles) -->
       <div class="sstab-panel active" id="sstab-article">
-        <div class="article-card">
-          <img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 900'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23001a0a'/%3E%3Cstop offset='.5' stop-color='%230a2a1a'/%3E%3Cstop offset='1' stop-color='%23002a0a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23g)' width='600' height='900'/%3E%3Ctext x='300' y='500' text-anchor='middle' fill='rgba(255,255,255,.06)' font-size='140' font-family='sans-serif' font-weight='900'%3EART%3C/text%3E%3C/svg%3E" alt="">
-          <div class="ac-num">002</div>
-          <div class="ac-overlay">
-            <div class="ac-cat">Artwork · Figure</div>
-            <div class="ac-title">FnKMDNS<br><small>Art Object<br>Series</small></div>
-          </div>
-        </div>
+        <div id="screen-article-list"></div>
       </div>
 
-      <!-- EVENT -->
+      <!-- EVENT (dynamic — reads localStorage.livepass_events) -->
       <div class="sstab-panel" id="sstab-event">
-        <div class="ev-list">
-          <div class="ev-item event">
-            <div class="ev-date"><div class="m">MAY</div><div class="d">03</div></div>
-            <div class="ev-body">
-              <div class="ev-cat">EVENT</div>
-              <div class="ev-title">All Must Dance Vol.25</div>
-              <div class="ev-meta">NOBBY · 21:00 — · LIQUIDROOM TOKYO</div>
-              <div class="ev-tags">
-                <div class="ev-tag">DJ</div>
-                <div class="ev-tag">HOUSE</div>
-                <div class="ev-tag">TECHNO</div>
-              </div>
-            </div>
-            <div class="ev-right"><div class="ev-price">¥3,000</div><div class="ev-thumb"></div></div>
-          </div>
-
-          <div class="ev-item event-party">
-            <div class="ev-date"><div class="m">JUN</div><div class="d">01</div></div>
-            <div class="ev-body">
-              <div class="ev-cat">EVENT</div>
-              <div class="ev-title">DUBLA® Launch Party</div>
-              <div class="ev-meta">NOBBY + SACHI · 20:00 — · Shibuya WOMB</div>
-              <div class="ev-tags">
-                <div class="ev-tag">PARTY</div>
-                <div class="ev-tag">FASHION</div>
-              </div>
-            </div>
-            <div class="ev-right"><div class="ev-price">¥2,500</div><div class="ev-thumb"></div></div>
-          </div>
-
-          <div class="ev-item event">
-            <div class="ev-date"><div class="m">JUL</div><div class="d">05</div></div>
-            <div class="ev-body">
-              <div class="ev-cat">EVENT</div>
-              <div class="ev-title">All Must Dance Vol.26</div>
-              <div class="ev-meta">NOBBY · 21:00 — · LIQUIDROOM TOKYO</div>
-              <div class="ev-tags">
-                <div class="ev-tag">DJ</div>
-                <div class="ev-tag">HOUSE</div>
-                <div class="ev-tag">TECHNO</div>
-              </div>
-            </div>
-            <div class="ev-right"><div class="ev-price">¥3,000</div><div class="ev-thumb"></div></div>
-          </div>
-        </div>
+        <div class="ev-list" id="screen-event-list"></div>
       </div>
 
-      <!-- WORKSHOP -->
+      <!-- WORKSHOP (dynamic — reads localStorage.livepass_workshops) -->
       <div class="sstab-panel" id="sstab-workshop">
-        <div class="ev-list">
-          <div class="ev-item workshop-waacking">
-            <div class="ev-date"><div class="m">MAY</div><div class="d">18</div></div>
-            <div class="ev-body">
-              <div class="ev-cat">WORKSHOP</div>
-              <div class="ev-title">Waacking Intensive</div>
-              <div class="ev-meta">SACHI · 13:00 — 17:00 · 代官山スタジオ</div>
-              <div class="ev-tags">
-                <div class="ev-tag">WAACKING</div>
-                <div class="ev-tag">ALL LEVELS</div>
-              </div>
-            </div>
-            <div class="ev-right"><div class="ev-price">¥6,000</div><div class="ev-thumb"></div></div>
-          </div>
-
-          <div class="ev-item workshop-breaking">
-            <div class="ev-date"><div class="m">JUN</div><div class="d">01</div></div>
-            <div class="ev-body">
-              <div class="ev-cat">WORKSHOP</div>
-              <div class="ev-title">Breaking — Cypher Lab</div>
-              <div class="ev-meta">CREW NRG · 15:00 — 19:00 · 渋谷 WOMB 2F</div>
-              <div class="ev-tags">
-                <div class="ev-tag">BREAKING</div>
-                <div class="ev-tag">INTERMEDIATE</div>
-              </div>
-            </div>
-            <div class="ev-right"><div class="ev-price">¥5,000</div><div class="ev-thumb"></div></div>
-          </div>
-
-          <div class="ev-item workshop-house">
-            <div class="ev-date"><div class="m">JUN</div><div class="d">08</div></div>
-            <div class="ev-body">
-              <div class="ev-cat">WORKSHOP</div>
-              <div class="ev-title">House Dance × DJ Lab</div>
-              <div class="ev-meta">NOBBY + DJ KEITA · 14:00 — 18:00 · 渋谷 Studio A</div>
-              <div class="ev-tags">
-                <div class="ev-tag">HOUSE</div>
-                <div class="ev-tag">DJ</div>
-                <div class="ev-tag">COLLAB</div>
-              </div>
-            </div>
-            <div class="ev-right"><div class="ev-price">¥7,000</div><div class="ev-thumb"></div></div>
-          </div>
-        </div>
+        <div class="ev-list" id="screen-workshop-list"></div>
       </div>
 
-      <!-- EXHIBITION -->
+      <!-- EXHIBITION (dynamic — reads localStorage.livepass_exhibitions) -->
       <div class="sstab-panel" id="sstab-exhibition">
-        <div class="sub-placeholder">
-          <span class="big">Exhibition</span>
-          展示スケジュールはまだありません<br>
-          投稿画面から追加可能
-        </div>
+        <div class="ev-list" id="screen-exhibition-list"></div>
       </div>
     </div>
   </section>
@@ -776,6 +680,10 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
       <button class="cs-opt workshop" data-type="workshop">
         <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6a6 6 0 1 0 6 6"/><circle cx="12" cy="12" r="2"/></svg>
         <div class="cs-opt-body"><div class="cs-opt-title">WORKSHOP</div><div class="cs-opt-sub">ワークショップ · レッスン</div></div>
+      </button>
+      <button class="cs-opt exhibition" data-type="exhibition">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>
+        <div class="cs-opt-body"><div class="cs-opt-title">EXHIBITION</div><div class="cs-opt-sub">展示 · アート · 写真</div></div>
       </button>
     </div>
     <button class="cs-close" id="csClose">キャンセル</button>
@@ -1083,6 +991,113 @@ zoomOverlay.addEventListener('click', (e) => {
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && zoomOpen) closeCardZoom();
 });
+
+/* ─────────────────────────────────────────────
+   SCREEN panel — render user posts from localStorage
+   into the 4 sub-sub-tabs (ARTICLE / EVENT / WORKSHOP / EXHIBITION)
+   ───────────────────────────────────────────── */
+(function renderScreenPanels(){
+  const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  const CAT_COLOR = {
+    // events
+    DJ:'#E8100A', LIVE:'#E8100A', PARTY:'#bf5af2',
+    EXHIBITION:'#00E5A0', FASHION:'#bf5af2',
+    // workshops
+    HOUSE:'#00E5A0', BREAKING:'#F5C842', WAACKING:'#F4C0D1',
+    LOCKING:'#F5C842', POPPING:'#F5C842',
+  };
+  function parseDate(iso){
+    if (!iso) return { m:'—', d:'—' };
+    const d = new Date(iso);
+    return { m:MONTHS[d.getMonth()], d:String(d.getDate()).padStart(2,'0') };
+  }
+  function readList(key){
+    try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) { return []; }
+  }
+  function emptyState(typeLabel){
+    return `<div class="sub-placeholder">
+      <span class="big">${typeLabel}</span>
+      投稿はまだありません<br>+ボタンから追加
+    </div>`;
+  }
+
+  /* ARTICLE — render user articles as large article-card style previews */
+  const articles = readList('livepass_articles');
+  const artList  = document.getElementById('screen-article-list');
+  if (articles.length === 0) {
+    artList.innerHTML = emptyState('Article');
+  } else {
+    articles.forEach((a, i) => {
+      const card = document.createElement('div');
+      card.className = 'article-card';
+      const coverHtml = a.cover
+        ? `<img src="${a.cover}" alt="">`
+        : `<img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 900'%3E%3Crect fill='%23001a0a' width='600' height='900'/%3E%3Ctext x='300' y='500' text-anchor='middle' fill='rgba(255,255,255,.08)' font-size='140' font-family='Arial' font-weight='900'%3EART%3C/text%3E%3C/svg%3E" alt="">`;
+      card.innerHTML = `
+        ${coverHtml}
+        <div class="ac-num">${String(i+1).padStart(3,'0')}</div>
+        <div class="ac-overlay">
+          <div class="ac-cat">${a.category || 'Article'}</div>
+          <div class="ac-title">${a.title || '(no title)'}</div>
+        </div>
+      `;
+      artList.appendChild(card);
+    });
+  }
+
+  /* Shared row builder for EVENT / WORKSHOP / EXHIBITION */
+  function buildRow(item, defaultCat) {
+    const pd = parseDate(item.date);
+    const cat = (item.category || defaultCat).toUpperCase();
+    const color = CAT_COLOR[cat] || '#F5C842';
+    const tags = (item.tags && item.tags.length)
+      ? item.tags
+      : [cat].concat(item.level ? [item.level] : []);
+    const price = '¥' + (item.price || '0');
+    const meta = `${item.author || 'NOBBY'} · ${item.time || '—'} · ${item.venue || '—'}`;
+    const row = document.createElement('div');
+    row.className = 'ev-item';
+    row.style.setProperty('--cat-color', color);
+    row.innerHTML = `
+      <div class="ev-date"><div class="m">${pd.m}</div><div class="d">${pd.d}</div></div>
+      <div class="ev-body">
+        <div class="ev-cat">${defaultCat}</div>
+        <div class="ev-title">${item.title || ''}</div>
+        <div class="ev-meta">${meta}</div>
+        <div class="ev-tags">${tags.map(t => `<div class="ev-tag">${t}</div>`).join('')}</div>
+      </div>
+      <div class="ev-right"><div class="ev-price">${price}</div></div>
+    `;
+    return row;
+  }
+
+  /* EVENT */
+  const events  = readList('livepass_events');
+  const evList  = document.getElementById('screen-event-list');
+  if (events.length === 0) {
+    evList.innerHTML = emptyState('Event');
+  } else {
+    events.forEach(e => evList.appendChild(buildRow(e, 'EVENT')));
+  }
+
+  /* WORKSHOP */
+  const workshops = readList('livepass_workshops');
+  const wsList    = document.getElementById('screen-workshop-list');
+  if (workshops.length === 0) {
+    wsList.innerHTML = emptyState('Workshop');
+  } else {
+    workshops.forEach(w => wsList.appendChild(buildRow(w, 'WORKSHOP')));
+  }
+
+  /* EXHIBITION */
+  const exhibitions = readList('livepass_exhibitions');
+  const exList      = document.getElementById('screen-exhibition-list');
+  if (exhibitions.length === 0) {
+    exList.innerHTML = emptyState('Exhibition');
+  } else {
+    exhibitions.forEach(x => exList.appendChild(buildRow(x, 'EXHIBITION')));
+  }
+})();
 
 /* Compose selector bottom sheet */
 (function initComposeSheet(){

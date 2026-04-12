@@ -201,9 +201,11 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .cs-opt.article{border-left:3px solid var(--green)}
 .cs-opt.event{border-left:3px solid var(--red)}
 .cs-opt.workshop{border-left:3px solid var(--gold)}
+.cs-opt.exhibition{border-left:3px solid var(--mint)}
 .cs-opt.article svg{color:var(--green)}
 .cs-opt.event svg{color:var(--red)}
 .cs-opt.workshop svg{color:var(--gold)}
+.cs-opt.exhibition svg{color:var(--mint)}
 .cs-close{display:block;width:100%;padding:14px;background:none;border:0.5px solid rgba(237,235,230,.12);border-radius:99px;margin-top:16px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;color:rgba(237,235,230,.5)}
 </style>
 </head>
@@ -280,6 +282,10 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
       <button class="cs-opt workshop" data-type="workshop">
         <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6a6 6 0 1 0 6 6"/><circle cx="12" cy="12" r="2"/></svg>
         <div class="cs-opt-body"><div class="cs-opt-title">WORKSHOP</div><div class="cs-opt-sub">ワークショップ · レッスン</div></div>
+      </button>
+      <button class="cs-opt exhibition" data-type="exhibition">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>
+        <div class="cs-opt-body"><div class="cs-opt-title">EXHIBITION</div><div class="cs-opt-sub">展示 · アート · 写真</div></div>
       </button>
     </div>
     <button class="cs-close" id="csClose">キャンセル</button>

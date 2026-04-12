@@ -8,7 +8,8 @@
     { "source": "/settings", "destination": "/livepass_settings.html" },
     { "source": "/compose/article",  "destination": "/livepass_compose_article.html" },
     { "source": "/compose/event",    "destination": "/livepass_compose_event.html" },
-    { "source": "/compose/workshop", "destination": "/livepass_compose_workshop.html" },
+    { "source": "/compose/workshop",   "destination": "/livepass_compose_workshop.html" },
+    { "source": "/compose/exhibition", "destination": "/livepass_compose_exhibition.html" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "headers": [
