@@ -1058,6 +1058,79 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 }
 
 /* ─────────────────────────────────────────────
+   CREDITS — movie-credits style team display
+   ───────────────────────────────────────────── */
+.pm-credits{
+  padding:0 22px;text-align:center;
+  font-family:Arial,'Noto Sans JP',sans-serif;
+  color:rgba(237,235,230,.85);
+}
+.pm-credits-group{margin-bottom:22px}
+.pm-credits-role{
+  font-family:'IBM Plex Mono',monospace;font-size:8px;
+  letter-spacing:.36em;text-transform:uppercase;
+  color:rgba(237,235,230,.35);margin-bottom:6px;
+}
+.pm-credits-name{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:16px;letter-spacing:.04em;color:var(--white);
+  line-height:1.4;
+}
+.pm-credits-name a{
+  color:inherit;text-decoration:none;
+  border-bottom:1px solid rgba(61,170,255,.3);
+  padding-bottom:1px;
+  transition:border-color .15s ease, color .15s ease;
+}
+.pm-credits-name a:active{color:#8fcaff;border-bottom-color:var(--blue)}
+.pm-credits-name .sep{margin:0 10px;color:rgba(237,235,230,.25);font-weight:400}
+
+/* Collaborator revenue split display */
+.pm-collab{padding:8px 22px 0}
+.pm-collab-row{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 14px;margin-bottom:8px;
+  background:rgba(191,90,242,.06);
+  border:0.5px solid rgba(191,90,242,.35);
+  border-radius:12px;
+}
+.pm-collab-row.me{background:rgba(61,170,255,.06);border-color:rgba(61,170,255,.4)}
+.pm-collab-av{
+  width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,#bf5af2,#F4C0D1);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-family:Arial,sans-serif;font-weight:900;font-size:11px;color:#000;
+}
+.pm-collab-row.me .pm-collab-av{
+  background:linear-gradient(135deg,#3DAAFF,#bf5af2);
+}
+.pm-collab-name{
+  flex:1;min-width:0;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:13px;color:var(--white);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.pm-collab-name a{color:inherit;text-decoration:none}
+.pm-collab-share{
+  flex-shrink:0;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:16px;color:#d4a8ff;letter-spacing:.02em;
+}
+.pm-collab-row.me .pm-collab-share{color:#8fcaff}
+.pm-collab-bar{
+  display:flex;height:4px;border-radius:99px;overflow:hidden;
+  margin:6px 0 14px;background:rgba(255,255,255,.06);
+}
+.pm-collab-bar .seg{height:100%}
+.pm-collab-bar .seg.me{background:var(--blue)}
+.pm-collab-bar .seg.them{background:var(--purple)}
+.pm-collab-note{
+  font-family:'IBM Plex Mono',monospace;font-size:8px;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(237,235,230,.35);margin-top:4px;text-align:center;
+}
+
+/* ─────────────────────────────────────────────
    CTA section (mirrors calendar's em-cta) — buy/reservation/subscriber
    ───────────────────────────────────────────── */
 .pm-cta{padding:22px;margin-top:8px}
@@ -2550,6 +2623,67 @@ function openPostDetail(type, item) {
     const subPriceNum = item.subscriberPrice && Number(item.subscriberPrice) > 0
       ? Number(item.subscriberPrice) : 0;
 
+    // ─── EVENT PROJECT TEAM — movie-credits-style display ───
+    // Group members by role. Hidden members are only shown when viewing
+    // your own post (owner) — not to the public.
+    const teamArr = Array.isArray(item.team) ? item.team : [];
+    const visibleTeam = teamArr.filter(t => !t.hidden || isAuthor);
+    const teamByRole = {};
+    visibleTeam.forEach(t => {
+      const role = (t.role || 'Credit').trim();
+      if (!teamByRole[role]) teamByRole[role] = [];
+      teamByRole[role].push(t);
+    });
+    const teamHtml = visibleTeam.length ? `
+      <div class="pm-section">
+        <div class="pm-sec-label" style="text-align:center">EVENT PROJECT TEAM</div>
+        <div class="pm-credits">
+          ${Object.keys(teamByRole).map(role => `
+            <div class="pm-credits-group">
+              <div class="pm-credits-role">${role}</div>
+              <div class="pm-credits-name">
+                ${teamByRole[role].map((t, i) => {
+                  const link = `<a href="/profile?user=${encodeURIComponent(t.name)}">${t.name}</a>`;
+                  const priv = t.hidden ? ' <span style="color:var(--gold);font-size:9px">(非公開)</span>' : '';
+                  return (i > 0 ? '<span class="sep">·</span>' : '') + link + priv;
+                }).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    ` : '';
+
+    // ─── COLLABORATION — revenue split display ───
+    const collabArr = Array.isArray(item.collaborators) ? item.collaborators : [];
+    const validCollabs = collabArr.filter(c => c && c.name);
+    const totalCollabShare = validCollabs.reduce((s, c) => s + (Number(c.share) || 0), 0);
+    const mySharePct = Math.max(0, 100 - totalCollabShare);
+    const collabHtml = validCollabs.length ? `
+      <div class="pm-section">
+        <div class="pm-sec-label">Collaboration · 収益分配</div>
+        <div class="pm-collab">
+          <div class="pm-collab-row me">
+            <div class="pm-collab-av">${initialsOf(item.author || 'NOBBY')}</div>
+            <div class="pm-collab-name"><a href="/profile?user=${encodeURIComponent(item.author || 'NOBBY')}">${item.author || 'NOBBY'}</a></div>
+            <div class="pm-collab-share">${mySharePct}%</div>
+          </div>
+          ${validCollabs.map(c => `
+            <div class="pm-collab-row">
+              <div class="pm-collab-av">${initialsOf(c.name)}</div>
+              <div class="pm-collab-name"><a href="/profile?user=${encodeURIComponent(c.name)}">${c.name}</a></div>
+              <div class="pm-collab-share">${Number(c.share) || 0}%</div>
+            </div>
+          `).join('')}
+          <div class="pm-collab-bar">
+            <div class="seg me" style="width:${mySharePct}%"></div>
+            <div class="seg them" style="width:${totalCollabShare}%"></div>
+          </div>
+          <div class="pm-collab-note">売り上げは上記の割合で自動分配されます</div>
+        </div>
+      </div>
+    ` : '';
+
     const ctaHtml = showBuyCta ? `
       <div class="pm-cta">
         <div class="pm-cta-stack">
@@ -2596,6 +2730,8 @@ function openPostDetail(type, item) {
         <div class="pm-sec-label">${artistsList.length ? 'Featured Artists' : 'By'}</div>
         ${artistsHtml}
       </div>
+      ${teamHtml}
+      ${collabHtml}
       <div class="pm-section">
         <div class="pm-sec-label">Price</div>
         ${priceChipsHtml}
