@@ -493,7 +493,7 @@ textarea.input-box{resize:vertical;min-height:120px;line-height:1.8;font-size:13
   </div>
 
   <div class="form-section">
-    <div class="form-label">説明</div>
+    <div class="form-label">説明 / 補足情報</div>
     <div class="tmpl-hint">Format Templates</div>
     <div class="tmpl-row">
       <button type="button" class="tmpl-chip" data-tmpl="club">
@@ -508,8 +508,13 @@ textarea.input-box{resize:vertical;min-height:120px;line-height:1.8;font-size:13
         <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>
         EXHIBITION
       </button>
+      <button type="button" class="tmpl-chip" id="aiSupplementBtn" style="background:rgba(168,230,61,.08);border-color:rgba(168,230,61,.5);color:var(--green)">
+        <svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>
+        AI 補足生成
+      </button>
     </div>
-    <textarea class="input-box" id="bodyInput" placeholder="ワークショップの詳細... 上のテンプレートから選択できます" rows="8"></textarea>
+    <div id="aiSupplementStatus" style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.24em;text-transform:uppercase;color:rgba(168,230,61,.7);margin-bottom:8px;display:none">AI thinking…</div>
+    <textarea class="input-box" id="bodyInput" placeholder="タイトル・会場・日時・出演者を先に入力し「AI 補足生成」を押すと、フォームに入力済みの情報を避けて補足情報だけを自動生成します" rows="8"></textarea>
   </div>
 
   <div class="form-section">
@@ -710,7 +715,7 @@ function applyArtistsToTemplate(tmpl) {
   return out;
 }
 
-document.querySelectorAll('.tmpl-chip').forEach(chip => {
+document.querySelectorAll('.tmpl-chip[data-tmpl]').forEach(chip => {
   chip.addEventListener('click', () => {
     const key = chip.dataset.tmpl;
     const tmpl = TEMPLATES[key];
@@ -721,6 +726,67 @@ document.querySelectorAll('.tmpl-chip').forEach(chip => {
     bodyInput.focus();
     if (navigator.vibrate) navigator.vibrate(8);
   });
+});
+
+// ─────────────────────────────────────────────
+// AI supplement — generates "■ LABEL" blocks for info NOT already in form
+// ─────────────────────────────────────────────
+const aiSupplementBtn    = document.getElementById('aiSupplementBtn');
+const aiSupplementStatus = document.getElementById('aiSupplementStatus');
+aiSupplementBtn?.addEventListener('click', async () => {
+  // Collect structured fields from the form
+  const fields = {
+    title:    titleInput.value.trim(),
+    category: state.category,
+    venue:    venueInput.value.trim(),
+    date:     dateInput.value,
+    time:     document.getElementById('timeInput')?.value || '',
+    endTime:  document.getElementById('endInput')?.value || '',
+    endDate:  document.getElementById('endDateInput')?.value || '',
+    price:    document.getElementById('priceInput')?.value || '',
+    tags:     (document.getElementById('tagsInput')?.value || '').split(',').map(t => t.trim()).filter(Boolean),
+    artists:  state.artists.slice(),
+    team:     state.team.slice(),
+  };
+  if (!fields.title || !fields.venue || !fields.date) {
+    alert('タイトル・会場・日付を入力してから AI 補足生成を押してください');
+    return;
+  }
+
+  // If there's existing content, confirm before replacing
+  if (bodyInput.value.trim() && !confirm('既存の説明を AI 生成の補足で置き換えますか？\n\n（構造化フィールドに既に入っている情報は含まれません）')) {
+    return;
+  }
+
+  aiSupplementBtn.disabled = true;
+  aiSupplementStatus.style.display = 'block';
+  aiSupplementStatus.textContent = 'AI thinking…';
+  aiSupplementStatus.style.color = 'rgba(168,230,61,.7)';
+  try {
+    const r = await fetch('/api/ai-write', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'event-supplement', fields }),
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'api error');
+    bodyInput.value = data.text || '';
+    updateSubmitState();
+    if (data.stub) {
+      aiSupplementStatus.textContent = 'AI stub — set ANTHROPIC_API_KEY in Vercel';
+      aiSupplementStatus.style.color = 'rgba(245,200,66,.7)';
+    } else {
+      aiSupplementStatus.textContent = 'AI ✓ Done — 補足を追加しました';
+    }
+    if (navigator.vibrate) navigator.vibrate(12);
+    setTimeout(() => { aiSupplementStatus.style.display = 'none'; }, 3000);
+  } catch (e) {
+    aiSupplementStatus.textContent = 'AI error: ' + e.message;
+    aiSupplementStatus.style.color = 'rgba(232,16,10,.8)';
+    setTimeout(() => { aiSupplementStatus.style.display = 'none'; }, 3400);
+  } finally {
+    aiSupplementBtn.disabled = false;
+  }
 });
 
 // ─────────────────────────────────────────────

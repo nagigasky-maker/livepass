@@ -982,13 +982,47 @@ function openEventDetail(e) {
     </div>
   ` : '';
 
+  // ─── Parse description into credits-style rows (same rule as profile) ───
+  function renderBodyAsCredits(raw){
+    const text = (raw || '').trim();
+    if (!text) return '<div class="em-sec-body">No description</div>';
+    const blocks = text.split(/\n(?=\s*■)/);
+    if (blocks.length === 1 && !/■/.test(blocks[0])) {
+      return `<div class="em-sec-body">${blocks[0].replace(/\n/g,'<br>')}</div>`;
+    }
+    const leading = /^\s*■/.test(blocks[0]) ? '' : blocks.shift().trim();
+    const leadHtml = leading ? `<div class="em-sec-body" style="margin-bottom:14px">${leading.replace(/\n/g,'<br>')}</div>` : '';
+    const rows = blocks.map(b => {
+      const m = b.match(/^\s*■\s*([^\n]+)\n?([\s\S]*)$/);
+      if (!m) return '';
+      const role = m[1].trim();
+      const content = (m[2] || '').trim();
+      if (!content) return '';
+      const lines = content.split('\n').map(l => l.trim()).filter(Boolean);
+      const allBullets = lines.length > 0 && lines.every(l => l.startsWith('・'));
+      let bodyHtml;
+      if (allBullets) {
+        bodyHtml = lines.map(l => `<span class="nm">${l.replace(/^・\s*/, '')}</span>`).join('');
+      } else {
+        bodyHtml = content.replace(/\n/g, '<br>');
+      }
+      return `
+        <div class="em-credits-group">
+          <div class="em-credits-role">${role}</div>
+          <div class="em-credits-name">${bodyHtml}</div>
+        </div>
+      `;
+    }).join('');
+    return `${leadHtml}<div class="em-credits" style="padding:0">${rows}</div>`;
+  }
+
   emBody.innerHTML = `
     ${coverAndHeroHtml}
     ${teamHtml}
 
     <div class="em-section">
       <div class="em-sec-label">About</div>
-      <div class="em-sec-body">${(e.desc || '').replace(/\n/g,'<br>')}</div>
+      ${renderBodyAsCredits(e.desc)}
     </div>
 
     ${byFallbackHtml}
