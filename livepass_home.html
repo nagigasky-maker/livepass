@@ -136,9 +136,10 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   font-size:7px;color:rgba(237,235,230,.45);letter-spacing:.02em;
 }
 .feed-card .fc-author-av{
-  width:14px;height:14px;border-radius:50%;
+  width:14px;height:14px;border-radius:50%;overflow:hidden;
   background:linear-gradient(135deg,#3DAAFF,#1a2030);flex-shrink:0;
 }
+.feed-card .fc-author-av img{width:100%;height:100%;object-fit:cover;display:block}
 
 /* ARTICLE DETAIL MODAL ───────────────────── */
 #detailModal{
@@ -376,6 +377,10 @@ function placeholderSVG(article) {
   return 'data:image/svg+xml;charset=utf-8,' + svg;
 }
 
+/* ─── User identity — single source of truth for author name + avatar ─── */
+const USER_NAME   = localStorage.getItem('livepass_account_name') || 'NOBBY';
+const USER_AVATAR = localStorage.getItem('livepass_avatar') || null;
+
 /* Merge user-posted articles from localStorage with the sample feed.
    User posts are prepended (newest first) so they show up at the top. */
 function getUserArticles(){
@@ -383,7 +388,6 @@ function getUserArticles(){
     const raw = localStorage.getItem('livepass_articles');
     if (!raw) return [];
     const list = JSON.parse(raw);
-    // Normalize to the same shape used by the renderer
     return list.map((u, i) => ({
       id:       u.id,
       layout:   u.layout || 'square',
@@ -392,9 +396,12 @@ function getUserArticles(){
       catColor: '#A8E63D',
       title:    u.title,
       subtitle: null,
-      author:   u.author || 'NOBBY',
+      // Author name: prefer the value at the time of posting, but if missing
+      // fall back to the CURRENT user name so renames flow forward.
+      author:   u.author || USER_NAME,
+      avatar:   USER_AVATAR, // user posts always show the current user avatar
       body:     u.body,
-      cover:    u.cover,      // Data URL from compose upload (may be null)
+      cover:    u.cover,
       bgHue:    '140,60,20',
       createdAt:u.createdAt,
       userPost: true,
@@ -428,6 +435,9 @@ FEED.forEach(a => {
   card.dataset.id = a.id;
   const subHtml = a.subtitle ? `<small>${a.subtitle}</small>` : '';
   const imgSrc = a.cover || placeholderSVG(a);
+  const avHtml = (a.userPost && a.avatar)
+    ? `<div class="fc-author-av"><img src="${a.avatar}" alt=""></div>`
+    : `<div class="fc-author-av"></div>`;
   card.innerHTML = `
     <div class="fc-img">
       <img src="${imgSrc}" alt="">
@@ -436,7 +446,7 @@ FEED.forEach(a => {
     <div class="fc-overlay">
       <div class="fc-cat">${a.cat}</div>
       <div class="fc-title">${a.title}${subHtml}</div>
-      <div class="fc-author"><div class="fc-author-av"></div>${a.author}${a.userPost ? ' · あなたの投稿' : ''}</div>
+      <div class="fc-author">${avHtml}${a.author}${a.userPost ? ' · あなたの投稿' : ''}</div>
     </div>
   `;
   card.addEventListener('click', () => openDetail(a));
@@ -489,6 +499,9 @@ function openDetail(a) {
 
   const liked = getIds('livepass_likes').includes(a.id);
   const saved = getIds('livepass_saves').includes(a.id);
+  const byAvatar = (a.userPost && a.avatar)
+    ? `<div class="av" style="overflow:hidden"><img src="${a.avatar}" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>`
+    : `<div class="av"></div>`;
 
   dmBody.innerHTML = `
     <div class="dm-hero">
@@ -497,7 +510,7 @@ function openDetail(a) {
         <div class="dm-cat" style="color:${a.catColor}">${a.cat}</div>
         <div class="dm-title">${a.title}${a.subtitle ? '<br><span style="font-size:20px;font-weight:700">'+a.subtitle+'</span>' : ''}</div>
         <a class="dm-by" href="/profile?user=${encodeURIComponent(a.author)}" style="cursor:pointer">
-          <div class="av"></div>${a.author} · ${dateStr}
+          ${byAvatar}${a.author} · ${dateStr}
         </a>
       </div>
     </div>
