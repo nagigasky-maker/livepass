@@ -1,6 +1,7 @@
 {
   "rewrites": [
     { "source": "/p/amd",    "destination": "/livepass_flashback.html" },
+    { "source": "/",         "destination": "/livepass_home.html" },
     { "source": "/home",     "destination": "/livepass_home.html" },
     { "source": "/search",   "destination": "/livepass_search.html" },
     { "source": "/calendar", "destination": "/livepass_calendar.html" },
@@ -13,6 +14,7 @@
     { "source": "/checkout/success",   "destination": "/livepass_checkout_success.html" },
     { "source": "/checkout/cancel",    "destination": "/livepass_checkout_cancel.html" },
     { "source": "/messages",           "destination": "/livepass_messages.html" },
+    { "source": "/followers",          "destination": "/livepass_followers.html" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "headers": [

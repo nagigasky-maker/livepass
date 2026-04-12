@@ -532,14 +532,34 @@ let nftDragged = false;
 (function initAutoTrigger(){
   const id = new URLSearchParams(location.search).get('auto');
   if (!id) return;
+
+  // Hide the landing collection view IMMEDIATELY so the user never sees
+  // the "PASSES COLLECTION / YOU WERE THERE" intermediate screen. The
+  // cinematic plays straight to the memory room from the profile zoom.
+  const landing = document.getElementById('landing');
+  if (landing) {
+    landing.style.display = 'none';
+  }
+  // Also force the body + flashback layers to black up front so there's
+  // no flash of content between zoom close and cinematic start.
+  document.body.style.background = '#000';
+
   // Give the effect001 init a beat to settle, then trigger
   setTimeout(() => {
     const card = document.querySelector(`#nft-track .card[data-id="${id}"]`);
     const pass = PASSES.find(p => p.id === id);
     if (card && pass && !isBusy) {
       openFlashback(pass, card);
+    } else if (pass) {
+      // Card element might not have rendered yet because landing is hidden —
+      // synthesize a dummy rect at screen center so openFlashback still works
+      const tempCard = document.createElement('div');
+      tempCard.style.cssText = 'position:fixed;top:50%;left:50%;width:220px;height:348px;transform:translate(-50%,-50%);pointer-events:none;';
+      tempCard.innerHTML = `<img src="${pass.image}" alt="" style="width:100%;height:100%;object-fit:cover">`;
+      document.body.appendChild(tempCard);
+      openFlashback(pass, tempCard);
     }
-  }, 350);
+  }, 100);
 })();
 
 /* ═════════════════════════════════
@@ -908,7 +928,11 @@ function closeFlashback() {
    ═════════════════════════════════ */
 function enterMemoryRoom() {
   haptic(20);
-  location.href = 'livepass_memoryroom.html';
+  // Use replace() so this cinematic page drops out of history —
+  // when the user leaves memory room (back button), they return
+  // to /profile instead of landing back on the PASSES COLLECTION
+  // browse UI with no exit.
+  location.replace('/livepass_memoryroom.html');
 }
 
 /* ═════════════════════════════════

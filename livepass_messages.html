@@ -238,28 +238,78 @@ function saveUserMessages(contactId, msgs){
   try { localStorage.setItem(DM_KEY + contactId, JSON.stringify(msgs)); } catch(e) {}
 }
 
+/* ── Sort contacts by latest activity (newest first) ── */
+// Approximate "latest timestamp" per contact: if user has sent a message,
+// use the local clock from the last sent; otherwise use the contact's
+// mock history order (index is a stable tiebreaker).
+function lastActivityTime(c){
+  const userMsgs = loadUserMessages(c.id);
+  if (userMsgs.length > 0) {
+    // Use now() at save time as a proxy; real backend would use server time
+    return userMsgs[userMsgs.length - 1].sentAt || Date.now();
+  }
+  // Parse mock time string like "14:30" or "昨日" or "4/10" into a crude rank
+  return c._rank;
+}
+CONTACTS.forEach((c, i) => { c._rank = CONTACTS.length - i; });
+CONTACTS.sort((a, b) => lastActivityTime(b) - lastActivityTime(a));
+
 /* ── Render conversation list ── */
 const convList = document.getElementById('convList');
-CONTACTS.forEach(c => {
-  const userMsgs = loadUserMessages(c.id);
-  const lastUserMsg = userMsgs.length ? userMsgs[userMsgs.length-1] : null;
-  const preview = lastUserMsg ? lastUserMsg.text : c.preview;
-  const item = document.createElement('div');
-  item.className = 'conv-item';
-  item.innerHTML = `
-    <div class="conv-av" style="--av-hue:${c.hue}">
-      ${c.name.charAt(0)}
-      ${c.unread > 0 ? '<div class="conv-unread"></div>' : ''}
-    </div>
-    <div class="conv-body">
-      <div class="conv-name">${c.name}</div>
-      <div class="conv-preview">${preview}</div>
-    </div>
-    <div class="conv-time">${c.time}</div>
-  `;
-  item.addEventListener('click', () => openChat(c));
-  convList.appendChild(item);
-});
+function renderConvList(){
+  convList.innerHTML = '';
+  CONTACTS.forEach(c => {
+    const userMsgs = loadUserMessages(c.id);
+    const lastUserMsg = userMsgs.length ? userMsgs[userMsgs.length-1] : null;
+    const preview = lastUserMsg ? lastUserMsg.text : c.preview;
+    const time = lastUserMsg ? lastUserMsg.t : c.time;
+    const item = document.createElement('div');
+    item.className = 'conv-item';
+    item.innerHTML = `
+      <div class="conv-av" style="--av-hue:${c.hue}">
+        ${c.name.charAt(0)}
+        ${c.unread > 0 ? '<div class="conv-unread"></div>' : ''}
+      </div>
+      <div class="conv-body">
+        <div class="conv-name">${c.name}</div>
+        <div class="conv-preview">${preview}</div>
+      </div>
+      <div class="conv-time">${time}</div>
+    `;
+    item.addEventListener('click', () => openChat(c));
+    convList.appendChild(item);
+  });
+}
+renderConvList();
+
+/* ── Auto-open a chat from ?open=<nameOrId> ── */
+(function handleOpenParam(){
+  const param = new URLSearchParams(location.search).get('open');
+  if (!param) return;
+  const needle = param.toLowerCase();
+  const match = CONTACTS.find(c =>
+    c.id === needle ||
+    c.name.toLowerCase() === needle ||
+    c.name.toLowerCase().replace(/[^a-z]/g,'') === needle.replace(/[^a-z]/g,'')
+  );
+  if (match) {
+    setTimeout(() => openChat(match), 200);
+  } else {
+    // Create a new ad-hoc conversation from the name
+    const newContact = {
+      id:      'new-' + Date.now(),
+      name:    param,
+      hue:     '#3DAAFF',
+      unread:  0,
+      preview: 'まだメッセージがありません',
+      time:    'Now',
+      history: [],
+    };
+    CONTACTS.unshift(newContact);
+    renderConvList();
+    setTimeout(() => openChat(newContact), 200);
+  }
+})();
 
 /* ── Chat view ── */
 const chatView = document.getElementById('chatView');
@@ -309,12 +359,15 @@ function sendMessage(){
   if (!text || !currentContact) return;
   const now = new Date();
   const t = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
-  const msg = { from:'me', text, t };
+  const msg = { from:'me', text, t, sentAt: Date.now() };
   const userMsgs = loadUserMessages(currentContact.id);
   userMsgs.push(msg);
   saveUserMessages(currentContact.id, userMsgs);
   chatInput.value = '';
   renderMessages(currentContact);
+  // Re-sort so this contact floats to the top when user returns
+  CONTACTS.sort((a, b) => lastActivityTime(b) - lastActivityTime(a));
+  renderConvList();
   if (navigator.vibrate) navigator.vibrate(6);
 }
 
