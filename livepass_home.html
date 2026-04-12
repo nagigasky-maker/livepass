@@ -240,6 +240,14 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .dm-act.liked svg{fill:var(--red);stroke:var(--red)}
 .dm-act.saved{color:var(--gold)}
 .dm-act.saved svg{fill:var(--gold);stroke:var(--gold)}
+.dm-act.shared{color:var(--blue)}
+.dm-act.shared svg{stroke:var(--blue)}
+@keyframes dmSharePulse{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.25)}
+  100%{transform:scale(1)}
+}
+.dm-act.sharing{animation:dmSharePulse .35s ease}
 
 /* ─────────────────────────────────────────────
    COMPOSE SELECTOR BOTTOM SHEET (shared)
@@ -494,6 +502,52 @@ function toggleId(key, id){
   return idx < 0; // true if now present
 }
 
+// Share an article: reshare to current user's ARTICLE timeline AND
+// notify followers. Returns true on success, false if already shared.
+function shareArticle(a){
+  if (!a || !a.id) return false;
+  const me = localStorage.getItem('livepass_account_name') || 'NOBBY';
+  try {
+    const raw  = localStorage.getItem('livepass_articles');
+    const list = raw ? JSON.parse(raw) : [];
+    const existing = list.find(x => x.sharedFromId === a.id && x.sharedBy === me);
+    if (existing) return false;
+
+    const reshare = {
+      id:           's' + Date.now(),
+      type:         'article',
+      category:     a.cat || a.category || 'Article',
+      cover:        a.cover || null,
+      title:        a.title || '',
+      body:         a.body || '',
+      tags:         Array.isArray(a.tags) ? a.tags.slice() : [],
+      author:       me,
+      sharedBy:     me,
+      sharedFromId: a.id,
+      sharedFromAuthor: a.author || 'NOBBY',
+      createdAt:    new Date().toISOString(),
+    };
+    list.unshift(reshare);
+    localStorage.setItem('livepass_articles', JSON.stringify(list));
+
+    // Notify followers
+    const notifKey = 'livepass_follower_notifications';
+    const notifRaw = localStorage.getItem(notifKey);
+    const notifs   = notifRaw ? JSON.parse(notifRaw) : [];
+    notifs.unshift({
+      id:        'n' + Date.now(),
+      type:      'share',
+      actor:     me,
+      articleId: a.id,
+      title:     a.title || '',
+      originalAuthor: a.author || 'NOBBY',
+      at:        new Date().toISOString(),
+    });
+    localStorage.setItem(notifKey, JSON.stringify(notifs.slice(0, 50)));
+    return true;
+  } catch (e) { return false; }
+}
+
 /* Detail modal */
 const modal = document.getElementById('detailModal');
 const dmBody = document.getElementById('dmBody');
@@ -519,8 +573,9 @@ function openDetail(a) {
     ? new Date(a.createdAt).toLocaleDateString('ja-JP')
     : '2026.04.11';
 
-  const liked = getIds('livepass_likes').includes(a.id);
-  const saved = getIds('livepass_saves').includes(a.id);
+  const liked  = getIds('livepass_likes').includes(a.id);
+  const saved  = getIds('livepass_saves').includes(a.id);
+  const shared = getIds('livepass_shares').includes(a.id);
   // User's own posts: show their uploaded avatar (always cropped to circle)
   // Other authors: show the gradient dot
   const byAvatar = (a.userPost && a.avatar)
@@ -543,7 +598,7 @@ function openDetail(a) {
       <button class="dm-act" data-act="comment"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>12</button>
       <button class="dm-act ${liked ? 'liked' : ''}" data-act="like"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>48</button>
       <button class="dm-act ${saved ? 'saved' : ''}" data-act="save"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>保存</button>
-      <button class="dm-act" data-act="share"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>共有</button>
+      <button class="dm-act ${shared ? 'shared' : ''}" data-act="share"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>共有</button>
     </div>
   `;
   modal.classList.add('active');
@@ -559,6 +614,27 @@ function openDetail(a) {
       } else if (act === 'save') {
         const now = toggleId('livepass_saves', a.id);
         btn.classList.toggle('saved', now);
+      } else if (act === 'share') {
+        const meNow = localStorage.getItem('livepass_account_name') || 'NOBBY';
+        if ((a.author || 'NOBBY') === meNow && !a.sharedBy) {
+          alert('自分の投稿です。フォロワーのタイムラインに既に表示されています。');
+          return;
+        }
+        if (getIds('livepass_shares').includes(a.id)) {
+          alert('この記事はすでに共有済みです。');
+          return;
+        }
+        const ok = shareArticle(a);
+        if (ok) {
+          toggleId('livepass_shares', a.id);
+          btn.classList.add('shared', 'sharing');
+          setTimeout(() => btn.classList.remove('sharing'), 400);
+          if (navigator.vibrate) navigator.vibrate([12, 30, 12]);
+          alert(`共有しました。\n\n✓ あなたのARTICLEに追加されました\n✓ フォロワーに通知が送られました`);
+        } else {
+          alert('共有に失敗しました。');
+        }
+        return;
       }
       if (navigator.vibrate) navigator.vibrate(6);
     });
