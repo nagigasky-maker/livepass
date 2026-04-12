@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#000000">
+<title>LIVE PASS — Messages</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#000;--bg:#080808;--white:#EDEBE6;
+  --red:#E8100A;--blue:#3DAAFF;--green:#A8E63D;
+  --gold:#F5C842;--mint:#00E5A0;--pink:#F4C0D1;
+  --muted:rgba(237,235,230,.3);--border:rgba(255,255,255,.07);
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;height:100dvh;background:var(--black);color:var(--white);
+  font-family:Arial,'Noto Sans JP',sans-serif;-webkit-font-smoothing:antialiased;
+  user-select:none;-webkit-user-select:none;overflow:hidden;}
+a{color:inherit;text-decoration:none}
+button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
+
+/* Header */
+.hdr{position:fixed;top:0;left:0;right:0;z-index:10;
+  padding:max(14px,calc(var(--safe-top) + 12px)) 18px 12px;
+  display:flex;align-items:center;gap:14px;
+  background:rgba(0,0,0,.96);border-bottom:0.5px solid var(--border);}
+.hdr-back{background:none;border:0.5px solid rgba(255,255,255,.18);
+  color:rgba(237,235,230,.65);font-size:10px;font-weight:500;letter-spacing:.08em;
+  padding:7px 14px;border-radius:99px;}
+.hdr-title{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:18px;color:var(--white);margin-left:auto;margin-right:auto;padding-right:60px;}
+
+/* Conversation list */
+.conv-list{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  padding-top:calc(var(--safe-top) + 64px);
+  overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+}
+.conv-list::-webkit-scrollbar{display:none}
+
+.conv-item{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 20px;
+  border-bottom:0.5px solid rgba(255,255,255,.04);
+  cursor:pointer;
+}
+.conv-item:active{background:rgba(255,255,255,.03)}
+.conv-av{
+  width:48px;height:48px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--av-hue,#3DAAFF),#0a1020);
+  border:1.5px solid rgba(237,235,230,.12);
+  display:flex;align-items:center;justify-content:center;
+  font-family:Arial,sans-serif;font-weight:900;font-size:18px;color:var(--white);
+  position:relative;overflow:hidden;
+}
+.conv-av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%}
+.conv-unread{
+  position:absolute;top:-2px;right:-2px;
+  width:12px;height:12px;border-radius:50%;
+  background:var(--red);border:2px solid var(--black);
+}
+.conv-body{flex:1;min-width:0}
+.conv-name{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:14px;color:var(--white);margin-bottom:3px;
+}
+.conv-preview{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
+  font-size:11px;color:rgba(237,235,230,.5);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.conv-time{
+  flex-shrink:0;
+  font-family:'IBM Plex Mono',monospace;font-size:8px;
+  letter-spacing:.1em;color:rgba(237,235,230,.3);
+}
+
+/* Chat view */
+#chatView{
+  position:fixed;inset:0;z-index:20;
+  background:var(--black);
+  display:none;flex-direction:column;
+}
+#chatView.active{display:flex}
+
+.chat-header{
+  flex-shrink:0;
+  padding:max(14px,calc(var(--safe-top) + 12px)) 18px 12px;
+  display:flex;align-items:center;gap:12px;
+  background:rgba(0,0,0,.96);border-bottom:0.5px solid var(--border);
+}
+.chat-back{font-size:10px;font-weight:500;letter-spacing:.08em;
+  color:rgba(237,235,230,.65);padding:7px 14px;
+  border:0.5px solid rgba(255,255,255,.18);border-radius:99px;}
+.chat-name{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:15px;color:var(--white);flex:1;
+}
+
+.chat-messages{
+  flex:1;overflow-y:auto;padding:20px 16px;
+  display:flex;flex-direction:column;gap:10px;
+  scrollbar-width:none;
+}
+.chat-messages::-webkit-scrollbar{display:none}
+
+.msg{max-width:78%;padding:12px 16px;border-radius:18px;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-size:13px;
+  line-height:1.6;word-break:break-word;}
+.msg.them{
+  align-self:flex-start;
+  background:rgba(255,255,255,.06);
+  border-bottom-left-radius:4px;
+  color:rgba(237,235,230,.85);
+}
+.msg.me{
+  align-self:flex-end;
+  background:var(--blue);color:#fff;
+  border-bottom-right-radius:4px;
+}
+.msg-time{
+  font-family:'IBM Plex Mono',monospace;font-size:7px;
+  color:rgba(237,235,230,.25);margin-top:2px;
+}
+.msg.me .msg-time{text-align:right;color:rgba(255,255,255,.4)}
+
+.chat-input-bar{
+  flex-shrink:0;
+  padding:10px 14px calc(12px + var(--safe-bot));
+  display:flex;gap:10px;align-items:center;
+  background:rgba(0,0,0,.96);border-top:0.5px solid var(--border);
+}
+.chat-input{
+  flex:1;padding:12px 18px;
+  background:rgba(255,255,255,.06);
+  border:0.5px solid rgba(255,255,255,.1);
+  border-radius:99px;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-size:13px;
+  color:var(--white);outline:none;
+}
+.chat-input::placeholder{color:rgba(237,235,230,.35)}
+.chat-send{
+  width:40px;height:40px;border-radius:50%;
+  background:var(--blue);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.chat-send svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2}
+.chat-send:disabled{background:rgba(237,235,230,.08)}
+
+.empty-msg{
+  text-align:center;padding:80px 20px;
+  font-family:'IBM Plex Mono',monospace;font-size:9px;
+  letter-spacing:.28em;text-transform:uppercase;
+  color:rgba(237,235,230,.25);line-height:2;
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <a href="/profile" class="hdr-back">← Back</a>
+  <div class="hdr-title">Messages</div>
+</header>
+
+<div class="conv-list" id="convList"></div>
+
+<!-- Chat view overlay -->
+<div id="chatView">
+  <header class="chat-header">
+    <button class="chat-back" id="chatBack">← 戻る</button>
+    <div class="chat-name" id="chatName">—</div>
+  </header>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="chat-input-bar">
+    <input class="chat-input" id="chatInput" placeholder="メッセージを入力..." maxlength="500">
+    <button class="chat-send" id="chatSend">
+      <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13" stroke-linecap="round"/><polygon points="22,2 15,22 11,13 2,9" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+/* ─────────────────────────────────────────────
+   MOCK CONVERSATIONS (sample DM data)
+   In production these would come from a backend.
+   Sent messages are persisted to localStorage.
+   ───────────────────────────────────────────── */
+const CONTACTS = [
+  { id:'sachi',    name:'SACHI',    hue:'#F4C0D1', unread:2,
+    preview:'ワッキングの動画送ったよ！見てね', time:'14:30',
+    history:[
+      { from:'them', text:'ワッキングの動画送ったよ！見てね', t:'14:30' },
+      { from:'them', text:'今度のWSの詳細も送るね', t:'14:31' },
+    ] },
+  { id:'ali',      name:'ALI',      hue:'#E8100A', unread:0,
+    preview:'次の All Must Dance 楽しみ', time:'昨日',
+    history:[
+      { from:'me',   text:'次のイベントの DJ リスト決まった？', t:'20:12' },
+      { from:'them', text:'うん、来週発表する予定！', t:'20:45' },
+      { from:'me',   text:'了解！楽しみにしてる', t:'20:46' },
+      { from:'them', text:'次の All Must Dance 楽しみ', t:'21:00' },
+    ] },
+  { id:'dubla',    name:'DUBLA®',   hue:'#bf5af2', unread:1,
+    preview:'SS26 コレクションのフライヤー添付したよ', time:'4/10',
+    history:[
+      { from:'them', text:'SS26 コレクションのフライヤー添付したよ', t:'18:00' },
+    ] },
+  { id:'keita',    name:'DJ KEITA', hue:'#3DAAFF', unread:0,
+    preview:'スタジオ空いてるか確認するね', time:'4/9',
+    history:[
+      { from:'me',   text:'来週の日曜、Studio A 空いてる？', t:'11:20' },
+      { from:'them', text:'スタジオ空いてるか確認するね', t:'12:05' },
+    ] },
+  { id:'nrg',      name:'CREW NRG', hue:'#F5C842', unread:0,
+    preview:'サイファー参加人数20人超えた！', time:'4/8',
+    history:[
+      { from:'them', text:'サイファー参加人数20人超えた！', t:'16:30' },
+      { from:'me',   text:'すごいね！会場大丈夫そう？', t:'16:55' },
+      { from:'them', text:'大丈夫、WOMB 2F 広いから', t:'17:02' },
+    ] },
+];
+
+const DM_KEY = 'livepass_dm_';
+
+function loadUserMessages(contactId){
+  try {
+    const raw = localStorage.getItem(DM_KEY + contactId);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+function saveUserMessages(contactId, msgs){
+  try { localStorage.setItem(DM_KEY + contactId, JSON.stringify(msgs)); } catch(e) {}
+}
+
+/* ── Render conversation list ── */
+const convList = document.getElementById('convList');
+CONTACTS.forEach(c => {
+  const userMsgs = loadUserMessages(c.id);
+  const lastUserMsg = userMsgs.length ? userMsgs[userMsgs.length-1] : null;
+  const preview = lastUserMsg ? lastUserMsg.text : c.preview;
+  const item = document.createElement('div');
+  item.className = 'conv-item';
+  item.innerHTML = `
+    <div class="conv-av" style="--av-hue:${c.hue}">
+      ${c.name.charAt(0)}
+      ${c.unread > 0 ? '<div class="conv-unread"></div>' : ''}
+    </div>
+    <div class="conv-body">
+      <div class="conv-name">${c.name}</div>
+      <div class="conv-preview">${preview}</div>
+    </div>
+    <div class="conv-time">${c.time}</div>
+  `;
+  item.addEventListener('click', () => openChat(c));
+  convList.appendChild(item);
+});
+
+/* ── Chat view ── */
+const chatView = document.getElementById('chatView');
+const chatName = document.getElementById('chatName');
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const chatSend = document.getElementById('chatSend');
+const chatBack = document.getElementById('chatBack');
+let currentContact = null;
+
+function openChat(c){
+  currentContact = c;
+  chatName.textContent = c.name;
+  chatView.classList.add('active');
+  renderMessages(c);
+  chatInput.value = '';
+  setTimeout(() => {
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    chatInput.focus();
+  }, 100);
+}
+
+function renderMessages(c){
+  const userMsgs = loadUserMessages(c.id);
+  const allMsgs = [...c.history, ...userMsgs];
+  if (allMsgs.length === 0) {
+    chatMessages.innerHTML = '<div class="empty-msg">メッセージはまだありません</div>';
+    return;
+  }
+  chatMessages.innerHTML = '';
+  allMsgs.forEach(m => {
+    const div = document.createElement('div');
+    div.className = 'msg ' + (m.from === 'me' ? 'me' : 'them');
+    div.innerHTML = `${m.text}<div class="msg-time">${m.t}</div>`;
+    chatMessages.appendChild(div);
+  });
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+chatBack.addEventListener('click', () => {
+  chatView.classList.remove('active');
+  currentContact = null;
+});
+
+function sendMessage(){
+  const text = chatInput.value.trim();
+  if (!text || !currentContact) return;
+  const now = new Date();
+  const t = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  const msg = { from:'me', text, t };
+  const userMsgs = loadUserMessages(currentContact.id);
+  userMsgs.push(msg);
+  saveUserMessages(currentContact.id, userMsgs);
+  chatInput.value = '';
+  renderMessages(currentContact);
+  if (navigator.vibrate) navigator.vibrate(6);
+}
+
+chatSend.addEventListener('click', sendMessage);
+chatInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+</script>
+
+</body>
+</html>
