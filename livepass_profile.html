@@ -29,6 +29,7 @@ html,body{
   font-family:'Noto Sans JP','Inter',sans-serif;
   -webkit-font-smoothing:antialiased;
   user-select:none;-webkit-user-select:none;
+  overflow-x:hidden;
   overflow:hidden;
 }
 a{color:inherit;text-decoration:none}
@@ -73,7 +74,7 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   top:0;left:0;right:0;
   bottom:calc(var(--nav-h) + var(--safe-bot));
   padding-top:max(94px,calc(var(--safe-top) + 62px));
-  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
   scrollbar-width:none;
 }
 .content::-webkit-scrollbar{display:none}
@@ -1077,8 +1078,12 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .pm-credits-name{
   font-family:Arial,'Noto Sans JP',sans-serif;font-weight:600;
   font-size:11px;letter-spacing:.02em;color:var(--white);
-  line-height:1.45;flex:1;
+  line-height:1.45;flex:1;min-width:0;
+  display:flex;flex-wrap:wrap;
+  column-gap:12px;row-gap:2px;
+  word-break:break-word;overflow-wrap:anywhere;
 }
+.pm-credits-name > .nm{display:inline-flex;white-space:nowrap}
 .pm-credits-name a{
   color:inherit;text-decoration:none;
   border-bottom:1px solid rgba(61,170,255,.25);
@@ -1086,7 +1091,6 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   transition:border-color .15s ease, color .15s ease;
 }
 .pm-credits-name a:active{color:#8fcaff;border-bottom-color:var(--blue)}
-.pm-credits-name .sep{margin:0 6px;color:rgba(237,235,230,.2);font-weight:400}
 
 /* Collaborator revenue split display */
 .pm-collab{padding:8px 22px 0}
@@ -2412,11 +2416,50 @@ function openPostDetail(type, item) {
       </div>
     ` : '';
 
+    // Subscribers-only access badge
+    const accessBadgeHtml = item.access === 'pass' ? `
+      <div style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:99px;background:rgba(191,90,242,.12);border:0.5px solid rgba(191,90,242,.5);color:#d4a8ff;font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:.22em;text-transform:uppercase;font-weight:700;margin-bottom:8px">
+        🔒 Subscribers Only
+      </div>
+    ` : '';
+
+    // Collaboration revenue split for articles
+    const artCollabArr = Array.isArray(item.collaborators) ? item.collaborators : [];
+    const artValidCollabs = artCollabArr.filter(c => c && c.name);
+    const artTotalShare = artValidCollabs.reduce((s, c) => s + (Number(c.share) || 0), 0);
+    const artMyShare = Math.max(0, 100 - artTotalShare);
+    const artInitialsOf = (n) => (n || '?').replace(/[^A-Za-z0-9\u3040-\u30FF\u4E00-\u9FFF]/g, '').slice(0, 2).toUpperCase();
+    const artCollabHtml = artValidCollabs.length ? `
+      <div class="pm-section">
+        <div class="pm-sec-label">Collaboration · 収益分配</div>
+        <div class="pm-collab">
+          <div class="pm-collab-row me">
+            <div class="pm-collab-av">${artInitialsOf(item.author || 'NOBBY')}</div>
+            <div class="pm-collab-name"><a href="/profile?user=${encodeURIComponent(item.author || 'NOBBY')}">${item.author || 'NOBBY'}</a></div>
+            <div class="pm-collab-share">${artMyShare}%</div>
+          </div>
+          ${artValidCollabs.map(c => `
+            <div class="pm-collab-row">
+              <div class="pm-collab-av">${artInitialsOf(c.name)}</div>
+              <div class="pm-collab-name"><a href="/profile?user=${encodeURIComponent(c.name)}">${c.name}</a></div>
+              <div class="pm-collab-share">${Number(c.share) || 0}%</div>
+            </div>
+          `).join('')}
+          <div class="pm-collab-bar">
+            <div class="seg me" style="width:${artMyShare}%"></div>
+            <div class="seg them" style="width:${artTotalShare}%"></div>
+          </div>
+          <div class="pm-collab-note">売り上げは上記の割合で自動分配されます</div>
+        </div>
+      </div>
+    ` : '';
+
     pmBody.innerHTML = `
       <div class="pm-hero with-cover">
         ${coverHtml}
         <div class="pm-hero-text">
           ${sharedByHtml}
+          ${accessBadgeHtml}
           <div class="pm-cat" style="color:#A8E63D">${item.category || 'Article'}</div>
           <div class="pm-title">${item.title || ''}</div>
           <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;color:rgba(237,235,230,.55)">${item.author || 'NOBBY'} · ${dateStr}</div>
@@ -2426,6 +2469,7 @@ function openPostDetail(type, item) {
         <div class="pm-sec-label">Body</div>
         <div class="pm-sec-body">${bodyHtml}</div>
       </div>
+      ${artCollabHtml}
       <div class="pm-actions">
         <button class="pm-act" data-act="comment" type="button">
           <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>12
@@ -2499,7 +2543,7 @@ function openPostDetail(type, item) {
     // Author-only re-edit button (only for events — article/workshop/exhibition keep existing flow)
     const currentUser = localStorage.getItem('livepass_account_name') || 'NOBBY';
     const isAuthor = (item.author || 'NOBBY') === currentUser;
-    const isOwner = isAuthor && type === 'event';   // re-edit supported for events only
+    const isOwner = isAuthor && (type === 'event' || type === 'workshop' || type === 'exhibition');
     const isOwnerReservable = isAuthor && !!item.reservation;  // reservation mgmt for any type
 
     // Count of reservations belonging to this event for the owner badge
@@ -2657,10 +2701,9 @@ function openPostDetail(type, item) {
             <div class="pm-credits-group">
               <div class="pm-credits-role">${role}</div>
               <div class="pm-credits-name">
-                ${creditGroups[role].map((t, i) => {
-                  const link = `<a href="/profile?user=${encodeURIComponent(t.name)}">${t.name}</a>`;
+                ${creditGroups[role].map(t => {
                   const priv = t.hidden ? ' <span style="color:var(--gold);font-size:8px">(非公開)</span>' : '';
-                  return (i > 0 ? '<span class="sep">·</span>' : '') + link + priv;
+                  return `<span class="nm"><a href="/profile?user=${encodeURIComponent(t.name)}">${t.name}</a>${priv}</span>`;
                 }).join('')}
               </div>
             </div>
@@ -2775,7 +2818,7 @@ function openPostDetail(type, item) {
       if (editBtn && item.id) {
         editBtn.addEventListener('click', () => {
           if (navigator.vibrate) navigator.vibrate(10);
-          location.href = '/compose/event?edit=' + encodeURIComponent(item.id);
+          location.href = '/compose/' + type + '?edit=' + encodeURIComponent(item.id);
         });
       }
     }
