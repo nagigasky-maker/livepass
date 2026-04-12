@@ -888,13 +888,15 @@ function openEventDetail(e) {
     </div>
   ` : '';
 
-  // COLLABORATION — revenue split
+  // COLLABORATION — revenue split (PRIVATE — only visible to the author
+  // and the listed collaborators, never to the public feed)
   const collabArr = Array.isArray(e.collaborators) ? e.collaborators : [];
   const validCollabs = collabArr.filter(c => c && c.name);
   const totalCollabShare = validCollabs.reduce((s, c) => s + (Number(c.share) || 0), 0);
   const mySharePct = Math.max(0, 100 - totalCollabShare);
   const eventAuthor = e.author || e.by || 'NOBBY';
-  const collabHtml = validCollabs.length ? `
+  const isCollabParticipant = (eventAuthor === currentUser) || validCollabs.some(c => c.name === currentUser);
+  const collabHtml = (validCollabs.length && isCollabParticipant) ? `
     <div class="em-section">
       <div class="em-sec-label">Collaboration · 収益分配</div>
       <div class="em-collab">

@@ -2423,13 +2423,17 @@ function openPostDetail(type, item) {
       </div>
     ` : '';
 
-    // Collaboration revenue split for articles
+    // Collaboration revenue split for articles (PRIVATE — only visible
+    // to the author and the listed collaborators, never to the public)
     const artCollabArr = Array.isArray(item.collaborators) ? item.collaborators : [];
     const artValidCollabs = artCollabArr.filter(c => c && c.name);
     const artTotalShare = artValidCollabs.reduce((s, c) => s + (Number(c.share) || 0), 0);
     const artMyShare = Math.max(0, 100 - artTotalShare);
     const artInitialsOf = (n) => (n || '?').replace(/[^A-Za-z0-9\u3040-\u30FF\u4E00-\u9FFF]/g, '').slice(0, 2).toUpperCase();
-    const artCollabHtml = artValidCollabs.length ? `
+    const artCurrentUser = localStorage.getItem('livepass_account_name') || 'NOBBY';
+    const artIsAuthor = (item.author || 'NOBBY') === artCurrentUser;
+    const artIsCollabParticipant = artIsAuthor || artValidCollabs.some(c => c.name === artCurrentUser);
+    const artCollabHtml = (artValidCollabs.length && artIsCollabParticipant) ? `
       <div class="pm-section">
         <div class="pm-sec-label">Collaboration · 収益分配</div>
         <div class="pm-collab">
@@ -2712,12 +2716,15 @@ function openPostDetail(type, item) {
       </div>
     ` : '';
 
-    // ─── COLLABORATION — revenue split display ───
+    // ─── COLLABORATION — revenue split display (PRIVATE)
+    // Only visible to the author and to the participants listed as
+    // collaborators. Revenue info must never leak to the public feed.
     const collabArr = Array.isArray(item.collaborators) ? item.collaborators : [];
     const validCollabs = collabArr.filter(c => c && c.name);
     const totalCollabShare = validCollabs.reduce((s, c) => s + (Number(c.share) || 0), 0);
     const mySharePct = Math.max(0, 100 - totalCollabShare);
-    const collabHtml = validCollabs.length ? `
+    const isCollabParticipant = isAuthor || validCollabs.some(c => c.name === currentUser);
+    const collabHtml = (validCollabs.length && isCollabParticipant) ? `
       <div class="pm-section">
         <div class="pm-sec-label">Collaboration · 収益分配</div>
         <div class="pm-collab">
