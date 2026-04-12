@@ -224,6 +224,123 @@ textarea.input-box{resize:vertical;min-height:120px;line-height:1.8;font-size:13
   font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;
   color:rgba(237,235,230,.4);
 }
+
+/* ───── TEAM CREDIT section (映画クレジット風) ───── */
+.team-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.team-list:empty{display:none}
+.team-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px 10px 8px;border-radius:10px;
+  background:rgba(255,255,255,.03);
+  border:0.5px solid rgba(255,255,255,.08);
+}
+.team-row.private{
+  background:rgba(245,200,66,.05);
+  border-color:rgba(245,200,66,.3);
+}
+.team-row-av{
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,#3DAAFF,#bf5af2);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-family:Arial,sans-serif;font-weight:900;font-size:10px;color:#000;
+}
+.team-row-info{flex:1;min-width:0}
+.team-row-name{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:13px;color:var(--white);margin-bottom:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.team-row-role{
+  background:none;border:none;outline:none;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;
+  color:rgba(237,235,230,.6);width:100%;padding:2px 0;
+  border-bottom:0.5px dashed rgba(237,235,230,.15);
+}
+.team-row-role:focus{border-bottom-color:var(--accent)}
+.team-row-private{
+  flex-shrink:0;padding:6px 10px;border-radius:99px;
+  background:none;border:0.5px solid rgba(237,235,230,.2);
+  color:rgba(237,235,230,.55);
+  font-family:Arial,sans-serif;font-weight:700;font-size:9px;
+  letter-spacing:.06em;display:flex;align-items:center;gap:4px;
+}
+.team-row-private svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2}
+.team-row-private.on{
+  background:rgba(245,200,66,.12);border-color:var(--gold);color:var(--gold);
+}
+.team-row-remove{
+  width:22px;height:22px;border-radius:50%;
+  background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,.75);flex-shrink:0;
+}
+.team-row-remove svg{width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2.4}
+.team-role-presets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.team-preset{
+  padding:5px 10px;border-radius:99px;
+  background:rgba(255,255,255,.03);
+  border:0.5px solid rgba(237,235,230,.1);
+  color:rgba(237,235,230,.55);
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
+  font-size:9px;letter-spacing:.04em;
+}
+.team-preset:active{background:rgba(232,16,10,.08);border-color:var(--accent);color:var(--accent)}
+
+/* ───── COLLABORATION section ───── */
+.collab-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.collab-list:empty{display:none}
+.collab-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px 10px 8px;border-radius:10px;
+  background:rgba(191,90,242,.06);
+  border:0.5px solid rgba(191,90,242,.35);
+}
+.collab-row-av{
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,#bf5af2,#F4C0D1);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-family:Arial,sans-serif;font-weight:900;font-size:10px;color:#000;
+}
+.collab-row-name{
+  flex:1;min-width:0;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:13px;color:var(--white);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.collab-row-share{
+  flex-shrink:0;width:72px;
+  display:flex;align-items:center;gap:4px;
+  background:rgba(0,0,0,.35);border:0.5px solid rgba(191,90,242,.35);
+  border-radius:99px;padding:4px 12px;
+}
+.collab-row-share input{
+  background:none;border:none;outline:none;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:13px;color:var(--white);width:34px;text-align:right;
+  -moz-appearance:textfield;
+}
+.collab-row-share input::-webkit-outer-spin-button,
+.collab-row-share input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.collab-row-share span{
+  font-family:Arial,sans-serif;font-weight:700;font-size:11px;color:#d4a8ff;
+}
+.collab-row-remove{
+  width:22px;height:22px;border-radius:50%;
+  background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,.75);flex-shrink:0;
+}
+.collab-row-remove svg{width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2.4}
+.collab-total{
+  margin-top:10px;padding:12px 14px;border-radius:10px;
+  background:rgba(255,255,255,.02);
+  border:0.5px solid rgba(255,255,255,.08);
+  font-family:'IBM Plex Mono',monospace;font-size:9px;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(237,235,230,.5);line-height:1.9;
+}
+.collab-total b{color:var(--white);font-weight:800}
+.collab-total.error{background:rgba(232,16,10,.06);border-color:rgba(232,16,10,.4);color:#ff8a86}
+.collab-total .me{color:#8fcaff}
+.collab-total .them{color:#d4a8ff}
 </style>
 </head>
 <body>
@@ -327,6 +444,43 @@ textarea.input-box{resize:vertical;min-height:120px;line-height:1.8;font-size:13
   </div>
 
   <div class="form-section">
+    <div class="form-label">EVENT PROJECT TEAM / クレジット</div>
+    <div class="team-role-presets">
+      <button type="button" class="team-preset">Lighting</button>
+      <button type="button" class="team-preset">Sound</button>
+      <button type="button" class="team-preset">Stage Manager</button>
+      <button type="button" class="team-preset">VJ</button>
+      <button type="button" class="team-preset">Photo</button>
+      <button type="button" class="team-preset">Video</button>
+      <button type="button" class="team-preset">Production</button>
+      <button type="button" class="team-preset">Curation</button>
+      <button type="button" class="team-preset">Security</button>
+      <button type="button" class="team-preset">Catering</button>
+    </div>
+    <div class="team-list" id="teamList"></div>
+    <div class="artist-search-wrap">
+      <input class="input-box" id="teamSearchInput" placeholder="チームメンバーのアカウントを検索して追加" autocomplete="off">
+      <div class="artist-suggest" id="teamSuggest"></div>
+    </div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:rgba(237,235,230,.3);margin-top:8px;line-height:1.7">
+      ※ 役割を直接入力 or プリセットタップで設定 / 非公開は所有者のみ閲覧可
+    </div>
+  </div>
+
+  <div class="form-section">
+    <div class="form-label">COLLABORATION / 収益分配</div>
+    <div class="collab-list" id="collabList"></div>
+    <div class="artist-search-wrap">
+      <input class="input-box" id="collabSearchInput" placeholder="コラボアーティストのアカウントを検索" autocomplete="off">
+      <div class="artist-suggest" id="collabSuggest"></div>
+    </div>
+    <div class="collab-total" id="collabTotal" style="display:none">
+      <div><b>自分の取り分</b> <span class="me" id="collabMyShare">100%</span></div>
+      <div><b>コラボ合計</b> <span class="them" id="collabThemShare">0%</span></div>
+    </div>
+  </div>
+
+  <div class="form-section">
     <div class="form-label">カバー画像</div>
     <div class="cover-upload" id="coverUpload">
       <div class="cover-placeholder" id="coverPh">
@@ -378,6 +532,8 @@ const state = {
   reservation: false,
   subscriberEnabled: false,
   artists: [],        // [{ name, role }]
+  team:     [],       // [{ name, role, hidden }]
+  collaborators: [],  // [{ name, share }]
   editingId: null,    // if set, we're editing an existing event
 };
 // Default cancellation policy (editable in the reservation body when enabled)
@@ -736,6 +892,216 @@ artistSuggest.addEventListener('mousedown', (e) => {
   artistSearchIn.focus();
 });
 
+// ─────────────────────────────────────────────
+// EVENT PROJECT TEAM — credits-style contributor list
+// ─────────────────────────────────────────────
+const teamList        = document.getElementById('teamList');
+const teamSearchIn    = document.getElementById('teamSearchInput');
+const teamSuggest     = document.getElementById('teamSuggest');
+
+function renderTeamList() {
+  teamList.innerHTML = state.team.map((t, i) => `
+    <div class="team-row${t.hidden ? ' private' : ''}" data-i="${i}">
+      <div class="team-row-av">${initialsOf(t.name)}</div>
+      <div class="team-row-info">
+        <div class="team-row-name">${t.name}</div>
+        <input class="team-row-role" data-i="${i}" placeholder="役割 (例: Lighting)" value="${t.role || ''}">
+      </div>
+      <button type="button" class="team-row-private ${t.hidden ? 'on' : ''}" data-toggle-private="${i}">
+        <svg viewBox="0 0 24 24">${t.hidden
+          ? '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>'
+          : '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>'}</svg>
+        ${t.hidden ? '非公開' : '公開'}
+      </button>
+      <button type="button" class="team-row-remove" data-remove-team="${i}" aria-label="Remove">
+        <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+      </button>
+    </div>
+  `).join('');
+}
+teamList.addEventListener('click', (e) => {
+  const removeBtn = e.target.closest('[data-remove-team]');
+  if (removeBtn) {
+    state.team.splice(Number(removeBtn.dataset.removeTeam), 1);
+    renderTeamList();
+    return;
+  }
+  const privBtn = e.target.closest('[data-toggle-private]');
+  if (privBtn) {
+    const idx = Number(privBtn.dataset.togglePrivate);
+    state.team[idx].hidden = !state.team[idx].hidden;
+    renderTeamList();
+    return;
+  }
+});
+teamList.addEventListener('input', (e) => {
+  const roleInput = e.target.closest('.team-row-role');
+  if (!roleInput) return;
+  state.team[Number(roleInput.dataset.i)].role = roleInput.value;
+});
+// Preset chips populate the LAST added team row's role (or create-tip)
+document.querySelectorAll('.team-preset').forEach(chip => {
+  chip.addEventListener('click', () => {
+    if (state.team.length === 0) {
+      alert('先にチームメンバーを追加してください。追加後にプリセットで役割を設定できます。');
+      return;
+    }
+    const last = state.team[state.team.length - 1];
+    last.role = chip.textContent.trim();
+    renderTeamList();
+  });
+});
+
+function renderTeamSuggest(query) {
+  const q = (query || '').trim().toLowerCase();
+  const added = new Set(state.team.map(t => t.name));
+  let matches = ALL_ACCOUNTS.filter(a => !added.has(a.name));
+  if (q) matches = matches.filter(a => a.name.toLowerCase().includes(q));
+  matches = matches.slice(0, 8);
+  if (matches.length === 0) {
+    if (q) {
+      teamSuggest.innerHTML = `
+        <div class="artist-suggest-item" data-team-add-new="${q.toUpperCase()}">
+          <div class="artist-suggest-avatar">${initialsOf(q)}</div>
+          <div>
+            <div class="artist-suggest-name">${q.toUpperCase()}</div>
+            <div class="artist-suggest-role">新しいメンバーとして追加</div>
+          </div>
+          <div class="artist-suggest-add">+ ADD</div>
+        </div>`;
+    } else {
+      teamSuggest.innerHTML = `<div class="artist-suggest-empty">候補なし</div>`;
+    }
+    teamSuggest.classList.add('open');
+    return;
+  }
+  teamSuggest.innerHTML = matches.map(a => `
+    <div class="artist-suggest-item" data-team-add="${a.name}">
+      <div class="artist-suggest-avatar">${initialsOf(a.name)}</div>
+      <div>
+        <div class="artist-suggest-name">${a.name}</div>
+        <div class="artist-suggest-role">${a.role || ''}</div>
+      </div>
+      <div class="artist-suggest-add">+ ADD</div>
+    </div>
+  `).join('');
+  teamSuggest.classList.add('open');
+}
+teamSearchIn.addEventListener('focus', () => renderTeamSuggest(teamSearchIn.value));
+teamSearchIn.addEventListener('input', () => renderTeamSuggest(teamSearchIn.value));
+teamSearchIn.addEventListener('blur', () => setTimeout(() => teamSuggest.classList.remove('open'), 180));
+teamSuggest.addEventListener('mousedown', (e) => {
+  const item = e.target.closest('[data-team-add], [data-team-add-new]');
+  if (!item) return;
+  e.preventDefault();
+  const name = item.dataset.teamAdd || item.dataset.teamAddNew;
+  state.team.push({ name, role: '', hidden: false });
+  renderTeamList();
+  teamSearchIn.value = '';
+  renderTeamSuggest('');
+  teamSearchIn.focus();
+});
+
+// ─────────────────────────────────────────────
+// COLLABORATION — revenue split
+// ─────────────────────────────────────────────
+const collabList     = document.getElementById('collabList');
+const collabSearchIn = document.getElementById('collabSearchInput');
+const collabSuggest  = document.getElementById('collabSuggest');
+const collabTotal    = document.getElementById('collabTotal');
+const collabMyShare  = document.getElementById('collabMyShare');
+const collabThemShare= document.getElementById('collabThemShare');
+
+function updateCollabTotals() {
+  const them = state.collaborators.reduce((s, c) => s + (Number(c.share) || 0), 0);
+  const me = 100 - them;
+  collabMyShare.textContent = me + '%';
+  collabThemShare.textContent = them + '%';
+  collabTotal.style.display = state.collaborators.length > 0 ? 'block' : 'none';
+  collabTotal.classList.toggle('error', them > 100 || me < 0);
+}
+function renderCollabList() {
+  collabList.innerHTML = state.collaborators.map((c, i) => `
+    <div class="collab-row" data-i="${i}">
+      <div class="collab-row-av">${initialsOf(c.name)}</div>
+      <div class="collab-row-name">${c.name}</div>
+      <div class="collab-row-share">
+        <input type="number" min="0" max="100" step="5" value="${c.share}" data-i="${i}">
+        <span>%</span>
+      </div>
+      <button type="button" class="collab-row-remove" data-remove-collab="${i}" aria-label="Remove">
+        <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+      </button>
+    </div>
+  `).join('');
+  updateCollabTotals();
+}
+collabList.addEventListener('click', (e) => {
+  const removeBtn = e.target.closest('[data-remove-collab]');
+  if (!removeBtn) return;
+  state.collaborators.splice(Number(removeBtn.dataset.removeCollab), 1);
+  renderCollabList();
+});
+collabList.addEventListener('input', (e) => {
+  if (e.target.tagName !== 'INPUT') return;
+  const i = Number(e.target.dataset.i);
+  state.collaborators[i].share = Math.max(0, Math.min(100, parseInt(e.target.value, 10) || 0));
+  updateCollabTotals();
+});
+
+function renderCollabSuggest(query) {
+  const q = (query || '').trim().toLowerCase();
+  const added = new Set(state.collaborators.map(c => c.name));
+  let matches = ALL_ACCOUNTS.filter(a => !added.has(a.name));
+  if (q) matches = matches.filter(a => a.name.toLowerCase().includes(q));
+  matches = matches.slice(0, 8);
+  if (matches.length === 0) {
+    if (q) {
+      collabSuggest.innerHTML = `
+        <div class="artist-suggest-item" data-collab-add-new="${q.toUpperCase()}">
+          <div class="artist-suggest-avatar">${initialsOf(q)}</div>
+          <div>
+            <div class="artist-suggest-name">${q.toUpperCase()}</div>
+            <div class="artist-suggest-role">新しいコラボ先として追加</div>
+          </div>
+          <div class="artist-suggest-add">+ ADD</div>
+        </div>`;
+    } else {
+      collabSuggest.innerHTML = `<div class="artist-suggest-empty">候補なし</div>`;
+    }
+    collabSuggest.classList.add('open');
+    return;
+  }
+  collabSuggest.innerHTML = matches.map(a => `
+    <div class="artist-suggest-item" data-collab-add="${a.name}">
+      <div class="artist-suggest-avatar">${initialsOf(a.name)}</div>
+      <div>
+        <div class="artist-suggest-name">${a.name}</div>
+        <div class="artist-suggest-role">${a.role || ''}</div>
+      </div>
+      <div class="artist-suggest-add">+ ADD</div>
+    </div>
+  `).join('');
+  collabSuggest.classList.add('open');
+}
+collabSearchIn.addEventListener('focus', () => renderCollabSuggest(collabSearchIn.value));
+collabSearchIn.addEventListener('input', () => renderCollabSuggest(collabSearchIn.value));
+collabSearchIn.addEventListener('blur', () => setTimeout(() => collabSuggest.classList.remove('open'), 180));
+collabSuggest.addEventListener('mousedown', (e) => {
+  const item = e.target.closest('[data-collab-add], [data-collab-add-new]');
+  if (!item) return;
+  e.preventDefault();
+  const name = item.dataset.collabAdd || item.dataset.collabAddNew;
+  // Default share: split remaining evenly among collaborators + 1 new
+  const remaining = Math.max(0, 100 - state.collaborators.reduce((s, c) => s + (Number(c.share)||0), 0));
+  const defaultShare = remaining > 0 ? Math.min(remaining, 20) : 0;
+  state.collaborators.push({ name, share: defaultShare });
+  renderCollabList();
+  collabSearchIn.value = '';
+  renderCollabSuggest('');
+  collabSearchIn.focus();
+});
+
 function downscaleImageFile(file, maxDim = 1280, quality = 0.82) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -820,6 +1186,8 @@ submitBtn.addEventListener('click', () => {
     cancelDeadlineH: state.reservation ? (parseInt(cancelDeadlineInput.value, 10) || 0) : 0,
     subscriberPrice: state.subscriberEnabled ? (subscriberInput.value || '') : '',
     artists:         state.artists.slice(),
+    team:            state.team.slice(),
+    collaborators:   state.collaborators.slice(),
     body:            bodyInput.value.trim(),
     tags:            document.getElementById('tagsInput').value.split(',').map(t => t.trim()).filter(Boolean),
     author:          (editingEvent && editingEvent.author) || localStorage.getItem('livepass_account_name') || 'NOBBY',
@@ -917,6 +1285,25 @@ if (editingEvent) {
       typeof a === 'string' ? { name: a, role: '' } : a
     );
     renderArtistChips();
+  }
+
+  // Team
+  if (Array.isArray(editingEvent.team)) {
+    state.team = editingEvent.team.map(t => ({
+      name: t.name || t,
+      role: t.role || '',
+      hidden: !!t.hidden,
+    }));
+    renderTeamList();
+  }
+
+  // Collaborators
+  if (Array.isArray(editingEvent.collaborators)) {
+    state.collaborators = editingEvent.collaborators.map(c => ({
+      name: c.name || c,
+      share: Number(c.share) || 0,
+    }));
+    renderCollabList();
   }
 
   updateSubmitState();
