@@ -455,10 +455,19 @@ const FEED = [...getUserArticles(), ...ARTICLES];
     const map = {};
     FEED.forEach(a => {
       map[a.id] = {
-        title: a.title,
-        cat:   a.cat,
+        id:       a.id,
+        title:    a.title,
+        subtitle: a.subtitle || null,
+        cat:      a.cat,
+        category: a.cat,
         catColor: a.catColor,
-        cover: a.cover || null, // sample items don't have a cover so SAVED will fall back to gradient bg
+        cover:    a.cover || placeholderSVG(a),
+        body:     a.body || '',
+        author:   a.author,
+        layout:   a.layout,
+        createdAt:a.createdAt || null,
+        sharedBy: a.sharedBy || null,
+        sharedFromAuthor: a.sharedFromAuthor || null,
       };
     });
     localStorage.setItem('livepass_article_meta', JSON.stringify(map));
