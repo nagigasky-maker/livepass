@@ -249,6 +249,48 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .pf-card img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;}
 .pf-card.empty{background:linear-gradient(135deg,#151515,#0a0a0a)}
 
+/* NEXT LIVE teaser — semi-transparent placeholder card */
+.pf-card.next-live{
+  background:
+    linear-gradient(160deg,rgba(61,170,255,.08) 0%,rgba(168,230,61,.06) 50%,rgba(0,0,0,.9) 100%),
+    #050505;
+  border:1.5px dashed rgba(237,235,230,.18);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:14px;text-decoration:none;
+  padding:16px 10px;
+  box-shadow:0 14px 40px rgba(0,0,0,.6),inset 0 0 60px rgba(61,170,255,.04);
+}
+.pf-card.next-live .nl-stage{
+  position:relative;width:54px;height:54px;
+  display:flex;align-items:center;justify-content:center;
+}
+.pf-card.next-live .nl-ring{
+  position:absolute;inset:0;border-radius:50%;
+  border:1px solid rgba(61,170,255,.5);
+  animation:nlPulse 2.4s ease-out infinite;
+}
+.pf-card.next-live .nl-ring-2{animation-delay:1.2s}
+@keyframes nlPulse{
+  0%  {transform:scale(.5);opacity:0}
+  30% {opacity:.8}
+  100%{transform:scale(1.6);opacity:0}
+}
+.pf-card.next-live .nl-plus{
+  width:26px;height:26px;
+  stroke:var(--blue);fill:none;stroke-width:2;
+  position:relative;z-index:2;
+}
+.pf-card.next-live .nl-label{
+  font-family:'IBM Plex Mono',monospace;font-weight:500;
+  font-size:10px;letter-spacing:.32em;text-transform:uppercase;
+  color:var(--blue);text-align:center;
+}
+.pf-card.next-live .nl-sub{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
+  font-size:8px;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(237,235,230,.35);text-align:center;line-height:1.6;
+}
+
 /* SCREEN sub-sub-tabs ─────────────────────────── */
 .screen-wrap{padding-top:6px}
 .sstabs{
@@ -686,7 +728,7 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
           <div class="ph-label-ywt">YOU WERE THERE</div>
           <div class="ph-label-pass">PASS HOLDER</div>
         </div>
-        <div class="ph-count">4 PASSES</div>
+        <div class="ph-count" id="phCount">3 PASSES</div>
       </div>
     </div>
 
@@ -701,7 +743,18 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
         <div class="pf-card" data-card="amd">
           <img src="/assets/cards/amd-clubasia-2026-05-04.jpg" alt="ALL MUST DANCE">
         </div>
-        <div class="pf-card empty" data-card="placeholder"></div>
+        <!-- NEXT LIVE teaser — semi-transparent placeholder that invites the
+             user to go to the next live event to claim the 4th card. Tap
+             routes to /calendar (discover upcoming events). -->
+        <a class="pf-card next-live" data-card="next" href="/calendar">
+          <div class="nl-stage">
+            <div class="nl-ring"></div>
+            <div class="nl-ring nl-ring-2"></div>
+            <svg class="nl-plus" viewBox="0 0 24 24"><line x1="12" y1="6" x2="12" y2="18" stroke-linecap="round"/><line x1="6" y1="12" x2="18" y2="12" stroke-linecap="round"/></svg>
+          </div>
+          <div class="nl-label">NEXT LIVE</div>
+          <div class="nl-sub">GET YOUR PASS<br>AT THE EVENT</div>
+        </a>
       </div>
     </div>
   </section>
@@ -1117,11 +1170,18 @@ let nftDragged = false;
   window.addEventListener('resize', calcMax);
 })();
 
-// Card taps open the zoom (step 1) — but only if not coming out of a drag
-document.querySelectorAll('.pf-card').forEach(card => {
+// Card taps open the zoom (step 1) — but only if not coming out of a drag.
+// Skip .next-live because it's an <a href="/calendar"> — browser nav handles it.
+document.querySelectorAll('.pf-card:not(.next-live)').forEach(card => {
   card.addEventListener('click', () => {
     if (nftDragged) return;
     openCardZoom(card);
+  });
+});
+// NEXT LIVE card: suppress the link navigation if the user was dragging
+document.querySelectorAll('.pf-card.next-live').forEach(card => {
+  card.addEventListener('click', (e) => {
+    if (nftDragged) { e.preventDefault(); return; }
   });
 });
 
@@ -1459,6 +1519,15 @@ window.addEventListener('keydown', (e) => {
     document.querySelectorAll('[data-count="following"]').forEach(el => el.textContent = f1 || '0');
     document.querySelectorAll('[data-count="followers"]').forEach(el => el.textContent = f2 || '0');
   } catch(e) {}
+})();
+
+/* Pass count — count real .pf-card elements (skip .next-live + .empty).
+   This automatically tracks the actual owned PASS count so adding or
+   removing a card anywhere (JS or markup) flows through to the header. */
+(function syncPassCount(){
+  const realCards = document.querySelectorAll('.pf-card:not(.next-live):not(.empty)');
+  const el = document.getElementById('phCount');
+  if (el) el.textContent = realCards.length + ' PASS' + (realCards.length === 1 ? '' : 'ES');
 })();
 
 /* DM button context — own profile → /messages, other user → open that chat */
