@@ -101,13 +101,136 @@ textarea.input-box{resize:vertical;min-height:120px;line-height:1.8;font-size:13
   opacity:0;transition:opacity .3s, transform .3s;pointer-events:none;}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 .form-bottom-padding{height:28px}
+
+/* Description format templates */
+.tmpl-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.tmpl-chip{
+  padding:8px 13px;border-radius:99px;
+  background:rgba(255,255,255,.04);
+  border:0.5px solid rgba(237,235,230,.14);
+  color:rgba(237,235,230,.7);
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:600;
+  font-size:10px;letter-spacing:.04em;
+  display:flex;align-items:center;gap:6px;
+}
+.tmpl-chip:active{background:rgba(232,16,10,.12);border-color:var(--accent);color:var(--accent)}
+.tmpl-chip svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2}
+.tmpl-hint{
+  font-family:'IBM Plex Mono',monospace;font-size:8px;
+  letter-spacing:.28em;text-transform:uppercase;
+  color:rgba(237,235,230,.22);margin:-4px 0 8px;
+}
+
+/* Add-on toggle buttons (reservation / subscriber price) */
+.addon-row{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.addon-btn{
+  width:100%;padding:14px 16px;
+  background:rgba(255,255,255,.03);
+  border:0.5px dashed rgba(255,255,255,.18);
+  border-radius:10px;
+  display:flex;align-items:center;gap:12px;text-align:left;
+  font-family:Arial,'Noto Sans JP',sans-serif;
+  color:rgba(237,235,230,.7);
+}
+.addon-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0}
+.addon-btn-title{font-weight:700;font-size:12px;color:var(--white)}
+.addon-btn-sub{font-weight:400;font-size:10px;color:rgba(237,235,230,.4);margin-top:2px;letter-spacing:.02em}
+.addon-btn.active{
+  background:rgba(232,16,10,.08);
+  border-style:solid;border-color:var(--accent);
+  color:var(--accent);
+}
+.addon-btn.active .addon-btn-title{color:var(--accent)}
+.addon-body{display:none;margin-top:10px}
+.addon-body.open{display:block}
+.addon-btn-body{flex:1}
+.addon-check{
+  width:20px;height:20px;border-radius:50%;
+  border:0.5px solid rgba(237,235,230,.25);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.addon-btn.active .addon-check{border-color:var(--accent);background:var(--accent)}
+.addon-btn.active .addon-check svg{stroke:#fff;display:block}
+.addon-check svg{width:11px;height:11px;display:none;stroke-width:3}
+
+/* Artist account search + chips */
+.artist-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.artist-chips:empty{display:none}
+.artist-chip{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 8px 6px 6px;border-radius:99px;
+  background:rgba(61,170,255,.08);
+  border:0.5px solid rgba(61,170,255,.4);
+  color:var(--white);
+}
+.artist-chip-avatar{
+  width:22px;height:22px;border-radius:50%;
+  background:linear-gradient(135deg,#3DAAFF,#bf5af2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:Arial,sans-serif;font-weight:900;font-size:9px;color:#000;
+  flex-shrink:0;
+}
+.artist-chip-name{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:600;
+  font-size:11px;letter-spacing:.02em;
+}
+.artist-chip-remove{
+  width:18px;height:18px;border-radius:50%;
+  background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,.75);
+}
+.artist-chip-remove svg{width:9px;height:9px;stroke:currentColor;fill:none;stroke-width:2.4}
+.artist-search-wrap{position:relative}
+.artist-suggest{
+  position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:6;
+  background:#0c0c0c;border:0.5px solid rgba(255,255,255,.14);
+  border-radius:10px;
+  max-height:240px;overflow-y:auto;
+  box-shadow:0 12px 36px rgba(0,0,0,.55);
+  display:none;
+}
+.artist-suggest.open{display:block}
+.artist-suggest-item{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 14px;cursor:pointer;
+  border-bottom:0.5px solid rgba(255,255,255,.04);
+}
+.artist-suggest-item:last-child{border-bottom:0}
+.artist-suggest-item:active{background:rgba(255,255,255,.05)}
+.artist-suggest-avatar{
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,#3DAAFF,#bf5af2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:Arial,sans-serif;font-weight:900;font-size:10px;color:#000;
+  flex-shrink:0;
+}
+.artist-suggest-name{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:13px;color:var(--white);
+}
+.artist-suggest-role{
+  font-family:'IBM Plex Mono',monospace;font-size:8px;
+  letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(237,235,230,.4);margin-top:2px;
+}
+.artist-suggest-add{
+  margin-left:auto;padding:5px 11px;border-radius:99px;
+  background:rgba(61,170,255,.12);border:0.5px solid rgba(61,170,255,.4);
+  color:#8fcaff;font-family:Arial,sans-serif;font-weight:700;
+  font-size:9px;letter-spacing:.1em;
+}
+.artist-suggest-empty{
+  padding:14px;text-align:center;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;
+  color:rgba(237,235,230,.4);
+}
 </style>
 </head>
 <body>
 
 <header class="hdr">
   <a href="/calendar" class="hdr-back">← Back</a>
-  <div class="hdr-title">イベント作成</div>
+  <div class="hdr-title" id="hdrTitle">イベント作成</div>
 </header>
 
 <main class="form">
@@ -146,6 +269,40 @@ textarea.input-box{resize:vertical;min-height:120px;line-height:1.8;font-size:13
   <div class="form-section">
     <div class="form-label">価格 (円)</div>
     <input class="input-box" type="number" id="priceInput" placeholder="3000" min="0" step="100">
+
+    <div class="addon-row">
+      <!-- Reservation toggle -->
+      <button type="button" class="addon-btn" id="reservationToggle" aria-pressed="false">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M9 16l2 2 4-4"/></svg>
+        <div class="addon-btn-body">
+          <div class="addon-btn-title">予約受付を追加</div>
+          <div class="addon-btn-sub">チケット予約を事前に受け付ける</div>
+        </div>
+        <div class="addon-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      </button>
+
+      <!-- Subscriber-only price toggle -->
+      <button type="button" class="addon-btn" id="subscriberToggle" aria-pressed="false">
+        <svg viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7l3-7z"/></svg>
+        <div class="addon-btn-body">
+          <div class="addon-btn-title">サブスク加入者限定価格</div>
+          <div class="addon-btn-sub">アーティストのサブスク加入者限定の特別価格</div>
+        </div>
+        <div class="addon-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      </button>
+      <div class="addon-body" id="subscriberBody">
+        <input class="input-box" type="number" id="subscriberPriceInput" placeholder="サブスク加入者価格 (例: 1500)" min="0" step="100">
+      </div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <div class="form-label">出演アーティスト</div>
+    <div class="artist-chips" id="artistChips"></div>
+    <div class="artist-search-wrap">
+      <input class="input-box" id="artistSearchInput" placeholder="アカウントを検索して追加" autocomplete="off">
+      <div class="artist-suggest" id="artistSuggest"></div>
+    </div>
   </div>
 
   <div class="form-section">
@@ -161,7 +318,22 @@ textarea.input-box{resize:vertical;min-height:120px;line-height:1.8;font-size:13
 
   <div class="form-section">
     <div class="form-label">説明</div>
-    <textarea class="input-box" id="bodyInput" placeholder="イベントの詳細..." rows="6"></textarea>
+    <div class="tmpl-hint">Format Templates</div>
+    <div class="tmpl-row">
+      <button type="button" class="tmpl-chip" data-tmpl="club">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/></svg>
+        CLUB / DJ
+      </button>
+      <button type="button" class="tmpl-chip" data-tmpl="live">
+        <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        LIVE
+      </button>
+      <button type="button" class="tmpl-chip" data-tmpl="exhibition">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>
+        EXHIBITION
+      </button>
+    </div>
+    <textarea class="input-box" id="bodyInput" placeholder="イベントの詳細... 上のテンプレートから選択できます" rows="8"></textarea>
   </div>
 
   <div class="form-section">
@@ -176,10 +348,44 @@ textarea.input-box{resize:vertical;min-height:120px;line-height:1.8;font-size:13
   <button class="submit-btn" id="submitBtn">イベントを投稿 →</button>
 </div>
 
-<div id="toast">✓ イベントを投稿しました</div>
+<div id="toast">✓ 保存しました</div>
 
 <script>
-const state = { category:'DJ', coverDataUrl:null };
+const state = {
+  category: 'DJ',
+  coverDataUrl: null,
+  reservation: false,
+  subscriberEnabled: false,
+  artists: [],        // [{ name, role }]
+  editingId: null,    // if set, we're editing an existing event
+};
+
+// ─────────────────────────────────────────────
+// Edit mode: detect ?edit=<id> and prefill from localStorage
+// ─────────────────────────────────────────────
+const editId = new URLSearchParams(location.search).get('edit');
+let editingEvent = null;
+if (editId) {
+  try {
+    const raw = localStorage.getItem('livepass_events');
+    const list = raw ? JSON.parse(raw) : [];
+    editingEvent = list.find(e => e.id === editId) || null;
+    if (editingEvent) {
+      state.editingId = editingEvent.id;
+      const currentUser = localStorage.getItem('livepass_account_name') || 'NOBBY';
+      if ((editingEvent.author || 'NOBBY') !== currentUser) {
+        alert('このイベントを編集する権限がありません');
+        location.href = '/profile';
+      }
+    }
+  } catch (e) {}
+}
+
+// Update header and submit button when in edit mode
+if (editingEvent) {
+  document.getElementById('hdrTitle').textContent = 'イベント編集';
+  document.getElementById('submitBtn').textContent = '変更を保存 →';
+}
 
 document.querySelectorAll('#catRow .pill').forEach(p => {
   p.addEventListener('click', () => {
@@ -187,6 +393,261 @@ document.querySelectorAll('#catRow .pill').forEach(p => {
     p.classList.add('active');
     state.category = p.dataset.cat;
   });
+});
+
+// ─────────────────────────────────────────────
+// Description format templates (3 patterns)
+// ─────────────────────────────────────────────
+const TEMPLATES = {
+  club:
+`🎧 CLUB / DJ NIGHT
+
+■ LINEUP
+・DJ 1
+・DJ 2
+・DJ 3
+
+■ OPEN / START
+OPEN 22:00 / START 23:00
+
+■ ENTRANCE
+¥3,000 (1D付き)
+※ID必須 / 20歳未満入場不可
+
+■ MUSIC
+HOUSE / TECHNO / DISCO
+
+■ VENUE
+会場名・アクセス
+
+※当日は混雑が予想されます。お早めのご来場をおすすめします。`,
+
+  live:
+`🎤 LIVE PERFORMANCE
+
+■ ARTIST
+メインアーティスト名
+
+■ SUPPORT ACT
+・Support 1
+・Support 2
+
+■ SCHEDULE
+OPEN 18:00 / START 19:00
+
+■ TICKET
+前売 ¥4,000 / 当日 ¥4,500
+(+1 Drink ¥600)
+
+■ SET LIST
+- Track 1
+- Track 2
+- Track 3
+
+■ 注意事項
+撮影・録音は禁止です。`,
+
+  exhibition:
+`🎨 EXHIBITION
+
+■ THEME
+展示テーマ・コンセプト
+
+■ ARTISTS
+・Artist 1
+・Artist 2
+・Artist 3
+
+■ 会期
+2026.04.15 - 2026.04.30
+
+■ 開館時間
+12:00 - 20:00 (最終入場 19:30)
+定休日: 月曜
+
+■ INPUT
+入場無料 / オープニング招待制
+
+■ COLLABORATION
+コラボブランド・スポンサー
+
+お問い合わせは DM まで。`,
+};
+
+const bodyInput = document.getElementById('bodyInput');
+document.querySelectorAll('.tmpl-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    const key = chip.dataset.tmpl;
+    const tmpl = TEMPLATES[key];
+    if (!tmpl) return;
+    // Only overwrite if empty or user confirms
+    if (bodyInput.value.trim() && !confirm('既に入力された説明を置き換えますか？')) return;
+    bodyInput.value = tmpl;
+    bodyInput.focus();
+    if (navigator.vibrate) navigator.vibrate(8);
+  });
+});
+
+// ─────────────────────────────────────────────
+// Reservation + subscriber-only price toggles
+// ─────────────────────────────────────────────
+const reservationToggle = document.getElementById('reservationToggle');
+reservationToggle.addEventListener('click', () => {
+  state.reservation = !state.reservation;
+  reservationToggle.classList.toggle('active', state.reservation);
+  reservationToggle.setAttribute('aria-pressed', String(state.reservation));
+  if (navigator.vibrate) navigator.vibrate(8);
+});
+
+const subscriberToggle = document.getElementById('subscriberToggle');
+const subscriberBody   = document.getElementById('subscriberBody');
+const subscriberInput  = document.getElementById('subscriberPriceInput');
+subscriberToggle.addEventListener('click', () => {
+  state.subscriberEnabled = !state.subscriberEnabled;
+  subscriberToggle.classList.toggle('active', state.subscriberEnabled);
+  subscriberToggle.setAttribute('aria-pressed', String(state.subscriberEnabled));
+  subscriberBody.classList.toggle('open', state.subscriberEnabled);
+  if (state.subscriberEnabled) setTimeout(() => subscriberInput.focus(), 120);
+  if (navigator.vibrate) navigator.vibrate(8);
+});
+
+// ─────────────────────────────────────────────
+// Featured artists — account search + chips
+// ─────────────────────────────────────────────
+// Curated directory of known accounts (mirrors profile.html MOCK_USERS)
+const KNOWN_ACCOUNTS = [
+  { name: 'NOBBY',       role: 'Founder / DJ' },
+  { name: 'MOZYSKYE',    role: 'Artist / Illustrator' },
+  { name: 'KENJI',       role: 'DJ / Producer' },
+  { name: 'SAKURA',      role: 'Dancer / Choreographer' },
+  { name: 'YUKI',        role: 'Photographer' },
+  { name: 'TAKUYA',      role: 'DJ / House' },
+  { name: 'MARI',        role: 'VJ / Visual Artist' },
+  { name: 'REN',         role: 'DJ / Techno' },
+  { name: 'AMI',         role: 'Vocalist' },
+  { name: 'KOTA',        role: 'Live Band' },
+  { name: 'HARUKA',      role: 'DJ / Disco' },
+  { name: 'RYO',         role: 'Producer' },
+  { name: 'SPACE COOKING', role: 'Collective' },
+];
+
+// Augment directory with followers/following + past post authors in localStorage
+function loadDynamicAccounts() {
+  const set = new Map();
+  KNOWN_ACCOUNTS.forEach(a => set.set(a.name, a));
+  const tryLoad = (key) => {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return [];
+      return JSON.parse(raw);
+    } catch (e) { return []; }
+  };
+  const following = tryLoad('livepass_following');
+  const followers = tryLoad('livepass_followers');
+  [...following, ...followers].forEach(u => {
+    const name = typeof u === 'string' ? u : (u && u.name);
+    if (name && !set.has(name)) set.set(name, { name, role: 'Follower/Following' });
+  });
+  // Past events authors (for quick re-add)
+  const events = tryLoad('livepass_events');
+  events.forEach(e => {
+    if (e.author && !set.has(e.author)) set.set(e.author, { name: e.author, role: 'Previous Author' });
+    if (Array.isArray(e.artists)) {
+      e.artists.forEach(a => {
+        const n = typeof a === 'string' ? a : (a && a.name);
+        if (n && !set.has(n)) set.set(n, { name: n, role: 'Featured Artist' });
+      });
+    }
+  });
+  return Array.from(set.values());
+}
+const ALL_ACCOUNTS = loadDynamicAccounts();
+
+const artistChips     = document.getElementById('artistChips');
+const artistSearchIn  = document.getElementById('artistSearchInput');
+const artistSuggest   = document.getElementById('artistSuggest');
+
+function initialsOf(name) {
+  return (name || '?').replace(/[^A-Za-z0-9\u3040-\u30FF\u4E00-\u9FFF]/g, '').slice(0, 2).toUpperCase();
+}
+
+function renderArtistChips() {
+  artistChips.innerHTML = state.artists.map((a, i) => `
+    <div class="artist-chip" data-i="${i}">
+      <div class="artist-chip-avatar">${initialsOf(a.name)}</div>
+      <div class="artist-chip-name">${a.name}</div>
+      <button type="button" class="artist-chip-remove" data-remove="${i}" aria-label="Remove">
+        <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+      </button>
+    </div>
+  `).join('');
+}
+artistChips.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-remove]');
+  if (!btn) return;
+  const idx = Number(btn.dataset.remove);
+  state.artists.splice(idx, 1);
+  renderArtistChips();
+});
+
+function renderSuggest(query) {
+  const q = (query || '').trim().toLowerCase();
+  // Exclude already-added artists
+  const added = new Set(state.artists.map(a => a.name));
+  let matches = ALL_ACCOUNTS.filter(a => !added.has(a.name));
+  if (q) {
+    matches = matches.filter(a => a.name.toLowerCase().includes(q));
+  }
+  matches = matches.slice(0, 8);
+  if (matches.length === 0) {
+    // Allow adding free-text account name even if not in directory
+    if (q) {
+      artistSuggest.innerHTML = `
+        <div class="artist-suggest-item" data-add-new="${q.toUpperCase()}">
+          <div class="artist-suggest-avatar">${initialsOf(q)}</div>
+          <div>
+            <div class="artist-suggest-name">${q.toUpperCase()}</div>
+            <div class="artist-suggest-role">新しいアカウントとして追加</div>
+          </div>
+          <div class="artist-suggest-add">+ ADD</div>
+        </div>
+      `;
+    } else {
+      artistSuggest.innerHTML = `<div class="artist-suggest-empty">候補なし</div>`;
+    }
+    artistSuggest.classList.add('open');
+    return;
+  }
+  artistSuggest.innerHTML = matches.map(a => `
+    <div class="artist-suggest-item" data-add="${a.name}">
+      <div class="artist-suggest-avatar">${initialsOf(a.name)}</div>
+      <div>
+        <div class="artist-suggest-name">${a.name}</div>
+        <div class="artist-suggest-role">${a.role || ''}</div>
+      </div>
+      <div class="artist-suggest-add">+ ADD</div>
+    </div>
+  `).join('');
+  artistSuggest.classList.add('open');
+}
+artistSearchIn.addEventListener('focus', () => renderSuggest(artistSearchIn.value));
+artistSearchIn.addEventListener('input', () => renderSuggest(artistSearchIn.value));
+artistSearchIn.addEventListener('blur', () => {
+  // Delay to allow click on suggest item to register
+  setTimeout(() => artistSuggest.classList.remove('open'), 180);
+});
+artistSuggest.addEventListener('mousedown', (e) => {
+  const item = e.target.closest('[data-add], [data-add-new]');
+  if (!item) return;
+  e.preventDefault();
+  const name = item.dataset.add || item.dataset.addNew;
+  if (!name) return;
+  const directory = ALL_ACCOUNTS.find(a => a.name === name);
+  state.artists.push(directory || { name, role: '' });
+  renderArtistChips();
+  artistSearchIn.value = '';
+  renderSuggest('');
+  artistSearchIn.focus();
 });
 
 function downscaleImageFile(file, maxDim = 1280, quality = 0.82) {
@@ -230,7 +691,7 @@ const submitBtn = document.getElementById('submitBtn');
 const titleInput = document.getElementById('titleInput');
 const venueInput = document.getElementById('venueInput');
 const dateInput = document.getElementById('dateInput');
-const bodyInput = document.getElementById('bodyInput');
+// bodyInput declared earlier in template-chip section
 
 function updateSubmitState(){
   const valid = titleInput.value.trim() && venueInput.value.trim() && dateInput.value;
@@ -259,35 +720,48 @@ submitBtn.addEventListener('click', () => {
     return;
   }
   const event = {
-    id:       'e' + Date.now(),
-    type:     'event',
-    category: state.category,
-    cover:    state.coverDataUrl,
-    title:    titleInput.value.trim(),
-    venue:    venueInput.value.trim(),
-    date:     dateInput.value,
-    time:     document.getElementById('timeInput').value || '',
-    price:    document.getElementById('priceInput').value || '0',
-    body:     bodyInput.value.trim(),
-    tags:     document.getElementById('tagsInput').value.split(',').map(t => t.trim()).filter(Boolean),
-    author:   localStorage.getItem('livepass_account_name') || 'NOBBY',
-    createdAt:new Date().toISOString(),
+    id:              state.editingId || ('e' + Date.now()),
+    type:            'event',
+    category:        state.category,
+    cover:           state.coverDataUrl,
+    title:           titleInput.value.trim(),
+    venue:           venueInput.value.trim(),
+    date:            dateInput.value,
+    time:            document.getElementById('timeInput').value || '',
+    price:           document.getElementById('priceInput').value || '0',
+    reservation:     !!state.reservation,
+    subscriberPrice: state.subscriberEnabled ? (subscriberInput.value || '') : '',
+    artists:         state.artists.slice(),
+    body:            bodyInput.value.trim(),
+    tags:            document.getElementById('tagsInput').value.split(',').map(t => t.trim()).filter(Boolean),
+    author:          (editingEvent && editingEvent.author) || localStorage.getItem('livepass_account_name') || 'NOBBY',
+    createdAt:       (editingEvent && editingEvent.createdAt) || new Date().toISOString(),
+    updatedAt:       state.editingId ? new Date().toISOString() : undefined,
   };
-  try {
-    const raw = localStorage.getItem('livepass_events');
+
+  const saveList = (withCover) => {
+    if (!withCover) event.cover = null;
+    const raw  = localStorage.getItem('livepass_events');
     const list = raw ? JSON.parse(raw) : [];
-    list.unshift(event);
+    if (state.editingId) {
+      // Replace existing entry in place (preserve original position)
+      const idx = list.findIndex(e => e.id === state.editingId);
+      if (idx >= 0) list[idx] = event;
+      else list.unshift(event);
+    } else {
+      list.unshift(event);
+    }
     localStorage.setItem('livepass_events', JSON.stringify(list));
+  };
+
+  try {
+    saveList(true);
   } catch(err) {
     // Storage quota: retry WITHOUT the cover image (most likely culprit)
     if (err && /quota/i.test(err.name + ' ' + err.message)) {
       try {
-        event.cover = null;
-        const raw = localStorage.getItem('livepass_events');
-        const list = raw ? JSON.parse(raw) : [];
-        list.unshift(event);
-        localStorage.setItem('livepass_events', JSON.stringify(list));
-        alert('カバー画像が大きすぎたので画像なしで投稿しました。小さい画像で投稿し直すと保存できます。');
+        saveList(false);
+        alert('カバー画像が大きすぎたので画像なしで保存しました。小さい画像で保存し直すと保存できます。');
       } catch(err2) {
         alert('保存に失敗しました: ' + err2.message);
         return;
@@ -299,8 +773,63 @@ submitBtn.addEventListener('click', () => {
   }
   if (navigator.vibrate) navigator.vibrate([18, 40, 18]);
   document.getElementById('toast').classList.add('show');
-  setTimeout(() => { location.href = '/calendar'; }, 900);
+  setTimeout(() => {
+    location.href = state.editingId ? '/profile' : '/calendar';
+  }, 900);
 });
+
+// ─────────────────────────────────────────────
+// Prefill all fields if editing an existing event
+// ─────────────────────────────────────────────
+if (editingEvent) {
+  titleInput.value = editingEvent.title || '';
+  venueInput.value = editingEvent.venue || '';
+  dateInput.value  = editingEvent.date  || '';
+  document.getElementById('timeInput').value  = editingEvent.time  || '';
+  document.getElementById('priceInput').value = editingEvent.price || '';
+  bodyInput.value = editingEvent.body || '';
+  document.getElementById('tagsInput').value = (editingEvent.tags || []).join(', ');
+
+  // Category pill
+  const cat = editingEvent.category || 'DJ';
+  state.category = cat;
+  document.querySelectorAll('#catRow .pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.cat === cat);
+  });
+
+  // Cover preview
+  if (editingEvent.cover) {
+    state.coverDataUrl = editingEvent.cover;
+    coverUpload.classList.add('has-image');
+    coverUpload.innerHTML = `<img class="cover-preview-img" src="${editingEvent.cover}" alt="">`;
+  }
+
+  // Reservation toggle
+  if (editingEvent.reservation) {
+    state.reservation = true;
+    reservationToggle.classList.add('active');
+    reservationToggle.setAttribute('aria-pressed', 'true');
+  }
+
+  // Subscriber price
+  if (editingEvent.subscriberPrice) {
+    state.subscriberEnabled = true;
+    subscriberToggle.classList.add('active');
+    subscriberToggle.setAttribute('aria-pressed', 'true');
+    subscriberBody.classList.add('open');
+    subscriberInput.value = editingEvent.subscriberPrice;
+  }
+
+  // Featured artists
+  if (Array.isArray(editingEvent.artists)) {
+    state.artists = editingEvent.artists.map(a =>
+      typeof a === 'string' ? { name: a, role: '' } : a
+    );
+    renderArtistChips();
+  }
+
+  updateSubmitState();
+}
 </script>
 </body>
 </html>
