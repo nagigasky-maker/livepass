@@ -321,6 +321,54 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
   font-size:11px;border-radius:99px;letter-spacing:.02em;}
 
+/* ───── Card registration sheet (simulated Stripe SetupIntent) ───── */
+#cardSheetOverlay{position:fixed;inset:0;z-index:1400;background:rgba(0,0,0,0);pointer-events:none;opacity:0;transition:background .3s ease,opacity .2s ease}
+#cardSheetOverlay.active{background:rgba(0,0,0,.75);pointer-events:all;opacity:1;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+#cardSheet{position:fixed;left:0;right:0;bottom:0;z-index:1401;background:#0a0a0a;border-top:0.5px solid var(--border);border-top-left-radius:20px;border-top-right-radius:20px;padding:16px 20px calc(24px + var(--safe-bot));transform:translateY(100%);transition:transform .35s cubic-bezier(.2,.8,.2,1);box-shadow:0 -12px 40px rgba(0,0,0,.7);max-height:92vh;overflow-y:auto}
+#cardSheetOverlay.active #cardSheet{transform:translateY(0)}
+#cardSheet .cs-handle{width:40px;height:4px;border-radius:99px;background:rgba(237,235,230,.2);margin:0 auto 16px}
+.cdrs-event{padding:14px 16px;border-radius:12px;background:rgba(61,170,255,.06);border:0.5px solid rgba(61,170,255,.3);margin-bottom:16px}
+.cdrs-event-label{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:#8fcaff;margin-bottom:6px}
+.cdrs-event-title{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:800;font-size:15px;color:var(--white);margin-bottom:4px}
+.cdrs-event-meta{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;font-size:10px;color:rgba(237,235,230,.55)}
+.cdrs-policy{padding:12px 14px;border-radius:10px;background:rgba(232,16,10,.06);border:0.5px solid rgba(232,16,10,.3);margin-bottom:16px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;color:rgba(237,235,230,.75);line-height:1.7}
+.cdrs-policy b{color:#ff6b66;font-weight:800}
+.cdrs-form{display:flex;flex-direction:column;gap:12px;margin-bottom:18px}
+.cdrs-field-label{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.32em;text-transform:uppercase;color:rgba(237,235,230,.35);margin-bottom:6px}
+.cdrs-input{width:100%;background:rgba(255,255,255,.04);border:0.5px solid rgba(255,255,255,.1);border-radius:10px;padding:14px 16px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:14px;color:var(--white);outline:none;transition:border-color .15s ease}
+.cdrs-input:focus{border-color:var(--blue)}
+.cdrs-row{display:flex;gap:10px}
+.cdrs-row > div{flex:1}
+.cdrs-submit{display:block;width:100%;padding:16px;margin-top:4px;background:var(--blue);color:#000;font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:13px;letter-spacing:.14em;text-transform:uppercase;border-radius:99px;border:none;cursor:pointer;box-shadow:0 8px 28px rgba(61,170,255,.25)}
+.cdrs-submit:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+.cdrs-cancel{display:block;width:100%;padding:12px;margin-top:10px;background:none;border:0.5px solid rgba(237,235,230,.18);color:rgba(237,235,230,.55);font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;font-size:11px;border-radius:99px}
+.cdrs-note{font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:.18em;text-transform:uppercase;color:rgba(237,235,230,.25);text-align:center;margin-top:12px;line-height:1.8}
+
+/* ───── Organizer reservation sheet (event author only) ───── */
+.em-owner-actions{position:absolute;top:14px;right:14px;z-index:4;display:flex;gap:8px}
+.em-owner-reserves-btn{display:flex;align-items:center;gap:6px;padding:7px 13px 7px 11px;border-radius:99px;background:rgba(0,0,0,.72);border:0.5px solid rgba(61,170,255,.45);color:#8fcaff;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;font-size:10px;letter-spacing:.06em}
+.em-owner-reserves-btn svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2}
+.em-owner-reserves-btn .cnt{display:inline-block;padding:1px 6px;border-radius:99px;background:var(--blue);color:#000;margin-left:3px;font-family:Arial,sans-serif;font-size:9px;font-weight:900}
+
+#orgSheetOverlay{position:fixed;inset:0;z-index:1400;background:rgba(0,0,0,0);pointer-events:none;opacity:0;transition:background .3s ease, opacity .2s ease}
+#orgSheetOverlay.active{background:rgba(0,0,0,.78);pointer-events:all;opacity:1;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+#orgSheet{position:fixed;left:0;right:0;bottom:0;z-index:1401;background:#0a0a0a;border-top:0.5px solid var(--border);border-top-left-radius:20px;border-top-right-radius:20px;padding:16px 20px calc(24px + var(--safe-bot));transform:translateY(100%);transition:transform .35s cubic-bezier(.2,.8,.2,1);max-height:85vh;overflow-y:auto}
+#orgSheetOverlay.active #orgSheet{transform:translateY(0)}
+.org-title{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:18px;color:var(--white);margin-bottom:4px}
+.org-sub{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(237,235,230,.4);margin-bottom:16px}
+.org-list{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.org-item{padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.03);border:0.5px solid rgba(255,255,255,.08)}
+.org-item.canceled{opacity:.55;background:rgba(232,16,10,.04);border-color:rgba(232,16,10,.25)}
+.org-item-top{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.org-item-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#3DAAFF,#bf5af2);display:flex;align-items:center;justify-content:center;font-family:Arial,sans-serif;font-weight:900;font-size:12px;color:#000;flex-shrink:0}
+.org-item-name{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:800;font-size:14px;color:var(--white)}
+.org-item-sub{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.14em;color:rgba(237,235,230,.45);margin-top:2px}
+.org-item-body{display:flex;justify-content:space-between;align-items:center;gap:12px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;color:rgba(237,235,230,.6);line-height:1.7}
+.org-item-charge{padding:7px 12px;border-radius:99px;background:rgba(232,16,10,.1);border:0.5px solid rgba(232,16,10,.5);color:#ff6b66;font-family:Arial,'Noto Sans JP',sans-serif;font-weight:800;font-size:10px;letter-spacing:.04em}
+.org-item-charge:active{background:rgba(232,16,10,.2)}
+.org-empty{padding:40px 20px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(237,235,230,.3)}
+.org-close{display:block;width:100%;padding:14px;background:none;border:0.5px solid rgba(237,235,230,.15);color:rgba(237,235,230,.55);font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;font-size:11px;border-radius:99px;letter-spacing:.02em}
+
 /* Compose selector bottom sheet (shared) */
 #composeSheetOverlay{position:fixed;inset:0;z-index:1100;background:rgba(0,0,0,0);pointer-events:none;opacity:0;transition:background .3s ease, opacity .2s ease}
 #composeSheetOverlay.active{background:rgba(0,0,0,.7);pointer-events:all;opacity:1;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
@@ -394,6 +442,56 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 </div>
 
 <!-- ═══ COMPOSE SELECTOR BOTTOM SHEET (shared) ═══ -->
+<!-- ═══ CARD REGISTRATION SHEET (reservation with cancel-fee credit registration) ═══ -->
+<div id="cardSheetOverlay" aria-hidden="true">
+  <div id="cardSheet" role="dialog" aria-label="クレジット登録">
+    <div class="cs-handle"></div>
+    <div class="cdrs-event">
+      <div class="cdrs-event-label">予約イベント</div>
+      <div class="cdrs-event-title" id="cdrsEventTitle">—</div>
+      <div class="cdrs-event-meta"   id="cdrsEventMeta">—</div>
+    </div>
+    <div class="cdrs-policy" id="cdrsPolicy">
+      <b>キャンセルポリシー</b><br>
+      期限後のキャンセル・無連絡欠席はクレジットカードに自動請求されます。
+    </div>
+    <div class="cdrs-form">
+      <div>
+        <div class="cdrs-field-label">カード所有者名</div>
+        <input class="cdrs-input" id="cdrsCardHolder" placeholder="TARO YAMADA" autocomplete="cc-name">
+      </div>
+      <div>
+        <div class="cdrs-field-label">カード番号</div>
+        <input class="cdrs-input" id="cdrsCardNumber" placeholder="4242 4242 4242 4242" inputmode="numeric" maxlength="19" autocomplete="cc-number">
+      </div>
+      <div class="cdrs-row">
+        <div>
+          <div class="cdrs-field-label">有効期限 (MM/YY)</div>
+          <input class="cdrs-input" id="cdrsCardExp" placeholder="12/28" inputmode="numeric" maxlength="5" autocomplete="cc-exp">
+        </div>
+        <div>
+          <div class="cdrs-field-label">CVC</div>
+          <input class="cdrs-input" id="cdrsCardCvc" placeholder="123" inputmode="numeric" maxlength="4" autocomplete="cc-csc">
+        </div>
+      </div>
+    </div>
+    <button class="cdrs-submit" id="cdrsSubmit" type="button" disabled>カードを登録して予約を確定</button>
+    <button class="cdrs-cancel" id="cdrsCancel" type="button">キャンセル</button>
+    <div class="cdrs-note">※ プロトタイプ環境 — カード情報は本番決済されません<br>※ Stripe SetupIntent 相当の処理をシミュレートしています</div>
+  </div>
+</div>
+
+<!-- ═══ ORGANIZER RESERVATION SHEET ═══ -->
+<div id="orgSheetOverlay" aria-hidden="true">
+  <div id="orgSheet" role="dialog" aria-label="予約者一覧">
+    <div class="cs-handle"></div>
+    <div class="org-title" id="orgTitle">予約者一覧</div>
+    <div class="org-sub"   id="orgSub">—</div>
+    <div class="org-list"  id="orgList"></div>
+    <button class="org-close" id="orgClose" type="button">閉じる</button>
+  </div>
+</div>
+
 <div id="composeSheetOverlay" aria-hidden="true">
   <div id="composeSheet" role="dialog" aria-label="投稿作成">
     <div class="cs-handle"></div>
@@ -516,6 +614,9 @@ function getUserSchedule(){
         desc: e.body || '',
         cover: e.cover || null,
         reservation: !!e.reservation,
+        cancelFee: Number(e.cancelFee || 0),
+        cancelDeadlineH: Number(e.cancelDeadlineH || 0),
+        rawDate: e.date || '',
         subscriberPrice: e.subscriberPrice || '',
         artists: Array.isArray(e.artists) ? e.artists : [],
       });
@@ -542,6 +643,9 @@ function getUserSchedule(){
         desc: w.body || '',
         cover: w.cover || null,
         reservation: !!w.reservation,
+        cancelFee: Number(w.cancelFee || 0),
+        cancelDeadlineH: Number(w.cancelDeadlineH || 0),
+        rawDate: w.date || '',
         subscriberPrice: w.subscriberPrice || '',
         artists: Array.isArray(w.artists) ? w.artists : [],
       });
@@ -569,6 +673,9 @@ function getUserSchedule(){
         desc: x.body || '',
         cover: x.cover || null,
         reservation: !!x.reservation,
+        cancelFee: Number(x.cancelFee || 0),
+        cancelDeadlineH: Number(x.cancelDeadlineH || 0),
+        rawDate: x.date || '',
         subscriberPrice: x.subscriberPrice || '',
         artists: Array.isArray(x.artists) ? x.artists : [],
       });
@@ -657,9 +764,30 @@ function openEventDetail(e) {
     </div>
   `;
 
+  // Owner reservation management button — visible when current user is
+  // the event author and the event accepts reservations
+  const currentUser = localStorage.getItem('livepass_account_name') || 'NOBBY';
+  const isOwnerReservable = (e.author || e.by || 'NOBBY') === currentUser && !!e.reservation;
+  let ownerReserveCount = 0;
+  if (isOwnerReservable) {
+    try {
+      const all = JSON.parse(localStorage.getItem('livepass_reservations') || '[]');
+      ownerReserveCount = all.filter(r => r.eventId === e.id && r.eventAuthor === currentUser && r.status === 'confirmed').length;
+    } catch(err) {}
+  }
+  const ownerActionsHtml = isOwnerReservable ? `
+    <div class="em-owner-actions">
+      <button class="em-owner-reserves-btn" id="emOwnerReservesBtn" type="button">
+        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11h-6M19 8v6"/></svg>
+        予約者<span class="cnt">${ownerReserveCount}</span>
+      </button>
+    </div>
+  ` : '';
+
   // Cover + hero combined layout — poster-style overlay when cover present
   const coverAndHeroHtml = e.cover ? `
     <div class="em-cover">
+      ${ownerActionsHtml}
       <img class="em-cover-bg" src="${e.cover}" alt="" aria-hidden="true">
       <img class="em-cover-fg" src="${e.cover}" alt="">
       <div class="em-hero over-cover" style="--cat-color:${e.catColor};--cat-color-soft:${soft}">
@@ -667,7 +795,8 @@ function openEventDetail(e) {
       </div>
     </div>
   ` : `
-    <div class="em-hero" style="--cat-color:${e.catColor};--cat-color-soft:${soft}">
+    <div class="em-hero" style="--cat-color:${e.catColor};--cat-color-soft:${soft};position:relative">
+      ${ownerActionsHtml}
       ${heroContentHtml}
     </div>
   `;
@@ -715,7 +844,7 @@ function openEventDetail(e) {
   let subscribedArtists = [];
   try { subscribedArtists = JSON.parse(localStorage.getItem('livepass_subscribed_artists') || '[]'); }
   catch(err) { subscribedArtists = []; }
-  const currentUser = localStorage.getItem('livepass_account_name') || 'NOBBY';
+  // currentUser declared earlier in the function (for isOwnerReservable)
   const eventOwner  = e.author || e.by || 'NOBBY';
   const isSubscribed = subscribedArtists.includes(eventOwner) || eventOwner === currentUser;
 
@@ -831,39 +960,57 @@ function openEventDetail(e) {
     });
   }
 
-  // Reservation → persist to localStorage
+  // Reservation → open card registration sheet first, persist on confirm
   const reserveBtn = document.getElementById('emReserveBtn');
   if (reserveBtn) {
     reserveBtn.addEventListener('click', () => {
       if (navigator.vibrate) navigator.vibrate(10);
+      // Check for existing reservation by the current user
       try {
-        const key = 'livepass_reservations';
-        const existing = JSON.parse(localStorage.getItem(key) || '[]');
-        if (existing.find(r => r.id === e.id)) {
+        const me = localStorage.getItem('livepass_account_name') || 'NOBBY';
+        const existing = JSON.parse(localStorage.getItem('livepass_reservations') || '[]');
+        const dupe = existing.find(r => r.eventId === e.id && r.userId === me && r.status === 'confirmed');
+        if (dupe) {
           alert('既に予約済みです。\n\n/profile → SAVED → 予約 タブから確認・取り消しができます。');
           return;
         }
-        // Normalize date: store the raw event date if available, else time string
-        existing.unshift({
-          id: e.id, title: e.title,
-          date: (e.date || e.time || '').match(/\d{4}-\d{2}-\d{2}/)?.[0] || e.time,
+      } catch(err) {}
+      // Build the item shape expected by openCardSheet
+      openCardSheet({
+        item: {
+          id: e.id,
+          title: e.title,
           venue: e.venue,
-          reservedAt: new Date().toISOString(),
-        });
-        localStorage.setItem(key, JSON.stringify(existing));
-        // Flip button state visually
-        reserveBtn.disabled = true;
-        reserveBtn.style.opacity = '.6';
-        reserveBtn.innerHTML = `
-          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-          予約済み
-        `;
-        // Show confirmation with link to the reservations list
-        const okToView = confirm(`予約を受け付けました。\n\n${e.title}\n当日は会場でPASSをご提示ください。\n\n今すぐ予約一覧を確認しますか？`);
-        if (okToView) location.href = '/profile#panel-saved';
-      } catch (err) {
-        alert('予約に失敗しました: ' + err.message);
-      }
+          time: e.time,
+          date: e.rawDate || (e.time || '').match(/\d{4}-\d{2}-\d{2}/)?.[0],
+          author: e.author || e.by,
+          type: e.type,
+          cancelFee: e.cancelFee,
+          cancelDeadlineH: e.cancelDeadlineH,
+        },
+        type: e.type || 'event',
+        onConfirmed: () => {
+          reserveBtn.disabled = true;
+          reserveBtn.style.opacity = '.6';
+          reserveBtn.innerHTML = `
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            予約済み
+          `;
+        },
+      });
+    });
+  }
+
+  // Owner 予約者 button — shown as an overlay badge on the hero for owners
+  const ownerBtn = document.getElementById('emOwnerReservesBtn');
+  if (ownerBtn) {
+    ownerBtn.addEventListener('click', () => {
+      if (navigator.vibrate) navigator.vibrate(10);
+      openOrgSheet({
+        id: e.id,
+        title: e.title,
+        author: e.author || e.by,
+      });
     });
   }
 
@@ -902,6 +1049,218 @@ emClose.addEventListener('click', () => {
 window.addEventListener('keydown', e => {
   if (e.key === 'Escape' && eventModal.classList.contains('active')) emClose.click();
 });
+
+/* ─────────────────────────────────────────────
+   CARD REGISTRATION SHEET — simulated Stripe SetupIntent
+   ───────────────────────────────────────────── */
+const cardSheetOverlay = document.getElementById('cardSheetOverlay');
+const cdrsEventTitle   = document.getElementById('cdrsEventTitle');
+const cdrsEventMeta    = document.getElementById('cdrsEventMeta');
+const cdrsPolicy       = document.getElementById('cdrsPolicy');
+const cdrsHolder       = document.getElementById('cdrsCardHolder');
+const cdrsNumber       = document.getElementById('cdrsCardNumber');
+const cdrsExp          = document.getElementById('cdrsCardExp');
+const cdrsCvc          = document.getElementById('cdrsCardCvc');
+const cdrsSubmit       = document.getElementById('cdrsSubmit');
+const cdrsCancel       = document.getElementById('cdrsCancel');
+
+cdrsNumber?.addEventListener('input', () => {
+  const raw = cdrsNumber.value.replace(/\s+/g, '').replace(/\D/g, '');
+  const parts = raw.match(/.{1,4}/g) || [];
+  cdrsNumber.value = parts.join(' ');
+  validateCard();
+});
+cdrsExp?.addEventListener('input', () => {
+  let v = cdrsExp.value.replace(/\D/g, '').slice(0, 4);
+  if (v.length >= 3) v = v.slice(0,2) + '/' + v.slice(2);
+  cdrsExp.value = v;
+  validateCard();
+});
+cdrsCvc?.addEventListener('input', () => {
+  cdrsCvc.value = cdrsCvc.value.replace(/\D/g, '').slice(0, 4);
+  validateCard();
+});
+cdrsHolder?.addEventListener('input', validateCard);
+
+function validateCard(){
+  const n = cdrsNumber.value.replace(/\s+/g, '');
+  const holder = cdrsHolder.value.trim();
+  const exp    = cdrsExp.value;
+  const cvc    = cdrsCvc.value;
+  const ok = holder.length >= 2 && n.length >= 13 && /^\d{2}\/\d{2}$/.test(exp) && cvc.length >= 3;
+  cdrsSubmit.disabled = !ok;
+}
+
+function computeCancelDeadline(eventDate, hoursBefore){
+  if (!eventDate || !hoursBefore) return null;
+  try {
+    const d = new Date(eventDate);
+    if (isNaN(d.getTime())) return null;
+    return new Date(d.getTime() - hoursBefore * 3600 * 1000).toISOString();
+  } catch(e) { return null; }
+}
+
+let pendingReserveContext = null;
+
+function openCardSheet(ctx){
+  pendingReserveContext = ctx;
+  const { item } = ctx;
+  cdrsEventTitle.textContent = item.title || '(no title)';
+  cdrsEventMeta.textContent = (item.venue || '') + ' · ' + (item.time || '');
+
+  const fee = Number(item.cancelFee || 0);
+  const hrs = Number(item.cancelDeadlineH || 0);
+  if (hrs === 0) {
+    cdrsPolicy.innerHTML = `<b>キャンセルポリシー</b><br>キャンセル不可のイベントです。予約後のキャンセルは ¥${fee.toLocaleString()} の料金が自動請求されます。`;
+  } else if (fee > 0) {
+    cdrsPolicy.innerHTML = `<b>キャンセルポリシー</b><br>開催 ${hrs} 時間前までは無料でキャンセル可能です。<br>以降のキャンセル / 無連絡欠席は <b>¥${fee.toLocaleString()}</b> を登録カードに自動請求します。`;
+  } else {
+    cdrsPolicy.innerHTML = `<b>キャンセルポリシー</b><br>キャンセル料はかかりません。いつでもキャンセル可能です。`;
+  }
+
+  const me = localStorage.getItem('livepass_account_name') || 'NOBBY';
+  if (!cdrsHolder.value) cdrsHolder.value = me.toUpperCase();
+
+  validateCard();
+  cardSheetOverlay.classList.add('active');
+  cardSheetOverlay.setAttribute('aria-hidden', 'false');
+}
+function closeCardSheet(){
+  cardSheetOverlay.classList.remove('active');
+  cardSheetOverlay.setAttribute('aria-hidden', 'true');
+  pendingReserveContext = null;
+}
+cardSheetOverlay?.addEventListener('click', (e) => { if (e.target === cardSheetOverlay) closeCardSheet(); });
+cdrsCancel?.addEventListener('click', closeCardSheet);
+
+cdrsSubmit?.addEventListener('click', () => {
+  if (!pendingReserveContext) return;
+  const { item, type, onConfirmed } = pendingReserveContext;
+  const rawNum = cdrsNumber.value.replace(/\s+/g, '');
+  const last4  = rawNum.slice(-4);
+  const me     = localStorage.getItem('livepass_account_name') || 'NOBBY';
+  const now    = new Date().toISOString();
+
+  // item.date in calendar shape is typically the raw YYYY-MM-DD
+  const rawDate = item.date || item.rawDate || (item.time || '').match(/\d{4}-\d{2}-\d{2}/)?.[0] || null;
+  const deadlineIso = computeCancelDeadline(rawDate, Number(item.cancelDeadlineH || 0));
+
+  try {
+    const key = 'livepass_reservations';
+    const existing = JSON.parse(localStorage.getItem(key) || '[]');
+    if (existing.find(r => r.eventId === item.id && r.userId === me && r.status !== 'canceled_free')) {
+      alert('既にこのイベントを予約しています');
+      closeCardSheet();
+      return;
+    }
+    existing.unshift({
+      id:              'r' + Date.now(),
+      eventId:         item.id,
+      eventType:       type || item.type || 'event',
+      title:           item.title,
+      date:            rawDate || item.time,
+      venue:           item.venue,
+      eventAuthor:     item.author || item.by || 'NOBBY',
+      userId:          me,
+      userName:        me,
+      reservedAt:      now,
+      cancelFee:       Number(item.cancelFee || 0),
+      cancelDeadline:  deadlineIso,
+      cancelDeadlineH: Number(item.cancelDeadlineH || 0),
+      cardLast4:       last4,
+      cardHolder:      cdrsHolder.value.trim(),
+      status:          'confirmed',
+      chargedAmount:   0,
+    });
+    localStorage.setItem(key, JSON.stringify(existing));
+    cdrsNumber.value = ''; cdrsCvc.value = '';
+    closeCardSheet();
+    if (navigator.vibrate) navigator.vibrate([12, 30, 12]);
+    if (onConfirmed) onConfirmed();
+    const ok = confirm(`予約を受け付けました。\n\n${item.title}\nカード登録: •••• ${last4}\n\n今すぐ予約一覧を確認しますか？`);
+    if (ok) location.href = '/profile#panel-saved';
+  } catch(e) {
+    alert('予約に失敗しました: ' + e.message);
+  }
+});
+
+/* ─────────────────────────────────────────────
+   ORGANIZER RESERVATION SHEET
+   ───────────────────────────────────────────── */
+const orgSheetOverlay = document.getElementById('orgSheetOverlay');
+const orgList         = document.getElementById('orgList');
+const orgTitleEl      = document.getElementById('orgTitle');
+const orgSubEl        = document.getElementById('orgSub');
+const orgCloseBtn     = document.getElementById('orgClose');
+
+function openOrgSheet(item){
+  const me = localStorage.getItem('livepass_account_name') || 'NOBBY';
+  const all = (() => {
+    try { return JSON.parse(localStorage.getItem('livepass_reservations') || '[]'); }
+    catch(e) { return []; }
+  })();
+  const list = all.filter(r => r.eventId === item.id && r.eventAuthor === me);
+  orgTitleEl.textContent = item.title || '(no title)';
+  orgSubEl.textContent   = `予約者 ${list.filter(r=>r.status==='confirmed').length}人 / 全 ${list.length}件`;
+
+  if (list.length === 0) {
+    orgList.innerHTML = `<div class="org-empty">まだ予約はありません</div>`;
+  } else {
+    const initialsOf = (n) => (n || '?').replace(/[^A-Za-z0-9\u3040-\u30FF\u4E00-\u9FFF]/g, '').slice(0, 2).toUpperCase();
+    orgList.innerHTML = '';
+    list.forEach(r => {
+      const row = document.createElement('div');
+      row.className = 'org-item' + (r.status !== 'confirmed' ? ' canceled' : '');
+      const reservedAt = r.reservedAt ? new Date(r.reservedAt).toLocaleString('ja-JP', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
+      const card = r.cardLast4 ? `•••• ${r.cardLast4}` : '—';
+      const statusLabel = r.status === 'confirmed' ? '予約確定'
+        : r.status === 'canceled_free' ? 'キャンセル済み (無料)'
+        : r.status === 'canceled_charged' ? `キャンセル請求済み ¥${Number(r.chargedAmount||0).toLocaleString()}`
+        : r.status === 'no_show' ? `無連絡欠席 ¥${Number(r.chargedAmount||0).toLocaleString()} 請求済`
+        : r.status;
+      const canCharge = r.status === 'confirmed' && Number(r.cancelFee||0) > 0;
+      row.innerHTML = `
+        <div class="org-item-top">
+          <div class="org-item-avatar">${initialsOf(r.userName || r.userId)}</div>
+          <div>
+            <div class="org-item-name">${r.userName || r.userId || '—'}</div>
+            <div class="org-item-sub">${reservedAt} · 💳 ${card}</div>
+          </div>
+        </div>
+        <div class="org-item-body">
+          <div>${statusLabel}</div>
+          ${canCharge ? `<button class="org-item-charge" data-rid="${r.id}">無連絡欠席 ¥${Number(r.cancelFee||0).toLocaleString()} 請求</button>` : ''}
+        </div>
+      `;
+      orgList.appendChild(row);
+    });
+    orgList.querySelectorAll('.org-item-charge').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const rid = btn.dataset.rid;
+        if (!confirm('この予約者に無連絡欠席のキャンセル料を請求しますか？\n\n（プロトタイプ環境では実際の決済は行われません）')) return;
+        try {
+          const all2 = JSON.parse(localStorage.getItem('livepass_reservations') || '[]');
+          const idx = all2.findIndex(x => x.id === rid);
+          if (idx < 0) return;
+          all2[idx].status = 'no_show';
+          all2[idx].chargedAmount = Number(all2[idx].cancelFee || 0);
+          all2[idx].chargedAt = new Date().toISOString();
+          localStorage.setItem('livepass_reservations', JSON.stringify(all2));
+          if (navigator.vibrate) navigator.vibrate([12, 40, 12]);
+          openOrgSheet(item);
+        } catch (e) { alert('請求に失敗しました: ' + e.message); }
+      });
+    });
+  }
+  orgSheetOverlay.classList.add('active');
+  orgSheetOverlay.setAttribute('aria-hidden', 'false');
+}
+function closeOrgSheet(){
+  orgSheetOverlay.classList.remove('active');
+  orgSheetOverlay.setAttribute('aria-hidden', 'true');
+}
+orgCloseBtn?.addEventListener('click', closeOrgSheet);
+orgSheetOverlay?.addEventListener('click', (e) => { if (e.target === orgSheetOverlay) closeOrgSheet(); });
 
 /* Top bar counters + unread badge */
 (function syncCounters(){

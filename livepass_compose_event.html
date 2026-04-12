@@ -276,10 +276,31 @@ textarea.input-box{resize:vertical;min-height:120px;line-height:1.8;font-size:13
         <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M9 16l2 2 4-4"/></svg>
         <div class="addon-btn-body">
           <div class="addon-btn-title">予約受付を追加</div>
-          <div class="addon-btn-sub">チケット予約を事前に受け付ける</div>
+          <div class="addon-btn-sub">予約者にクレジット登録を要求・当日キャンセル料を請求可</div>
         </div>
         <div class="addon-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
       </button>
+      <div class="addon-body" id="reservationBody">
+        <div style="display:flex;gap:10px">
+          <div style="flex:1">
+            <div class="form-label" style="margin-bottom:6px">キャンセル料 (円)</div>
+            <input class="input-box" type="number" id="cancelFeeInput" placeholder="例: 2000" min="0" step="100">
+          </div>
+          <div style="flex:1">
+            <div class="form-label" style="margin-bottom:6px">無料キャンセル期限</div>
+            <select class="input-box" id="cancelDeadlineInput" style="appearance:none;-webkit-appearance:none">
+              <option value="24">開催24時間前まで</option>
+              <option value="48">開催48時間前まで</option>
+              <option value="72">開催72時間前まで</option>
+              <option value="168">開催1週間前まで</option>
+              <option value="0">キャンセル不可</option>
+            </select>
+          </div>
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:rgba(237,235,230,.35);margin-top:10px;line-height:1.7">
+          ※ 期限後のキャンセル / 無連絡欠席 はここで設定した金額を<br>自動請求できます
+        </div>
+      </div>
 
       <!-- Subscriber-only price toggle -->
       <button type="button" class="addon-btn" id="subscriberToggle" aria-pressed="false">
@@ -359,6 +380,9 @@ const state = {
   artists: [],        // [{ name, role }]
   editingId: null,    // if set, we're editing an existing event
 };
+// Default cancellation policy (editable in the reservation body when enabled)
+const DEFAULT_CANCEL_FEE = 2000;
+const DEFAULT_CANCEL_DEADLINE_H = 24;
 
 // ─────────────────────────────────────────────
 // Edit mode: detect ?edit=<id> and prefill from localStorage
@@ -546,10 +570,18 @@ document.querySelectorAll('.tmpl-chip').forEach(chip => {
 // Reservation + subscriber-only price toggles
 // ─────────────────────────────────────────────
 const reservationToggle = document.getElementById('reservationToggle');
+const reservationBody   = document.getElementById('reservationBody');
+const cancelFeeInput    = document.getElementById('cancelFeeInput');
+const cancelDeadlineInput = document.getElementById('cancelDeadlineInput');
+// Seed defaults so first-time users don't stare at empty fields
+cancelFeeInput.value = DEFAULT_CANCEL_FEE;
+cancelDeadlineInput.value = String(DEFAULT_CANCEL_DEADLINE_H);
 reservationToggle.addEventListener('click', () => {
   state.reservation = !state.reservation;
   reservationToggle.classList.toggle('active', state.reservation);
   reservationToggle.setAttribute('aria-pressed', String(state.reservation));
+  reservationBody.classList.toggle('open', state.reservation);
+  if (state.reservation && !cancelFeeInput.value) cancelFeeInput.value = DEFAULT_CANCEL_FEE;
   if (navigator.vibrate) navigator.vibrate(8);
 });
 
@@ -784,6 +816,8 @@ submitBtn.addEventListener('click', () => {
     time:            document.getElementById('timeInput').value || '',
     price:           document.getElementById('priceInput').value || '0',
     reservation:     !!state.reservation,
+    cancelFee:       state.reservation ? (parseInt(cancelFeeInput.value, 10) || 0) : 0,
+    cancelDeadlineH: state.reservation ? (parseInt(cancelDeadlineInput.value, 10) || 0) : 0,
     subscriberPrice: state.subscriberEnabled ? (subscriberInput.value || '') : '',
     artists:         state.artists.slice(),
     body:            bodyInput.value.trim(),
@@ -858,11 +892,14 @@ if (editingEvent) {
     coverUpload.innerHTML = `<img class="cover-preview-img" src="${editingEvent.cover}" alt="">`;
   }
 
-  // Reservation toggle
+  // Reservation toggle + cancel policy
   if (editingEvent.reservation) {
     state.reservation = true;
     reservationToggle.classList.add('active');
     reservationToggle.setAttribute('aria-pressed', 'true');
+    reservationBody.classList.add('open');
+    if (editingEvent.cancelFee != null)       cancelFeeInput.value       = editingEvent.cancelFee;
+    if (editingEvent.cancelDeadlineH != null) cancelDeadlineInput.value  = String(editingEvent.cancelDeadlineH);
   }
 
   // Subscriber price
