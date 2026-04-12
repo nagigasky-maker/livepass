@@ -2805,12 +2805,52 @@ function openPostDetail(type, item) {
       </div>
     ` : '';
 
+    // ─── Parse description into credits-style rows ───
+    // Templates use "■ LABEL\ncontent..." blocks. Each block becomes a
+    // credits row (label on the left, content on the right). Any text
+    // before the first ■ block renders as a lead paragraph.
+    function renderBodyAsCredits(raw){
+      const text = (raw || '').trim();
+      if (!text) return '<div class="pm-sec-body">No description</div>';
+      const blocks = text.split(/\n(?=\s*■)/);
+      // If there are no ■ markers at all, fall back to plain paragraphs
+      if (blocks.length === 1 && !/■/.test(blocks[0])) {
+        return `<div class="pm-sec-body">${blocks[0].replace(/\n/g,'<br>')}</div>`;
+      }
+      const leading = /^\s*■/.test(blocks[0]) ? '' : blocks.shift().trim();
+      const leadHtml = leading ? `<div class="pm-sec-body" style="margin-bottom:14px">${leading.replace(/\n/g,'<br>')}</div>` : '';
+      const rows = blocks.map(b => {
+        const m = b.match(/^\s*■\s*([^\n]+)\n?([\s\S]*)$/);
+        if (!m) return '';
+        const role = m[1].trim();
+        const content = (m[2] || '').trim();
+        if (!content) return '';
+        // Replace bullet "・" prefix lines into individual <span class="nm">
+        // entries so they flow like credits names
+        const lines = content.split('\n').map(l => l.trim()).filter(Boolean);
+        const allBullets = lines.length > 0 && lines.every(l => l.startsWith('・'));
+        let bodyHtml;
+        if (allBullets) {
+          bodyHtml = lines.map(l => `<span class="nm">${l.replace(/^・\s*/, '')}</span>`).join('');
+        } else {
+          bodyHtml = content.replace(/\n/g, '<br>');
+        }
+        return `
+          <div class="pm-credits-group">
+            <div class="pm-credits-role">${role}</div>
+            <div class="pm-credits-name">${bodyHtml}</div>
+          </div>
+        `;
+      }).join('');
+      return `${leadHtml}<div class="pm-credits" style="padding:0">${rows}</div>`;
+    }
+
     pmBody.innerHTML = `
       ${coverAndHeroHtml}
       ${teamHtml}
       <div class="pm-section">
         <div class="pm-sec-label">About</div>
-        <div class="pm-sec-body">${(item.body || 'No description').replace(/\n/g,'<br>')}</div>
+        ${renderBodyAsCredits(item.body)}
       </div>
       ${byFallbackHtml}
       ${collabHtml}
