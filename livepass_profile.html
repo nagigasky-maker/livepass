@@ -1058,32 +1058,35 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 }
 
 /* ─────────────────────────────────────────────
-   CREDITS — movie-credits style team display
+   CREDITS — compact left-aligned team display (rendered directly
+   below the cover image so the whole credit block fits in ~half
+   of the first screen).
    ───────────────────────────────────────────── */
 .pm-credits{
-  padding:0 22px;text-align:center;
+  padding:14px 22px 6px;text-align:left;
   font-family:Arial,'Noto Sans JP',sans-serif;
   color:rgba(237,235,230,.85);
 }
-.pm-credits-group{margin-bottom:22px}
+.pm-credits-group{margin-bottom:8px;display:flex;gap:10px;align-items:baseline}
 .pm-credits-role{
-  font-family:'IBM Plex Mono',monospace;font-size:8px;
-  letter-spacing:.36em;text-transform:uppercase;
-  color:rgba(237,235,230,.35);margin-bottom:6px;
+  font-family:'IBM Plex Mono',monospace;font-size:7px;
+  letter-spacing:.24em;text-transform:uppercase;
+  color:rgba(237,235,230,.35);
+  flex-shrink:0;min-width:82px;line-height:1.4;
 }
 .pm-credits-name{
-  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
-  font-size:16px;letter-spacing:.04em;color:var(--white);
-  line-height:1.4;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:600;
+  font-size:11px;letter-spacing:.02em;color:var(--white);
+  line-height:1.45;flex:1;
 }
 .pm-credits-name a{
   color:inherit;text-decoration:none;
-  border-bottom:1px solid rgba(61,170,255,.3);
-  padding-bottom:1px;
+  border-bottom:1px solid rgba(61,170,255,.25);
+  padding-bottom:0;
   transition:border-color .15s ease, color .15s ease;
 }
 .pm-credits-name a:active{color:#8fcaff;border-bottom-color:var(--blue)}
-.pm-credits-name .sep{margin:0 10px;color:rgba(237,235,230,.25);font-weight:400}
+.pm-credits-name .sep{margin:0 6px;color:rgba(237,235,230,.2);font-weight:400}
 
 /* Collaborator revenue split display */
 .pm-collab{padding:8px 22px 0}
@@ -2623,28 +2626,40 @@ function openPostDetail(type, item) {
     const subPriceNum = item.subscriberPrice && Number(item.subscriberPrice) > 0
       ? Number(item.subscriberPrice) : 0;
 
-    // ─── EVENT PROJECT TEAM — movie-credits-style display ───
-    // Group members by role. Hidden members are only shown when viewing
-    // your own post (owner) — not to the public.
+    // ─── CREDITS — unified credits block (artists + team), movie-style ───
+    // Group members by role. Artists are rendered as the top group (LINEUP /
+    // CAST). Hidden team members are only shown when viewing your own post.
     const teamArr = Array.isArray(item.team) ? item.team : [];
     const visibleTeam = teamArr.filter(t => !t.hidden || isAuthor);
-    const teamByRole = {};
+    // Build ordered groups so LINEUP appears first, then team roles in
+    // insertion order. Object literals preserve insertion order.
+    const creditGroups = {};
+    if (artistsList.length) {
+      const lineupLabel = (type === 'workshop') ? 'INSTRUCTOR'
+                        : (type === 'exhibition') ? 'ARTIST'
+                        : 'LINEUP';
+      creditGroups[lineupLabel] = artistsList.map(a => ({
+        name: typeof a === 'string' ? a : (a && a.name) || '',
+        hidden: false,
+      })).filter(x => x.name);
+    }
     visibleTeam.forEach(t => {
       const role = (t.role || 'Credit').trim();
-      if (!teamByRole[role]) teamByRole[role] = [];
-      teamByRole[role].push(t);
+      if (!creditGroups[role]) creditGroups[role] = [];
+      creditGroups[role].push(t);
     });
-    const teamHtml = visibleTeam.length ? `
-      <div class="pm-section">
-        <div class="pm-sec-label" style="text-align:center">EVENT PROJECT TEAM</div>
+    const hasCredits = Object.keys(creditGroups).length > 0;
+    const teamHtml = hasCredits ? `
+      <div class="pm-section" style="padding:18px 22px 0">
+        <div class="pm-sec-label" style="margin-bottom:10px">CREDITS</div>
         <div class="pm-credits">
-          ${Object.keys(teamByRole).map(role => `
+          ${Object.keys(creditGroups).map(role => `
             <div class="pm-credits-group">
               <div class="pm-credits-role">${role}</div>
               <div class="pm-credits-name">
-                ${teamByRole[role].map((t, i) => {
+                ${creditGroups[role].map((t, i) => {
                   const link = `<a href="/profile?user=${encodeURIComponent(t.name)}">${t.name}</a>`;
-                  const priv = t.hidden ? ' <span style="color:var(--gold);font-size:9px">(非公開)</span>' : '';
+                  const priv = t.hidden ? ' <span style="color:var(--gold);font-size:8px">(非公開)</span>' : '';
                   return (i > 0 ? '<span class="sep">·</span>' : '') + link + priv;
                 }).join('')}
               </div>
@@ -2720,17 +2735,22 @@ function openPostDetail(type, item) {
       </div>
     ` : '';
 
+    // If there are no credits AND no artists, fall back to a plain By line
+    const byFallbackHtml = (!hasCredits) ? `
+      <div class="pm-section">
+        <div class="pm-sec-label">By</div>
+        <div class="pm-sec-body">${byLine}</div>
+      </div>
+    ` : '';
+
     pmBody.innerHTML = `
       ${coverAndHeroHtml}
+      ${teamHtml}
       <div class="pm-section">
         <div class="pm-sec-label">About</div>
         <div class="pm-sec-body">${(item.body || 'No description').replace(/\n/g,'<br>')}</div>
       </div>
-      <div class="pm-section">
-        <div class="pm-sec-label">${artistsList.length ? 'Featured Artists' : 'By'}</div>
-        ${artistsHtml}
-      </div>
-      ${teamHtml}
+      ${byFallbackHtml}
       ${collabHtml}
       <div class="pm-section">
         <div class="pm-sec-label">Price</div>
