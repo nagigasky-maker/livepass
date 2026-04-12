@@ -101,7 +101,12 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .feed-card .fc-img img{
   width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;
 }
+/* Poster cards span both columns → full-width tall row */
+.feed-card.poster{grid-column:1 / -1}
 .feed-card.poster .fc-img{aspect-ratio:9/14}
+.feed-card.poster .fc-title{font-size:22px}
+.feed-card.poster .fc-cat{font-size:9px}
+.feed-card.poster .fc-overlay{padding:22px 22px 22px}
 .feed-card.square .fc-img{aspect-ratio:1/1}
 /* wide cards span both columns → full-width row */
 .feed-card.wide{grid-column:1 / -1}
