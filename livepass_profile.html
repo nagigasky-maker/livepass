@@ -20,7 +20,7 @@
   --border:rgba(255,255,255,.07);
   --safe-top:env(safe-area-inset-top,0px);
   --safe-bot:env(safe-area-inset-bottom,0px);
-  --nav-h:64px;
+  --nav-h:76px;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{
@@ -484,6 +484,93 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   opacity:1;transform:translate(-50%,0);
 }
 
+/* ─────────────────────────────────────────────
+   POST DETAIL MODAL (shared — ARTICLE / EVENT / WORKSHOP / EXHIBITION)
+   ───────────────────────────────────────────── */
+#postModal{
+  position:fixed;inset:0;z-index:1200;
+  background:var(--black);display:none;flex-direction:column;
+  opacity:0;transition:opacity .3s ease;
+}
+#postModal.active{display:flex;opacity:1}
+.pm-header{
+  flex-shrink:0;
+  padding:max(14px,calc(var(--safe-top) + 12px)) 18px 12px;
+  display:flex;align-items:center;gap:14px;
+  background:rgba(0,0,0,.96);border-bottom:0.5px solid var(--border);
+}
+.pm-close{
+  width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;color:var(--white);
+  border:0.5px solid rgba(255,255,255,.15);background:none;
+}
+.pm-close svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
+.pm-label{
+  font-family:'IBM Plex Mono',monospace;font-size:8px;
+  letter-spacing:.32em;text-transform:uppercase;
+  color:rgba(237,235,230,.3);margin-left:auto;
+}
+.pm-body{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.pm-body::-webkit-scrollbar{display:none}
+.pm-hero{
+  position:relative;padding:40px 22px 30px;
+  background:linear-gradient(180deg,var(--cat-color-soft,rgba(232,16,10,.08)) 0%,transparent 100%);
+}
+.pm-hero.with-cover{padding:0;aspect-ratio:9/14;overflow:hidden;background:#0a0a0a}
+.pm-hero.with-cover img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
+}
+.pm-hero.with-cover::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(0,0,0,.92) 0%,transparent 45%);
+}
+.pm-hero.with-cover .pm-hero-text{
+  position:absolute;bottom:0;left:0;right:0;padding:32px 22px 24px;z-index:2;
+}
+.pm-date-big{display:flex;align-items:baseline;gap:10px;margin-bottom:18px}
+.pm-date-m{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:16px;letter-spacing:.14em;
+  color:var(--cat-color,var(--red));text-transform:uppercase;
+}
+.pm-date-d{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:72px;line-height:.85;color:var(--white);letter-spacing:-.02em;
+}
+.pm-cat{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:11px;letter-spacing:.22em;
+  color:var(--cat-color,var(--red));text-transform:uppercase;margin-bottom:10px;
+}
+.pm-title{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:28px;line-height:1.1;color:var(--white);margin-bottom:14px;
+}
+.pm-venue{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
+  font-size:13px;color:var(--white);margin-bottom:4px;
+}
+.pm-time{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
+  font-size:11px;color:rgba(237,235,230,.55);letter-spacing:.04em;
+}
+.pm-tags{display:flex;gap:6px;margin-top:16px;flex-wrap:wrap}
+.pm-tags .ev-tag{padding:4px 12px;font-size:9px}
+.pm-section{padding:22px 22px 0}
+.pm-sec-label{
+  font-family:'IBM Plex Mono',monospace;font-size:8px;
+  letter-spacing:.34em;text-transform:uppercase;
+  color:rgba(237,235,230,.22);margin-bottom:12px;
+}
+.pm-sec-body{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
+  font-size:12px;line-height:1.8;color:rgba(237,235,230,.75);letter-spacing:.02em;
+  white-space:pre-wrap;
+}
+
 /* Compose selector bottom sheet (shared) */
 #composeSheetOverlay{position:fixed;inset:0;z-index:1100;background:rgba(0,0,0,0);pointer-events:none;opacity:0;transition:background .3s ease, opacity .2s ease}
 #composeSheetOverlay.active{background:rgba(0,0,0,.7);pointer-events:all;opacity:1;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
@@ -527,14 +614,14 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   </a>
 
   <!-- Following -->
-  <a class="tb-stat" href="#followers">
-    <div class="tb-stat-n">25</div>
+  <a class="tb-stat" href="/followers?tab=following">
+    <div class="tb-stat-n" data-count="following">0</div>
     <div class="tb-stat-l">フォロー中</div>
   </a>
 
   <!-- Followers -->
-  <a class="tb-stat" href="#followers">
-    <div class="tb-stat-n">25</div>
+  <a class="tb-stat" href="/followers?tab=followers">
+    <div class="tb-stat-n" data-count="followers">0</div>
     <div class="tb-stat-l">フォロワー</div>
   </a>
 
@@ -561,7 +648,7 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
          Still shows DM icon as a future "messages" shortcut. -->
     <div class="ph-actions" id="phActions">
       <button class="ph-follow-btn" id="phFollowBtn" style="display:none">フォローする</button>
-      <button class="ph-dm-btn" aria-label="Messages">
+      <button class="ph-dm-btn" id="phDmBtn" aria-label="Messages">
         <svg viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><polyline points="3,7 12,13 21,7"/></svg>
       </button>
     </div>
@@ -709,6 +796,15 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   </section>
 
 </main>
+
+<!-- ═══ POST DETAIL MODAL (shared) ═══ -->
+<div id="postModal" aria-hidden="true">
+  <header class="pm-header">
+    <button class="pm-close" id="pmClose" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18" stroke-linecap="round"/><line x1="6" y1="18" x2="18" y2="6" stroke-linecap="round"/></svg></button>
+    <div class="pm-label" id="pmLabel">Article</div>
+  </header>
+  <div class="pm-body" id="pmBody"></div>
+</div>
 
 <!-- ═══ COMPOSE SELECTOR BOTTOM SHEET (shared) ═══ -->
 <div id="composeSheetOverlay" aria-hidden="true">
@@ -1043,6 +1139,122 @@ window.addEventListener('keydown', (e) => {
    SCREEN panel — render user posts from localStorage
    into the 4 sub-sub-tabs (ARTICLE / EVENT / WORKSHOP / EXHIBITION)
    ───────────────────────────────────────────── */
+/* ─────────────────────────────────────────────
+   POST DETAIL MODAL — shared opener for ARTICLE / EVENT / WORKSHOP / EXHIBITION
+   ───────────────────────────────────────────── */
+const postModal = document.getElementById('postModal');
+const pmBody    = document.getElementById('pmBody');
+const pmLabel   = document.getElementById('pmLabel');
+const pmClose   = document.getElementById('pmClose');
+
+function hexToRgba(hex, a) {
+  const h = (hex || '#E8100A').replace('#','');
+  const r = parseInt(h.substring(0,2), 16);
+  const g = parseInt(h.substring(2,4), 16);
+  const b = parseInt(h.substring(4,6), 16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+function openPostDetail(type, item) {
+  if (navigator.vibrate) navigator.vibrate(8);
+
+  const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  const parseDate = (iso) => {
+    if (!iso) return { m:'—', d:'—' };
+    const d = new Date(iso);
+    return { m:MONTHS[d.getMonth()], d:String(d.getDate()).padStart(2,'0') };
+  };
+  const CAT_COLOR_MAP = {
+    DJ:'#E8100A', LIVE:'#E8100A', PARTY:'#bf5af2',
+    EXHIBITION:'#00E5A0', FASHION:'#bf5af2',
+    HOUSE:'#00E5A0', BREAKING:'#F5C842', WAACKING:'#F4C0D1',
+    LOCKING:'#F5C842', POPPING:'#F5C842',
+  };
+
+  if (type === 'article') {
+    pmLabel.textContent = 'Article';
+    const coverHtml = item.cover
+      ? `<img src="${item.cover}" alt="">`
+      : `<img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 900'%3E%3Crect fill='%23001a0a' width='600' height='900'/%3E%3Ctext x='300' y='500' text-anchor='middle' fill='rgba(255,255,255,.08)' font-size='140' font-family='Arial' font-weight='900'%3EART%3C/text%3E%3C/svg%3E" alt="">`;
+    const bodyHtml = (item.body || '').split(/\n\n+/)
+      .map(p => `<p style="margin-bottom:18px">${p.replace(/\n/g,'<br>')}</p>`)
+      .join('') || '<p>本文なし</p>';
+    const dateStr = item.createdAt ? new Date(item.createdAt).toLocaleDateString('ja-JP') : '';
+    pmBody.innerHTML = `
+      <div class="pm-hero with-cover">
+        ${coverHtml}
+        <div class="pm-hero-text">
+          <div class="pm-cat" style="color:#A8E63D">${item.category || 'Article'}</div>
+          <div class="pm-title">${item.title || ''}</div>
+          <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;color:rgba(237,235,230,.55)">${item.author || 'NOBBY'} · ${dateStr}</div>
+        </div>
+      </div>
+      <div class="pm-section">
+        <div class="pm-sec-label">Body</div>
+        <div class="pm-sec-body">${bodyHtml}</div>
+      </div>
+      <div style="height:40px"></div>
+    `;
+  } else {
+    // EVENT / WORKSHOP / EXHIBITION — event-style layout
+    pmLabel.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+    const pd = parseDate(item.date);
+    const cat = (item.category || type).toUpperCase();
+    const color = CAT_COLOR_MAP[cat] || '#F5C842';
+    const soft = hexToRgba(color, 0.08);
+    const tags = (item.tags && item.tags.length)
+      ? item.tags
+      : [cat].concat(item.level ? [item.level] : []);
+    const price = item.price && item.price !== '0' ? '¥' + item.price : '無料';
+    const byLine = item.instructor || item.artist || item.author || 'NOBBY';
+    const timeLine = item.endDate
+      ? `${item.date} — ${item.endDate}`
+      : `${item.date} ${item.time || ''}${item.endTime ? ' — '+item.endTime : ''}`;
+    pmBody.innerHTML = `
+      <div class="pm-hero" style="--cat-color:${color};--cat-color-soft:${soft}">
+        <div class="pm-date-big">
+          <div>
+            <div class="pm-date-m">${pd.m}</div>
+            <div class="pm-date-d">${pd.d}</div>
+          </div>
+        </div>
+        <div class="pm-cat" style="color:${color}">${cat}</div>
+        <div class="pm-title">${item.title || ''}</div>
+        <div class="pm-venue">${item.venue || '—'}</div>
+        <div class="pm-time">${timeLine}</div>
+        <div class="pm-tags" style="--cat-color:${color}">
+          ${tags.map(t => `<div class="ev-tag">${t}</div>`).join('')}
+        </div>
+      </div>
+      <div class="pm-section">
+        <div class="pm-sec-label">About</div>
+        <div class="pm-sec-body">${(item.body || 'No description').replace(/\n/g,'<br>')}</div>
+      </div>
+      <div class="pm-section">
+        <div class="pm-sec-label">By</div>
+        <div class="pm-sec-body">${byLine}</div>
+      </div>
+      <div class="pm-section">
+        <div class="pm-sec-label">Price</div>
+        <div class="pm-sec-body">${price}</div>
+      </div>
+      <div style="height:40px"></div>
+    `;
+  }
+
+  postModal.classList.add('active');
+  postModal.setAttribute('aria-hidden','false');
+}
+
+pmClose.addEventListener('click', () => {
+  postModal.classList.remove('active');
+  postModal.setAttribute('aria-hidden','true');
+  setTimeout(() => { pmBody.innerHTML = ''; }, 300);
+});
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && postModal.classList.contains('active')) pmClose.click();
+});
+
 (function renderScreenPanels(){
   const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
   const CAT_COLOR = {
@@ -1077,6 +1289,7 @@ window.addEventListener('keydown', (e) => {
     articles.forEach((a, i) => {
       const card = document.createElement('div');
       card.className = 'article-card';
+      card.style.cursor = 'pointer';
       const coverHtml = a.cover
         ? `<img src="${a.cover}" alt="">`
         : `<img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 900'%3E%3Crect fill='%23001a0a' width='600' height='900'/%3E%3Ctext x='300' y='500' text-anchor='middle' fill='rgba(255,255,255,.08)' font-size='140' font-family='Arial' font-weight='900'%3EART%3C/text%3E%3C/svg%3E" alt="">`;
@@ -1088,6 +1301,7 @@ window.addEventListener('keydown', (e) => {
           <div class="ac-title">${a.title || '(no title)'}</div>
         </div>
       `;
+      card.addEventListener('click', () => openPostDetail('article', a));
       artList.appendChild(card);
     });
   }
@@ -1124,7 +1338,11 @@ window.addEventListener('keydown', (e) => {
   if (events.length === 0) {
     evList.innerHTML = emptyState('Event');
   } else {
-    events.forEach(e => evList.appendChild(buildRow(e, 'EVENT')));
+    events.forEach(e => {
+      const row = buildRow(e, 'EVENT');
+      row.addEventListener('click', () => openPostDetail('event', e));
+      evList.appendChild(row);
+    });
   }
 
   /* WORKSHOP */
@@ -1133,7 +1351,11 @@ window.addEventListener('keydown', (e) => {
   if (workshops.length === 0) {
     wsList.innerHTML = emptyState('Workshop');
   } else {
-    workshops.forEach(w => wsList.appendChild(buildRow(w, 'WORKSHOP')));
+    workshops.forEach(w => {
+      const row = buildRow(w, 'WORKSHOP');
+      row.addEventListener('click', () => openPostDetail('workshop', w));
+      wsList.appendChild(row);
+    });
   }
 
   /* EXHIBITION */
@@ -1142,7 +1364,11 @@ window.addEventListener('keydown', (e) => {
   if (exhibitions.length === 0) {
     exList.innerHTML = emptyState('Exhibition');
   } else {
-    exhibitions.forEach(x => exList.appendChild(buildRow(x, 'EXHIBITION')));
+    exhibitions.forEach(x => {
+      const row = buildRow(x, 'EXHIBITION');
+      row.addEventListener('click', () => openPostDetail('exhibition', x));
+      exList.appendChild(row);
+    });
   }
 })();
 
@@ -1215,6 +1441,32 @@ window.addEventListener('keydown', (e) => {
     location.href='/compose/'+t;
   }));
   window.addEventListener('keydown',e=>{if(e.key==='Escape'&&ov.classList.contains('active'))dismiss()});
+})();
+
+/* Top bar counters — shared pattern */
+(function syncCounters(){
+  try {
+    const f1 = JSON.parse(localStorage.getItem('livepass_following') || '[]').length;
+    const f2 = JSON.parse(localStorage.getItem('livepass_followers') || '[]').length;
+    document.querySelectorAll('[data-count="following"]').forEach(el => el.textContent = f1 || '0');
+    document.querySelectorAll('[data-count="followers"]').forEach(el => el.textContent = f2 || '0');
+  } catch(e) {}
+})();
+
+/* DM button context — own profile → /messages, other user → open that chat */
+(function initDmButton(){
+  const btn = document.getElementById('phDmBtn');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    const viewing = new URLSearchParams(location.search).get('user');
+    const own = !viewing || viewing === (localStorage.getItem('livepass_account_name') || 'NOBBY');
+    if (own) {
+      location.href = '/messages';
+    } else {
+      // Pass the user name, messages page maps it to a contact id
+      location.href = '/messages?open=' + encodeURIComponent(viewing);
+    }
+  });
 })();
 
 /* ─────────────────────────────────────────────
