@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#000000">
+<title>LIVE PASS — ワークショップ作成</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#000;--bg:#080808;--white:#EDEBE6;
+  --red:#E8100A;--blue:#3DAAFF;--green:#A8E63D;
+  --gold:#F5C842;--mint:#00E5A0;--pink:#F4C0D1;--purple:#bf5af2;
+  --muted:rgba(237,235,230,.3);--muted2:rgba(237,235,230,.14);
+  --border:rgba(255,255,255,.07);
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+  --accent:var(--gold);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;height:100dvh;background:var(--black);color:var(--white);
+  font-family:Arial,'Noto Sans JP',sans-serif;-webkit-font-smoothing:antialiased;
+  user-select:none;-webkit-user-select:none;overflow:hidden;}
+a{color:inherit;text-decoration:none}
+button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
+input,textarea{color:inherit;font:inherit}
+
+.hdr{position:fixed;top:0;left:0;right:0;z-index:10;
+  padding:max(14px,calc(var(--safe-top) + 12px)) 18px 12px;
+  display:flex;align-items:center;gap:14px;
+  background:rgba(0,0,0,.96);border-bottom:0.5px solid var(--border);}
+.hdr-back{background:none;border:0.5px solid rgba(255,255,255,.18);
+  color:rgba(237,235,230,.65);
+  font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;
+  font-weight:500;letter-spacing:.08em;
+  padding:7px 14px;border-radius:99px;}
+.hdr-title{font-family:'IBM Plex Mono',monospace;font-size:10px;
+  letter-spacing:.32em;text-transform:uppercase;
+  color:rgba(237,235,230,.35);margin-left:auto;margin-right:auto;padding-right:60px;}
+
+.form{position:fixed;top:0;left:0;right:0;bottom:calc(72px + var(--safe-bot));
+  padding-top:calc(var(--safe-top) + 64px);
+  overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.form::-webkit-scrollbar{display:none}
+.form-section{padding:18px 20px 4px}
+.form-row{display:flex;gap:10px}
+.form-row .form-section{flex:1;padding:0}
+.form-label{font-family:'IBM Plex Mono',monospace;font-size:8px;
+  letter-spacing:.34em;text-transform:uppercase;
+  color:rgba(237,235,230,.3);margin-bottom:10px;}
+
+.input-box{width:100%;background:rgba(255,255,255,.04);
+  border:0.5px solid rgba(255,255,255,.08);
+  border-radius:8px;padding:14px 16px;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-size:14px;
+  color:var(--white);outline:none;transition:border-color .2s;}
+.input-box:focus{border-color:var(--accent)}
+textarea.input-box{resize:vertical;min-height:120px;line-height:1.8;font-size:13px}
+.input-box[type="date"],.input-box[type="time"]{font-family:Arial,sans-serif;color-scheme:dark}
+
+.pill-row{display:flex;flex-wrap:wrap;gap:8px}
+.pill{padding:7px 14px;border-radius:99px;
+  background:rgba(255,255,255,.04);
+  border:0.5px solid rgba(237,235,230,.15);
+  color:rgba(237,235,230,.55);
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
+  font-size:10px;letter-spacing:.08em;}
+.pill.active{background:rgba(245,200,66,.1);border-color:var(--accent);color:var(--accent)}
+
+.cover-upload{width:100%;
+  border:1px dashed rgba(255,255,255,.14);
+  border-radius:10px;background:rgba(255,255,255,.02);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;cursor:pointer;aspect-ratio:16/10;}
+.cover-upload.has-image{border-style:solid;border-color:transparent}
+.cover-placeholder{display:flex;flex-direction:column;align-items:center;gap:8px;color:rgba(237,235,230,.3);}
+.cover-placeholder svg{width:32px;height:32px;stroke:currentColor;fill:none;stroke-width:1.5}
+.cover-placeholder span{font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;letter-spacing:.12em;}
+.cover-preview-img{width:100%;height:100%;object-fit:cover;display:block}
+#coverInput{display:none}
+
+.submit-bar{position:fixed;left:0;right:0;bottom:0;z-index:10;
+  padding:14px 18px calc(14px + var(--safe-bot));
+  background:rgba(0,0,0,.96);border-top:0.5px solid var(--border);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);}
+.submit-btn{width:100%;padding:16px;
+  background:var(--accent);color:#000;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:13px;letter-spacing:.2em;text-transform:uppercase;
+  border-radius:99px;box-shadow:0 6px 24px rgba(245,200,66,.25);}
+.submit-btn:disabled{background:rgba(237,235,230,.08);color:rgba(237,235,230,.25);box-shadow:none;}
+
+#toast{position:fixed;top:max(20px,calc(var(--safe-top) + 20px));left:50%;
+  transform:translate(-50%,-30px);z-index:20;
+  background:rgba(245,200,66,.15);border:0.5px solid var(--accent);
+  color:var(--accent);padding:10px 20px;border-radius:99px;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:11px;letter-spacing:.12em;
+  opacity:0;transition:opacity .3s, transform .3s;pointer-events:none;}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+.form-bottom-padding{height:28px}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <a href="/calendar" class="hdr-back">← Back</a>
+  <div class="hdr-title">ワークショップ作成</div>
+</header>
+
+<main class="form">
+  <div class="form-section">
+    <div class="form-label">タイトル</div>
+    <input class="input-box" id="titleInput" placeholder="ワークショップ名" maxlength="80">
+  </div>
+
+  <div class="form-section">
+    <div class="form-label">カテゴリ</div>
+    <div class="pill-row" id="catRow">
+      <button class="pill active" data-cat="HOUSE">HOUSE</button>
+      <button class="pill" data-cat="BREAKING">BREAKING</button>
+      <button class="pill" data-cat="WAACKING">WAACKING</button>
+      <button class="pill" data-cat="LOCKING">LOCKING</button>
+      <button class="pill" data-cat="POPPING">POPPING</button>
+      <button class="pill" data-cat="DJ">DJ</button>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <div class="form-label">レベル</div>
+    <div class="pill-row" id="levelRow">
+      <button class="pill active" data-level="ALL LEVELS">ALL LEVELS</button>
+      <button class="pill" data-level="BEGINNER">BEGINNER</button>
+      <button class="pill" data-level="INTERMEDIATE">INTERMEDIATE</button>
+      <button class="pill" data-level="ADVANCED">ADVANCED</button>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <div class="form-label">会場 / スタジオ</div>
+    <input class="input-box" id="venueInput" placeholder="代官山 Studio A / 渋谷 WOMB 2F など">
+  </div>
+
+  <div class="form-row">
+    <div class="form-section">
+      <div class="form-label">日付</div>
+      <input class="input-box" type="date" id="dateInput">
+    </div>
+    <div class="form-section">
+      <div class="form-label">開始</div>
+      <input class="input-box" type="time" id="timeInput">
+    </div>
+    <div class="form-section">
+      <div class="form-label">終了</div>
+      <input class="input-box" type="time" id="endInput">
+    </div>
+  </div>
+
+  <div class="form-section">
+    <div class="form-label">参加費 (円)</div>
+    <input class="input-box" type="number" id="priceInput" placeholder="5000" min="0" step="500">
+  </div>
+
+  <div class="form-section">
+    <div class="form-label">講師</div>
+    <input class="input-box" id="instructorInput" placeholder="SACHI / NOBBY など">
+  </div>
+
+  <div class="form-section">
+    <div class="form-label">カバー画像</div>
+    <div class="cover-upload" id="coverUpload">
+      <div class="cover-placeholder" id="coverPh">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>
+        <span>タップして画像を選択</span>
+      </div>
+    </div>
+    <input type="file" id="coverInput" accept="image/*">
+  </div>
+
+  <div class="form-section">
+    <div class="form-label">内容説明</div>
+    <textarea class="input-box" id="bodyInput" placeholder="ワークショップの内容、持ち物など..." rows="6"></textarea>
+  </div>
+
+  <div class="form-bottom-padding"></div>
+</main>
+
+<div class="submit-bar">
+  <button class="submit-btn" id="submitBtn">ワークショップを投稿 →</button>
+</div>
+
+<div id="toast">✓ ワークショップを投稿しました</div>
+
+<script>
+const state = { category:'HOUSE', level:'ALL LEVELS', coverDataUrl:null };
+
+document.querySelectorAll('#catRow .pill').forEach(p => {
+  p.addEventListener('click', () => {
+    document.querySelectorAll('#catRow .pill').forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+    state.category = p.dataset.cat;
+  });
+});
+document.querySelectorAll('#levelRow .pill').forEach(p => {
+  p.addEventListener('click', () => {
+    document.querySelectorAll('#levelRow .pill').forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+    state.level = p.dataset.level;
+  });
+});
+
+const coverUpload = document.getElementById('coverUpload');
+const coverInput  = document.getElementById('coverInput');
+coverUpload.addEventListener('click', () => coverInput.click());
+coverInput.addEventListener('change', (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    state.coverDataUrl = ev.target.result;
+    coverUpload.classList.add('has-image');
+    coverUpload.innerHTML = `<img class="cover-preview-img" src="${ev.target.result}" alt="">`;
+  };
+  reader.readAsDataURL(file);
+});
+
+const submitBtn = document.getElementById('submitBtn');
+const titleInput = document.getElementById('titleInput');
+const venueInput = document.getElementById('venueInput');
+const dateInput = document.getElementById('dateInput');
+
+function updateSubmitState(){
+  const valid = titleInput.value.trim() && venueInput.value.trim() && dateInput.value;
+  submitBtn.disabled = !valid;
+}
+[titleInput, venueInput, dateInput].forEach(i => i.addEventListener('input', updateSubmitState));
+updateSubmitState();
+
+submitBtn.addEventListener('click', () => {
+  if (submitBtn.disabled) return;
+  const workshop = {
+    id:         'w' + Date.now(),
+    type:       'workshop',
+    category:   state.category,
+    level:      state.level,
+    cover:      state.coverDataUrl,
+    title:      titleInput.value.trim(),
+    venue:      venueInput.value.trim(),
+    date:       dateInput.value,
+    time:       document.getElementById('timeInput').value || '',
+    endTime:    document.getElementById('endInput').value || '',
+    price:      document.getElementById('priceInput').value || '0',
+    instructor: document.getElementById('instructorInput').value.trim(),
+    body:       document.getElementById('bodyInput').value.trim(),
+    author:     localStorage.getItem('livepass_account_name') || 'NOBBY',
+    createdAt:  new Date().toISOString(),
+  };
+  try {
+    const raw = localStorage.getItem('livepass_workshops');
+    const list = raw ? JSON.parse(raw) : [];
+    list.unshift(workshop);
+    localStorage.setItem('livepass_workshops', JSON.stringify(list));
+  } catch(e) { alert('保存に失敗: ' + e.message); return; }
+  if (navigator.vibrate) navigator.vibrate([18, 40, 18]);
+  document.getElementById('toast').classList.add('show');
+  setTimeout(() => { location.href = '/calendar'; }, 900);
+});
+</script>
+</body>
+</html>
