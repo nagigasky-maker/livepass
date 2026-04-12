@@ -781,6 +781,34 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   font-size:11px;letter-spacing:.04em;
   border-radius:99px;}
 
+/* Article action bar (comment/like/save/share) — matches home's dm-actions */
+.pm-actions{
+  padding:16px 22px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-top:0.5px solid var(--border);
+}
+.pm-act{
+  display:flex;align-items:center;gap:6px;
+  color:rgba(237,235,230,.55);
+  font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;
+  font-weight:500;background:none;border:none;cursor:pointer;
+  transition:transform .15s ease, color .15s ease;
+}
+.pm-act:active{transform:scale(.9)}
+.pm-act svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8}
+.pm-act.liked{color:var(--red)}
+.pm-act.liked svg{fill:var(--red);stroke:var(--red)}
+.pm-act.saved{color:var(--gold)}
+.pm-act.saved svg{fill:var(--gold);stroke:var(--gold)}
+.pm-act.shared{color:var(--blue)}
+.pm-act.shared svg{stroke:var(--blue)}
+@keyframes pmSharePulse{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.25)}
+  100%{transform:scale(1)}
+}
+.pm-act.sharing{animation:pmSharePulse .35s ease}
+
 /* Compose selector bottom sheet (shared) */
 #composeSheetOverlay{position:fixed;inset:0;z-index:1100;background:rgba(0,0,0,0);pointer-events:none;opacity:0;transition:background .3s ease, opacity .2s ease}
 #composeSheetOverlay.active{background:rgba(0,0,0,.7);pointer-events:all;opacity:1;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
@@ -1399,6 +1427,75 @@ function hexToRgba(hex, a) {
   return `rgba(${r},${g},${b},${a})`;
 }
 
+// ─── Shared like / save / share helpers (mirrors livepass_home.html) ───
+function pmGetIds(key){
+  try { return JSON.parse(localStorage.getItem(key) || '[]'); }
+  catch(e) { return []; }
+}
+function pmSetIds(key, arr){
+  try { localStorage.setItem(key, JSON.stringify(arr)); } catch(e) {}
+}
+function pmToggleId(key, id){
+  const arr = pmGetIds(key);
+  const idx = arr.indexOf(id);
+  if (idx >= 0) arr.splice(idx, 1);
+  else arr.unshift(id);
+  pmSetIds(key, arr);
+  return idx < 0;  // true = added
+}
+
+// Share an article: reshare it to the current user's own ARTICLE timeline
+// AND notify followers. Returns true if shared successfully, false if
+// the user had already shared this article (idempotent).
+function pmShareArticle(item){
+  if (!item || !item.id) return false;
+  const me = localStorage.getItem('livepass_account_name') || 'NOBBY';
+  try {
+    // 1) Reshare to my own livepass_articles timeline
+    const raw  = localStorage.getItem('livepass_articles');
+    const list = raw ? JSON.parse(raw) : [];
+    // Avoid duplicates (same original id + sharedBy=me)
+    const existing = list.find(a => a.sharedFromId === item.id && a.sharedBy === me);
+    if (existing) return false;
+
+    const reshare = {
+      id:           's' + Date.now(),
+      type:         'article',
+      category:     item.category || 'Article',
+      cover:        item.cover || null,
+      title:        item.title || '',
+      body:         item.body || '',
+      tags:         Array.isArray(item.tags) ? item.tags.slice() : [],
+      author:       me,
+      sharedBy:     me,
+      sharedFromId: item.id,
+      sharedFromAuthor: item.author || 'NOBBY',
+      createdAt:    new Date().toISOString(),
+    };
+    list.unshift(reshare);
+    localStorage.setItem('livepass_articles', JSON.stringify(list));
+
+    // 2) Notify followers
+    const notifKey = 'livepass_follower_notifications';
+    const notifRaw = localStorage.getItem(notifKey);
+    const notifs   = notifRaw ? JSON.parse(notifRaw) : [];
+    notifs.unshift({
+      id:        'n' + Date.now(),
+      type:      'share',
+      actor:     me,
+      articleId: item.id,
+      title:     item.title || '',
+      originalAuthor: item.author || 'NOBBY',
+      at:        new Date().toISOString(),
+    });
+    // Keep last 50
+    localStorage.setItem(notifKey, JSON.stringify(notifs.slice(0, 50)));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 function openPostDetail(type, item) {
   if (navigator.vibrate) navigator.vibrate(8);
 
@@ -1424,10 +1521,24 @@ function openPostDetail(type, item) {
       .map(p => `<p style="margin-bottom:18px">${p.replace(/\n/g,'<br>')}</p>`)
       .join('') || '<p>本文なし</p>';
     const dateStr = item.createdAt ? new Date(item.createdAt).toLocaleDateString('ja-JP') : '';
+
+    // Action-bar state (like / save / share) — same storage keys as home
+    const liked  = pmGetIds('livepass_likes').includes(item.id);
+    const saved  = pmGetIds('livepass_saves').includes(item.id);
+    const shared = pmGetIds('livepass_shares').includes(item.id);
+
+    // If this article is a reshare, show the "Shared by" byline above the title
+    const sharedByHtml = item.sharedBy && item.sharedFromAuthor ? `
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--blue);margin-bottom:8px">
+        ↻ Shared by ${item.sharedBy} · 元: ${item.sharedFromAuthor}
+      </div>
+    ` : '';
+
     pmBody.innerHTML = `
       <div class="pm-hero with-cover">
         ${coverHtml}
         <div class="pm-hero-text">
+          ${sharedByHtml}
           <div class="pm-cat" style="color:#A8E63D">${item.category || 'Article'}</div>
           <div class="pm-title">${item.title || ''}</div>
           <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;color:rgba(237,235,230,.55)">${item.author || 'NOBBY'} · ${dateStr}</div>
@@ -1437,8 +1548,60 @@ function openPostDetail(type, item) {
         <div class="pm-sec-label">Body</div>
         <div class="pm-sec-body">${bodyHtml}</div>
       </div>
-      <div style="height:40px"></div>
+      <div class="pm-actions">
+        <button class="pm-act" data-act="comment" type="button">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>12
+        </button>
+        <button class="pm-act ${liked ? 'liked' : ''}" data-act="like" type="button">
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>48
+        </button>
+        <button class="pm-act ${saved ? 'saved' : ''}" data-act="save" type="button">
+          <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>保存
+        </button>
+        <button class="pm-act ${shared ? 'shared' : ''}" data-act="share" type="button">
+          <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>共有
+        </button>
+      </div>
+      <div style="height:20px"></div>
     `;
+
+    // Wire up the action buttons
+    pmBody.querySelectorAll('.pm-act').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const act = btn.dataset.act;
+        if (act === 'like') {
+          const now = pmToggleId('livepass_likes', item.id);
+          btn.classList.toggle('liked', now);
+        } else if (act === 'save') {
+          const now = pmToggleId('livepass_saves', item.id);
+          btn.classList.toggle('saved', now);
+        } else if (act === 'share') {
+          // Prevent sharing your own article back to your own timeline
+          const meNow = localStorage.getItem('livepass_account_name') || 'NOBBY';
+          if ((item.author || 'NOBBY') === meNow && !item.sharedBy) {
+            alert('自分の投稿です。フォロワーのタイムラインに既に表示されています。');
+            return;
+          }
+          // Already shared? Confirm unshare
+          const alreadyShared = pmGetIds('livepass_shares').includes(item.id);
+          if (alreadyShared) {
+            alert('この記事はすでに共有済みです。');
+            return;
+          }
+          const ok = pmShareArticle(item);
+          if (ok) {
+            pmToggleId('livepass_shares', item.id);
+            btn.classList.add('shared', 'sharing');
+            setTimeout(() => btn.classList.remove('sharing'), 400);
+            if (navigator.vibrate) navigator.vibrate([12, 30, 12]);
+            alert(`共有しました。\n\n✓ あなたのARTICLEに追加されました\n✓ フォロワーに通知が送られました`);
+          } else {
+            alert('共有に失敗しました。');
+          }
+        }
+        if (navigator.vibrate) navigator.vibrate(6);
+      });
+    });
   } else {
     // EVENT / WORKSHOP / EXHIBITION — event-style layout
     pmLabel.textContent = type.charAt(0).toUpperCase() + type.slice(1);
