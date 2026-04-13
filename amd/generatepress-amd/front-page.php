@@ -1534,6 +1534,8 @@ function amdSetLang(lang){
     const el=document.getElementById('amc-'+_apCurIdx);
     if(el){
       el.querySelectorAll('.af-desc,.af-desc-en').forEach(p=>{p.dataset.wrapped='';p.querySelectorAll('.amd-word').forEach(w=>w.replaceWith(w.textContent));});
+      /* Re-fit font-size for the newly-active language bio */
+      if(typeof _amdFitBioFontSize==='function') _amdFitBioFontSize(el);
       if(typeof _amdWrapWords==='function'){
         el.querySelectorAll('.af-desc,.af-desc-en').forEach(_amdWrapWords);
         const words=el.querySelectorAll('.amd-word');
@@ -1687,6 +1689,28 @@ function _amdWrapWords(el){
   el.dataset.wrapped='1';
 }
 
+/* Auto-fit artist bio text so long descriptions never get cut off.
+   Shrinks .af-desc / .af-desc-en font-size iteratively until the
+   .amd-card-content container no longer overflows. Range: 14 → 8 px. */
+function _amdFitBioFontSize(cardEl){
+  if(!cardEl) return;
+  var content = cardEl.querySelector('.amd-card-content');
+  if(!content) return;
+  var bios = content.querySelectorAll('.af-desc, .af-desc-en');
+  if(!bios.length) return;
+  // Reset any previous inline sizing
+  bios.forEach(function(b){ b.style.fontSize=''; b.style.lineHeight=''; });
+  // If content already fits, nothing to do (scroll remains as fallback)
+  if(content.scrollHeight <= content.clientHeight + 1) return;
+  var fs = 14;
+  var min = 8;
+  var step = 0.5;
+  while(fs > min && content.scrollHeight > content.clientHeight + 1){
+    fs -= step;
+    bios.forEach(function(b){ b.style.fontSize = fs + 'px'; });
+  }
+}
+
 function _buildCardStack(stage,artists){
   stage.innerHTML='';
   if(!artists.length){stage.innerHTML='<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;"><p style="font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:rgba(237,235,230,.3);">Coming Soon</p></div>';return;}
@@ -1713,6 +1737,8 @@ function _showCard(idx,animate){
     const el=document.getElementById('amc-'+i); if(!el) return;
     if(i<idx) gsap.set(el,{rotationX:40,rotationZ:0,scale:0.72,opacity:0,transformPerspective:800,transformOrigin:'50% 10%'});
     else if(i===idx){
+      /* Auto-fit bio font-size BEFORE word-wrap so measurement is accurate */
+      _amdFitBioFontSize(el);
       if(animate){
         gsap.fromTo(el,{rotationX:-10,rotationZ:0,y:40,opacity:0,scale:0.96,transformPerspective:800,transformOrigin:'50% 10%'},{rotationX:0,rotationZ:0,y:0,opacity:1,scale:1,duration:0.52,ease:'power3.out'});
         el.querySelectorAll('.af-desc,.af-desc-en').forEach(_amdWrapWords);
@@ -1724,6 +1750,8 @@ function _showCard(idx,animate){
         const words=el.querySelectorAll('.amd-word');
         if(words.length){words.forEach(function(w,i){gsap.set(w,{y:40+(i%3)*15,opacity:0,rotationX:20});});gsap.to(words,{y:0,opacity:1,rotationX:0,duration:0.65,stagger:0.02,ease:'power4.out',delay:0.45});}
       }
+      /* Re-fit after word-wrap in case span box layout changes height slightly */
+      requestAnimationFrame(function(){ _amdFitBioFontSize(el); });
     } else gsap.set(el,{rotationX:0,y:0,opacity:0,scale:1,transformPerspective:800,transformOrigin:'50% 10%'});
   });
   const overlayEl=document.getElementById('cardStackOverlay');
