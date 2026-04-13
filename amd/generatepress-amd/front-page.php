@@ -271,7 +271,17 @@ html.pwa-mode #deck {
    Bottom 45%: solid info panel with header + scrollable bio
    This replaces the overlay approach so long bios always read cleanly. */
 .amd-card-photo { position:absolute; top:0; left:0; right:0; height:55%; overflow:hidden; background:#0a0d16; }
-.amd-card-photo img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center 22%; }
+.amd-card-photo img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center 22%; animation:amdPhotoDrift 22s cubic-bezier(.42,.08,.58,.92) infinite alternate; transform-origin:50% 40%; will-change:transform; }
+@keyframes amdPhotoDrift {
+  0%   { transform:scale(1.00) translate(0%, 0%); }
+  25%  { transform:scale(1.035) translate(-0.6%, -0.4%); }
+  50%  { transform:scale(1.055) translate(-0.2%, -0.9%); }
+  75%  { transform:scale(1.035) translate(0.4%, -0.5%); }
+  100% { transform:scale(1.02) translate(0.6%, 0.2%); }
+}
+/* Slight per-card phase offset so adjacent cards don't move in sync */
+.amd-card:nth-child(2n) .amd-card-photo img { animation-delay:-6s; }
+.amd-card:nth-child(3n) .amd-card-photo img { animation-delay:-12s; }
 .amd-card-photo::after { content:""; position:absolute; left:0; right:0; bottom:0; height:90px; background:linear-gradient(to bottom,transparent 0%,rgba(10,13,22,0.7) 55%,#0a0d16 100%); pointer-events:none; }
 
 .amd-card-num { position:absolute; top:max(22px,calc(env(safe-area-inset-top)+12px)); right:22px; z-index:4; font-size:9px; letter-spacing:0.32em; color:rgba(237,235,230,0.65); text-shadow:0 1px 8px rgba(0,0,0,0.85); margin-top:0; }
