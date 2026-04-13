@@ -1820,6 +1820,10 @@ function _buildCardStack(stage,artists){
 function _showCard(idx,animate){
   _apArtists.forEach((_,i)=>{
     const el=document.getElementById('amc-'+i); if(!el) return;
+    /* Only the active card receives taps — inactive cards (opacity:0 but
+       still in the DOM) must not intercept clicks meant for the visible
+       card below them in the z stack. */
+    el.style.pointerEvents = (i === idx) ? 'auto' : 'none';
     if(i<idx) gsap.set(el,{rotationX:40,rotationZ:0,scale:0.72,opacity:0,transformPerspective:800,transformOrigin:'50% 10%'});
     else if(i===idx){
       /* Auto-fit bio font-size BEFORE word-wrap so measurement is accurate */
