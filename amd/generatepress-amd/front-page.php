@@ -263,29 +263,27 @@ html.pwa-mode #deck {
 .amd-cs-close { position:absolute; top:max(22px, calc(env(safe-area-inset-top) + 14px)); left:24px; z-index:10000; background:none; border:none; color:rgba(237,235,230,0.5); font-size:11px; letter-spacing:0.28em; text-transform:uppercase; cursor:pointer; }
 .amd-cs-title { position:absolute; top:max(24px, calc(env(safe-area-inset-top) + 14px)); left:50%; transform:translateX(-50%); z-index:10000; font-size:9px; letter-spacing:0.38em; text-transform:uppercase; color:rgba(237,235,230,0.3); white-space:nowrap; }
 #cardStackStage { position:absolute; inset:0; }
-.amd-card { position:absolute; inset:0; will-change:transform,opacity; overflow:hidden; }
-/* Scroll container: flex column with bottom-alignment via margin-top:auto.
-   Combined with flex-shrink:0 on children so bios don't get squeezed, and
-   with the _amdFitBioFontSize auto-shrink so long text fits naturally at a
-   smaller size. Scroll remains as a fallback for extreme overflow. */
-/* .amd-card-content bottom padding locks the bio's last line to a fixed
-   offset above .amd-card-nav. Computed as (nav height at current device)
-   + 28px breathing margin, so the last line of text is ALWAYS 28px above
-   the nav bar border, regardless of iPhone home indicator or long bio. */
-.amd-card-content { position:absolute; top:0; bottom:0; left:20px; right:20px; z-index:2; display:flex; flex-direction:column; padding:max(88px,calc(env(safe-area-inset-top)+64px)) 0 calc(68px + env(safe-area-inset-bottom)); box-sizing:border-box; overflow-y:auto; overscroll-behavior:contain; touch-action:pan-y; }
-.amd-card-content > * { flex-shrink:0; }
-.amd-card-content > :first-child { margin-top:auto; }
-.amd-card-content::-webkit-scrollbar { display:none; }
-/* No extra margin on the bio paragraphs — padding-bottom on the
-   container already handles the gap from the nav bar. */
-.amd-card-content .af-desc,
-.amd-card-content .af-desc-en { margin-bottom:0; }
-/* Artist photo: default crop focus to upper area so portrait faces stay
-   visible on narrow phone aspect ratios (was: center which cropped faces). */
-.amd-card img { object-position:center 20% !important; }
-/* Page counter floated top-right so it doesn't take vertical space from
-   the bio block and the photo stays maximally visible */
-.amd-card-num { position:absolute; top:max(22px,calc(env(safe-area-inset-top)+12px)); right:22px; font-size:9px; letter-spacing:0.32em; color:rgba(237,235,230,0.42); z-index:3; margin-top:0; }
+.amd-card { position:absolute; inset:0; will-change:transform,opacity; overflow:hidden; background:#0a0d16; }
+
+/* NEW TWO-PANE LAYOUT
+   ────────────────────
+   Top 55%: photo hero (portrait-safe crop, fades into the info panel)
+   Bottom 45%: solid info panel with header + scrollable bio
+   This replaces the overlay approach so long bios always read cleanly. */
+.amd-card-photo { position:absolute; top:0; left:0; right:0; height:55%; overflow:hidden; background:#0a0d16; }
+.amd-card-photo img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center 22%; }
+.amd-card-photo::after { content:""; position:absolute; left:0; right:0; bottom:0; height:90px; background:linear-gradient(to bottom,transparent 0%,rgba(10,13,22,0.7) 55%,#0a0d16 100%); pointer-events:none; }
+
+.amd-card-num { position:absolute; top:max(22px,calc(env(safe-area-inset-top)+12px)); right:22px; z-index:4; font-size:9px; letter-spacing:0.32em; color:rgba(237,235,230,0.65); text-shadow:0 1px 8px rgba(0,0,0,0.85); margin-top:0; }
+
+.amd-card-info { position:absolute; left:0; right:0; top:55%; bottom:0; background:#0a0d16; display:flex; flex-direction:column; z-index:2; }
+.amd-card-header { flex-shrink:0; padding:18px 26px 14px; }
+.amd-card-bio { flex:1 1 auto; min-height:0; overflow-y:auto; padding:6px 26px calc(60px + env(safe-area-inset-bottom)) 26px; overscroll-behavior:contain; touch-action:pan-y; }
+.amd-card-bio::-webkit-scrollbar { display:none; }
+
+/* Fade at the top of the bio scroll area so scrolled text melts out instead
+   of hitting the header with a hard edge */
+.amd-card-bio::before { content:""; position:sticky; top:0; display:block; height:10px; margin-bottom:-10px; background:linear-gradient(to bottom,#0a0d16,transparent); z-index:1; pointer-events:none; }
 .amd-card-nav { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; align-items:center; padding:14px 24px calc(14px + env(safe-area-inset-bottom)) 24px; z-index:300; border-top:1px solid rgba(237,235,230,0.14); background:rgba(12,15,26,0.94); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
 .amd-card-nav-btn { background:none; border:none; color:rgba(237,235,230,0.55); font-size:11px; letter-spacing:0.32em; text-transform:uppercase; cursor:pointer; padding:8px 0; transition:color 0.2s; }
 .amd-card-nav-btn:hover { color:var(--white); }
@@ -576,9 +574,12 @@ a.sc:hover { background: rgba(237,235,230,0.06); }
   .menu-sub { display:none; }
   .menu-footer { flex-wrap:wrap; gap:16px; }
 }
-/* CARD STACK OVERRIDES */
-.amd-card-stack .af-desc { display:block; color:var(--white); overflow:visible; -webkit-line-clamp:unset; font-size:10px; line-height:1.65; }
-.amd-card-stack .af-desc-en { display:none; color:var(--white); overflow:visible; -webkit-line-clamp:unset; font-size:10px; line-height:1.55; }
+/* CARD STACK OVERRIDES — two-pane layout typography */
+.amd-card-stack .af-genre { font-size:9px; letter-spacing:0.4em; color:var(--red); margin:0 0 8px 0; text-shadow:none; opacity:1; }
+.amd-card-stack .af-name { font-family:Arial,"Arial Black",sans-serif; font-weight:900; font-size:clamp(26px,6.5vw,40px); line-height:0.95; letter-spacing:0.01em; color:var(--white); margin:0 0 12px 0; text-shadow:none; max-width:none; }
+.amd-card-stack .af-links { display:flex; gap:10px; margin:0; }
+.amd-card-stack .af-desc { display:block; color:rgba(237,235,230,0.88); overflow:visible; -webkit-line-clamp:unset; font-size:11px; line-height:1.75; font-weight:300; margin:0 0 10px 0; text-shadow:none; }
+.amd-card-stack .af-desc-en { display:none; color:rgba(237,235,230,0.85); overflow:visible; -webkit-line-clamp:unset; font-size:11px; line-height:1.65; font-weight:300; font-style:italic; margin:0 0 10px 0; text-shadow:none; }
 [data-lang="en"] .amd-card-stack .af-desc { display:none; }
 [data-lang="en"] .amd-card-stack .af-desc-en { display:block; }
 body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opacity .2s; }
@@ -1790,28 +1791,10 @@ function _amdWrapWords(el){
   el.dataset.wrapped='1';
 }
 
-/* Auto-fit artist bio text so long descriptions never get cut off.
-   Starts at the CSS default (10px for card stack) and shrinks down to
-   9px until the .amd-card-content container no longer overflows.
-   If 9px still isn't enough, scroll takes over as a fallback. */
-function _amdFitBioFontSize(cardEl){
-  if(!cardEl) return;
-  var content = cardEl.querySelector('.amd-card-content');
-  if(!content) return;
-  var bios = content.querySelectorAll('.af-desc, .af-desc-en');
-  if(!bios.length) return;
-  // Reset any previous inline sizing
-  bios.forEach(function(b){ b.style.fontSize=''; b.style.lineHeight=''; });
-  // If content already fits, nothing to do (scroll remains as fallback)
-  if(content.scrollHeight <= content.clientHeight + 1) return;
-  var fs = 10;
-  var min = 9;
-  var step = 0.5;
-  while(fs > min && content.scrollHeight > content.clientHeight + 1){
-    fs -= step;
-    bios.forEach(function(b){ b.style.fontSize = fs + 'px'; });
-  }
-}
+/* No-op in the new two-pane layout — the .amd-card-bio scroll container
+   handles overflow naturally. Kept as a function stub so call sites in
+   _showCard / amdSetLang don't break if they still reference it. */
+function _amdFitBioFontSize(cardEl){ /* intentionally empty — see .amd-card-bio */ }
 
 function _buildCardStack(stage,artists){
   stage.innerHTML='';
@@ -1823,7 +1806,7 @@ function _buildCardStack(stage,artists){
     const photoHtml=a.photo?`<img src="${a.photo}" alt="${a.name}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;">`:'';
     const scHtml=a.sc?`<a href="${a.sc}" target="_blank" class="af-link"><img src="${_amdThemeUrl}/logos/sc.png" style="width:28px;height:28px;object-fit:contain;opacity:0.82;"></a>`:'';
     const igHtml=a.ig?`<a href="${a.ig}" target="_blank" class="af-link"><img src="${_amdThemeUrl}/logos/insta.png" style="width:28px;height:28px;object-fit:contain;opacity:0.82;"></a>`:'';
-    card.innerHTML=`<div style="position:absolute;inset:0;">${photoHtml}</div><div class="vig-artist"></div><div class="amd-card-num">${String(i+1).padStart(2,'0')} / ${String(artists.length).padStart(2,'0')}</div><div class="amd-card-content"><div class="af-genre">${a.genre||''}</div><div class="af-name">${a.name}</div><div class="af-links" style="margin-bottom:14px;">${scHtml}${igHtml}</div><p class="af-desc">${(a.bio_ja||'').replace(/\n/g,'<br>')}</p><p class="af-desc-en">${(a.bio_en||'').replace(/\n/g,'<br>')}</p></div>`;
+    card.innerHTML=`<div class="amd-card-photo">${photoHtml}</div><div class="amd-card-num">${String(i+1).padStart(2,'0')} / ${String(artists.length).padStart(2,'0')}</div><div class="amd-card-info"><div class="amd-card-header"><div class="af-genre">${a.genre||''}</div><div class="af-name">${a.name}</div><div class="af-links">${scHtml}${igHtml}</div></div><div class="amd-card-bio"><p class="af-desc">${(a.bio_ja||'').replace(/\n/g,'<br>')}</p><p class="af-desc-en">${(a.bio_en||'').replace(/\n/g,'<br>')}</p></div></div>`;
     stage.appendChild(card);
   });
   const overlay=document.getElementById('cardStackOverlay');
