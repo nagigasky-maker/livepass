@@ -364,30 +364,53 @@ textarea.input-box{resize:vertical;min-height:160px;line-height:1.8;font-size:13
 .form-bottom-padding{height:28px}
 </style>
 </head>
-<body>
-<script>
-/* PWA NAV FIX — iOS Safari breaks out of standalone mode on <a href>
-   clicks unless we intercept them. Catch every same-origin link click
-   and navigate via location.href so the address bar stays hidden. */
+<body><script>
+/* PWA NAV FIX v65 — form-submission technique for iOS PWA standalone.
+   Link clicks in iOS PWAs can break out of standalone mode; form
+   submissions are handled differently by iOS and stay in-app. */
 (function(){
-  if (!('standalone' in navigator) && !window.matchMedia('(display-mode: standalone)').matches) return;
+  function isStandalone(){
+    return (window.navigator.standalone === true) ||
+           window.matchMedia('(display-mode: standalone)').matches ||
+           window.matchMedia('(display-mode: fullscreen)').matches;
+  }
+  if (!isStandalone()) return;
+  // Also add a body class so CSS can adjust for standalone mode
+  document.documentElement.classList.add('is-pwa');
   document.addEventListener('click', function(e){
     var a = e.target.closest && e.target.closest('a');
     if (!a) return;
     var href = a.getAttribute('href');
     if (!href) return;
-    // Skip: external, new tab, hash only, mailto/tel, explicit target
     if (a.target && a.target !== '_self') return;
-    if (href.indexOf('http') === 0 && a.host !== location.host) return;
     if (href.charAt(0) === '#') return;
-    if (/^(mailto|tel):/.test(href)) return;
+    if (/^(mailto|tel|sms):/i.test(href)) return;
+    // External origin?
+    try {
+      var u = new URL(a.href, location.href);
+      if (u.host !== location.host) return;
+    } catch(err) { return; }
     e.preventDefault();
-    location.href = a.href;
+    e.stopPropagation();
+    // Use form submission — iOS PWA treats this as in-app navigation
+    try {
+      var form = document.createElement('form');
+      form.method = 'GET';
+      form.action = a.href;
+      form.style.display = 'none';
+      document.body.appendChild(form);
+      form.submit();
+    } catch(err) {
+      window.location.href = a.href;
+    }
   }, true);
 })();
 </script>
-
-
+<style>
+#__v{position:fixed;bottom:2px;right:2px;z-index:9999;
+  font:9px/1 'IBM Plex Mono',monospace;color:rgba(237,235,230,.18);
+  letter-spacing:.1em;pointer-events:none;user-select:none}
+</style>
 <header class="hdr">
   <a href="/home" class="hdr-back">← Back</a>
   <div class="hdr-title" id="hdrTitle">記事作成</div>
@@ -962,5 +985,6 @@ submitBtn.addEventListener('click', () => {
 });
 </script>
 
+<div id="__v">v65</div>
 </body>
 </html>
