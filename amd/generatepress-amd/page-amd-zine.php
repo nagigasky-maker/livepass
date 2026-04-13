@@ -181,31 +181,31 @@ body {
 <!-- Card list -->
 <div class="zine-card-list">
 
-  <a href="<?= home_url('/zine-ep07/') ?>" class="zine-card">
+  <a href="<?= home_url('/amd-ep07/') ?>" class="zine-card">
     <div class="zine-card-ep">EP.07</div>
     <div class="zine-card-title">HOME COMING</div>
     <div class="zine-card-meta">clubasia · Shibuya · 2026 · ALL MUST DANCE™</div>
   </a>
 
-  <a href="<?= home_url('/zine-ep06/') ?>" class="zine-card">
+  <a href="<?= home_url('/amd-ep06/') ?>" class="zine-card">
     <div class="zine-card-ep">EP.06</div>
     <div class="zine-card-title">CHEEKY</div>
     <div class="zine-card-meta">Cheeky · Shibuya · 2025 · ALL MUST DANCE™</div>
   </a>
 
-  <a href="<?= home_url('/zine-ep05/') ?>" class="zine-card">
+  <a href="<?= home_url('/amd-ep05/') ?>" class="zine-card">
     <div class="zine-card-ep">EP.05</div>
     <div class="zine-card-title">PARCO SKYLINE</div>
     <div class="zine-card-meta">Rooftop · Shibuya · 2024 · ALL MUST DANCE™</div>
   </a>
 
-  <a href="<?= home_url('/zine-ep02/') ?>" class="zine-card">
+  <a href="<?= home_url('/amd-ep02/') ?>" class="zine-card">
     <div class="zine-card-ep">EP.02</div>
     <div class="zine-card-title">WARSAW</div>
     <div class="zine-card-meta">Tour · Europe · 2023 · ALL MUST DANCE™</div>
   </a>
 
-  <a href="<?= home_url('/zine-art01/') ?>" class="zine-card">
+  <a href="<?= home_url('/amd-art01/') ?>" class="zine-card">
     <div class="zine-card-ep">ART.01</div>
     <div class="zine-card-title">ART ISSUE</div>
     <div class="zine-card-meta">Art · Special Issue · ALL MUST DANCE™</div>

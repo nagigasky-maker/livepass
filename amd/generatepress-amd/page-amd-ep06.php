@@ -100,8 +100,8 @@ body { overflow-x:hidden; overflow-y:auto; min-height:100vh; min-height:-webkit-
 </div>
 
 <div class="zine-footer-nav">
-  <a href="<?= home_url('/zine-ep07/') ?>">← EP.07</a>
-  <a href="<?= home_url('/zine-ep05/') ?>">EP.05 →</a>
+  <a href="<?= home_url('/amd-ep07/') ?>">← EP.07</a>
+  <a href="<?= home_url('/amd-ep05/') ?>">EP.05 →</a>
 </div>
 
 <?php wp_footer(); ?>

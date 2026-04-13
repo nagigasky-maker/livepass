@@ -132,8 +132,8 @@ body {
 
 <!-- Footer navigation -->
 <div class="zine-footer-nav">
-  <a href="<?= home_url('/zine-ep05/') ?>">← EP.05</a>
-  <a href="<?= home_url('/zine-art01/') ?>">ART.01 →</a>
+  <a href="<?= home_url('/amd-ep05/') ?>">← EP.05</a>
+  <a href="<?= home_url('/amd-art01/') ?>">ART.01 →</a>
 </div>
 
 <?php wp_footer(); ?>

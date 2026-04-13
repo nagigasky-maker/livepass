@@ -101,7 +101,7 @@ body { overflow-x:hidden; overflow-y:auto; min-height:100vh; min-height:-webkit-
 </div>
 
 <div class="zine-footer-nav">
-  <a href="<?= home_url('/zine-ep02/') ?>">← EP.02</a>
+  <a href="<?= home_url('/amd-ep02/') ?>">← EP.02</a>
   <a href="<?= home_url() ?>">HOME →</a>
 </div>
 

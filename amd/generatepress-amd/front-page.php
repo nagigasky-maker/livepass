@@ -868,7 +868,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         </div>
 
         <!-- EP.06 — Cheeky Session (book flip) -->
-        <div class="zine-book" data-zine-card data-page="0" data-href="https://allmustdance.com/zine-ep06/">
+        <div class="zine-book" data-zine-card data-page="0" data-href="https://allmustdance.com/amd-ep06/">
           <div class="zine-book-inner">
             <div class="zine-page-back zine-page-layer" data-layer="1">
               <div style="position:absolute;inset:0;background:#0a0c14;"></div>
@@ -893,7 +893,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         </div>
 
         <!-- EP.05 — PARCO Skyline (book flip) -->
-        <div class="zine-book" data-zine-card data-page="0" data-href="https://allmustdance.com/zine-ep05/">
+        <div class="zine-book" data-zine-card data-page="0" data-href="https://allmustdance.com/amd-ep05/">
           <div class="zine-book-inner">
             <div class="zine-page-back zine-page-layer" data-layer="1">
               <div style="position:absolute;inset:0;background:#0a0c14;"></div>
@@ -918,7 +918,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         </div>
 
         <!-- ARTWORK — MOZYSKEY × NOBBY (book flip) -->
-        <div class="zine-book" data-zine-card data-page="0" data-href="https://allmustdance.com/zine-art01/">
+        <div class="zine-book" data-zine-card data-page="0" data-href="https://allmustdance.com/amd-art01/">
           <div class="zine-book-inner">
             <div class="zine-page-back zine-page-layer" data-layer="1">
               <div style="position:absolute;inset:0;background:#0a0c14;"></div>
@@ -943,7 +943,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         </div>
 
         <!-- EP.02 — WARSAW (book flip) -->
-        <div class="zine-book" data-zine-card data-page="0" data-href="https://allmustdance.com/zine-ep02/">
+        <div class="zine-book" data-zine-card data-page="0" data-href="https://allmustdance.com/amd-ep02/">
           <div class="zine-book-inner">
             <div class="zine-page-back zine-page-layer" data-layer="1">
               <div style="position:absolute;inset:0;background:#0a0c14;"></div>
@@ -972,7 +972,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 
       <!-- View all -->
       <div class="zine-view-all">
-        <a href="<?= home_url('/zine-index/') ?>">View All Issues →</a>
+        <a href="<?= home_url('/amd-zine/') ?>">View All Issues →</a>
       </div>
 
     </div>
@@ -1034,7 +1034,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
               <ul class="connect-list">
                 <li class="cl anim-up" style="transition-delay:0.1s;"><a href="https://www.instagram.com/allmustdancetokyo/" target="_blank">Instagram</a><span class="cl-type">Social</span></li>
                 <li class="cl anim-up" style="transition-delay:0.15s;"><a href="https://www.youtube.com/@allmustdancetokyo" target="_blank">YouTube</a><span class="cl-type">Video</span></li>
-                <li class="cl anim-up" style="transition-delay:0.2s;"><a href="<?= home_url('/zine-index/') ?>">Zine</a><span class="cl-type">Archive</span></li>
+                <li class="cl anim-up" style="transition-delay:0.2s;"><a href="<?= home_url('/amd-zine/') ?>">Zine</a><span class="cl-type">Archive</span></li>
                 <li class="cl anim-up" style="transition-delay:0.25s;"><a href="https://zzazz-za.stores.jp/" target="_blank">Store</a><span class="cl-type">Shop</span></li>
                 <li class="cl anim-up" style="transition-delay:0.3s;"><a href="mailto:niko@allmustdance.com">Contact</a><span class="cl-type">Mail</span></li>
               </ul>
