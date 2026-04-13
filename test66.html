@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#000000">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>LIVE PASS — test66</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{
+  width:100%;height:100%;height:100dvh;
+  background:#000;color:#EDEBE6;
+  font-family:Arial,'Noto Sans JP',sans-serif;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px;gap:24px;text-align:center;
+  -webkit-font-smoothing:antialiased;
+}
+.big{
+  font-size:48px;font-weight:900;line-height:1;
+  background:linear-gradient(135deg,#A8E63D 0%,#3DAAFF 100%);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:transparent;
+  letter-spacing:-.02em;
+}
+.sub{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;
+  letter-spacing:.3em;text-transform:uppercase;
+  color:rgba(237,235,230,.5);line-height:2;
+}
+.ts{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;
+  color:rgba(237,235,230,.3);letter-spacing:.1em;
+  padding-top:16px;border-top:0.5px solid rgba(255,255,255,.1);
+  margin-top:16px;
+}
+.btn{
+  display:inline-block;padding:16px 32px;
+  background:#A8E63D;color:#000;
+  font-weight:900;font-size:13px;letter-spacing:.14em;
+  text-transform:uppercase;text-decoration:none;
+  border-radius:99px;margin-top:12px;
+}
+</style>
+</head>
+<body>
+  <div class="big">v66 OK ✓</div>
+  <div class="sub">
+    CACHE BUSTER TEST PAGE<br>
+    Deploy: 2026-04-13 v66
+  </div>
+  <a class="btn" href="/start">GO TO HOME →</a>
+  <div class="ts" id="ts"></div>
+<script>
+document.getElementById('ts').textContent = 'Loaded at ' + new Date().toISOString();
+</script>
+</body>
+</html>
