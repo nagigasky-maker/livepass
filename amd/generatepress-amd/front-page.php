@@ -331,6 +331,15 @@ html.pwa-mode #deck {
 .zine-tap-hint { position:absolute; bottom:28px; right:28px; z-index:10; font-size:8px; letter-spacing:.4em; text-transform:uppercase; color:rgba(237,235,230,.35); animation:zinePulse 2.5s ease-in-out infinite; }
 @keyframes zinePulse { 0%,100%{opacity:.35} 50%{opacity:.7} }
 .zine-book.open .zine-tap-hint { opacity:0; transition:opacity .2s; }
+/* ZINE section global TAP pulse — shows center-right of viewport while
+   the ZINE chapter is visible, hides when the book is open */
+.zine-tap-pulse { position:fixed; top:50%; right:18px; transform:translate3d(0,-50%,0); z-index:80; width:64px; height:64px; pointer-events:none; opacity:0; visibility:hidden; transition:opacity .4s ease, visibility .4s ease; display:flex; align-items:center; justify-content:center; }
+.zine-tap-pulse.visible { opacity:1; visibility:visible; }
+.ztp-dot { position:absolute; width:12px; height:12px; border-radius:50%; background:var(--red); box-shadow:0 0 18px rgba(232,16,10,.7); }
+.ztp-ring { position:absolute; width:64px; height:64px; border-radius:50%; border:1.5px solid var(--red); animation:ztpRing 1.8s cubic-bezier(.4,0,.2,1) infinite; }
+.ztp-ring:nth-of-type(2) { animation-delay:.9s; }
+.ztp-label { position:absolute; right:calc(100% + 10px); font-size:8px; letter-spacing:.34em; color:rgba(237,235,230,.7); text-transform:uppercase; white-space:nowrap; animation:zinePulse 1.8s ease-in-out infinite; }
+@keyframes ztpRing { 0%{transform:scale(.35);opacity:1} 100%{transform:scale(1.35);opacity:0} }
 /* ZINE header bar (replaces site header in this section) */
 .zine-section-header { position:sticky; top:0; z-index:100; display:flex; justify-content:space-between; align-items:center; padding:max(60px,calc(env(safe-area-inset-top)+28px)) 24px 16px; background:linear-gradient(to bottom,rgba(12,15,26,.97) 0%,rgba(12,15,26,.85) 50%,rgba(12,15,26,.4) 80%,transparent 100%); pointer-events:none; }
 .zine-section-header > * { pointer-events:all; }
@@ -922,6 +931,14 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         <a href="<?= home_url('/amd-zine/') ?>">View All Issues →</a>
       </div>
 
+    </div>
+
+    <!-- Center-right TAP pulse guide (fixed to viewport while this chapter is visible) -->
+    <div class="zine-tap-pulse" id="zineTapPulse" aria-hidden="true">
+      <span class="ztp-ring"></span>
+      <span class="ztp-ring"></span>
+      <span class="ztp-dot"></span>
+      <span class="ztp-label">TAP</span>
     </div>
   </div>
 
@@ -1972,6 +1989,33 @@ window.closeZineBook = function(){
   var deck=document.getElementById('deck');
   if(deck) deck.style.overflow='';
 };
+
+/* ZINE section TAP pulse — shows while the ZINE chapter is in viewport.
+   Hidden while the book is open so it doesn't overlap the flipping book. */
+(function(){
+  var pulse = document.getElementById('zineTapPulse');
+  var zine  = document.getElementById('cZine');
+  var book  = document.getElementById('zineBook07');
+  if(!pulse || !zine) return;
+  var inView = false, bookOpen = false;
+  function apply(){
+    if(inView && !bookOpen) pulse.classList.add('visible');
+    else pulse.classList.remove('visible');
+  }
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ inView = e.isIntersecting && e.intersectionRatio > 0.25; apply(); });
+    }, {threshold:[0,0.25,0.5]}).observe(zine);
+  } else {
+    inView = true; apply();
+  }
+  if(book && 'MutationObserver' in window){
+    new MutationObserver(function(){
+      bookOpen = book.classList.contains('open');
+      apply();
+    }).observe(book, {attributes:true, attributeFilter:['class']});
+  }
+})();
 
 /* Generic book flip for other ZINE cards (2-page: cover → inner → navigate) */
 window.flipZineCard = function(book, e){
