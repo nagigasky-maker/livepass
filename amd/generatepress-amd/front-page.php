@@ -303,13 +303,18 @@ html.pwa-mode #deck {
 .zine-page-layer img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.8; }
 .zine-page-layer .zine-card-vig { z-index:2; }
 .zine-page-layer .zine-card-body { z-index:3; }
-.zine-page-layer[data-layer="0"] { z-index:7; }
-.zine-page-layer[data-layer="1"] { z-index:6; }
-.zine-page-layer[data-layer="2"] { z-index:5; }
-.zine-page-layer[data-layer="3"] { z-index:4; }
-.zine-page-layer[data-layer="4"] { z-index:3; }
-.zine-page-layer[data-layer="5"] { z-index:2; }
-.zine-page-layer[data-layer="6"] { z-index:1; }
+.zine-page-layer[data-layer="0"] { z-index:12; }
+.zine-page-layer[data-layer="1"] { z-index:11; }
+.zine-page-layer[data-layer="2"] { z-index:10; }
+.zine-page-layer[data-layer="3"] { z-index:9; }
+.zine-page-layer[data-layer="4"] { z-index:8; }
+.zine-page-layer[data-layer="5"] { z-index:7; }
+.zine-page-layer[data-layer="6"] { z-index:6; }
+.zine-page-layer[data-layer="7"] { z-index:5; }
+.zine-page-layer[data-layer="8"] { z-index:4; }
+.zine-page-layer[data-layer="9"] { z-index:3; }
+.zine-page-layer[data-layer="10"] { z-index:2; }
+.zine-page-layer[data-layer="11"] { z-index:1; }
 .zine-page-back-credit { font-size:9px; font-weight:300; letter-spacing:.2em; color:rgba(237,235,230,.5); margin-top:12px; line-height:1.8; }
 /* Flippable pages */
 .zine-page-flip { transform-origin:left center; transition:transform 0.9s cubic-bezier(0.4,0,0.2,1); backface-visibility:hidden; will-change:transform; }
@@ -793,45 +798,105 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         <div class="zine-book" id="zineBook07" data-zine-card data-page="0" onclick="flipZineBook(event)">
           <div class="zine-book-inner">
 
-            <!-- Page 6 (deepest): NEXT FRIDAY back — red/white converted to gray -->
-            <div class="zine-page-back zine-page-layer" data-layer="6" style="background:#0C0F1A;">
+            <!-- Page 11 (deepest): NEXT FRIDAY back — original red/white -->
+            <div class="zine-page-back zine-page-layer" data-layer="11" style="background:#0C0F1A;">
               <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;">
-                <div style="font-size:8px;letter-spacing:.6em;text-transform:uppercase;color:rgba(237,235,230,.5);margin-bottom:20px;">COMING SOON</div>
-                <div style="font-family:Arial,'Arial Black',sans-serif;font-size:clamp(32px,8vw,52px);font-weight:900;color:rgba(237,235,230,.7);line-height:.9;letter-spacing:-.02em;">NEXT<br>FRIDAY</div>
+                <div style="font-size:8px;letter-spacing:.6em;text-transform:uppercase;color:var(--red);margin-bottom:20px;">COMING SOON</div>
+                <div style="font-family:Arial,'Arial Black',sans-serif;font-size:clamp(32px,8vw,52px);font-weight:900;color:var(--white);line-height:.9;letter-spacing:-.02em;">NEXT<br>FRIDAY</div>
                 <div style="font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:rgba(237,235,230,.35);margin-top:16px;">UPDATE</div>
-                <div style="width:40px;height:1px;background:rgba(237,235,230,.3);margin:24px 0;"></div>
+                <div style="width:40px;height:1px;background:var(--red);margin:24px 0;"></div>
                 <div style="font-size:10px;letter-spacing:.2em;color:rgba(237,235,230,.3);">ALL MUST DANCE™ ZINE</div>
               </div>
             </div>
 
-            <!-- Page 5: IMG_6247 (image only) -->
-            <div class="zine-page-flip zine-page-layer" data-layer="5">
-              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/IMG_6247-scaled-e1769346260398.jpeg" alt="">
+            <!-- Page 10: 20260323 GIF (new, image only) -->
+            <div class="zine-page-flip zine-page-layer" data-layer="10">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/03/20260323_152503.gif" alt="">
             </div>
 
-            <!-- Page 4: g1111 (image only) -->
-            <div class="zine-page-flip zine-page-layer" data-layer="4">
-              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/g1111.jpg" alt="">
-            </div>
-
-            <!-- Page 3: g455 (image only) -->
-            <div class="zine-page-flip zine-page-layer" data-layer="3">
+            <!-- Page 9: g455 (new, image only) -->
+            <div class="zine-page-flip zine-page-layer" data-layer="9">
               <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/g455-scaled.jpg" alt="">
             </div>
 
-            <!-- Page 2: 92C071F3 (image only) -->
-            <div class="zine-page-flip zine-page-layer" data-layer="2">
+            <!-- Page 8: EP.02 — AKAKI NAMPEI (original) -->
+            <div class="zine-page-flip zine-page-layer" data-layer="8">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/g1.jpg" alt="AMD EP02">
+              <div class="zine-card-vig"></div>
+              <div class="zine-card-body">
+                <div class="zine-card-cat">AMD™ EP.02</div>
+                <div class="zine-card-title" style="font-size:clamp(22px,6vw,36px);">ALL MUST<br>DANCE™</div>
+                <div class="zine-card-meta">EP.02</div>
+                <div class="zine-page-back-credit">Photo — AKAKI NAMPEI<br>Shadow Dancer — Yasumin &amp; MIMI<br>Location — clubasia</div>
+              </div>
+            </div>
+
+            <!-- Page 7: IMG_6247 (new, image only) -->
+            <div class="zine-page-flip zine-page-layer" data-layer="7">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/IMG_6247-scaled-e1769346260398.jpeg" alt="">
+            </div>
+
+            <!-- Page 6: EP.03 Teaser — AKAKI NAMPEI (original) -->
+            <div class="zine-page-flip zine-page-layer" data-layer="6">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88-2024-07-02-20.13.45.png" alt="AMD EP03 Teaser">
+              <div class="zine-card-vig"></div>
+              <div class="zine-card-body">
+                <div class="zine-card-cat">TEASER · AMD™ EP.03</div>
+                <div class="zine-card-title" style="font-size:clamp(22px,6vw,36px);">ALL MUST<br>DANCE™</div>
+                <div class="zine-card-meta">EP.03 · Amsterdam</div>
+                <div class="zine-page-back-credit">Photo — NOBBY<br>Location — Amsterdam in Friend Room</div>
+              </div>
+            </div>
+
+            <!-- Page 5: 92C071F3 (new, image only) -->
+            <div class="zine-page-flip zine-page-layer" data-layer="5">
               <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/92C071F3-F3C8-4D57-B12A-92FBAE7E0EC4.jpg" alt="">
             </div>
 
-            <!-- Page 1: g0000 (image only) -->
+            <!-- Page 4: EP.03 — GREEN TECK (original) -->
+            <div class="zine-page-flip zine-page-layer" data-layer="4">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/g15.jpg" alt="AMD EP03">
+              <div class="zine-card-vig"></div>
+              <div class="zine-card-body">
+                <div class="zine-card-cat">AMD™ EP.03</div>
+                <div class="zine-card-title" style="font-size:clamp(22px,6vw,36px);">ALL MUST<br>DANCE™</div>
+                <div class="zine-card-meta">EP.03 · Tokyo</div>
+                <div class="zine-page-back-credit">Photo — NOBBY<br>Dancer — GREEN TECK<br>Wear Support — Dickies<br>Location — TOKYO</div>
+              </div>
+            </div>
+
+            <!-- Page 3: g1111 (new, image only) -->
+            <div class="zine-page-flip zine-page-layer" data-layer="3">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/g1111.jpg" alt="">
+            </div>
+
+            <!-- Page 2: EP.01 — MOZYSKEY (original) -->
+            <div class="zine-page-flip zine-page-layer" data-layer="2">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/g00-scaled.jpg" alt="AMD EP01">
+              <div class="zine-card-vig"></div>
+              <div class="zine-card-body">
+                <div class="zine-card-cat">AMD™ EP.01 · VISUAL POSTER</div>
+                <div class="zine-card-title" style="font-size:clamp(22px,6vw,36px);">ALL MUST<br>DANCE™</div>
+                <div class="zine-card-meta">EP.01 · The Beginning</div>
+                <div class="zine-page-back-credit">Photo — NOBBY<br>Art Support — MOZYSKEY</div>
+              </div>
+            </div>
+
+            <!-- Page 1: g0000 (new, image only) -->
             <div class="zine-page-flip zine-page-layer" data-layer="1">
               <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/g0000-scaled.jpg" alt="">
             </div>
 
-            <!-- Cover (top): 20260323 GIF (image only) -->
+            <!-- Cover (top): EP.07 HOME COMING (original) -->
             <div class="zine-page-flip zine-page-layer" data-layer="0">
-              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/03/20260323_152503.gif" alt="">
+              <img loading="lazy" src="<?= get_stylesheet_directory_uri() ?>/logos/amd2026asia.jpg" alt="EP.07">
+              <div class="zine-card-vig"></div>
+              <div class="zine-card-num">007</div>
+              <div class="zine-card-body">
+                <div class="zine-card-cat">PARTY · FEATURED</div>
+                <div class="zine-card-title">HOME<br>COMING</div>
+                <div class="zine-card-meta">clubasia · Shibuya · 2026.05.04</div>
+              </div>
             </div>
 
             <!-- Close + hint -->
