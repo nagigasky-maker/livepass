@@ -249,6 +249,17 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 </style>
 </head>
 <body>
+<script>
+/* AUTH GUARD — first visit redirect to /onboarding if no account exists */
+(function(){
+  try {
+    if (!localStorage.getItem('livepass_account_name')) {
+      location.replace('/onboarding');
+    }
+  } catch(e) {}
+})();
+</script>
+
 
 <div class="topbar">
   <a class="tb-brand" href="/home" aria-label="LIVE PASS"><img src="/livepasslogo.png" alt="LIVE PASS"></a>
@@ -397,9 +408,22 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 
   <!-- ═══ SUBSCRIPTION ═══ -->
   <div class="sec-label">SUBSCRIPTION</div>
-  <div style="padding:20px 20px 60px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;color:rgba(237,235,230,.35);letter-spacing:.02em;line-height:1.8">
+  <div style="padding:20px 20px 20px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;color:rgba(237,235,230,.35);letter-spacing:.02em;line-height:1.8">
     現在のプラン：<strong style="color:rgba(237,235,230,.7)">FREE</strong><br>
     アップグレード / 決済方法 / 解約 → 5/4後アップデート予定
+  </div>
+
+  <!-- ═══ SIGN OUT ═══ -->
+  <div class="sec-label">ACCOUNT</div>
+  <div style="padding:14px 20px 60px">
+    <button id="signOutBtn" type="button"
+      style="width:100%;padding:16px;border-radius:12px;background:rgba(232,16,10,.06);border:0.5px solid rgba(232,16,10,.35);color:#ff6b66;font-family:Arial,'Noto Sans JP',sans-serif;font-weight:800;font-size:12px;letter-spacing:.12em;text-transform:uppercase">
+      サインアウト
+    </button>
+    <div style="margin-top:10px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(237,235,230,.3);line-height:1.8">
+      サインアウトするとこの端末のアカウント情報が消去されます<br>
+      投稿・いいね・予約などは保持されます
+    </div>
   </div>
 
 </main>
@@ -519,6 +543,33 @@ nameInput.addEventListener('input', () => {
   }));
   window.addEventListener('keydown',e=>{if(e.key==='Escape'&&ov.classList.contains('active'))dismiss()});
 })();
+
+/* ─────────────────────────────────────────────
+   SIGN OUT — clears account identity so the next visit sends the
+   user back through /onboarding. Posts, likes, saves, reservations
+   are intentionally preserved in localStorage so the same browser
+   on sign-in (even under a new name) still sees them.
+   ───────────────────────────────────────────── */
+document.getElementById('signOutBtn')?.addEventListener('click', () => {
+  const name = localStorage.getItem('livepass_account_name') || '';
+  if (!confirm(`${name ? name + ' として ' : ''}サインアウトしますか？\n\n次回アクセス時はサインアップ画面に戻ります。投稿や保存済みは残ります。`)) return;
+  try {
+    // Identity-only keys are cleared; content keys (articles/events/saves/
+    // likes/reservations/...) stay so the browser remembers everything
+    // when a new or returning account signs in.
+    localStorage.removeItem('livepass_account_name');
+    localStorage.removeItem('livepass_account_name_ja');
+    localStorage.removeItem('livepass_account_name_en');
+    localStorage.removeItem('livepass_role');
+    localStorage.removeItem('livepass_kind');
+    localStorage.removeItem('livepass_style');
+    localStorage.removeItem('livepass_goals');
+    localStorage.removeItem('livepass_avatar');
+    localStorage.removeItem('livepass_signed_in');
+  } catch(e) {}
+  if (navigator.vibrate) navigator.vibrate([18, 40, 18]);
+  location.replace('/onboarding');
+});
 </script>
 
 <!-- ═══ COMPOSE SELECTOR BOTTOM SHEET (shared) ═══ -->

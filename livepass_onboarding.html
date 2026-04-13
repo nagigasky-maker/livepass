@@ -232,12 +232,17 @@ html,body{height:100%;background:var(--bg);color:var(--fg);font-family:'Inter',s
       <div class="roadmap-list" id="roadmap-list"></div>
     </div>
     <div class="step-footer">
-      <button class="dash-btn" onclick="alert('ダッシュボードへ移動します')">ダッシュボードへ →</button>
+      <button class="dash-btn" id="finishBtn" type="button">アカウントを作成して始める →</button>
     </div>
   </div>
 
 </div>
 <script>
+// ─── Redirect away if an account already exists ──────────────────
+if (localStorage.getItem('livepass_account_name')) {
+  // Returning user — skip the sign-up flow entirely
+  location.replace('/home');
+}
 const KINDS = [
   {id:"dj",      label:"DJ",        sub:"Mix / Live set / Radio", color:"#9FE1CB"},
   {id:"dancer",  label:"Dancer",    sub:"Solo / Crew / Company",  color:"#AFA9EC"},
@@ -444,6 +449,39 @@ function startWelcome(){
 buildKinds();
 buildGoals();
 setTimeout(startWelcome, 500);
+
+// ─── Finish button: persist to localStorage and enter the app ──────────────
+document.getElementById('finishBtn')?.addEventListener('click', () => {
+  const nameJa = document.getElementById('name-ja').value.trim();
+  const nameEn = document.getElementById('name-en').value.trim();
+  if (!nameJa && !nameEn) {
+    alert('活動名を入力してから続行してください');
+    goStep(3);
+    return;
+  }
+  const kind = KINDS.find(k => k.id === selectedKind);
+  // English name becomes the canonical account name (used as the @handle
+  // across profile, messages, credits, etc). Default to the Japanese
+  // name uppercased if English wasn't provided.
+  const accountName = (nameEn || nameJa).toUpperCase();
+  try {
+    localStorage.setItem('livepass_account_name', accountName);
+    localStorage.setItem('livepass_account_name_ja', nameJa);
+    localStorage.setItem('livepass_account_name_en', nameEn);
+    if (kind) localStorage.setItem('livepass_role', kind.label);
+    if (selectedKind) localStorage.setItem('livepass_kind', selectedKind);
+    if (selectedGenre) localStorage.setItem('livepass_style', selectedGenre);
+    if (selectedGoals.length) localStorage.setItem('livepass_goals', JSON.stringify(selectedGoals));
+    localStorage.setItem('livepass_onboarded_at', new Date().toISOString());
+    // Mark this browser as signed in; sign-out clears this key.
+    localStorage.setItem('livepass_signed_in', '1');
+  } catch (e) {
+    alert('保存に失敗しました: ' + e.message);
+    return;
+  }
+  if (navigator.vibrate) navigator.vibrate([18, 40, 18]);
+  location.href = '/home';
+});
 </script>
 </body>
 </html>
