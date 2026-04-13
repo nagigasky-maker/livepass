@@ -263,7 +263,9 @@ html.pwa-mode #deck {
 .amd-cs-close { position:absolute; top:max(22px, calc(env(safe-area-inset-top) + 14px)); left:24px; z-index:10000; background:none; border:none; color:rgba(237,235,230,0.5); font-size:11px; letter-spacing:0.28em; text-transform:uppercase; cursor:pointer; }
 .amd-cs-title { position:absolute; top:max(24px, calc(env(safe-area-inset-top) + 14px)); left:50%; transform:translateX(-50%); z-index:10000; font-size:9px; letter-spacing:0.38em; text-transform:uppercase; color:rgba(237,235,230,0.3); white-space:nowrap; }
 #cardStackStage { position:absolute; inset:0; }
-.amd-card { position:absolute; inset:0; will-change:transform,opacity; overflow:hidden; background:#0a0d16; }
+.amd-card { position:absolute; inset:0; will-change:transform,opacity; overflow:hidden; background:#0a0d16; pointer-events:none; }
+/* Only the active card is interactive AND sits on top of the stack */
+.amd-card.amd-card-active { pointer-events:auto; z-index:9999 !important; }
 
 /* NEW TWO-PANE LAYOUT
    ────────────────────
@@ -1830,10 +1832,9 @@ function _buildCardStack(stage,artists){
 function _showCard(idx,animate){
   _apArtists.forEach((_,i)=>{
     const el=document.getElementById('amc-'+i); if(!el) return;
-    /* Only the active card receives taps — inactive cards (opacity:0 but
-       still in the DOM) must not intercept clicks meant for the visible
-       card below them in the z stack. */
-    el.style.pointerEvents = (i === idx) ? 'auto' : 'none';
+    /* Only the active card is interactive AND z-index-topped. Inactive
+       cards (opacity:0 but still in the DOM) must not intercept clicks. */
+    el.classList.toggle('amd-card-active', i === idx);
     if(i<idx) gsap.set(el,{rotationX:40,rotationZ:0,scale:0.72,opacity:0,transformPerspective:800,transformOrigin:'50% 10%'});
     else if(i===idx){
       /* Auto-fit bio font-size BEFORE word-wrap so measurement is accurate */
