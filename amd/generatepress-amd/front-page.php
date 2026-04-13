@@ -831,9 +831,13 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
               </div>
             </div>
 
-            <!-- Page 7: IMG_6247 (new, image only) -->
+            <!-- Page 7: IMG_6247 — AKAKI NAMPEI · Berlin 2024 -->
             <div class="zine-page-flip zine-page-layer" data-layer="7">
-              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/IMG_6247-scaled-e1769346260398.jpeg" alt="">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/IMG_6247-scaled-e1769346260398.jpeg" alt="AMD Berlin 2024">
+              <div class="zine-card-vig"></div>
+              <div class="zine-card-body">
+                <div class="zine-page-back-credit">Artist — AKAKI NAMPEI<br>Location — Berlin, Germany 2024</div>
+              </div>
             </div>
 
             <!-- Page 6: EP.03 Teaser — AKAKI NAMPEI (original) -->
