@@ -1243,9 +1243,13 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
       <?php
       $party_artists_list2 = $party_artists ?? [];
       $grouped2 = ['dj'=>[], 'bar'=>[], 'dresser'=>[]];
+      $fdoor_names = ['Yacheemi','Nina Yamada','Bungo','Ali','Ayana'];
       foreach($party_artists_list2 as $pa2){
         $role2 = strtolower(get_field('role',$pa2->ID) ?? '');
-        if(str_contains($role2,'dresser')||str_contains($role2,'dancer')||str_contains($role2,'dance')||str_contains($role2,'style')){
+        $name2 = trim($pa2->post_title);
+        if(in_array($name2, $fdoor_names, true)){
+          $grouped2['bar'][] = $pa2;
+        } elseif(str_contains($role2,'dresser')||str_contains($role2,'dancer')||str_contains($role2,'dance')||str_contains($role2,'style')){
           $grouped2['dresser'][] = $pa2;
         } elseif(str_contains($role2,'bar')||str_contains($role2,'fdoor')||str_contains($role2,'bartender')){
           $grouped2['bar'][] = $pa2;
@@ -1290,9 +1294,13 @@ var _amdThemeUrl = '<?= get_stylesheet_directory_uri() ?>';
 var _amdArtists = <?php
 $out = ['dj'=>[], 'bar'=>[], 'dresser'=>[]];
 $party_artists_all = $party_artists ?? [];
+$fdoor_names_all = ['Yacheemi','Nina Yamada','Bungo','Ali','Ayana'];
 foreach($party_artists_all as $pa_all){
   $role_all = strtolower(get_field('role',$pa_all->ID) ?? '');
-  if(str_contains($role_all,'dresser') || str_contains($role_all,'dancer') || str_contains($role_all,'dance') || str_contains($role_all,'style')){
+  $name_all = trim($pa_all->post_title);
+  if(in_array($name_all, $fdoor_names_all, true)){
+    $group_all = 'bar';
+  } elseif(str_contains($role_all,'dresser') || str_contains($role_all,'dancer') || str_contains($role_all,'dance') || str_contains($role_all,'style')){
     $group_all = 'dresser';
   } elseif(str_contains($role_all,'bar') || str_contains($role_all,'fdoor') || str_contains($role_all,'bartender')){
     $group_all = 'bar';
