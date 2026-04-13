@@ -264,10 +264,11 @@ html.pwa-mode #deck {
 .amd-cs-title { position:absolute; top:max(24px, calc(env(safe-area-inset-top) + 14px)); left:50%; transform:translateX(-50%); z-index:10000; font-size:9px; letter-spacing:0.38em; text-transform:uppercase; color:rgba(237,235,230,0.3); white-space:nowrap; }
 #cardStackStage { position:absolute; inset:0; }
 .amd-card { position:absolute; inset:0; will-change:transform,opacity; overflow:hidden; }
-.amd-card-content { position:absolute; top:0; bottom:0; left:20px; right:20px; z-index:2; display:flex; flex-direction:column; padding:max(60px,calc(env(safe-area-inset-top)+40px)) 0 80px; box-sizing:border-box; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; touch-action:pan-y; }
-.amd-card-content > * { flex-shrink:0; }
-.amd-card-content > :first-child { margin-top:0; }
-.amd-card-content::before { content:""; flex:1 1 0; min-height:0; }
+/* Scroll container: plain block layout, no flex, no -webkit-overflow-scrolling.
+   Flex + transformed ancestor + -webkit-overflow-scrolling had WebKit bugs
+   that squeezed the bio text and killed touch scroll. Natural top-to-bottom
+   flow with overflow-y:auto reliably scrolls the full bio. */
+.amd-card-content { position:absolute; top:0; bottom:0; left:20px; right:20px; z-index:2; padding:max(60px,calc(env(safe-area-inset-top)+40px)) 0 100px; box-sizing:border-box; overflow-y:auto; overscroll-behavior:contain; touch-action:pan-y; }
 .amd-card-content::-webkit-scrollbar { display:none; }
 .amd-card-num { font-size:10px; letter-spacing:0.32em; color:rgba(237,235,230,0.28); margin-top:16px; }
 .amd-card-nav { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; align-items:center; padding:14px 24px; z-index:300; border-top:1px solid rgba(237,235,230,0.1); background:rgba(12,15,26,0.6); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
@@ -308,6 +309,7 @@ html.pwa-mode #deck {
 .zine-page-layer[data-layer="3"] { z-index:4; }
 .zine-page-layer[data-layer="4"] { z-index:3; }
 .zine-page-layer[data-layer="5"] { z-index:2; }
+.zine-page-layer[data-layer="6"] { z-index:1; }
 .zine-page-back-credit { font-size:9px; font-weight:300; letter-spacing:.2em; color:rgba(237,235,230,.5); margin-top:12px; line-height:1.8; }
 /* Flippable pages */
 .zine-page-flip { transform-origin:left center; transition:transform 0.9s cubic-bezier(0.4,0,0.2,1); backface-visibility:hidden; will-change:transform; }
@@ -791,75 +793,45 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         <div class="zine-book" id="zineBook07" data-zine-card data-page="0" onclick="flipZineBook(event)">
           <div class="zine-book-inner">
 
-            <!-- Page 5 (deepest): NEXT UPDATE -->
-            <div class="zine-page-back zine-page-layer" data-layer="5" style="background:#0C0F1A;">
+            <!-- Page 6 (deepest): NEXT FRIDAY back — red/white converted to gray -->
+            <div class="zine-page-back zine-page-layer" data-layer="6" style="background:#0C0F1A;">
               <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;">
-                <div style="font-size:8px;letter-spacing:.6em;text-transform:uppercase;color:var(--red);margin-bottom:20px;">COMING SOON</div>
-                <div style="font-family:Arial,'Arial Black',sans-serif;font-size:clamp(32px,8vw,52px);font-weight:900;color:var(--white);line-height:.9;letter-spacing:-.02em;">NEXT<br>FRIDAY</div>
+                <div style="font-size:8px;letter-spacing:.6em;text-transform:uppercase;color:rgba(237,235,230,.5);margin-bottom:20px;">COMING SOON</div>
+                <div style="font-family:Arial,'Arial Black',sans-serif;font-size:clamp(32px,8vw,52px);font-weight:900;color:rgba(237,235,230,.7);line-height:.9;letter-spacing:-.02em;">NEXT<br>FRIDAY</div>
                 <div style="font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:rgba(237,235,230,.35);margin-top:16px;">UPDATE</div>
-                <div style="width:40px;height:1px;background:var(--red);margin:24px 0;"></div>
+                <div style="width:40px;height:1px;background:rgba(237,235,230,.3);margin:24px 0;"></div>
                 <div style="font-size:10px;letter-spacing:.2em;color:rgba(237,235,230,.3);">ALL MUST DANCE™ ZINE</div>
               </div>
             </div>
 
-            <!-- Page 4: EP01 — MOZYSKEY -->
+            <!-- Page 5: IMG_6247 (image only) -->
+            <div class="zine-page-flip zine-page-layer" data-layer="5">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/IMG_6247-scaled-e1769346260398.jpeg" alt="">
+            </div>
+
+            <!-- Page 4: g1111 (image only) -->
             <div class="zine-page-flip zine-page-layer" data-layer="4">
-              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/g00-scaled.jpg" alt="AMD EP01">
-              <div class="zine-card-vig"></div>
-              <div class="zine-card-body">
-                <div class="zine-card-cat">AMD™ EP.01 · VISUAL POSTER</div>
-                <div class="zine-card-title" style="font-size:clamp(22px,6vw,36px);">ALL MUST<br>DANCE™</div>
-                <div class="zine-card-meta">EP.01 · The Beginning</div>
-                <div class="zine-page-back-credit">Photo — NOBBY<br>Art Support — MOZYSKEY</div>
-              </div>
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/g1111.jpg" alt="">
             </div>
 
-            <!-- Page 3: EP03 — GREEN TECK -->
+            <!-- Page 3: g455 (image only) -->
             <div class="zine-page-flip zine-page-layer" data-layer="3">
-              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/g15.jpg" alt="AMD EP03">
-              <div class="zine-card-vig"></div>
-              <div class="zine-card-body">
-                <div class="zine-card-cat">AMD™ EP.03</div>
-                <div class="zine-card-title" style="font-size:clamp(22px,6vw,36px);">ALL MUST<br>DANCE™</div>
-                <div class="zine-card-meta">EP.03 · Tokyo</div>
-                <div class="zine-page-back-credit">Photo — NOBBY<br>Dancer — GREEN TECK<br>Wear Support — Dickies<br>Location — TOKYO</div>
-              </div>
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/g455-scaled.jpg" alt="">
             </div>
 
-            <!-- Page 2: EP02 — AKAKI NAMPEI -->
+            <!-- Page 2: 92C071F3 (image only) -->
             <div class="zine-page-flip zine-page-layer" data-layer="2">
-              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/g1.jpg" alt="AMD EP02">
-              <div class="zine-card-vig"></div>
-              <div class="zine-card-body">
-                <div class="zine-card-cat">AMD™ EP.02</div>
-                <div class="zine-card-title" style="font-size:clamp(22px,6vw,36px);">ALL MUST<br>DANCE™</div>
-                <div class="zine-card-meta">EP.02</div>
-                <div class="zine-page-back-credit">Photo — AKAKI NAMPEI<br>Shadow Dancer — Yasumin &amp; MIMI<br>Location — clubasia</div>
-              </div>
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/92C071F3-F3C8-4D57-B12A-92FBAE7E0EC4.jpg" alt="">
             </div>
 
-            <!-- Page 1: EP03 Teaser — AKAKI NAMPEI -->
+            <!-- Page 1: g0000 (image only) -->
             <div class="zine-page-flip zine-page-layer" data-layer="1">
-              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88-2024-07-02-20.13.45.png" alt="AMD EP03 Teaser">
-              <div class="zine-card-vig"></div>
-              <div class="zine-card-body">
-                <div class="zine-card-cat">TEASER · AMD™ EP.03</div>
-                <div class="zine-card-title" style="font-size:clamp(22px,6vw,36px);">ALL MUST<br>DANCE™</div>
-                <div class="zine-card-meta">EP.03 · Amsterdam</div>
-                <div class="zine-page-back-credit">Photo — NOBBY<br>Location — Amsterdam in Friend Room</div>
-              </div>
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/g0000-scaled.jpg" alt="">
             </div>
 
-            <!-- Cover (top): EP.07 HOME COMING -->
+            <!-- Cover (top): 20260323 GIF (image only) -->
             <div class="zine-page-flip zine-page-layer" data-layer="0">
-              <img loading="lazy" src="<?= get_stylesheet_directory_uri() ?>/logos/amd2026asia.jpg" alt="EP.07">
-              <div class="zine-card-vig"></div>
-              <div class="zine-card-num">007</div>
-              <div class="zine-card-body">
-                <div class="zine-card-cat">PARTY · FEATURED</div>
-                <div class="zine-card-title">HOME<br>COMING</div>
-                <div class="zine-card-meta">clubasia · Shibuya · 2026.05.04</div>
-              </div>
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/03/20260323_152503.gif" alt="">
             </div>
 
             <!-- Close + hint -->
