@@ -2,7 +2,7 @@
   "name": "LIVE PASS",
   "short_name": "LIVE PASS",
   "description": "アーティストが100%表現できるプラットフォーム",
-  "start_url": "/home",
+  "start_url": "/start",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
