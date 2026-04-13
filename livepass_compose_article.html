@@ -365,6 +365,28 @@ textarea.input-box{resize:vertical;min-height:160px;line-height:1.8;font-size:13
 </style>
 </head>
 <body>
+<script>
+/* PWA NAV FIX — iOS Safari breaks out of standalone mode on <a href>
+   clicks unless we intercept them. Catch every same-origin link click
+   and navigate via location.href so the address bar stays hidden. */
+(function(){
+  if (!('standalone' in navigator) && !window.matchMedia('(display-mode: standalone)').matches) return;
+  document.addEventListener('click', function(e){
+    var a = e.target.closest && e.target.closest('a');
+    if (!a) return;
+    var href = a.getAttribute('href');
+    if (!href) return;
+    // Skip: external, new tab, hash only, mailto/tel, explicit target
+    if (a.target && a.target !== '_self') return;
+    if (href.indexOf('http') === 0 && a.host !== location.host) return;
+    if (href.charAt(0) === '#') return;
+    if (/^(mailto|tel):/.test(href)) return;
+    e.preventDefault();
+    location.href = a.href;
+  }, true);
+})();
+</script>
+
 
 <header class="hdr">
   <a href="/home" class="hdr-back">← Back</a>
