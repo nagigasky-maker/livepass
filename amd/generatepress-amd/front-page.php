@@ -278,14 +278,14 @@ html.pwa-mode #deck {
 
 .amd-card-info { position:absolute; left:0; right:0; top:55%; bottom:0; background:#0a0d16; display:flex; flex-direction:column; z-index:2; }
 .amd-card-header { flex-shrink:0; padding:18px 26px 14px; }
-.amd-card-bio { flex:1 1 auto; min-height:0; overflow-y:auto; padding:6px 26px calc(60px + env(safe-area-inset-bottom)) 26px; overscroll-behavior:contain; touch-action:pan-y; }
+.amd-card-bio { flex:1 1 auto; min-height:0; overflow-y:auto; padding:6px 26px calc(42px + env(safe-area-inset-bottom)) 26px; overscroll-behavior:contain; touch-action:pan-y; }
 .amd-card-bio::-webkit-scrollbar { display:none; }
 
 /* Fade at the top of the bio scroll area so scrolled text melts out instead
    of hitting the header with a hard edge */
 .amd-card-bio::before { content:""; position:sticky; top:0; display:block; height:10px; margin-bottom:-10px; background:linear-gradient(to bottom,#0a0d16,transparent); z-index:1; pointer-events:none; }
-.amd-card-nav { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; align-items:center; padding:14px 24px calc(14px + env(safe-area-inset-bottom)) 24px; z-index:300; border-top:1px solid rgba(237,235,230,0.14); background:rgba(12,15,26,0.94); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
-.amd-card-nav-btn { background:none; border:none; color:rgba(237,235,230,0.55); font-size:11px; letter-spacing:0.32em; text-transform:uppercase; cursor:pointer; padding:8px 0; transition:color 0.2s; }
+.amd-card-nav { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; align-items:center; padding:6px 24px calc(6px + env(safe-area-inset-bottom)) 24px; z-index:300; border-top:1px solid rgba(237,235,230,0.14); background:rgba(12,15,26,0.94); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+.amd-card-nav-btn { background:none; border:none; color:rgba(237,235,230,0.55); font-size:10px; letter-spacing:0.32em; text-transform:uppercase; cursor:pointer; padding:4px 0; transition:color 0.2s; }
 .amd-card-nav-btn:hover { color:var(--white); }
 .amd-card-nav-btn:disabled { opacity:0; cursor:default; pointer-events:none; }
 .art-detail-slide { position:absolute; inset:0; transition:transform 0.35s cubic-bezier(0.32,0,0.2,1); }
