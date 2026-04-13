@@ -553,8 +553,8 @@ a.sc:hover { background: rgba(237,235,230,0.06); }
   .menu-footer { flex-wrap:wrap; gap:16px; }
 }
 /* CARD STACK OVERRIDES */
-.amd-card-stack .af-desc { display:block; color:var(--white); overflow:visible; -webkit-line-clamp:unset; }
-.amd-card-stack .af-desc-en { display:none; color:var(--white); overflow:visible; -webkit-line-clamp:unset; }
+.amd-card-stack .af-desc { display:block; color:var(--white); overflow:visible; -webkit-line-clamp:unset; font-size:10px; line-height:1.65; }
+.amd-card-stack .af-desc-en { display:none; color:var(--white); overflow:visible; -webkit-line-clamp:unset; font-size:10px; line-height:1.55; }
 [data-lang="en"] .amd-card-stack .af-desc { display:none; }
 [data-lang="en"] .amd-card-stack .af-desc-en { display:block; }
 body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opacity .2s; }
@@ -1755,8 +1755,9 @@ function _amdWrapWords(el){
 }
 
 /* Auto-fit artist bio text so long descriptions never get cut off.
-   Shrinks .af-desc / .af-desc-en font-size iteratively until the
-   .amd-card-content container no longer overflows. Range: 14 → 8 px. */
+   Starts at the CSS default (10px for card stack) and shrinks down to
+   6px — roughly the smallest newspaper body size — until the
+   .amd-card-content container no longer overflows. */
 function _amdFitBioFontSize(cardEl){
   if(!cardEl) return;
   var content = cardEl.querySelector('.amd-card-content');
@@ -1767,8 +1768,8 @@ function _amdFitBioFontSize(cardEl){
   bios.forEach(function(b){ b.style.fontSize=''; b.style.lineHeight=''; });
   // If content already fits, nothing to do (scroll remains as fallback)
   if(content.scrollHeight <= content.clientHeight + 1) return;
-  var fs = 14;
-  var min = 8;
+  var fs = 10;
+  var min = 6;
   var step = 0.5;
   while(fs > min && content.scrollHeight > content.clientHeight + 1){
     fs -= step;
