@@ -264,12 +264,17 @@ html.pwa-mode #deck {
 .amd-cs-title { position:absolute; top:max(24px, calc(env(safe-area-inset-top) + 14px)); left:50%; transform:translateX(-50%); z-index:10000; font-size:9px; letter-spacing:0.38em; text-transform:uppercase; color:rgba(237,235,230,0.3); white-space:nowrap; }
 #cardStackStage { position:absolute; inset:0; }
 .amd-card { position:absolute; inset:0; will-change:transform,opacity; overflow:hidden; }
-/* Scroll container: plain block layout, no flex, no -webkit-overflow-scrolling.
-   Flex + transformed ancestor + -webkit-overflow-scrolling had WebKit bugs
-   that squeezed the bio text and killed touch scroll. Natural top-to-bottom
-   flow with overflow-y:auto reliably scrolls the full bio. */
-.amd-card-content { position:absolute; top:0; bottom:0; left:20px; right:20px; z-index:2; padding:max(60px,calc(env(safe-area-inset-top)+40px)) 0 100px; box-sizing:border-box; overflow-y:auto; overscroll-behavior:contain; touch-action:pan-y; }
+/* Scroll container: flex column with bottom-alignment via margin-top:auto.
+   Combined with flex-shrink:0 on children so bios don't get squeezed, and
+   with the _amdFitBioFontSize auto-shrink so long text fits naturally at a
+   smaller size. Scroll remains as a fallback for extreme overflow. */
+.amd-card-content { position:absolute; top:0; bottom:0; left:20px; right:20px; z-index:2; display:flex; flex-direction:column; padding:max(60px,calc(env(safe-area-inset-top)+40px)) 0 100px; box-sizing:border-box; overflow-y:auto; overscroll-behavior:contain; touch-action:pan-y; }
+.amd-card-content > * { flex-shrink:0; }
+.amd-card-content > :first-child { margin-top:auto; }
 .amd-card-content::-webkit-scrollbar { display:none; }
+/* Artist photo: default crop focus to upper area so portrait faces stay
+   visible on narrow phone aspect ratios (was: center which cropped faces). */
+.amd-card img { object-position:center 20% !important; }
 .amd-card-num { font-size:10px; letter-spacing:0.32em; color:rgba(237,235,230,0.28); margin-top:16px; }
 .amd-card-nav { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; align-items:center; padding:14px 24px; z-index:300; border-top:1px solid rgba(237,235,230,0.1); background:rgba(12,15,26,0.6); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
 .amd-card-nav-btn { background:none; border:none; color:rgba(237,235,230,0.55); font-size:11px; letter-spacing:0.32em; text-transform:uppercase; cursor:pointer; padding:8px 0; transition:color 0.2s; }
