@@ -265,7 +265,8 @@ html.pwa-mode #deck {
 #cardStackStage { position:absolute; inset:0; }
 .amd-card { position:absolute; inset:0; will-change:transform,opacity; overflow:hidden; }
 .amd-card-content { position:absolute; top:0; bottom:0; left:20px; right:20px; z-index:2; display:flex; flex-direction:column; padding:max(60px,calc(env(safe-area-inset-top)+40px)) 0 80px; box-sizing:border-box; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; touch-action:pan-y; }
-.amd-card-content > :first-child { margin-top:auto; }
+.amd-card-content > :first-child { margin-top:0; }
+.amd-card-content::before { content:""; flex:1 1 0; min-height:0; }
 .amd-card-content::-webkit-scrollbar { display:none; }
 .amd-card-num { font-size:10px; letter-spacing:0.32em; color:rgba(237,235,230,0.28); margin-top:16px; }
 .amd-card-nav { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; align-items:center; padding:14px 24px; z-index:300; border-top:1px solid rgba(237,235,230,0.1); background:rgba(12,15,26,0.6); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
@@ -2137,18 +2138,29 @@ document.addEventListener('DOMContentLoaded', function(){
     }, {passive:false});
   });
 
-  /* Prevent scroll chaining from panels to body/deck */
+  /* Prevent scroll chaining from panels to body/deck.
+     Walk up from the touch target and allow native scroll when any
+     ancestor inside the panel is actually scrollable (works for both
+     inline-styled scrollers like .amd-ticket-overlay's inner div AND
+     class-styled scrollers like .amd-card-content / .amd-ap-inner).
+     Only preventDefault when no scrollable ancestor is found. */
   var panelSelectors = '.amd-ticket-overlay, .amd-artist-panel, .amd-card-stack, .menu-overlay, #videoOverlay, #goodsOverlay';
   document.querySelectorAll(panelSelectors).forEach(function(panel){
     panel.addEventListener('touchmove', function(e){
-      /* Only prevent if panel is open and scrollable content at boundary */
       if(!panel.classList.contains('open')) return;
-      var scrollable = panel.querySelector('[style*="overflow-y:auto"], [style*="overflow-y: auto"]') || panel;
-      var st = scrollable.scrollTop;
-      var sh = scrollable.scrollHeight;
-      var ch = scrollable.clientHeight;
-      /* At top and scrolling up, or at bottom and scrolling down → block */
-      if(sh <= ch) { e.preventDefault(); return; }
+      var el = e.target;
+      while(el && el !== panel.parentNode){
+        if(el.nodeType === 1){
+          var cs = window.getComputedStyle(el);
+          var oy = cs.overflowY;
+          if((oy === 'auto' || oy === 'scroll') && el.scrollHeight > el.clientHeight){
+            return; /* native scroll is possible on this ancestor — let it happen */
+          }
+        }
+        if(el === panel) break;
+        el = el.parentNode;
+      }
+      if(e.cancelable) e.preventDefault();
     }, {passive:false});
   });
 });
