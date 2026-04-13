@@ -268,7 +268,7 @@ html.pwa-mode #deck {
    Combined with flex-shrink:0 on children so bios don't get squeezed, and
    with the _amdFitBioFontSize auto-shrink so long text fits naturally at a
    smaller size. Scroll remains as a fallback for extreme overflow. */
-.amd-card-content { position:absolute; top:0; bottom:0; left:20px; right:20px; z-index:2; display:flex; flex-direction:column; padding:max(60px,calc(env(safe-area-inset-top)+40px)) 0 78px; box-sizing:border-box; overflow-y:auto; overscroll-behavior:contain; touch-action:pan-y; }
+.amd-card-content { position:absolute; top:0; bottom:0; left:20px; right:20px; z-index:2; display:flex; flex-direction:column; padding:max(88px,calc(env(safe-area-inset-top)+64px)) 0 82px; box-sizing:border-box; overflow-y:auto; overscroll-behavior:contain; touch-action:pan-y; }
 .amd-card-content > * { flex-shrink:0; }
 .amd-card-content > :first-child { margin-top:auto; }
 .amd-card-content::-webkit-scrollbar { display:none; }
@@ -1787,8 +1787,8 @@ function _amdWrapWords(el){
 
 /* Auto-fit artist bio text so long descriptions never get cut off.
    Starts at the CSS default (10px for card stack) and shrinks down to
-   8px until the .amd-card-content container no longer overflows.
-   If 8px still isn't enough, scroll takes over as a fallback. */
+   9px until the .amd-card-content container no longer overflows.
+   If 9px still isn't enough, scroll takes over as a fallback. */
 function _amdFitBioFontSize(cardEl){
   if(!cardEl) return;
   var content = cardEl.querySelector('.amd-card-content');
@@ -1800,7 +1800,7 @@ function _amdFitBioFontSize(cardEl){
   // If content already fits, nothing to do (scroll remains as fallback)
   if(content.scrollHeight <= content.clientHeight + 1) return;
   var fs = 10;
-  var min = 8;
+  var min = 9;
   var step = 0.5;
   while(fs > min && content.scrollHeight > content.clientHeight + 1){
     fs -= step;
