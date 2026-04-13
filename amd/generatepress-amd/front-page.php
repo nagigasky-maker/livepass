@@ -268,20 +268,25 @@ html.pwa-mode #deck {
    Combined with flex-shrink:0 on children so bios don't get squeezed, and
    with the _amdFitBioFontSize auto-shrink so long text fits naturally at a
    smaller size. Scroll remains as a fallback for extreme overflow. */
-.amd-card-content { position:absolute; top:0; bottom:0; left:20px; right:20px; z-index:2; display:flex; flex-direction:column; padding:max(88px,calc(env(safe-area-inset-top)+64px)) 0 82px; box-sizing:border-box; overflow-y:auto; overscroll-behavior:contain; touch-action:pan-y; }
+/* .amd-card-content bottom padding locks the bio's last line to a fixed
+   offset above .amd-card-nav. Computed as (nav height at current device)
+   + 28px breathing margin, so the last line of text is ALWAYS 28px above
+   the nav bar border, regardless of iPhone home indicator or long bio. */
+.amd-card-content { position:absolute; top:0; bottom:0; left:20px; right:20px; z-index:2; display:flex; flex-direction:column; padding:max(88px,calc(env(safe-area-inset-top)+64px)) 0 calc(68px + env(safe-area-inset-bottom)); box-sizing:border-box; overflow-y:auto; overscroll-behavior:contain; touch-action:pan-y; }
 .amd-card-content > * { flex-shrink:0; }
 .amd-card-content > :first-child { margin-top:auto; }
 .amd-card-content::-webkit-scrollbar { display:none; }
-/* Bio text: a touch more breathing room below the last line */
+/* No extra margin on the bio paragraphs — padding-bottom on the
+   container already handles the gap from the nav bar. */
 .amd-card-content .af-desc,
-.amd-card-content .af-desc-en { margin-bottom:14px; }
+.amd-card-content .af-desc-en { margin-bottom:0; }
 /* Artist photo: default crop focus to upper area so portrait faces stay
    visible on narrow phone aspect ratios (was: center which cropped faces). */
 .amd-card img { object-position:center 20% !important; }
 /* Page counter floated top-right so it doesn't take vertical space from
    the bio block and the photo stays maximally visible */
 .amd-card-num { position:absolute; top:max(22px,calc(env(safe-area-inset-top)+12px)); right:22px; font-size:9px; letter-spacing:0.32em; color:rgba(237,235,230,0.42); z-index:3; margin-top:0; }
-.amd-card-nav { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; align-items:center; padding:14px 24px; z-index:300; border-top:1px solid rgba(237,235,230,0.1); background:rgba(12,15,26,0.6); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
+.amd-card-nav { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; align-items:center; padding:14px 24px calc(14px + env(safe-area-inset-bottom)) 24px; z-index:300; border-top:1px solid rgba(237,235,230,0.14); background:rgba(12,15,26,0.94); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
 .amd-card-nav-btn { background:none; border:none; color:rgba(237,235,230,0.55); font-size:11px; letter-spacing:0.32em; text-transform:uppercase; cursor:pointer; padding:8px 0; transition:color 0.2s; }
 .amd-card-nav-btn:hover { color:var(--white); }
 .amd-card-nav-btn:disabled { opacity:0; cursor:default; pointer-events:none; }
