@@ -1782,8 +1782,8 @@ function _amdWrapWords(el){
 
 /* Auto-fit artist bio text so long descriptions never get cut off.
    Starts at the CSS default (10px for card stack) and shrinks down to
-   6px — roughly the smallest newspaper body size — until the
-   .amd-card-content container no longer overflows. */
+   8px until the .amd-card-content container no longer overflows.
+   If 8px still isn't enough, scroll takes over as a fallback. */
 function _amdFitBioFontSize(cardEl){
   if(!cardEl) return;
   var content = cardEl.querySelector('.amd-card-content');
@@ -1795,7 +1795,7 @@ function _amdFitBioFontSize(cardEl){
   // If content already fits, nothing to do (scroll remains as fallback)
   if(content.scrollHeight <= content.clientHeight + 1) return;
   var fs = 10;
-  var min = 6;
+  var min = 8;
   var step = 0.5;
   while(fs > min && content.scrollHeight > content.clientHeight + 1){
     fs -= step;
