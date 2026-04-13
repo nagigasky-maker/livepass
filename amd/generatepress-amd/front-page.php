@@ -258,13 +258,15 @@ html.pwa-mode #deck {
 .amd-ap-group-sub { font-size:9px; letter-spacing:0.38em; text-transform:uppercase; color:var(--red); margin-bottom:4px; }
 .amd-ap-group-name { font-size:24px; font-weight:300; letter-spacing:0.05em; color:var(--white); line-height:1.1; }
 .amd-ap-group-members { font-size:10px; letter-spacing:0.18em; color:rgba(237,235,230,0.45); margin-top:6px; line-height:1.8; }
-.amd-card-stack { position:fixed; inset:0; z-index:9100; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); background:var(--black); touch-action:pan-y; overflow-x:hidden; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; isolation:isolate; }
+.amd-card-stack { position:fixed; inset:0; z-index:9100; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); background:var(--black); overflow:hidden; overscroll-behavior:contain; isolation:isolate; }
 .amd-card-stack.open { transform:translateY(0); }
 .amd-cs-close { position:absolute; top:max(22px, calc(env(safe-area-inset-top) + 14px)); left:24px; z-index:10000; background:none; border:none; color:rgba(237,235,230,0.5); font-size:11px; letter-spacing:0.28em; text-transform:uppercase; cursor:pointer; }
 .amd-cs-title { position:absolute; top:max(24px, calc(env(safe-area-inset-top) + 14px)); left:50%; transform:translateX(-50%); z-index:10000; font-size:9px; letter-spacing:0.38em; text-transform:uppercase; color:rgba(237,235,230,0.3); white-space:nowrap; }
 #cardStackStage { position:absolute; inset:0; }
 .amd-card { position:absolute; inset:0; will-change:transform,opacity; overflow:hidden; }
-.amd-card-content { position:absolute; top:0; bottom:0; left:20px; right:20px; z-index:2; display:flex; flex-direction:column; justify-content:flex-end; padding-bottom:44px; box-sizing:border-box; }
+.amd-card-content { position:absolute; top:0; bottom:0; left:20px; right:20px; z-index:2; display:flex; flex-direction:column; padding:max(60px,calc(env(safe-area-inset-top)+40px)) 0 80px; box-sizing:border-box; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; touch-action:pan-y; }
+.amd-card-content > :first-child { margin-top:auto; }
+.amd-card-content::-webkit-scrollbar { display:none; }
 .amd-card-num { font-size:10px; letter-spacing:0.32em; color:rgba(237,235,230,0.28); margin-top:16px; }
 .amd-card-nav { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; align-items:center; padding:14px 24px; z-index:300; border-top:1px solid rgba(237,235,230,0.1); background:rgba(12,15,26,0.6); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
 .amd-card-nav-btn { background:none; border:none; color:rgba(237,235,230,0.55); font-size:11px; letter-spacing:0.32em; text-transform:uppercase; cursor:pointer; padding:8px 0; transition:color 0.2s; }
@@ -1243,10 +1245,10 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
       <?php
       $party_artists_list2 = $party_artists ?? [];
       $grouped2 = ['dj'=>[], 'bar'=>[], 'dresser'=>[]];
-      $fdoor_names = ['Yacheemi','Nina Yamada','Bungo','Ali','Ayana'];
+      $fdoor_names = ['yacheemi','nina yamada','bungo','ali','ayana'];
       foreach($party_artists_list2 as $pa2){
         $role2 = strtolower(get_field('role',$pa2->ID) ?? '');
-        $name2 = trim($pa2->post_title);
+        $name2 = strtolower(trim($pa2->post_title));
         if(in_array($name2, $fdoor_names, true)){
           $grouped2['bar'][] = $pa2;
         } elseif(str_contains($role2,'dresser')||str_contains($role2,'dancer')||str_contains($role2,'dance')||str_contains($role2,'style')){
@@ -1294,10 +1296,10 @@ var _amdThemeUrl = '<?= get_stylesheet_directory_uri() ?>';
 var _amdArtists = <?php
 $out = ['dj'=>[], 'bar'=>[], 'dresser'=>[]];
 $party_artists_all = $party_artists ?? [];
-$fdoor_names_all = ['Yacheemi','Nina Yamada','Bungo','Ali','Ayana'];
+$fdoor_names_all = ['yacheemi','nina yamada','bungo','ali','ayana'];
 foreach($party_artists_all as $pa_all){
   $role_all = strtolower(get_field('role',$pa_all->ID) ?? '');
-  $name_all = trim($pa_all->post_title);
+  $name_all = strtolower(trim($pa_all->post_title));
   if(in_array($name_all, $fdoor_names_all, true)){
     $group_all = 'bar';
   } elseif(str_contains($role_all,'dresser') || str_contains($role_all,'dancer') || str_contains($role_all,'dance') || str_contains($role_all,'style')){
