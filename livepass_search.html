@@ -213,6 +213,17 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 </style>
 </head>
 <body>
+<script>
+/* AUTH GUARD — first visit redirect to /onboarding if no account exists */
+(function(){
+  try {
+    if (!localStorage.getItem('livepass_account_name')) {
+      location.replace('/onboarding');
+    }
+  } catch(e) {}
+})();
+</script>
+
 
 <div class="topbar">
   <a class="tb-brand" href="/home" aria-label="LIVE PASS"><img src="/livepasslogo.png" alt="LIVE PASS"></a>
