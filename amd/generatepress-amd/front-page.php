@@ -268,14 +268,19 @@ html.pwa-mode #deck {
    Combined with flex-shrink:0 on children so bios don't get squeezed, and
    with the _amdFitBioFontSize auto-shrink so long text fits naturally at a
    smaller size. Scroll remains as a fallback for extreme overflow. */
-.amd-card-content { position:absolute; top:0; bottom:0; left:20px; right:20px; z-index:2; display:flex; flex-direction:column; padding:max(60px,calc(env(safe-area-inset-top)+40px)) 0 100px; box-sizing:border-box; overflow-y:auto; overscroll-behavior:contain; touch-action:pan-y; }
+.amd-card-content { position:absolute; top:0; bottom:0; left:20px; right:20px; z-index:2; display:flex; flex-direction:column; padding:max(60px,calc(env(safe-area-inset-top)+40px)) 0 78px; box-sizing:border-box; overflow-y:auto; overscroll-behavior:contain; touch-action:pan-y; }
 .amd-card-content > * { flex-shrink:0; }
 .amd-card-content > :first-child { margin-top:auto; }
 .amd-card-content::-webkit-scrollbar { display:none; }
+/* Bio text: a touch more breathing room below the last line */
+.amd-card-content .af-desc,
+.amd-card-content .af-desc-en { margin-bottom:14px; }
 /* Artist photo: default crop focus to upper area so portrait faces stay
    visible on narrow phone aspect ratios (was: center which cropped faces). */
 .amd-card img { object-position:center 20% !important; }
-.amd-card-num { font-size:10px; letter-spacing:0.32em; color:rgba(237,235,230,0.28); margin-top:16px; }
+/* Page counter floated top-right so it doesn't take vertical space from
+   the bio block and the photo stays maximally visible */
+.amd-card-num { position:absolute; top:max(22px,calc(env(safe-area-inset-top)+12px)); right:22px; font-size:9px; letter-spacing:0.32em; color:rgba(237,235,230,0.42); z-index:3; margin-top:0; }
 .amd-card-nav { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; align-items:center; padding:14px 24px; z-index:300; border-top:1px solid rgba(237,235,230,0.1); background:rgba(12,15,26,0.6); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
 .amd-card-nav-btn { background:none; border:none; color:rgba(237,235,230,0.55); font-size:11px; letter-spacing:0.32em; text-transform:uppercase; cursor:pointer; padding:8px 0; transition:color 0.2s; }
 .amd-card-nav-btn:hover { color:var(--white); }
@@ -1813,7 +1818,7 @@ function _buildCardStack(stage,artists){
     const photoHtml=a.photo?`<img src="${a.photo}" alt="${a.name}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;">`:'';
     const scHtml=a.sc?`<a href="${a.sc}" target="_blank" class="af-link"><img src="${_amdThemeUrl}/logos/sc.png" style="width:28px;height:28px;object-fit:contain;opacity:0.82;"></a>`:'';
     const igHtml=a.ig?`<a href="${a.ig}" target="_blank" class="af-link"><img src="${_amdThemeUrl}/logos/insta.png" style="width:28px;height:28px;object-fit:contain;opacity:0.82;"></a>`:'';
-    card.innerHTML=`<div style="position:absolute;inset:0;">${photoHtml}</div><div class="vig-artist"></div><div class="amd-card-content"><div class="af-genre">${a.genre||''}</div><div class="af-name">${a.name}</div><div class="af-links" style="margin-bottom:14px;">${scHtml}${igHtml}</div><p class="af-desc">${(a.bio_ja||'').replace(/\n/g,'<br>')}</p><p class="af-desc-en">${(a.bio_en||'').replace(/\n/g,'<br>')}</p><div class="amd-card-num">${String(i+1).padStart(2,'0')} / ${String(artists.length).padStart(2,'0')}</div></div>`;
+    card.innerHTML=`<div style="position:absolute;inset:0;">${photoHtml}</div><div class="vig-artist"></div><div class="amd-card-num">${String(i+1).padStart(2,'0')} / ${String(artists.length).padStart(2,'0')}</div><div class="amd-card-content"><div class="af-genre">${a.genre||''}</div><div class="af-name">${a.name}</div><div class="af-links" style="margin-bottom:14px;">${scHtml}${igHtml}</div><p class="af-desc">${(a.bio_ja||'').replace(/\n/g,'<br>')}</p><p class="af-desc-en">${(a.bio_en||'').replace(/\n/g,'<br>')}</p></div>`;
     stage.appendChild(card);
   });
   const overlay=document.getElementById('cardStackOverlay');
