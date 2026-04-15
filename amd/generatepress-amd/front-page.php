@@ -600,12 +600,31 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 .unlock-info-row:first-of-type { border-top:1px solid rgba(237,235,230,.08); }
 .unlock-info-row .ik { font-size:9px; font-weight:400; letter-spacing:.38em; text-transform:uppercase; color:rgba(237,235,230,.55); }
 .unlock-info-row .iv { font-size:12px; font-weight:300; text-align:right; color:var(--white); letter-spacing:.04em; }
-.unlock-artwork-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
-.unlock-art-card { display:block; text-decoration:none; color:var(--white); }
-.unlock-art-img { aspect-ratio:3/4; position:relative; overflow:hidden; border:1px solid rgba(237,235,230,.08); background:#0a0a0a; }
-.unlock-art-label { padding:10px 2px 0; }
-.unlock-art-title { font-family:Arial,"Arial Black",sans-serif; font-size:11px; font-weight:900; letter-spacing:.02em; color:var(--white); margin-bottom:3px; }
-.unlock-art-credit { font-size:8px; font-weight:300; letter-spacing:.12em; color:rgba(237,235,230,.42); text-transform:uppercase; }
+/* UNSEEN CITY poster card */
+.unlock-poster-card { border:1px solid rgba(237,235,230,.08); background:#050505; overflow:hidden; margin-bottom:14px; }
+.unlock-poster-visual { position:relative; aspect-ratio:3/4; background:radial-gradient(ellipse at 50% 40%, #1a1a24 0%, #050508 70%); overflow:hidden; display:flex; align-items:center; justify-content:center; }
+.unlock-poster-light { position:absolute; top:-20%; left:-20%; right:-20%; bottom:-20%; background:radial-gradient(ellipse at 30% 30%, rgba(232,235,240,.08) 0%, transparent 50%); animation:posterLight 6s ease-in-out infinite; pointer-events:none; }
+@keyframes posterLight {
+  0%,100%{opacity:.3; transform:translate(0,0);}
+  50%{opacity:1; transform:translate(10%,5%);}
+}
+.unlock-poster-text { position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; text-align:center; }
+.unlock-poster-text .upt-line1, .unlock-poster-text .upt-line2 {
+  font-family:Arial,"Arial Black",sans-serif; font-weight:900;
+  font-size:clamp(36px,10vw,58px); line-height:.9; letter-spacing:.02em;
+  color:rgba(237,235,230,.1);
+  background:linear-gradient(135deg, rgba(237,235,230,.85) 0%, rgba(237,235,230,.1) 50%, rgba(237,235,230,.6) 100%);
+  -webkit-background-clip:text; background-clip:text;
+  -webkit-text-fill-color:transparent;
+  text-shadow:0 0 40px rgba(237,235,230,.2);
+  mix-blend-mode:screen;
+}
+.unlock-poster-limited { position:absolute; top:16px; right:16px; z-index:3; font-size:8px; letter-spacing:.38em; text-transform:uppercase; color:var(--red); border:1px solid rgba(232,16,10,.5); padding:4px 10px; font-weight:600; background:rgba(12,15,26,.6); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); }
+.unlock-poster-body { padding:20px 20px 22px; border-top:1px solid rgba(237,235,230,.06); }
+.unlock-poster-title-ja { font-family:Arial,"Arial Black",sans-serif; font-size:20px; font-weight:900; letter-spacing:.02em; color:var(--white); line-height:1; margin-bottom:4px; }
+.unlock-poster-title-en { font-family:Arial,"Arial Black",sans-serif; font-size:12px; font-weight:900; letter-spacing:.32em; color:rgba(237,235,230,.45); margin-bottom:10px; }
+.unlock-poster-meta { font-size:9px; letter-spacing:.28em; text-transform:uppercase; color:var(--red); opacity:.85; margin-bottom:14px; font-weight:500; }
+.unlock-poster-desc { font-size:12px; font-weight:300; line-height:1.95; color:rgba(237,235,230,.78); letter-spacing:.04em; font-style:italic; }
 .unlock-artwork-desc { font-size:11px; font-weight:300; line-height:1.9; color:rgba(237,235,230,.55); letter-spacing:.04em; margin-top:12px; }
 @media (max-width:420px){
   .unlock-tier-ref{padding:12px 8px;min-height:100px;}
@@ -1168,27 +1187,23 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
     <!-- Artwork / Poster section -->
     <div class="unlock-artwork">
       <div class="unlock-section-label">Artwork &amp; Poster</div>
-      <div class="unlock-artwork-grid">
-        <div class="unlock-art-card">
-          <div class="unlock-art-img">
-            <img loading="lazy" src="<?= get_stylesheet_directory_uri() ?>/logos/amd2026asia.jpg" alt="EP.07 Main Visual" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+      <div class="unlock-poster-card">
+        <div class="unlock-poster-visual">
+          <div class="unlock-poster-light"></div>
+          <div class="unlock-poster-text">
+            <span class="upt-line1">UNSEEN</span>
+            <span class="upt-line2">CITY</span>
           </div>
-          <div class="unlock-art-label">
-            <div class="unlock-art-title lang-switchable" data-jp="メインビジュアル" data-en="Main Visual">メインビジュアル</div>
-            <div class="unlock-art-credit">EP.07 — HOMECOMING</div>
-          </div>
+          <div class="unlock-poster-limited">LIMITED 20</div>
         </div>
-        <div class="unlock-art-card">
-          <div class="unlock-art-img">
-            <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/03/20260323_152503.gif" alt="Poster Art" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
-          </div>
-          <div class="unlock-art-label">
-            <div class="unlock-art-title lang-switchable" data-jp="ポスター作品" data-en="Poster Artwork">ポスター作品</div>
-            <div class="unlock-art-credit">by SPACE COOKING™</div>
-          </div>
+        <div class="unlock-poster-body">
+          <div class="unlock-poster-title-ja">見えない都市</div>
+          <div class="unlock-poster-title-en">UNSEEN CITY</div>
+          <div class="unlock-poster-meta">Limited Edition · 20 copies only</div>
+          <p class="unlock-poster-desc lang-switchable" data-jp="光によって、現れたり消えたりするポスター。<br>見えていなかったものが、ふと浮かび上がる。" data-en="A poster that appears and disappears with light.<br>See what only light can reveal.">光によって、現れたり消えたりするポスター。<br>見えていなかったものが、ふと浮かび上がる。</p>
         </div>
       </div>
-      <p class="unlock-artwork-desc lang-switchable" data-jp="この夜のために制作された作品・ポスターは、会場限定で展示・配布されます。あなたのUNLOCK PASSは、作品との出会いへのチケットでもある。" data-en="Artworks and posters created for this night will be exhibited and distributed only at the venue. Your UNLOCK PASS is also a ticket to encounter the art.">この夜のために制作された作品・ポスターは、会場限定で展示・配布されます。あなたのUNLOCK PASSは、作品との出会いへのチケットでもある。</p>
+      <p class="unlock-artwork-desc lang-switchable" data-jp="この夜のために制作された『見えない都市 / UNSEEN CITY』は、会場限定20部の販売となります。あなたのUNLOCK PASSは、作品との出会いへのチケットでもある。" data-en="&lsquo;UNSEEN CITY&rsquo; — limited to 20 copies, sold only at the venue. Your UNLOCK PASS is also a ticket to encounter the art.">この夜のために制作された『見えない都市 / UNSEEN CITY』は、会場限定20部の販売となります。あなたのUNLOCK PASSは、作品との出会いへのチケットでもある。</p>
     </div>
   </div>
 </div>
