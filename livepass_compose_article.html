@@ -12,11 +12,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --black:#000;--bg:#080808;--white:#EDEBE6;
+  --black:#000;--bg:#0A0A0A;--bg2:#111111;--bg3:#1A1A1A;
+  --white:#F2F0EB;
   --red:#E8100A;--blue:#3DAAFF;--green:#A8E63D;
   --gold:#F5C842;--mint:#00E5A0;--pink:#F4C0D1;--purple:#bf5af2;
-  --muted:rgba(237,235,230,.3);--muted2:rgba(237,235,230,.14);
-  --border:rgba(255,255,255,.07);
+  --muted:rgba(242,240,235,.3);--muted2:rgba(242,240,235,.14);
+  --border:rgba(242,240,235,.07);
+  /* Dutch palette — accent tokens */
+  --accent-orange:#FF4D00;
+  --accent-blue:#0038FF;
+  --accent-yellow:#FFD000;
+  --accent-green:#00C853;
+  --accent-pink:#FF2D6B;
   --safe-top:env(safe-area-inset-top,0px);
   --safe-bot:env(safe-area-inset-bottom,0px);
 }
@@ -69,25 +76,120 @@ input,textarea{color:inherit;font:inherit}
 
 /* Layout picker ─────────────────────── */
 .layout-row{display:flex;gap:10px}
+.layout-row + .layout-row{margin-top:10px}
 .lay-btn{
-  flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;
-  padding:16px 8px 12px;
+  flex:1;min-width:0;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:14px 6px 11px;
   background:rgba(255,255,255,.02);
   border:0.5px solid rgba(255,255,255,.08);
-  border-radius:10px;color:rgba(237,235,230,.5);
+  border-radius:10px;color:rgba(242,240,235,.5);
   transition:background .2s, border-color .2s, color .2s;
+  position:relative;
 }
 .lay-btn.active{
   background:rgba(61,170,255,.08);
   border-color:var(--blue);color:var(--blue);
 }
-.lay-box{border:1.5px solid currentColor;border-radius:3px}
-.lay-btn[data-layout="poster"] .lay-box{width:28px;height:42px}
-.lay-btn[data-layout="square"] .lay-box{width:34px;height:34px}
-.lay-btn[data-layout="wide"]   .lay-box{width:48px;height:28px}
+.lay-box{border:1.5px solid currentColor;border-radius:3px;flex-shrink:0}
+.lay-btn[data-layout="poster"]   .lay-box{width:26px;height:43px}
+.lay-btn[data-layout="square"]   .lay-box{width:34px;height:34px}
+.lay-btn[data-layout="wide"]     .lay-box{width:50px;height:28px}
+.lay-btn[data-layout="9:16"]     .lay-box{width:22px;height:39px}
+.lay-btn[data-layout="sq-large"] .lay-box{width:42px;height:42px}
+.lay-btn[data-layout="cinema"]   .lay-box{width:58px;height:24px}
 .lay-name{
   font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
   font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  display:flex;align-items:center;gap:4px;
+}
+/* PRO badge on locked layouts */
+.lay-btn[data-pro="1"]{opacity:.55}
+.lay-btn[data-pro="1"].active{opacity:1}
+.lay-btn[data-pro="1"].locked .lay-box{border-style:dashed}
+.pro-tag{
+  display:inline-block;padding:2px 5px;border-radius:3px;
+  background:rgba(255,77,0,.14);color:var(--accent-orange);
+  font-family:'IBM Plex Mono',monospace;font-size:7px;font-weight:600;
+  letter-spacing:.12em;
+  border:0.5px solid rgba(255,77,0,.45);
+  line-height:1;
+}
+.lay-btn[data-pro="1"].active .pro-tag{
+  background:rgba(255,77,0,.22);
+}
+
+/* PRO upgrade bottom sheet ─────────────────────── */
+#proModalOverlay{
+  position:fixed;inset:0;z-index:1300;
+  background:rgba(0,0,0,0);pointer-events:none;opacity:0;
+  transition:background .3s ease, opacity .2s ease;
+}
+#proModalOverlay.active{
+  background:rgba(0,0,0,.78);pointer-events:all;opacity:1;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+#proModalSheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:1301;
+  background:#0a0a0a;
+  border-top:0.5px solid var(--border);
+  border-top-left-radius:20px;border-top-right-radius:20px;
+  padding:18px 22px calc(22px + var(--safe-bot));
+  transform:translateY(100%);
+  transition:transform .35s cubic-bezier(.2,.8,.2,1);
+  box-shadow:0 -12px 40px rgba(0,0,0,.7);
+}
+#proModalOverlay.active #proModalSheet{transform:translateY(0)}
+.pm-handle{width:40px;height:4px;border-radius:99px;background:rgba(242,240,235,.2);margin:0 auto 18px}
+.pm-badge{
+  display:inline-block;padding:4px 10px;border-radius:4px;
+  background:rgba(255,77,0,.16);color:var(--accent-orange);
+  border:0.5px solid rgba(255,77,0,.5);
+  font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;
+  letter-spacing:.22em;margin-bottom:12px;
+}
+.pm-title{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:20px;color:var(--white);line-height:1.2;margin-bottom:6px;
+}
+.pm-sub{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
+  font-size:11px;color:rgba(242,240,235,.5);line-height:1.6;margin-bottom:18px;
+}
+.pm-formats{
+  display:flex;gap:10px;margin-bottom:20px;
+}
+.pm-fmt{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:14px 6px 12px;
+  background:rgba(255,255,255,.025);
+  border:0.5px solid rgba(255,77,0,.2);
+  border-radius:10px;
+}
+.pm-fmt-box{border:1.5px solid var(--accent-orange);border-radius:3px}
+.pm-fmt-name{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:10px;letter-spacing:.1em;color:var(--white);
+}
+.pm-fmt-desc{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
+  font-size:8px;letter-spacing:.02em;color:rgba(242,240,235,.45);
+  text-align:center;line-height:1.3;
+}
+.pm-upgrade{
+  display:block;width:100%;padding:15px;margin-bottom:10px;
+  background:var(--accent-orange);color:#fff;
+  border-radius:99px;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+  box-shadow:0 6px 24px rgba(255,77,0,.28);
+}
+.pm-later{
+  display:block;width:100%;padding:13px;
+  background:none;border:0.5px solid rgba(242,240,235,.12);
+  border-radius:99px;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;
+  font-weight:500;letter-spacing:.04em;color:rgba(242,240,235,.5);
 }
 
 /* Input ─────────────────────── */
@@ -131,9 +233,12 @@ textarea.input-box{resize:vertical;min-height:160px;line-height:1.8;font-size:13
 }
 .cover-upload:hover,.cover-upload:active{border-color:var(--blue)}
 .cover-upload.has-image{border-style:solid;border-color:transparent}
-.cover-upload[data-layout="poster"]{aspect-ratio:9/14}
-.cover-upload[data-layout="square"]{aspect-ratio:1/1}
-.cover-upload[data-layout="wide"]  {aspect-ratio:16/10}
+.cover-upload[data-layout="poster"]  {aspect-ratio:3/5}
+.cover-upload[data-layout="square"]  {aspect-ratio:1/1}
+.cover-upload[data-layout="wide"]    {aspect-ratio:16/9}
+.cover-upload[data-layout="9:16"]    {aspect-ratio:9/16}
+.cover-upload[data-layout="sq-large"]{aspect-ratio:1/1}
+.cover-upload[data-layout="cinema"]  {aspect-ratio:21/9}
 .cover-placeholder{
   display:flex;flex-direction:column;align-items:center;gap:8px;
   color:rgba(237,235,230,.3);
@@ -420,19 +525,33 @@ textarea.input-box{resize:vertical;min-height:160px;line-height:1.8;font-size:13
 
   <!-- Layout ─────────────────────── -->
   <div class="form-section">
-    <div class="form-label">レイアウト</div>
-    <div class="layout-row" id="layoutRow">
-      <button class="lay-btn active" data-layout="poster">
+    <div class="form-label">画角 / FORMAT</div>
+    <div class="layout-row" id="layoutRowFree">
+      <button class="lay-btn active" data-layout="poster" type="button">
         <div class="lay-box"></div>
-        <div class="lay-name">Poster</div>
+        <div class="lay-name">Portrait</div>
       </button>
-      <button class="lay-btn" data-layout="square">
+      <button class="lay-btn" data-layout="square" type="button">
         <div class="lay-box"></div>
         <div class="lay-name">Square</div>
       </button>
-      <button class="lay-btn" data-layout="wide">
+      <button class="lay-btn" data-layout="wide" type="button">
         <div class="lay-box"></div>
         <div class="lay-name">Wide</div>
+      </button>
+    </div>
+    <div class="layout-row" id="layoutRowPro">
+      <button class="lay-btn" data-layout="9:16" data-pro="1" type="button">
+        <div class="lay-box"></div>
+        <div class="lay-name">9:16<span class="pro-tag">PRO</span></div>
+      </button>
+      <button class="lay-btn" data-layout="sq-large" data-pro="1" type="button">
+        <div class="lay-box"></div>
+        <div class="lay-name">SQ+<span class="pro-tag">PRO</span></div>
+      </button>
+      <button class="lay-btn" data-layout="cinema" data-pro="1" type="button">
+        <div class="lay-box"></div>
+        <div class="lay-name">Cinema<span class="pro-tag">PRO</span></div>
       </button>
     </div>
   </div>
@@ -529,6 +648,35 @@ textarea.input-box{resize:vertical;min-height:160px;line-height:1.8;font-size:13
 
 <div id="toast">✓ 投稿しました</div>
 
+<!-- ═══ PRO UPGRADE SHEET (shown when FREE user taps a PRO format) ═══ -->
+<div id="proModalOverlay" aria-hidden="true">
+  <div id="proModalSheet" role="dialog" aria-label="PROプラン">
+    <div class="pm-handle"></div>
+    <div class="pm-badge">PRO PLAN</div>
+    <div class="pm-title">PRO画角で表現を広げる</div>
+    <div class="pm-sub">FREEは3種類 (Portrait / Square / Wide)。PROでさらに3種類の画角が使えます。</div>
+    <div class="pm-formats">
+      <div class="pm-fmt">
+        <div class="pm-fmt-box" style="width:18px;height:32px"></div>
+        <div class="pm-fmt-name">9:16</div>
+        <div class="pm-fmt-desc">縦長<br>リール感覚</div>
+      </div>
+      <div class="pm-fmt">
+        <div class="pm-fmt-box" style="width:34px;height:34px"></div>
+        <div class="pm-fmt-name">SQ+</div>
+        <div class="pm-fmt-desc">大きい<br>正方形</div>
+      </div>
+      <div class="pm-fmt">
+        <div class="pm-fmt-box" style="width:46px;height:20px"></div>
+        <div class="pm-fmt-name">CINEMA</div>
+        <div class="pm-fmt-desc">21:9<br>映画スクリーン</div>
+      </div>
+    </div>
+    <button class="pm-upgrade" type="button" id="pmUpgradeBtn">PROにアップグレード →</button>
+    <button class="pm-later" type="button" id="pmLaterBtn">あとで</button>
+  </div>
+</div>
+
 <!-- ═══ AI PROMPT EXAMPLES ═══ -->
 <div id="aiPromptOverlay" aria-hidden="true">
   <div id="aiPromptSheet" role="dialog" aria-label="AI プロンプト例">
@@ -570,9 +718,52 @@ function loadDynamicAccounts() {
 const ALL_ACCOUNTS = loadDynamicAccounts();
 const initialsOf = (n) => (n || '?').replace(/[^A-Za-z0-9\u3040-\u30FF\u4E00-\u9FFF]/g, '').slice(0, 2).toUpperCase();
 
+/* ─── Plan check ─── */
+function isProUser() {
+  try {
+    return (localStorage.getItem('livepass_plan') || 'free').toLowerCase() === 'pro';
+  } catch (e) { return false; }
+}
+
+/* ─── PRO upgrade sheet ─── */
+const proModalOverlay = document.getElementById('proModalOverlay');
+const pmUpgradeBtn    = document.getElementById('pmUpgradeBtn');
+const pmLaterBtn      = document.getElementById('pmLaterBtn');
+function openProModal() {
+  proModalOverlay.classList.add('active');
+  proModalOverlay.setAttribute('aria-hidden', 'false');
+  if (navigator.vibrate) navigator.vibrate(10);
+}
+function closeProModal() {
+  proModalOverlay.classList.remove('active');
+  proModalOverlay.setAttribute('aria-hidden', 'true');
+}
+pmLaterBtn.addEventListener('click', closeProModal);
+proModalOverlay.addEventListener('click', (e) => { if (e.target === proModalOverlay) closeProModal(); });
+pmUpgradeBtn.addEventListener('click', () => {
+  // Dummy upgrade flow for M1 — real Stripe flow ships in M2.
+  alert('PRO プランの決済フローは近日公開です。\n\n5/4 ローンチ時点では FREE 画角のみ投稿可能、\nPRO 画角は準備中のプレビュー表示となります。');
+  closeProModal();
+});
+
+/* Paint locked state on PRO buttons for non-PRO users */
+function refreshProLockState() {
+  const isPro = isProUser();
+  document.querySelectorAll('.lay-btn[data-pro="1"]').forEach(b => {
+    b.classList.toggle('locked', !isPro);
+  });
+}
+refreshProLockState();
+
 /* Layout picker */
 document.querySelectorAll('.lay-btn').forEach(btn => {
   btn.addEventListener('click', () => {
+    const isPro = btn.dataset.pro === '1';
+    // FREE users tapping a PRO layout → show upgrade sheet, don't switch
+    if (isPro && !isProUser()) {
+      openProModal();
+      return;
+    }
     document.querySelectorAll('.lay-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     state.layout = btn.dataset.layout;

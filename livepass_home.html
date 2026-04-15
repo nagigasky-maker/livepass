@@ -12,11 +12,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --black:#000;--bg:#080808;--white:#EDEBE6;
+  --black:#000;--bg:#0A0A0A;--bg2:#111111;--bg3:#1A1A1A;
+  --white:#F2F0EB;
   --red:#E8100A;--blue:#3DAAFF;--green:#A8E63D;
   --gold:#F5C842;--mint:#00E5A0;--pink:#F4C0D1;--purple:#bf5af2;
-  --muted:rgba(237,235,230,.3);--muted2:rgba(237,235,230,.14);
-  --border:rgba(255,255,255,.07);
+  --muted:rgba(242,240,235,.3);--muted2:rgba(242,240,235,.14);
+  --border:rgba(242,240,235,.07);
+  /* Dutch palette — accent tokens */
+  --accent-orange:#FF4D00;
+  --accent-blue:#0038FF;
+  --accent-yellow:#FFD000;
+  --accent-green:#00C853;
+  --accent-pink:#FF2D6B;
   --safe-top:env(safe-area-inset-top,0px);
   --safe-bot:env(safe-area-inset-bottom,0px);
   --nav-h:44px;
@@ -83,19 +90,21 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   margin-top:4px;
 }
 
-/* MIXED GRID FEED — 2 columns + full-width (span 2) ─── */
+/* MIXED GRID FEED — Article 画角システム
+   Mobile (default): 2 columns, full-width spans for large formats
+   Tablet/Desktop (≥640px): 3 columns matching the spec  ─── */
 .feed-grid{
-  padding:0 10px 40px;
+  padding:0 8px 40px;
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:8px;
+  gap:6px;
   grid-auto-flow:dense; /* fill gaps left by full-width rows */
 }
 .feed-card{
   position:relative;display:block;
   border-radius:10px;overflow:hidden;
-  background:#0a0a0a;
-  border:0.5px solid rgba(255,255,255,.06);
+  background:var(--bg2);
+  border:0.5px solid var(--border);
   cursor:pointer;
   min-width:0; /* prevent grid item overflow */
 }
@@ -106,19 +115,49 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .feed-card .fc-img img{
   width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;
 }
-/* Poster cards span both columns → full-width tall row */
-.feed-card.poster{grid-column:1 / -1}
-.feed-card.poster .fc-img{aspect-ratio:9/14}
-.feed-card.poster .fc-title{font-size:22px}
-.feed-card.poster .fc-cat{font-size:9px}
-.feed-card.poster .fc-overlay{padding:22px 22px 22px}
-.feed-card.square .fc-img{aspect-ratio:1/1}
-/* wide cards span both columns → full-width row */
-.feed-card.wide{grid-column:1 / -1}
-.feed-card.wide .fc-img{aspect-ratio:16/9}
-.feed-card.wide .fc-title{font-size:18px}
-.feed-card.wide .fc-cat{font-size:9px}
-.feed-card.wide .fc-overlay{padding:18px 20px 18px}
+
+/* ─── Mobile defaults (2-col) ─── */
+/* FREE: portrait / square / wide */
+.feed-card[data-format="poster"]    {grid-column:span 1}
+.feed-card[data-format="poster"]  .fc-img{aspect-ratio:3/5}
+.feed-card[data-format="square"]    {grid-column:span 1}
+.feed-card[data-format="square"]  .fc-img{aspect-ratio:1/1}
+.feed-card[data-format="wide"]      {grid-column:1 / -1}
+.feed-card[data-format="wide"]    .fc-img{aspect-ratio:16/9}
+/* PRO: 9:16 / sq-large / cinema */
+.feed-card[data-format="9:16"]      {grid-column:span 1}
+.feed-card[data-format="9:16"]    .fc-img{aspect-ratio:9/16}
+.feed-card[data-format="sq-large"]  {grid-column:1 / -1}
+.feed-card[data-format="sq-large"] .fc-img{aspect-ratio:1/1}
+.feed-card[data-format="cinema"]    {grid-column:1 / -1}
+.feed-card[data-format="cinema"]  .fc-img{aspect-ratio:21/9}
+
+/* Bigger typography for wide/cinema/sq-large hero cards */
+.feed-card[data-format="wide"]     .fc-title,
+.feed-card[data-format="cinema"]   .fc-title,
+.feed-card[data-format="sq-large"] .fc-title{font-size:18px}
+.feed-card[data-format="wide"]     .fc-overlay,
+.feed-card[data-format="cinema"]   .fc-overlay,
+.feed-card[data-format="sq-large"] .fc-overlay{padding:18px 20px}
+
+/* ─── Tablet / Desktop (3-col) — matches the spec ─── */
+@media (min-width:640px){
+  .feed-grid{grid-template-columns:repeat(3,1fr);gap:8px;padding:0 14px 48px}
+  .feed-card[data-format="wide"]    {grid-column:span 2}
+  .feed-card[data-format="sq-large"]{grid-column:span 2}
+  .feed-card[data-format="cinema"]  {grid-column:span 3}
+}
+
+/* PRO badge chip on feed cards */
+.feed-card .fc-pro{
+  position:absolute;top:10px;left:12px;
+  padding:3px 6px;border-radius:3px;
+  background:rgba(255,77,0,.18);color:var(--accent-orange);
+  border:0.5px solid rgba(255,77,0,.5);
+  font-family:'IBM Plex Mono',monospace;font-size:7px;font-weight:600;
+  letter-spacing:.14em;line-height:1;
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+}
 .feed-card .fc-overlay{
   position:absolute;inset:0;
   background:linear-gradient(to top,rgba(0,0,0,.88) 0%,rgba(0,0,0,.15) 45%,transparent 70%);
@@ -426,7 +465,7 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 </nav>
 
 <script>
-/* Sample article data — 3 layouts mixed (poster / square / wide) */
+/* Sample article data — 6 formats: 3 FREE (poster/square/wide) + 3 PRO (9:16/sq-large/cinema) */
 const ARTICLES = [
   { id:'a001', layout:'poster', num:'002', cat:'Artwork · Figure', catColor:'#F4C0D1',
     title:'FnKMDNS', subtitle:'Art Object Series',
@@ -443,21 +482,33 @@ const ARTICLES = [
   { id:'a005', layout:'square', num:'005', cat:'Fashion', catColor:'#bf5af2',
     title:'DUBLA® SS26', subtitle:null,
     author:'DUBLA®', bgHue:'280,60,30' },
-  { id:'a006', layout:'wide', num:'006', cat:'Article', catColor:'#A8E63D',
+  { id:'a006', layout:'cinema', num:'006', cat:'Article · PRO', catColor:'#FF4D00', tier:'pro',
     title:'Space Cooking™ Manifesto', subtitle:null,
-    author:'NOBBY', bgHue:'220,70,20' },
+    author:'NOBBY', bgHue:'18,85,25' },
   { id:'a007', layout:'poster', num:'007', cat:'Dance', catColor:'#00E5A0',
     title:'Waacking', subtitle:'Body as Language',
     author:'SACHI', bgHue:'320,60,30' },
-  { id:'a008', layout:'square', num:'008', cat:'Music', catColor:'#3DAAFF',
-    title:'Mixtape #042', subtitle:null,
-    author:'NOBBY', bgHue:'200,80,25' },
+  { id:'a008', layout:'9:16', num:'008', cat:'Reel · PRO', catColor:'#FF2D6B', tier:'pro',
+    title:'60s of House', subtitle:null,
+    author:'AMI', bgHue:'200,80,25' },
   { id:'a009', layout:'wide', num:'009', cat:'Interview', catColor:'#E8100A',
     title:'ALI on House Culture', subtitle:null,
     author:'LIVE PASS', bgHue:'0,80,25' },
   { id:'a010', layout:'poster', num:'010', cat:'Event', catColor:'#E8100A',
     title:'Liquidroom', subtitle:'May 4 Preview',
-    author:'NOBBY', bgHue:'10,70,30' },
+    author:'KENJI', bgHue:'10,70,30' },
+  { id:'a011', layout:'sq-large', num:'011', cat:'Feature · PRO', catColor:'#FFD000', tier:'pro',
+    title:'Cypher Lab Vol.3', subtitle:'Field Notes',
+    author:'CREW NRG', bgHue:'55,80,28' },
+  { id:'a012', layout:'square', num:'012', cat:'Photography', catColor:'#3DAAFF',
+    title:'Backstage @ LQR', subtitle:null,
+    author:'KENJI', bgHue:'210,60,22' },
+  { id:'a013', layout:'poster', num:'013', cat:'Style', catColor:'#F4C0D1',
+    title:'Tokyo Night Walk', subtitle:null,
+    author:'SACHI', bgHue:'290,55,25' },
+  { id:'a014', layout:'wide', num:'014', cat:'Review', catColor:'#A8E63D',
+    title:'Vol.24 — Rotterdam Night', subtitle:null,
+    author:'LIVE PASS', bgHue:'240,70,22' },
 ];
 
 const grid = document.getElementById('feedGrid');
@@ -508,7 +559,63 @@ function getUserArticles(){
   } catch(e) { return []; }
 }
 
-const FEED = [...getUserArticles(), ...ARTICLES];
+/* ─────────────────────────────────────────────
+   AUTO-LAYOUT ENGINE — balance rules for the feed
+   Rules (per spec):
+     1. Same artist not within 3 posts
+     2. No more than 3 consecutive same-format
+     3. Large formats (cinema, sq-large) max 1 per 6 posts
+   Rules relax gracefully when no valid candidate remains,
+   so every input post eventually lands in the output.
+   ───────────────────────────────────────────── */
+const LARGE_FORMATS = new Set(['cinema','sq-large']);
+const AUTHOR_GAP    = 3; // min posts between same-author
+const LARGE_BUDGET  = 6; // 1 large card per 6 posts
+
+function fmtOf(a){ return a.format || a.layout || 'square'; }
+
+function buildBalancedFeed(posts) {
+  const input = posts.slice();
+  const out = [];
+  let largeSinceLast = 999; // allow the very first large card
+
+  // Helper: does candidate satisfy all rules given current output?
+  function passes(candidate) {
+    // Rule 1: author spacing
+    const recentAuthors = out.slice(-AUTHOR_GAP).map(p => p.author);
+    if (recentAuthors.includes(candidate.author)) return false;
+
+    // Rule 2: no 3 consecutive same-format
+    const lastThree = out.slice(-3);
+    if (lastThree.length === 3 &&
+        lastThree.every(p => fmtOf(p) === fmtOf(candidate))) return false;
+
+    // Rule 3: large-card budget
+    if (LARGE_FORMATS.has(fmtOf(candidate)) && largeSinceLast < LARGE_BUDGET) {
+      return false;
+    }
+    return true;
+  }
+
+  while (input.length > 0) {
+    // Try to pick the first candidate that passes all rules
+    let pickedIdx = input.findIndex(passes);
+
+    // No candidate passes → relax: accept the first remaining post
+    if (pickedIdx === -1) pickedIdx = 0;
+
+    const picked = input.splice(pickedIdx, 1)[0];
+    out.push(picked);
+
+    if (LARGE_FORMATS.has(fmtOf(picked))) largeSinceLast = 0;
+    else largeSinceLast++;
+  }
+
+  return out;
+}
+
+const RAW_FEED = [...getUserArticles(), ...ARTICLES];
+const FEED = buildBalancedFeed(RAW_FEED);
 
 /* Remember article metadata so the /profile SAVED tab can render them */
 (function writeArticleMeta(){
@@ -537,8 +644,10 @@ const FEED = [...getUserArticles(), ...ARTICLES];
 
 /* Render feed */
 FEED.forEach(a => {
+  const format = fmtOf(a);
   const card = document.createElement('div');
-  card.className = 'feed-card ' + a.layout;
+  card.className = 'feed-card ' + format;
+  card.dataset.format = format;
   card.style.setProperty('--cat', a.catColor);
   card.dataset.id = a.id;
   const subHtml = a.subtitle ? `<small>${a.subtitle}</small>` : '';
@@ -546,10 +655,12 @@ FEED.forEach(a => {
   const avHtml = (a.userPost && a.avatar)
     ? `<div class="fc-author-av"><img src="${a.avatar}" alt=""></div>`
     : `<div class="fc-author-av"></div>`;
+  const proChip = a.tier === 'pro' ? `<div class="fc-pro">PRO</div>` : '';
   card.innerHTML = `
     <div class="fc-img">
       <img src="${imgSrc}" alt="">
     </div>
+    ${proChip}
     <div class="fc-num">${a.num}</div>
     <div class="fc-overlay">
       <div class="fc-cat">${a.cat}</div>
