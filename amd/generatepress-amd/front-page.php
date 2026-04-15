@@ -1206,11 +1206,18 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
     <div class="amd-ap-title">Select a floor</div>
     <div class="amd-ap-groups">
       <?php
+      // FDOOR fixed member list (overrides role-based categorization)
+      $fdoor_members = ['YACHEEMI','NINA','BUNGO','AYANA','ALI'];
+      $fdoor_members_upper = array_map('strtoupper', $fdoor_members);
+
       $party_artists_list2 = $party_artists ?? [];
       $grouped2 = ['dj'=>[], 'bar'=>[], 'dresser'=>[]];
       foreach($party_artists_list2 as $pa2){
         $role2 = strtolower(get_field('role',$pa2->ID) ?? '');
-        if(str_contains($role2,'dresser')||str_contains($role2,'dancer')||str_contains($role2,'dance')||str_contains($role2,'style')){
+        $name_upper = strtoupper(trim($pa2->post_title));
+        if(in_array($name_upper, $fdoor_members_upper, true)){
+          $grouped2['bar'][] = $pa2;
+        } elseif(str_contains($role2,'dresser')||str_contains($role2,'dancer')||str_contains($role2,'dance')||str_contains($role2,'style')){
           $grouped2['dresser'][] = $pa2;
         } elseif(str_contains($role2,'bar')||str_contains($role2,'fdoor')||str_contains($role2,'bartender')){
           $grouped2['bar'][] = $pa2;
@@ -1255,9 +1262,14 @@ var _amdThemeUrl = '<?= get_stylesheet_directory_uri() ?>';
 var _amdArtists = <?php
 $out = ['dj'=>[], 'bar'=>[], 'dresser'=>[]];
 $party_artists_all = $party_artists ?? [];
+// Reuse FDOOR fixed member list from above
+$fdoor_members_js = isset($fdoor_members_upper) ? $fdoor_members_upper : ['YACHEEMI','NINA','BUNGO','AYANA','ALI'];
 foreach($party_artists_all as $pa_all){
   $role_all = strtolower(get_field('role',$pa_all->ID) ?? '');
-  if(str_contains($role_all,'dresser') || str_contains($role_all,'dancer') || str_contains($role_all,'dance') || str_contains($role_all,'style')){
+  $name_all_upper = strtoupper(trim($pa_all->post_title));
+  if(in_array($name_all_upper, $fdoor_members_js, true)){
+    $group_all = 'bar';
+  } elseif(str_contains($role_all,'dresser') || str_contains($role_all,'dancer') || str_contains($role_all,'dance') || str_contains($role_all,'style')){
     $group_all = 'dresser';
   } elseif(str_contains($role_all,'bar') || str_contains($role_all,'fdoor') || str_contains($role_all,'bartender')){
     $group_all = 'bar';
