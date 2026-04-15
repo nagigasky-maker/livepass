@@ -567,6 +567,43 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 /* ZINE ANIMATIONS */
 .zine-anim { opacity:0; transform:translateY(24px); transition:opacity .6s cubic-bezier(.22,1,.36,1), transform .6s cubic-bezier(.22,1,.36,1); }
 .zine-anim.in { opacity:1; transform:translateY(0); }
+/* ═══ UNLOCK PASS OVERLAY ═══ */
+.unlock-pass-overlay { z-index:8950; }
+.unlock-inner { width:100%; max-width:520px; margin:0 auto; padding:max(80px,calc(env(safe-area-inset-top)+64px)) 28px max(100px,calc(env(safe-area-inset-bottom)+80px)); }
+.unlock-hero { text-align:left; margin-bottom:28px; }
+.unlock-eyebrow { font-size:9px; font-weight:500; letter-spacing:0.42em; text-transform:uppercase; color:var(--red); opacity:.95; margin-bottom:16px; }
+.unlock-title { font-family:Arial,"Arial Black",sans-serif; font-size:clamp(42px,11vw,64px); font-weight:900; line-height:.9; letter-spacing:-.02em; color:var(--white); margin-bottom:18px; }
+.unlock-sub { font-size:13px; font-weight:300; line-height:1.9; color:rgba(237,235,230,.72); letter-spacing:.03em; }
+.unlock-divider { height:1px; background:linear-gradient(to right,var(--red),rgba(237,235,230,.08) 60%,transparent); margin:28px 0; }
+.unlock-tiers { display:flex; flex-direction:column; gap:2px; }
+.unlock-tier { display:flex; align-items:center; justify-content:space-between; padding:22px 20px; background:rgba(237,235,230,.02); border:1px solid rgba(237,235,230,.08); text-decoration:none; color:var(--white); transition:background .22s, border-color .22s, transform .15s; cursor:pointer; }
+.unlock-tier:hover, .unlock-tier:active { background:rgba(232,16,10,.08); border-color:rgba(232,16,10,.4); transform:translateX(4px); }
+.unlock-tier .ut-left { display:flex; flex-direction:column; gap:6px; }
+.unlock-tier .ut-label { font-size:9px; font-weight:500; letter-spacing:0.32em; text-transform:uppercase; color:rgba(237,235,230,.72); }
+.unlock-tier .ut-price { font-family:Arial,"Arial Black",sans-serif; font-size:24px; font-weight:900; letter-spacing:.01em; color:var(--white); line-height:1; }
+.unlock-tier .ut-right { display:flex; align-items:center; gap:14px; }
+.unlock-tier .ut-tier-num { font-family:Arial,"Arial Black",sans-serif; font-size:24px; font-weight:900; color:rgba(237,235,230,.08); letter-spacing:.02em; }
+.unlock-tier .ut-arrow { font-size:16px; color:var(--red); }
+.unlock-tier-max { background:rgba(232,16,10,.06); border-color:rgba(232,16,10,.35); }
+.unlock-tier-max .ut-price { color:var(--red); }
+.unlock-note { font-size:10px; font-weight:300; line-height:1.8; color:rgba(237,235,230,.42); letter-spacing:.05em; margin-top:18px; text-align:center; }
+.unlock-section-label { font-size:8px; font-weight:500; letter-spacing:0.42em; text-transform:uppercase; color:var(--red); opacity:.85; margin-bottom:14px; }
+.unlock-event-info { margin-bottom:32px; }
+.unlock-info-row { display:flex; justify-content:space-between; align-items:baseline; padding:14px 0; border-bottom:1px solid rgba(237,235,230,.08); }
+.unlock-info-row:first-of-type { border-top:1px solid rgba(237,235,230,.08); }
+.unlock-info-row .ik { font-size:9px; font-weight:400; letter-spacing:.38em; text-transform:uppercase; color:rgba(237,235,230,.55); }
+.unlock-info-row .iv { font-size:12px; font-weight:300; text-align:right; color:var(--white); letter-spacing:.04em; }
+.unlock-artwork-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
+.unlock-art-card { display:block; text-decoration:none; color:var(--white); }
+.unlock-art-img { aspect-ratio:3/4; position:relative; overflow:hidden; border:1px solid rgba(237,235,230,.08); background:#0a0a0a; }
+.unlock-art-label { padding:10px 2px 0; }
+.unlock-art-title { font-family:Arial,"Arial Black",sans-serif; font-size:11px; font-weight:900; letter-spacing:.02em; color:var(--white); margin-bottom:3px; }
+.unlock-art-credit { font-size:8px; font-weight:300; letter-spacing:.12em; color:rgba(237,235,230,.42); text-transform:uppercase; }
+.unlock-artwork-desc { font-size:11px; font-weight:300; line-height:1.9; color:rgba(237,235,230,.55); letter-spacing:.04em; margin-top:12px; }
+@media (max-width:420px){
+  .unlock-tier{padding:18px 16px;}
+  .unlock-tier .ut-price{font-size:22px;}
+}
 </style>
 <!-- FIX 1: GSAP removed from head, loaded only before </body> -->
 </head>
@@ -903,8 +940,14 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         </div>
         <div class="ticket-section">
           <div class="ticket-head"><span class="ticket-head-lbl">Tickets</span><span class="ticket-head-note lang-switchable" data-jp="Web only · 電子チケット" data-en="Web only · E-ticket">Web only · 電子チケット</span></div>
-          <a class="trow" href="<?= esc_url($party_ticket) ?>" target="_blank"><div class="trow-left"><span class="trow-type">Early Bird</span><span class="trow-price"><?= esc_html($party_eb_price) ?></span></div><div class="trow-right"><span class="trow-tag">30枚限定</span><span class="trow-arr">→</span></div></a>
-          <a class="trow" href="<?= esc_url($party_ticket) ?>" target="_blank"><div class="trow-left"><span class="trow-type">Advance</span><span class="trow-price"><?= esc_html($party_adv_price) ?></span></div><div class="trow-right"><span class="trow-arr">→</span></div></a>
+          <div onclick="openUnlockPass()" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:20px 0;border-bottom:1px solid rgba(237,235,230,0.14);transition:padding-left 0.2s;">
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <span style="font-size:8px;font-weight:500;letter-spacing:0.4em;text-transform:uppercase;color:var(--red);">🎫 Unlock Pass</span>
+              <span style="font-family:Arial,'Arial Black',sans-serif;font-size:20px;font-weight:900;line-height:1;color:var(--white);">¥3,500 — ¥9,999</span>
+              <span class="lang-switchable" data-jp="価格はあなたが決める" data-en="You decide the price" style="font-size:10px;font-weight:300;color:rgba(237,235,230,0.55);letter-spacing:0.1em;">価格はあなたが決める</span>
+            </div>
+            <span style="font-size:18px;color:var(--red);">→</span>
+          </div>
           <div class="trow disabled"><div class="trow-left"><span class="trow-type">Door</span><span class="trow-price">¥4,500</span></div><div class="trow-right"><span style="font-size:8px;letter-spacing:0.3em;text-transform:uppercase;color:var(--white)">On the Night</span></div></div>
         </div>
       </div>
@@ -1040,6 +1083,103 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
       <a class="sc" href="https://zzazz-za.stores.jp/items/69c04bdbd917113bede5e2fb" target="_blank"><div class="sc-vis"><img src="<?= get_stylesheet_directory_uri() ?>/artwear/amd09bl.png" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div><div class="sc-info"><div class="sc-cat">Artwork Wear</div><div class="sc-name">AMD BL</div></div></a>
       <a class="sc" href="https://zzazz-za.stores.jp/items/69c04c3bd9171143c6e5e2d0" target="_blank"><div class="sc-vis"><img src="<?= get_stylesheet_directory_uri() ?>/artwear/amd08blpk.png" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div><div class="sc-info"><div class="sc-cat">Artwork Wear</div><div class="sc-name">AMD BL PK</div></div></a>
       <a class="sc" href="https://zzazz-za.stores.jp/items/69c04cb6e126f8b4d7cb6b71" target="_blank"><div class="sc-vis"><img src="<?= get_stylesheet_directory_uri() ?>/artwear/amd07jktufo_1.PNG" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div><div class="sc-info"><div class="sc-cat">Artwork Wear</div><div class="sc-name">AMD JKT UFO</div></div></a>
+    </div>
+  </div>
+</div>
+
+<!-- UNLOCK PASS OVERLAY -->
+<div class="amd-ticket-overlay unlock-pass-overlay" id="unlockPassOverlay">
+  <button class="amd-ticket-close" onclick="closeUnlockPass()">×</button>
+  <div class="unlock-inner">
+    <!-- Hero / masthead -->
+    <div class="unlock-hero">
+      <div class="unlock-eyebrow lang-switchable" data-jp="EP.07 — ホームカミング" data-en="EP.07 — HOMECOMING">EP.07 — HOMECOMING</div>
+      <div class="unlock-title">🎫<br>UNLOCK<br>PASS</div>
+      <div class="unlock-sub lang-switchable" data-jp="価格はあなたが決める。<br>この夜の価値を、あなたの感覚で。" data-en="You decide the price.<br>Set the value of this night, your way.">価格はあなたが決める。<br>この夜の価値を、あなたの感覚で。</div>
+    </div>
+
+    <div class="unlock-divider"></div>
+
+    <!-- 4 tier cards -->
+    <div class="unlock-tiers">
+      <a class="unlock-tier" href="https://buy.stripe.com/" data-amount="3500" target="_blank" rel="noopener">
+        <div class="ut-left">
+          <div class="ut-label">Entrance</div>
+          <div class="ut-price">¥3,500</div>
+        </div>
+        <div class="ut-right">
+          <div class="ut-tier-num">01</div>
+          <div class="ut-arrow">→</div>
+        </div>
+      </a>
+      <a class="unlock-tier" href="https://buy.stripe.com/" data-amount="5000" target="_blank" rel="noopener">
+        <div class="ut-left">
+          <div class="ut-label">Standard Groove</div>
+          <div class="ut-price">¥5,000</div>
+        </div>
+        <div class="ut-right">
+          <div class="ut-tier-num">02</div>
+          <div class="ut-arrow">→</div>
+        </div>
+      </a>
+      <a class="unlock-tier" href="https://buy.stripe.com/" data-amount="7000" target="_blank" rel="noopener">
+        <div class="ut-left">
+          <div class="ut-label">Deep Support</div>
+          <div class="ut-price">¥7,000</div>
+        </div>
+        <div class="ut-right">
+          <div class="ut-tier-num">03</div>
+          <div class="ut-arrow">→</div>
+        </div>
+      </a>
+      <a class="unlock-tier unlock-tier-max" href="https://buy.stripe.com/" data-amount="9999" target="_blank" rel="noopener">
+        <div class="ut-left">
+          <div class="ut-label">Maximum Vibe</div>
+          <div class="ut-price">¥9,999</div>
+        </div>
+        <div class="ut-right">
+          <div class="ut-tier-num">04</div>
+          <div class="ut-arrow">→</div>
+        </div>
+      </a>
+    </div>
+
+    <div class="unlock-note lang-switchable" data-jp="※ 選んだ金額がそのままチケット価格になります。<br>中間搾取なし。全額がアーティストとイベントへ。" data-en="※ Your chosen amount is the ticket price.<br>No middleman. All proceeds to artists & event.">※ 選んだ金額がそのままチケット価格になります。<br>中間搾取なし。全額がアーティストとイベントへ。</div>
+
+    <div class="unlock-divider"></div>
+
+    <!-- Event details recap -->
+    <div class="unlock-event-info">
+      <div class="unlock-section-label">Event</div>
+      <div class="unlock-info-row"><span class="ik">Date</span><span class="iv"><?= esc_html($party_date) ?></span></div>
+      <div class="unlock-info-row"><span class="ik">Time</span><span class="iv"><?= esc_html($party_time) ?></span></div>
+      <div class="unlock-info-row"><span class="ik">Venue</span><span class="iv"><?= esc_html($party_venue) ?></span></div>
+    </div>
+
+    <!-- Artwork / Poster section -->
+    <div class="unlock-artwork">
+      <div class="unlock-section-label">Artwork &amp; Poster</div>
+      <div class="unlock-artwork-grid">
+        <div class="unlock-art-card">
+          <div class="unlock-art-img">
+            <img loading="lazy" src="<?= get_stylesheet_directory_uri() ?>/logos/amd2026asia.jpg" alt="EP.07 Main Visual" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+          </div>
+          <div class="unlock-art-label">
+            <div class="unlock-art-title lang-switchable" data-jp="メインビジュアル" data-en="Main Visual">メインビジュアル</div>
+            <div class="unlock-art-credit">EP.07 — HOMECOMING</div>
+          </div>
+        </div>
+        <div class="unlock-art-card">
+          <div class="unlock-art-img">
+            <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/03/20260323_152503.gif" alt="Poster Art" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+          </div>
+          <div class="unlock-art-label">
+            <div class="unlock-art-title lang-switchable" data-jp="ポスター作品" data-en="Poster Artwork">ポスター作品</div>
+            <div class="unlock-art-credit">by SPACE COOKING™</div>
+          </div>
+        </div>
+      </div>
+      <p class="unlock-artwork-desc lang-switchable" data-jp="この夜のために制作された作品・ポスターは、会場限定で展示・配布されます。あなたのUNLOCK PASSは、作品との出会いへのチケットでもある。" data-en="Artworks and posters created for this night will be exhibited and distributed only at the venue. Your UNLOCK PASS is also a ticket to encounter the art.">この夜のために制作された作品・ポスターは、会場限定で展示・配布されます。あなたのUNLOCK PASSは、作品との出会いへのチケットでもある。</p>
     </div>
   </div>
 </div>
@@ -1500,6 +1640,8 @@ function openWsTicketOverlay(){var d=document.getElementById('deck'),s=d?d.scrol
 function closeWsTicketOverlay(){var d=document.getElementById('deck'),s=d?d.scrollTop:0;document.body.classList.remove('overlay-open');document.getElementById('p1-2').classList.remove('open');unlockBodyScroll();if(d)d.scrollTop=s;}
 function openTicketOverlay(){var d=document.getElementById('deck'),s=d?d.scrollTop:0;document.body.classList.add('overlay-open');document.getElementById('p0-2').classList.add('open');lockBodyScroll();if(d)d.scrollTop=s;}
 function closeTicketOverlay(){var d=document.getElementById('deck'),s=d?d.scrollTop:0;document.body.classList.remove('overlay-open');document.getElementById('p0-2').classList.remove('open');unlockBodyScroll();if(d)d.scrollTop=s;}
+function openUnlockPass(){document.body.classList.add('overlay-open');document.getElementById('unlockPassOverlay').classList.add('open');lockBodyScroll();}
+function closeUnlockPass(){document.body.classList.remove('overlay-open');document.getElementById('unlockPassOverlay').classList.remove('open');unlockBodyScroll();}
 function openArtistPanel(){document.body.classList.add('overlay-open');document.getElementById('artistPanelOverlay').classList.add('open');lockBodyScroll();}
 function closeArtistPanel(){document.body.classList.remove('overlay-open');document.getElementById('artistPanelOverlay').classList.remove('open');unlockBodyScroll();}
 
