@@ -736,6 +736,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
       <a href="https://www.instagram.com/allmustdancetokyo/" target="_blank" class="menu-social">Instagram</a>
       <a href="https://www.youtube.com/@allmustdancetokyo" target="_blank" class="menu-social">YouTube</a>
       <a href="https://allmustdance.com/privacy-policy/" class="menu-social">Privacy Policy</a>
+      <a href="https://allmustdance.com/tokushoho/" class="menu-social">特定商取引法</a>
     </div>
   </div>
 </div>
@@ -1037,6 +1038,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
               <div class="connect-footer">
                 <span class="copyright">© ALL MUST DANCE™ · Tokyo · 2026</span>
                 <a href="https://allmustdance.com/privacy-policy/" class="privacy-link">Privacy Policy</a>
+                <a href="https://allmustdance.com/tokushoho/" class="privacy-link">特定商取引法に基づく表記</a>
               </div>
               <div class="space-cooking-credit">
                 <span class="sc-credit-label">Site Design &amp; Development</span>
