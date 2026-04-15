@@ -1149,7 +1149,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
     </div>
 
     <!-- Single CTA button -->
-    <a class="unlock-cta" href="https://buy.stripe.com/" target="_blank" rel="noopener">
+    <a class="unlock-cta" href="https://buy.stripe.com/14AdRb5BidgW2pk82S48001" target="_blank" rel="noopener">
       <span class="unlock-cta-label lang-switchable" data-jp="金額を入力して購入" data-en="Enter amount & unlock">金額を入力して購入</span>
       <span class="unlock-cta-icon">🎫</span>
     </a>
