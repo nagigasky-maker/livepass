@@ -602,24 +602,79 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 .unlock-info-row .iv { font-size:12px; font-weight:300; text-align:right; color:var(--white); letter-spacing:.04em; }
 /* UNSEEN CITY poster card */
 .unlock-poster-card { border:1px solid rgba(237,235,230,.08); background:#050505; overflow:hidden; margin-bottom:14px; }
-.unlock-poster-visual { position:relative; aspect-ratio:3/4; background:radial-gradient(ellipse at 50% 40%, #1a1a24 0%, #050508 70%); overflow:hidden; display:flex; align-items:center; justify-content:center; }
-.unlock-poster-light { position:absolute; top:-20%; left:-20%; right:-20%; bottom:-20%; background:radial-gradient(ellipse at 30% 30%, rgba(232,235,240,.08) 0%, transparent 50%); animation:posterLight 6s ease-in-out infinite; pointer-events:none; }
-@keyframes posterLight {
-  0%,100%{opacity:.3; transform:translate(0,0);}
-  50%{opacity:1; transform:translate(10%,5%);}
+.unlock-poster-visual { position:relative; aspect-ratio:3/4; background:#040408; overflow:hidden; display:flex; align-items:center; justify-content:center; isolation:isolate; }
+
+/* Base dark layer with subtle texture */
+.unlock-poster-visual::before {
+  content:''; position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse at 50% 100%, rgba(20,20,30,.8) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 0%, rgba(15,15,25,.6) 0%, transparent 50%);
+  z-index:1;
 }
-.unlock-poster-text { position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; text-align:center; }
+
+/* 7-color rotating light — Layer 1 (primary sweep) */
+.unlock-poster-light {
+  position:absolute; inset:-30%; z-index:2; pointer-events:none;
+  background:
+    radial-gradient(circle at 30% 30%, #FF1744 0%, transparent 35%),
+    radial-gradient(circle at 70% 20%, #FF9100 0%, transparent 35%),
+    radial-gradient(circle at 80% 60%, #FFEA00 0%, transparent 35%),
+    radial-gradient(circle at 60% 80%, #00E676 0%, transparent 35%),
+    radial-gradient(circle at 30% 70%, #00B0FF 0%, transparent 35%),
+    radial-gradient(circle at 20% 40%, #3D5AFE 0%, transparent 35%),
+    radial-gradient(circle at 50% 50%, #D500F9 0%, transparent 40%);
+  mix-blend-mode:screen;
+  filter:blur(20px);
+  animation:posterLightRotate 14s linear infinite, posterLightPulse 6s ease-in-out infinite;
+  opacity:.55;
+}
+
+/* Secondary sweep — offset timing */
+.unlock-poster-visual::after {
+  content:''; position:absolute; inset:-40%; z-index:3; pointer-events:none;
+  background:
+    radial-gradient(ellipse at 40% 30%, rgba(255,23,68,.7) 0%, transparent 45%),
+    radial-gradient(ellipse at 80% 70%, rgba(61,90,254,.7) 0%, transparent 45%),
+    radial-gradient(ellipse at 20% 80%, rgba(0,230,118,.6) 0%, transparent 45%);
+  mix-blend-mode:screen;
+  filter:blur(40px);
+  animation:posterLightRotate2 18s linear infinite, posterLightFade 8s ease-in-out infinite;
+  opacity:.4;
+}
+
+@keyframes posterLightRotate {
+  0%{transform:rotate(0deg) scale(1);}
+  100%{transform:rotate(360deg) scale(1);}
+}
+@keyframes posterLightRotate2 {
+  0%{transform:rotate(360deg) scale(1.1);}
+  100%{transform:rotate(0deg) scale(1.1);}
+}
+@keyframes posterLightPulse {
+  0%,100%{opacity:.35; filter:blur(20px) hue-rotate(0deg);}
+  50%{opacity:.75; filter:blur(30px) hue-rotate(60deg);}
+}
+@keyframes posterLightFade {
+  0%,100%{opacity:.25;}
+  50%{opacity:.6;}
+}
+
+.unlock-poster-text { position:relative; z-index:5; display:flex; flex-direction:column; align-items:center; text-align:center; }
 .unlock-poster-text .upt-line1, .unlock-poster-text .upt-line2 {
   font-family:Arial,"Arial Black",sans-serif; font-weight:900;
   font-size:clamp(36px,10vw,58px); line-height:.9; letter-spacing:.02em;
-  color:rgba(237,235,230,.1);
-  background:linear-gradient(135deg, rgba(237,235,230,.85) 0%, rgba(237,235,230,.1) 50%, rgba(237,235,230,.6) 100%);
+  background:linear-gradient(135deg, rgba(255,255,255,.95) 0%, rgba(237,235,230,.4) 50%, rgba(255,255,255,.9) 100%);
   -webkit-background-clip:text; background-clip:text;
   -webkit-text-fill-color:transparent;
-  text-shadow:0 0 40px rgba(237,235,230,.2);
-  mix-blend-mode:screen;
+  mix-blend-mode:overlay;
+  animation:posterTextFade 6s ease-in-out infinite;
 }
-.unlock-poster-limited { position:absolute; top:16px; right:16px; z-index:3; font-size:8px; letter-spacing:.38em; text-transform:uppercase; color:var(--red); border:1px solid rgba(232,16,10,.5); padding:4px 10px; font-weight:600; background:rgba(12,15,26,.6); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); }
+@keyframes posterTextFade {
+  0%,100%{opacity:.4;}
+  50%{opacity:.95;}
+}
+.unlock-poster-limited { position:absolute; top:16px; right:16px; z-index:10; font-size:8px; letter-spacing:.38em; text-transform:uppercase; color:var(--red); border:1px solid rgba(232,16,10,.5); padding:4px 10px; font-weight:600; background:rgba(12,15,26,.6); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); }
 .unlock-poster-body { padding:20px 20px 22px; border-top:1px solid rgba(237,235,230,.06); }
 .unlock-poster-title-ja { font-family:Arial,"Arial Black",sans-serif; font-size:20px; font-weight:900; letter-spacing:.02em; color:var(--white); line-height:1; margin-bottom:4px; }
 .unlock-poster-title-en { font-family:Arial,"Arial Black",sans-serif; font-size:12px; font-weight:900; letter-spacing:.32em; color:rgba(237,235,230,.45); margin-bottom:10px; }
