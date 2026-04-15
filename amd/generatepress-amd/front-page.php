@@ -627,7 +627,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
   mix-blend-mode:screen;
   filter:blur(20px);
   animation:posterLightRotate 14s linear infinite, posterLightPulse 6s ease-in-out infinite;
-  opacity:.55;
+  opacity:.35;
 }
 
 /* Secondary sweep — offset timing */
@@ -664,15 +664,16 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 .unlock-poster-text .upt-line1, .unlock-poster-text .upt-line2 {
   font-family:Arial,"Arial Black",sans-serif; font-weight:900;
   font-size:clamp(36px,10vw,58px); line-height:.9; letter-spacing:.02em;
-  background:linear-gradient(135deg, rgba(255,255,255,.95) 0%, rgba(237,235,230,.4) 50%, rgba(255,255,255,.9) 100%);
-  -webkit-background-clip:text; background-clip:text;
-  -webkit-text-fill-color:transparent;
-  mix-blend-mode:overlay;
-  animation:posterTextFade 6s ease-in-out infinite;
+  color:#fff;
+  text-shadow:
+    0 0 20px rgba(255,255,255,.5),
+    0 0 40px rgba(255,255,255,.3),
+    0 2px 8px rgba(0,0,0,.8);
+  animation:posterTextFade 5s ease-in-out infinite;
 }
 @keyframes posterTextFade {
-  0%,100%{opacity:.4;}
-  50%{opacity:.95;}
+  0%,100%{opacity:.75; text-shadow:0 0 20px rgba(255,255,255,.4),0 2px 8px rgba(0,0,0,.8);}
+  50%{opacity:1; text-shadow:0 0 30px rgba(255,255,255,.9),0 0 60px rgba(255,255,255,.4),0 2px 8px rgba(0,0,0,.8);}
 }
 .unlock-poster-limited { position:absolute; top:16px; right:16px; z-index:10; font-size:8px; letter-spacing:.38em; text-transform:uppercase; color:var(--red); border:1px solid rgba(232,16,10,.5); padding:4px 10px; font-weight:600; background:rgba(12,15,26,.6); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); }
 .unlock-poster-body { padding:20px 20px 22px; border-top:1px solid rgba(237,235,230,.06); }
