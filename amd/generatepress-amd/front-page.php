@@ -1144,8 +1144,6 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
       </a>
     </div>
 
-    <div class="unlock-note lang-switchable" data-jp="※ 選んだ金額がそのままチケット価格になります。<br>中間搾取なし。全額がアーティストとイベントへ。" data-en="※ Your chosen amount is the ticket price.<br>No middleman. All proceeds to artists & event.">※ 選んだ金額がそのままチケット価格になります。<br>中間搾取なし。全額がアーティストとイベントへ。</div>
-
     <div class="unlock-divider"></div>
 
     <!-- Event details recap -->
