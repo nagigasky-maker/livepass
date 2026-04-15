@@ -613,50 +613,38 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
   z-index:1;
 }
 
-/* 7-color rotating light — Layer 1 (primary sweep) */
+/* Single light that cycles through 7 colors */
 .unlock-poster-light {
-  position:absolute; inset:-30%; z-index:2; pointer-events:none;
-  background:
-    radial-gradient(circle at 30% 30%, #FF1744 0%, transparent 35%),
-    radial-gradient(circle at 70% 20%, #FF9100 0%, transparent 35%),
-    radial-gradient(circle at 80% 60%, #FFEA00 0%, transparent 35%),
-    radial-gradient(circle at 60% 80%, #00E676 0%, transparent 35%),
-    radial-gradient(circle at 30% 70%, #00B0FF 0%, transparent 35%),
-    radial-gradient(circle at 20% 40%, #3D5AFE 0%, transparent 35%),
-    radial-gradient(circle at 50% 50%, #D500F9 0%, transparent 40%);
+  position:absolute; inset:-20%; z-index:2; pointer-events:none;
+  background:radial-gradient(circle at 50% 45%, #FF1744 0%, transparent 55%);
   mix-blend-mode:screen;
-  filter:blur(20px);
-  animation:posterLightRotate 14s linear infinite, posterLightPulse 6s ease-in-out infinite;
-  opacity:.35;
+  filter:blur(30px);
+  animation:posterColorCycle 21s ease-in-out infinite;
+  opacity:.7;
 }
 
-/* Secondary sweep — offset timing */
+/* Secondary subtle ambient — same color as main */
 .unlock-poster-visual::after {
   content:''; position:absolute; inset:-40%; z-index:3; pointer-events:none;
-  background:
-    radial-gradient(ellipse at 40% 30%, rgba(255,23,68,.7) 0%, transparent 45%),
-    radial-gradient(ellipse at 80% 70%, rgba(61,90,254,.7) 0%, transparent 45%),
-    radial-gradient(ellipse at 20% 80%, rgba(0,230,118,.6) 0%, transparent 45%);
+  background:radial-gradient(ellipse at 50% 50%, rgba(255,255,255,.08) 0%, transparent 60%);
   mix-blend-mode:screen;
-  filter:blur(40px);
-  animation:posterLightRotate2 18s linear infinite, posterLightFade 8s ease-in-out infinite;
-  opacity:.4;
+  filter:blur(50px);
+  animation:posterAmbientFade 7s ease-in-out infinite;
+  opacity:.5;
 }
 
-@keyframes posterLightRotate {
-  0%{transform:rotate(0deg) scale(1);}
-  100%{transform:rotate(360deg) scale(1);}
+@keyframes posterColorCycle {
+  0%, 10%    { background:radial-gradient(circle at 50% 45%, #FF1744 0%, transparent 55%); } /* red */
+  14%, 24%   { background:radial-gradient(circle at 50% 45%, #FF9100 0%, transparent 55%); } /* orange */
+  28%, 38%   { background:radial-gradient(circle at 50% 45%, #FFEA00 0%, transparent 55%); } /* yellow */
+  42%, 52%   { background:radial-gradient(circle at 50% 45%, #00E676 0%, transparent 55%); } /* green */
+  56%, 66%   { background:radial-gradient(circle at 50% 45%, #00B0FF 0%, transparent 55%); } /* cyan */
+  70%, 80%   { background:radial-gradient(circle at 50% 45%, #3D5AFE 0%, transparent 55%); } /* blue */
+  84%, 94%   { background:radial-gradient(circle at 50% 45%, #D500F9 0%, transparent 55%); } /* purple */
+  100%       { background:radial-gradient(circle at 50% 45%, #FF1744 0%, transparent 55%); } /* back to red */
 }
-@keyframes posterLightRotate2 {
-  0%{transform:rotate(360deg) scale(1.1);}
-  100%{transform:rotate(0deg) scale(1.1);}
-}
-@keyframes posterLightPulse {
-  0%,100%{opacity:.35; filter:blur(20px) hue-rotate(0deg);}
-  50%{opacity:.75; filter:blur(30px) hue-rotate(60deg);}
-}
-@keyframes posterLightFade {
-  0%,100%{opacity:.25;}
+@keyframes posterAmbientFade {
+  0%,100%{opacity:.3;}
   50%{opacity:.6;}
 }
 
