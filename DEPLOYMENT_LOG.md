@@ -27,6 +27,13 @@ This file exists purely to trigger Vercel auto-deployment.
   still fails, the last resort is Settings → Git → Disconnect and
   reconnect the GitHub integration.
 
+- **v72** (2026-04-15): Post-Reconnect verification commit. User
+  disconnected and reconnected the GitHub integration at Settings →
+  Git. Project `updatedAt` refreshed, confirming the reconnect
+  succeeded. This commit pushes a fresh SHA to main to verify that
+  the webhook actually fires now. If Vercel creates a new production
+  deployment from this commit, the stall is resolved.
+
 ## If auto-deploy still doesn't work
 
 Use the Deploy Hook URL from Vercel Settings → Git → Deploy Hooks.
