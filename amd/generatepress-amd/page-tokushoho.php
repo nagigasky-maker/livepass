@@ -176,20 +176,18 @@ html, body {
 
         <div class="ts-row">
           <div class="ts-key">販売事業者</div>
-          <div class="ts-val">
-            ALL MUST DANCE™ <small>運営: SPACE COOKING™</small>
-          </div>
+          <div class="ts-val">ALL MUST DANCE™</div>
         </div>
 
         <div class="ts-row">
           <div class="ts-key">運営責任者</div>
-          <div class="ts-val">NOBBY (NIKO)</div>
+          <div class="ts-val">東 宣尚</div>
         </div>
 
         <div class="ts-row">
           <div class="ts-key">所在地</div>
           <div class="ts-val">
-            〒150-0043<br>東京都渋谷区道玄坂<br>
+            東京都杉並区<br>
             <small>※ご請求があれば遅滞なく開示いたします</small>
           </div>
         </div>
@@ -227,9 +225,8 @@ html, body {
           <div class="ts-key">商品代金以外の必要料金</div>
           <div class="ts-val">
             <ul>
-              <li>決済プラットフォーム手数料 (チケット販売の場合、販売事業者側で加算される場合があります)</li>
               <li>通信費 (お客様ご負担)</li>
-              <li>グッズ購入時の送料 (ZZAZZ ZA™ ストアのページを参照)</li>
+              <li>グッズ購入時の配送料 (ご注文画面で商品ごとに表示)</li>
             </ul>
           </div>
         </div>
@@ -237,39 +234,47 @@ html, body {
         <div class="ts-row">
           <div class="ts-key">支払方法</div>
           <div class="ts-val">
-            クレジットカード (VISA / Master / AMEX / JCB 他)、PayPay、Apple Pay、コンビニ決済 等<small>ご利用いただける決済手段は外部決済プラットフォーム (Peatix / STORES 等) の仕様に準じます。</small>
+            <ul>
+              <li>クレジット／デビットカード (Visa / Mastercard / American Express 他)</li>
+              <li>カード分割払い (対応カードのみ)</li>
+              <li>Apple Pay</li>
+              <li>Google Pay</li>
+              <li>Link (Stripe)</li>
+              <li>Kakao Pay (韓国)</li>
+            </ul>
+            <small>※ 決済はすべて Stripe を通じて安全に処理されます。JCB・PayPay・Alipay 等は順次対応予定です。</small>
           </div>
         </div>
 
         <div class="ts-row">
           <div class="ts-key">支払時期</div>
           <div class="ts-val">
-            各決済手段の定める時期にお支払いください。原則として購入手続き完了時に決済が確定します。
+            ご購入手続き完了時に決済が確定します。カード会社・決済サービスの締め日に応じてご請求されます。
           </div>
         </div>
 
         <div class="ts-row">
           <div class="ts-key">商品・サービスの引渡時期</div>
           <div class="ts-val">
-            <strong>イベントチケット</strong>: ご購入後、決済確定メールに電子チケットのリンクが発行されます (即時)。<br>
-            <strong>ワークショップ</strong>: ご購入後、開催日前までに入場方法をメールでご案内します。<br>
-            <strong>グッズ</strong>: ZZAZZ ZA™ ストアの配送ポリシーに準じます。
+            <strong>イベントチケット</strong>: 決済確定時にご登録のメールアドレスへ電子チケットを送信します (即時)。<br>
+            <strong>ワークショップ</strong>: 決済確定後、開催日前までに入場方法をメールでご案内します。<br>
+            <strong>グッズ</strong>: 在庫ありの場合、ご注文確定後 3〜7 営業日以内に発送いたします。
           </div>
         </div>
 
         <div class="ts-row">
           <div class="ts-key">返品・キャンセルについて</div>
           <div class="ts-val">
-            <strong>イベント／ワークショップチケット</strong>: イベントの性質上、購入後のお客様都合によるキャンセル・返金は承っておりません。ただし主催者側の都合で中止となった場合、販売手数料を除く額を返金します。<br>
+            <strong>イベント／ワークショップチケット</strong>: イベントの性質上、購入後のお客様都合によるキャンセル・返金は承っておりません。ただし主催者側の都合でイベントが中止となった場合は、Stripe 決済手数料を除く額を返金いたします。<br>
             <small>公演の延期・時間変更等の場合は、別途ご案内いたします。</small><br><br>
-            <strong>グッズ</strong>: ZZAZZ ZA™ ストアの返品・交換規定に準じます。商品到着後 7 日以内に不良品・誤配送があった場合は<a href="mailto:niko@allmustdance.com">niko@allmustdance.com</a>までご連絡ください。
+            <strong>グッズ</strong>: 商品到着後 7 日以内に不良品・誤配送があった場合、<a href="mailto:niko@allmustdance.com">niko@allmustdance.com</a> までご連絡ください。当方の送料負担にて返品・交換を承ります。お客様都合での返品・交換は原則として承っておりません。
           </div>
         </div>
 
         <div class="ts-row">
-          <div class="ts-key">動作環境 (電子チケット)</div>
+          <div class="ts-key">動作環境</div>
           <div class="ts-val">
-            最新版の iOS Safari / Android Chrome / デスクトップブラウザでの閲覧を推奨します。電子チケットの表示には外部決済プラットフォーム指定のアプリ／ブラウザが必要となる場合があります。
+            最新版の iOS Safari / Android Chrome / デスクトップブラウザ (Chrome / Safari / Edge / Firefox) での閲覧を推奨します。購入時には JavaScript および Cookie を有効にしてください。
           </div>
         </div>
 
@@ -283,8 +288,8 @@ html, body {
       </div>
 
       <div class="ts-note">
-        <strong>NOTICE.</strong> イベントチケットおよびワークショップチケットの販売は、Peatix・STORES・BASE 等の外部決済プラットフォームを通じて行われます。各プラットフォームには独自の特定商取引法表記・利用規約がございますので、購入の際はそちらも併せてご確認ください。<br><br>
-        本ページの記載内容は予告なく変更される場合があります。最終更新日は本ページの直下に表示されます。
+        <strong>NOTICE.</strong> 本サイトのチケット・グッズ決済はすべて <strong>Stripe</strong> を通じて処理されます。お客様のカード情報は Stripe (PCI DSS Level 1 準拠) のセキュア環境で処理され、本サイト側では一切保持いたしません。<br><br>
+        本ページの記載内容は予告なく変更される場合があります。最終更新日は本ページ末尾に表示されます。
       </div>
 
     </div>
