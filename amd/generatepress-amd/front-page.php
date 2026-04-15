@@ -602,35 +602,29 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 .unlock-info-row .iv { font-size:12px; font-weight:300; text-align:right; color:var(--white); letter-spacing:.04em; }
 /* UNSEEN CITY poster card */
 .unlock-poster-card { border:1px solid rgba(237,235,230,.08); background:#050505; overflow:hidden; margin-bottom:14px; }
-.unlock-poster-visual { position:relative; aspect-ratio:3/4; background:#040408; overflow:hidden; display:flex; align-items:center; justify-content:center; isolation:isolate; }
+.unlock-poster-visual { position:relative; aspect-ratio:3/4; background:#040408; overflow:hidden; isolation:isolate; }
 
-/* Base dark layer with subtle texture */
-.unlock-poster-visual::before {
-  content:''; position:absolute; inset:0;
-  background:
-    radial-gradient(ellipse at 50% 100%, rgba(20,20,30,.8) 0%, transparent 60%),
-    radial-gradient(ellipse at 50% 0%, rgba(15,15,25,.6) 0%, transparent 50%);
-  z-index:1;
+/* Poster image base */
+.unlock-poster-img {
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover; z-index:1;
+  animation:posterImgFade 21s ease-in-out infinite;
 }
 
 /* Single light that cycles through 7 colors */
 .unlock-poster-light {
   position:absolute; inset:-20%; z-index:2; pointer-events:none;
-  background:radial-gradient(circle at 50% 45%, #FF1744 0%, transparent 55%);
-  mix-blend-mode:screen;
-  filter:blur(30px);
+  background:radial-gradient(circle at 50% 45%, #FF1744 0%, transparent 60%);
+  mix-blend-mode:color-dodge;
+  filter:blur(35px);
   animation:posterColorCycle 21s ease-in-out infinite;
-  opacity:.7;
+  opacity:.55;
 }
 
-/* Secondary subtle ambient — same color as main */
+/* Secondary ambient glow */
 .unlock-poster-visual::after {
-  content:''; position:absolute; inset:-40%; z-index:3; pointer-events:none;
-  background:radial-gradient(ellipse at 50% 50%, rgba(255,255,255,.08) 0%, transparent 60%);
-  mix-blend-mode:screen;
-  filter:blur(50px);
-  animation:posterAmbientFade 7s ease-in-out infinite;
-  opacity:.5;
+  content:''; position:absolute; inset:0; z-index:3; pointer-events:none;
+  background:radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(0,0,0,.55) 100%);
 }
 
 @keyframes posterColorCycle {
@@ -643,25 +637,9 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
   84%, 94%   { background:radial-gradient(circle at 50% 45%, #D500F9 0%, transparent 55%); } /* purple */
   100%       { background:radial-gradient(circle at 50% 45%, #FF1744 0%, transparent 55%); } /* back to red */
 }
-@keyframes posterAmbientFade {
-  0%,100%{opacity:.3;}
-  50%{opacity:.6;}
-}
-
-.unlock-poster-text { position:relative; z-index:5; display:flex; flex-direction:column; align-items:center; text-align:center; }
-.unlock-poster-text .upt-line1, .unlock-poster-text .upt-line2 {
-  font-family:Arial,"Arial Black",sans-serif; font-weight:900;
-  font-size:clamp(36px,10vw,58px); line-height:.9; letter-spacing:.02em;
-  color:#fff;
-  text-shadow:
-    0 0 20px rgba(255,255,255,.5),
-    0 0 40px rgba(255,255,255,.3),
-    0 2px 8px rgba(0,0,0,.8);
-  animation:posterTextFade 5s ease-in-out infinite;
-}
-@keyframes posterTextFade {
-  0%,100%{opacity:.75; text-shadow:0 0 20px rgba(255,255,255,.4),0 2px 8px rgba(0,0,0,.8);}
-  50%{opacity:1; text-shadow:0 0 30px rgba(255,255,255,.9),0 0 60px rgba(255,255,255,.4),0 2px 8px rgba(0,0,0,.8);}
+@keyframes posterImgFade {
+  0%,100%{filter:brightness(.85) saturate(1);}
+  50%{filter:brightness(1.05) saturate(1.15);}
 }
 .unlock-poster-limited { position:absolute; top:16px; right:16px; z-index:10; font-size:8px; letter-spacing:.38em; text-transform:uppercase; color:var(--red); border:1px solid rgba(232,16,10,.5); padding:4px 10px; font-weight:600; background:rgba(12,15,26,.6); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); }
 .unlock-poster-body { padding:20px 20px 22px; border-top:1px solid rgba(237,235,230,.06); }
@@ -1233,11 +1211,8 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
       <div class="unlock-section-label">Artwork &amp; Poster</div>
       <div class="unlock-poster-card">
         <div class="unlock-poster-visual">
+          <img class="unlock-poster-img" loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/04/amd2026asia%E3%81%AE%E3%82%B3%E3%83%94%E3%83%BC.jpg" alt="UNSEEN CITY Poster">
           <div class="unlock-poster-light"></div>
-          <div class="unlock-poster-text">
-            <span class="upt-line1">UNSEEN</span>
-            <span class="upt-line2">CITY</span>
-          </div>
           <div class="unlock-poster-limited">LIMITED 20</div>
         </div>
         <div class="unlock-poster-body">
