@@ -575,18 +575,25 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 .unlock-title { font-family:Arial,"Arial Black",sans-serif; font-size:clamp(42px,11vw,64px); font-weight:900; line-height:.9; letter-spacing:-.02em; color:var(--white); margin-bottom:18px; }
 .unlock-sub { font-size:13px; font-weight:300; line-height:1.9; color:rgba(237,235,230,.72); letter-spacing:.03em; }
 .unlock-divider { height:1px; background:linear-gradient(to right,var(--red),rgba(237,235,230,.08) 60%,transparent); margin:28px 0; }
-.unlock-tiers { display:flex; flex-direction:column; gap:2px; }
-.unlock-tier { display:flex; align-items:center; justify-content:space-between; padding:22px 20px; background:rgba(237,235,230,.02); border:1px solid rgba(237,235,230,.08); text-decoration:none; color:var(--white); transition:background .22s, border-color .22s, transform .15s; cursor:pointer; }
-.unlock-tier:hover, .unlock-tier:active { background:rgba(232,16,10,.08); border-color:rgba(232,16,10,.4); transform:translateX(4px); }
-.unlock-tier .ut-left { display:flex; flex-direction:column; gap:6px; }
-.unlock-tier .ut-label { font-size:9px; font-weight:500; letter-spacing:0.32em; text-transform:uppercase; color:rgba(237,235,230,.72); }
-.unlock-tier .ut-price { font-family:Arial,"Arial Black",sans-serif; font-size:24px; font-weight:900; letter-spacing:.01em; color:var(--white); line-height:1; }
-.unlock-tier .ut-right { display:flex; align-items:center; gap:14px; }
-.unlock-tier .ut-tier-num { font-family:Arial,"Arial Black",sans-serif; font-size:24px; font-weight:900; color:rgba(237,235,230,.08); letter-spacing:.02em; }
-.unlock-tier .ut-arrow { font-size:16px; color:var(--red); }
-.unlock-tier-max { background:rgba(232,16,10,.06); border-color:rgba(232,16,10,.35); }
-.unlock-tier-max .ut-price { color:var(--red); }
-.unlock-note { font-size:10px; font-weight:300; line-height:1.8; color:rgba(237,235,230,.42); letter-spacing:.05em; margin-top:18px; text-align:center; }
+.unlock-ref-label { font-size:9px; font-weight:500; letter-spacing:0.42em; text-transform:uppercase; color:rgba(237,235,230,.35); margin-bottom:14px; }
+.unlock-tiers { display:grid; grid-template-columns:repeat(4,1fr); gap:2px; }
+.unlock-tier-ref { display:flex; flex-direction:column; justify-content:space-between; padding:16px 10px; background:rgba(237,235,230,.02); border:1px solid rgba(237,235,230,.08); aspect-ratio:3/4; min-height:120px; position:relative; }
+.unlock-tier-ref .ut-tier-num { font-family:Arial,"Arial Black",sans-serif; font-size:11px; font-weight:900; color:rgba(237,235,230,.25); letter-spacing:.18em; margin-bottom:auto; }
+.unlock-tier-ref .ut-ref-label { font-size:8px; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; color:rgba(237,235,230,.72); line-height:1.3; margin-bottom:8px; }
+.unlock-tier-ref .ut-ref-price { font-family:Arial,"Arial Black",sans-serif; font-size:14px; font-weight:900; line-height:1; color:var(--white); letter-spacing:.01em; }
+.unlock-tier-ref-max { background:rgba(232,16,10,.06); border-color:rgba(232,16,10,.35); }
+.unlock-tier-ref-max .ut-ref-price { color:var(--red); }
+.unlock-tier-ref-max .ut-tier-num { color:rgba(232,16,10,.5); }
+.unlock-range { margin:28px 0 24px; }
+.unlock-range-bar { position:relative; height:2px; background:linear-gradient(to right,rgba(237,235,230,.1),rgba(232,16,10,.4)); margin-bottom:10px; }
+.unlock-range-dot { position:absolute; top:50%; width:8px; height:8px; border-radius:50%; background:var(--white); transform:translate(-50%,-50%); opacity:.5; }
+.unlock-range-dot-max { background:var(--red); opacity:1; box-shadow:0 0 12px rgba(232,16,10,.6); }
+.unlock-range-labels { display:flex; justify-content:space-between; font-size:8px; letter-spacing:.32em; color:rgba(237,235,230,.42); font-weight:500; text-transform:uppercase; }
+.unlock-cta { display:flex; align-items:center; justify-content:space-between; width:100%; padding:22px 28px; margin-top:24px; background:var(--red); border:2px solid var(--red); color:#EDEBE6; text-decoration:none; font-family:Arial,"Arial Black",sans-serif; font-size:14px; font-weight:900; letter-spacing:.18em; text-transform:uppercase; transition:transform .2s, box-shadow .25s; }
+.unlock-cta:hover { transform:translateY(-2px); box-shadow:0 12px 32px rgba(232,16,10,.4); }
+.unlock-cta:active { transform:translateY(0); }
+.unlock-cta-icon { font-size:20px; }
+.unlock-cta-note { font-size:10px; font-weight:300; line-height:1.7; color:rgba(237,235,230,.45); letter-spacing:.06em; text-align:center; margin-top:14px; }
 .unlock-section-label { font-size:8px; font-weight:500; letter-spacing:0.42em; text-transform:uppercase; color:var(--red); opacity:.85; margin-bottom:14px; }
 .unlock-event-info { margin-bottom:32px; }
 .unlock-info-row { display:flex; justify-content:space-between; align-items:baseline; padding:14px 0; border-bottom:1px solid rgba(237,235,230,.08); }
@@ -601,8 +608,10 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 .unlock-art-credit { font-size:8px; font-weight:300; letter-spacing:.12em; color:rgba(237,235,230,.42); text-transform:uppercase; }
 .unlock-artwork-desc { font-size:11px; font-weight:300; line-height:1.9; color:rgba(237,235,230,.55); letter-spacing:.04em; margin-top:12px; }
 @media (max-width:420px){
-  .unlock-tier{padding:18px 16px;}
-  .unlock-tier .ut-price{font-size:22px;}
+  .unlock-tier-ref{padding:12px 8px;min-height:100px;}
+  .unlock-tier-ref .ut-ref-price{font-size:12px;}
+  .unlock-tier-ref .ut-ref-label{font-size:7px;}
+  .unlock-cta{padding:20px 22px;font-size:12px;letter-spacing:.14em;}
 }
 </style>
 <!-- FIX 1: GSAP removed from head, loaded only before </body> -->
@@ -1100,49 +1109,51 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 
     <div class="unlock-divider"></div>
 
-    <!-- 4 tier cards -->
+    <!-- Reference pricing grid -->
+    <div class="unlock-ref-label lang-switchable" data-jp="参考価格 — 例" data-en="Reference pricing — examples">参考価格 — 例</div>
     <div class="unlock-tiers">
-      <a class="unlock-tier" href="https://buy.stripe.com/" data-amount="3500" target="_blank" rel="noopener">
-        <div class="ut-left">
-          <div class="ut-label">Entrance</div>
-          <div class="ut-price">¥3,500</div>
-        </div>
-        <div class="ut-right">
-          <div class="ut-tier-num">01</div>
-          <div class="ut-arrow">→</div>
-        </div>
-      </a>
-      <a class="unlock-tier" href="https://buy.stripe.com/" data-amount="5000" target="_blank" rel="noopener">
-        <div class="ut-left">
-          <div class="ut-label">Standard Groove</div>
-          <div class="ut-price">¥5,000</div>
-        </div>
-        <div class="ut-right">
-          <div class="ut-tier-num">02</div>
-          <div class="ut-arrow">→</div>
-        </div>
-      </a>
-      <a class="unlock-tier" href="https://buy.stripe.com/" data-amount="7000" target="_blank" rel="noopener">
-        <div class="ut-left">
-          <div class="ut-label">Deep Support</div>
-          <div class="ut-price">¥7,000</div>
-        </div>
-        <div class="ut-right">
-          <div class="ut-tier-num">03</div>
-          <div class="ut-arrow">→</div>
-        </div>
-      </a>
-      <a class="unlock-tier unlock-tier-max" href="https://buy.stripe.com/" data-amount="9999" target="_blank" rel="noopener">
-        <div class="ut-left">
-          <div class="ut-label">Maximum Vibe</div>
-          <div class="ut-price">¥9,999</div>
-        </div>
-        <div class="ut-right">
-          <div class="ut-tier-num">04</div>
-          <div class="ut-arrow">→</div>
-        </div>
-      </a>
+      <div class="unlock-tier-ref">
+        <div class="ut-tier-num">01</div>
+        <div class="ut-ref-label">Entrance</div>
+        <div class="ut-ref-price">¥3,500</div>
+      </div>
+      <div class="unlock-tier-ref">
+        <div class="ut-tier-num">02</div>
+        <div class="ut-ref-label">Standard<br>Groove</div>
+        <div class="ut-ref-price">¥5,000</div>
+      </div>
+      <div class="unlock-tier-ref">
+        <div class="ut-tier-num">03</div>
+        <div class="ut-ref-label">Deep<br>Support</div>
+        <div class="ut-ref-price">¥7,000</div>
+      </div>
+      <div class="unlock-tier-ref unlock-tier-ref-max">
+        <div class="ut-tier-num">04</div>
+        <div class="ut-ref-label">Maximum<br>Vibe</div>
+        <div class="ut-ref-price">¥9,999</div>
+      </div>
     </div>
+
+    <!-- Range indicator -->
+    <div class="unlock-range">
+      <div class="unlock-range-bar">
+        <div class="unlock-range-dot" style="left:0%"></div>
+        <div class="unlock-range-dot" style="left:23%"></div>
+        <div class="unlock-range-dot" style="left:54%"></div>
+        <div class="unlock-range-dot unlock-range-dot-max" style="left:100%"></div>
+      </div>
+      <div class="unlock-range-labels">
+        <span>MIN ¥3,500</span>
+        <span>MAX ¥9,999</span>
+      </div>
+    </div>
+
+    <!-- Single CTA button -->
+    <a class="unlock-cta" href="https://buy.stripe.com/" target="_blank" rel="noopener">
+      <span class="unlock-cta-label lang-switchable" data-jp="金額を入力して購入" data-en="Enter amount & unlock">金額を入力して購入</span>
+      <span class="unlock-cta-icon">🎫</span>
+    </a>
+    <div class="unlock-cta-note lang-switchable" data-jp="次の画面で ¥3,500 〜 ¥9,999 の範囲で金額を入力できます" data-en="On the next screen, enter any amount between ¥3,500 and ¥9,999">次の画面で ¥3,500 〜 ¥9,999 の範囲で金額を入力できます</div>
 
     <div class="unlock-divider"></div>
 
