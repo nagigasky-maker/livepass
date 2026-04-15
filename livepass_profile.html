@@ -20,6 +20,8 @@
   --gold:#F5C842;--mint:#00E5A0;--pink:#F4C0D1;
   --muted:rgba(237,235,230,.3);--muted2:rgba(237,235,230,.14);
   --border:rgba(255,255,255,.07);
+  /* Dutch palette — accent tokens (added for PRO format badges) */
+  --accent-orange:#FF4D00;
   --safe-top:env(safe-area-inset-top,0px);
   --safe-bot:env(safe-area-inset-bottom,0px);
   --nav-h:44px;
@@ -357,6 +359,27 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .article-card.wide .ac-title{font-size:18px}
 .article-card.wide .ac-cat{font-size:9px}
 .article-card.wide .ac-overlay{padding:18px 20px 18px}
+/* PRO formats — mirror the home feed */
+.article-card[data-format="9:16"]{grid-column:span 1}
+.article-card[data-format="9:16"] .ac-img{aspect-ratio:9/16}
+.article-card[data-format="sq-large"]{grid-column:1 / -1}
+.article-card[data-format="sq-large"] .ac-img{aspect-ratio:1/1}
+.article-card[data-format="sq-large"] .ac-title{font-size:20px}
+.article-card[data-format="sq-large"] .ac-overlay{padding:22px 24px}
+.article-card[data-format="cinema"]{grid-column:1 / -1}
+.article-card[data-format="cinema"] .ac-img{aspect-ratio:21/9}
+.article-card[data-format="cinema"] .ac-title{font-size:18px}
+.article-card[data-format="cinema"] .ac-overlay{padding:18px 22px}
+/* PRO chip (top-left) */
+.article-card .ac-pro{
+  position:absolute;top:10px;left:12px;z-index:3;
+  padding:3px 6px;border-radius:3px;
+  background:rgba(255,77,0,.18);color:var(--accent-orange);
+  border:0.5px solid rgba(255,77,0,.5);
+  font-family:'IBM Plex Mono',monospace;font-size:7px;font-weight:600;
+  letter-spacing:.14em;line-height:1;
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+}
 
 .ac-num{
   position:absolute;top:10px;right:12px;
@@ -3186,7 +3209,8 @@ window.addEventListener('keydown', (e) => {
     </div>`;
   }
 
-  /* ARTICLE — render as 3-layout grid (poster/square/wide) like HOME */
+  /* ARTICLE — render as 6-format grid (3 FREE + 3 PRO) like HOME */
+  const PRO_FORMATS = new Set(['9:16', 'sq-large', 'cinema']);
   const articles = readList('livepass_articles');
   const artList  = document.getElementById('screen-article-list');
   if (articles.length === 0) {
@@ -3194,9 +3218,13 @@ window.addEventListener('keydown', (e) => {
   } else {
     artList.innerHTML = '';  // clear placeholder in case of re-render
     articles.forEach((a, i) => {
-      const layout = a.layout || 'square';
+      const layout = a.format || a.layout || 'square';
+      const isPro  = PRO_FORMATS.has(layout);
       const card = document.createElement('div');
-      card.className = 'article-card ' + layout;
+      // Avoid invalid class names like ".9:16" — use data-format for CSS,
+      // keep the class for non-PRO formats as backwards compat.
+      card.className = 'article-card' + (isPro ? '' : ' ' + layout);
+      card.dataset.format = layout;
       const fallbackSvg = "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 900'%3E%3Crect fill='%23001a0a' width='600' height='900'/%3E%3Ctext x='300' y='500' text-anchor='middle' fill='rgba(255,255,255,.08)' font-size='140' font-family='Arial' font-weight='900'%3EART%3C/text%3E%3C/svg%3E";
       const imgSrc = a.cover || fallbackSvg;
       const subHtml = a.subtitle ? `<small>${a.subtitle}</small>` : '';
@@ -3206,9 +3234,11 @@ window.addEventListener('keydown', (e) => {
           元: ${a.sharedFromAuthor || '—'}
         </div>
       ` : '';
+      const proChip = isPro ? `<div class="ac-pro">PRO</div>` : '';
       card.innerHTML = `
         <div class="ac-img"><img src="${imgSrc}" alt=""></div>
         ${reshareBadge}
+        ${proChip}
         <div class="ac-num">${String(i+1).padStart(3,'0')}</div>
         <div class="ac-overlay">
           <div class="ac-cat">${a.category || 'Article'}</div>
