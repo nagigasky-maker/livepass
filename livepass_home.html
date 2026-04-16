@@ -1025,7 +1025,7 @@ function renderMagazine(posts) {
       // Override block size to match user's chosen layout format
       let bCols = block.cols, bRows = block.rows, bCls = block.cls || '';
       if (a.userPost && a.layout) {
-        const fm = { poster:{c:5,r:6}, square:{c:6,r:5}, wide:{c:12,r:4,cls:'mag-lg'},
+        const fm = { poster:{c:5,r:6}, square:{c:6,r:6}, wide:{c:12,r:4,cls:'mag-lg'},
                      '9:16':{c:4,r:7}, 'sq-large':{c:12,r:5,cls:'mag-lg'}, cinema:{c:12,r:3,cls:'mag-lg'} };
         const ov = fm[a.layout];
         if (ov) { bCols = ov.c; bRows = ov.r; bCls = ov.cls || ''; }
