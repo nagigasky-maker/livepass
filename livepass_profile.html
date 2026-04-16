@@ -3272,7 +3272,9 @@ window.addEventListener('keydown', (e) => {
 
     // ── PRO/BIZ: long-press to reorder articles (iPhone-style) ──
     const userPlan = (localStorage.getItem('livepass_plan') || 'free').toLowerCase();
-    if ((userPlan === 'pro' || userPlan === 'biz') && articles.length > 1 && !isOtherUser) {
+    const _viewUser = new URLSearchParams(location.search).get('user');
+    const _isOther = _viewUser && _viewUser !== (localStorage.getItem('livepass_account_name') || 'NOBBY');
+    if ((userPlan === 'pro' || userPlan === 'biz') && articles.length > 1 && !_isOther) {
       let dragEl = null, dragIdx = -1, longTimer = null;
       const cards = () => Array.from(artList.querySelectorAll('.article-card'));
       function startReorder(card, idx) {
