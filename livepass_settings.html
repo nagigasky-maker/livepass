@@ -370,12 +370,12 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
     <div class="pr-avatar" id="srAvatar"></div>
     <div class="pr-info">
       <div class="pr-line1">
-        <span class="pr-name" id="srName">NOBBY</span>
-        <span class="pr-role">DANCER / DJ</span>
+        <span class="pr-name" id="srName"></span>
+        <span class="pr-role" id="srRole"></span>
       </div>
-      <div class="pr-sub">FREE / ARTIST</div>
+      <div class="pr-sub" id="srPlanSub"></div>
     </div>
-    <div class="pr-badge" style="background:rgba(237,235,230,.08);color:rgba(237,235,230,.55)">FREE</div>
+    <div class="pr-badge" id="srBadge" style="background:rgba(237,235,230,.08);color:rgba(237,235,230,.55)"></div>
   </div>
 
   <!-- ═══ ACCOUNT ═══ -->
@@ -395,8 +395,8 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
     </div>
     <div class="field-body">
       <div class="field-label">アカウント名</div>
-      <input type="text" id="srNameInput" placeholder="NOBBY"
-        value="NOBBY"
+      <input type="text" id="srNameInput" placeholder="アカウント名"
+        value=""
         style="width:100%;background:none;border:none;color:rgba(237,235,230,.5);
                font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;
                letter-spacing:.02em;margin-top:3px;padding:0;outline:none">
@@ -412,7 +412,7 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
     <div class="field-body">
       <div class="field-label">スタイル</div>
       <input type="text" id="srRoleInput" placeholder="例) アーティスト・DJ など"
-        value="DANCER / DJ"
+        value=""
         style="width:100%;background:none;border:none;color:rgba(237,235,230,.5);
                font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;
                letter-spacing:.02em;margin-top:3px;padding:0;outline:none">
@@ -420,35 +420,44 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
     <div class="field-chevron">›</div>
   </div>
 
-  <div class="field-row">
+  <div class="field-row" id="fieldEmail" style="cursor:pointer">
     <div class="field-icon red">
       <svg viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><polyline points="3,7 12,13 21,7"/></svg>
     </div>
     <div class="field-body">
       <div class="field-label">メールアドレス</div>
-      <div class="field-value">nobby@spacecooking.studio</div>
+      <input type="email" id="srEmailInput" placeholder="メールアドレスを入力"
+        style="width:100%;background:none;border:none;color:rgba(237,235,230,.5);
+               font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;
+               letter-spacing:.02em;margin-top:3px;padding:0;outline:none">
     </div>
     <div class="field-chevron">›</div>
   </div>
 
-  <div class="field-row">
+  <div class="field-row" id="fieldPhone" style="cursor:pointer">
     <div class="field-icon red">
       <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
     </div>
     <div class="field-body">
       <div class="field-label">電話番号</div>
-      <div class="field-value">未設定</div>
+      <input type="tel" id="srPhoneInput" placeholder="電話番号を入力"
+        style="width:100%;background:none;border:none;color:rgba(237,235,230,.5);
+               font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;
+               letter-spacing:.02em;margin-top:3px;padding:0;outline:none">
     </div>
     <div class="field-chevron">›</div>
   </div>
 
-  <div class="field-row">
+  <div class="field-row" id="fieldPassword" style="cursor:pointer">
     <div class="field-icon gold">
       <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
     </div>
     <div class="field-body">
       <div class="field-label">パスワード変更</div>
-      <div class="field-value">•••••••••</div>
+      <input type="password" id="srPassInput" placeholder="新しいパスワード"
+        style="width:100%;background:none;border:none;color:rgba(237,235,230,.5);
+               font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;
+               letter-spacing:.02em;margin-top:3px;padding:0;outline:none">
     </div>
     <div class="field-chevron">›</div>
   </div>
@@ -536,6 +545,72 @@ document.querySelectorAll('.plan').forEach(p => {
   });
 });
 
+/* Sync profile row from localStorage */
+(function syncProfileRow(){
+  try {
+    const n = localStorage.getItem('livepass_account_name') || '';
+    const r = localStorage.getItem('livepass_role') || localStorage.getItem('livepass_style') || '';
+    const p = (localStorage.getItem('livepass_plan') || 'FREE').toUpperCase();
+    document.getElementById('srName').textContent = n;
+    const roleEl = document.getElementById('srRole');
+    if (roleEl) roleEl.textContent = r;
+    const subEl = document.getElementById('srPlanSub');
+    if (subEl) subEl.textContent = p + (r ? ' / ' + r.toUpperCase() : '');
+    const badge = document.getElementById('srBadge');
+    if (badge) badge.textContent = p;
+    // Also fill input fields
+    const nameInput = document.getElementById('srNameInput');
+    if (nameInput && n) nameInput.value = n;
+    const roleInput = document.getElementById('srRoleInput');
+    if (roleInput && r) roleInput.value = r;
+  } catch(e){}
+})();
+
+/* Email / Phone / Password — save to Firebase + localStorage */
+(function initAccountFields(){
+  const emailInput = document.getElementById('srEmailInput');
+  const phoneInput = document.getElementById('srPhoneInput');
+  const passInput = document.getElementById('srPassInput');
+  // Load existing values
+  emailInput.value = localStorage.getItem('livepass_email') || localStorage.getItem('livepass_temp_email') || '';
+  phoneInput.value = localStorage.getItem('livepass_phone') || '';
+  // Save on blur
+  emailInput.addEventListener('change', async () => {
+    const v = emailInput.value.trim();
+    if (!v) return;
+    localStorage.setItem('livepass_email', v);
+    // Update Firebase Auth email if available
+    try {
+      if (window.FB && window.FB.currentUser) {
+        const { updateEmail } = await import('https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js');
+        await updateEmail(window.FB.currentUser, v);
+      }
+    } catch(e) { console.warn('Email update:', e.message); }
+  });
+  phoneInput.addEventListener('change', () => {
+    localStorage.setItem('livepass_phone', phoneInput.value.trim());
+    // Save to Firestore
+    try {
+      if (window.FB && window.FB.currentUser) {
+        const uid = window.FB.currentUser.uid;
+        window.FB.updateDoc(window.FB.doc(window.FB.db, 'users', uid), { phone: phoneInput.value.trim() });
+      }
+    } catch(e) {}
+  });
+  passInput.addEventListener('change', async () => {
+    const v = passInput.value.trim();
+    if (!v || v.length < 6) { alert('パスワードは6文字以上にしてください'); return; }
+    try {
+      if (window.FB && window.FB.currentUser) {
+        const { updatePassword } = await import('https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js');
+        await updatePassword(window.FB.currentUser, v);
+        passInput.value = '';
+        alert('パスワードを変更しました');
+      }
+    } catch(e) { alert('パスワード変更に失敗: ' + e.message); }
+  });
+})();
+
 /* Top bar counters + unread badge */
 (function syncCounters(){
   try {
@@ -572,7 +647,7 @@ roleInput.addEventListener('input', () => {
 nameInput.addEventListener('input', () => {
   try {
     localStorage.setItem(NAME_KEY, nameInput.value);
-    document.getElementById('srName').textContent = nameInput.value || 'NOBBY';
+    document.getElementById('srName').textContent = nameInput.value || '';
   } catch(e) {}
 });
 

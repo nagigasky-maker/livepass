@@ -733,7 +733,7 @@ function placeholderSVG(article) {
 }
 
 /* ─── User identity — single source of truth for author name + avatar ─── */
-const USER_NAME   = localStorage.getItem('livepass_account_name') || 'NOBBY';
+const USER_NAME   = localStorage.getItem('livepass_account_name') || '';
 const USER_AVATAR = localStorage.getItem('livepass_avatar') || null;
 
 /* Merge user-posted articles from localStorage with the sample feed.

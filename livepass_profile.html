@@ -1399,8 +1399,8 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
       <span class="pro" id="phPlanBadge">FREE</span>
     </div>
     <div class="ph-name-block">
-      <div class="ph-name">NOBBY</div>
-      <div class="ph-role">Dancer / DJ</div>
+      <div class="ph-name"></div>
+      <div class="ph-role"></div>
     </div>
     <!-- Own profile: follow button is hidden (can't follow yourself).
          Still shows DM icon as a future "messages" shortcut. -->
@@ -3607,12 +3607,12 @@ if (!isOtherUser) {
       const inner = document.querySelector('#phAvatar .ph-avatar-inner');
       if (inner) inner.innerHTML = `<img src="${dataUrl}" alt="avatar">`;
     }
-    const role = localStorage.getItem('livepass_role');
+    const role = localStorage.getItem('livepass_role') || localStorage.getItem('livepass_style') || '';
     if (role) {
       const el = document.querySelector('.ph-role');
       if (el) el.textContent = role;
     }
-    const name = localStorage.getItem('livepass_account_name');
+    const name = localStorage.getItem('livepass_account_name') || '';
     if (name) {
       const el = document.querySelector('.ph-name');
       if (el) el.textContent = name;
