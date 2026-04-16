@@ -668,16 +668,17 @@ const SCHEDULE = [
 /* renderSchedule moved inline into renderMagazine() — injected between article rows */
 
 /* Sample article data — magazine-style colored cards */
+const LP_COLORS = ['#FF4500','#0040FF','#FFD100','#00BA4A','#CC1F5A','#7B2FFF'];
 const ARTICLES = [
   { id:'a001', layout:'poster', num:'002', cat:'Photography', catColor:'#F4C0D1',
     title:'Movement as Architecture', titleJa:'空間の中のダンス', subtitle:null,
-    author:'SPACE COOKING™', handle:'@kenji_mv', bgHue:'115,40,20', bgColor:'#0E0E0E' },
+    author:'SPACE COOKING™', handle:'@kenji_mv', bgHue:'115,40,20', bgColor:'#1A1A1A' },
   { id:'a002', layout:'square', num:'001', cat:'Workshop', catColor:'#FF4500',
     title:'Popping Fundamentals', titleJa:'ポッピング基礎講座', subtitle:null,
     author:'NOBBY', handle:'@dancer_emi', bgHue:'0,70,40', bgColor:'#FF4500' },
   { id:'a003', layout:'wide', num:'003', cat:'Essay', catColor:'#F5C842',
     title:"Why Tokyo's underground scene is finally going global", titleJa:'東京アンダーグラウンドの世界進出', subtitle:null,
-    author:'DUBLA®', handle:'@organiser_yuki', bgHue:'45,60,30', bgColor:'#0E0E0E' },
+    author:'DUBLA®', handle:'@organiser_yuki', bgHue:'45,60,30', bgColor:'#1A1A1A' },
   { id:'a008', layout:'9:16', num:'008', cat:'Reel · PRO', catColor:'#FF2D6B', tier:'pro',
     title:'Amsterdam Set Reel', titleJa:'アムステルダム セット', subtitle:null,
     author:'AMI', handle:'@dj_sora', bgHue:'200,80,25', bgColor:'#0040FF' },
@@ -689,7 +690,7 @@ const ARTICLES = [
     author:'DUBLA®', handle:'@void_studio', bgHue:'280,60,30', bgColor:'#CC1F5A' },
   { id:'a006', layout:'wide', num:'006', cat:'Culture', catColor:'#0E0E0E',
     title:'How to build a crowd in 6 months', titleJa:'6ヶ月でファンをつくる方法', subtitle:null,
-    author:'NOBBY', handle:'@nobby', bgHue:'18,85,25', bgColor:'#0E0E0E' },
+    author:'NOBBY', handle:'@nobby', bgHue:'18,85,25', bgColor:'#1A1A1A' },
   { id:'a011', layout:'square', num:'011', cat:'Interview', catColor:'#00BA4A',
     title:'Scene is Family', titleJa:'シーンとは家族だ', subtitle:null,
     author:'CREW NRG', handle:'@crew_nrg', bgHue:'55,80,28', bgColor:'#00BA4A' },
@@ -698,19 +699,19 @@ const ARTICLES = [
     author:'SACHI', handle:'@marrow_night', bgHue:'320,60,30', bgColor:'#7B2FFF' },
   { id:'a012', layout:'square', num:'012', cat:'Dance', catColor:'#F4C0D1',
     title:'B-Boy Park 2026 Recap', titleJa:'ビーボイパーク振り返り', subtitle:null,
-    author:'KENJI', handle:'@kenji_mv', bgHue:'210,60,22', bgColor:'#0E0E0E' },
+    author:'KENJI', handle:'@kenji_mv', bgHue:'210,60,22', bgColor:'#1A1A1A' },
   { id:'a009', layout:'wide', num:'009', cat:'Interview', catColor:'#E8100A',
     title:'ALI on House Culture', titleJa:'ハウスカルチャーを語る', subtitle:null,
-    author:'LIVE PASS', handle:'@livepass', bgHue:'0,80,25', bgColor:'#0E0E0E' },
+    author:'LIVE PASS', handle:'@livepass', bgHue:'0,80,25', bgColor:'#FF4500' },
   { id:'a010', layout:'poster', num:'010', cat:'Event', catColor:'#E8100A',
     title:'Liquidroom', titleJa:'May 4 Preview', subtitle:null,
-    author:'KENJI', handle:'@kenji_mv', bgHue:'10,70,30', bgColor:'#0E0E0E' },
+    author:'KENJI', handle:'@kenji_mv', bgHue:'10,70,30', bgColor:'#0040FF' },
   { id:'a013', layout:'poster', num:'013', cat:'Style', catColor:'#F4C0D1',
     title:'Tokyo Night Walk', titleJa:'夜の東京散歩', subtitle:null,
-    author:'SACHI', handle:'@sachi_dance', bgHue:'290,55,25', bgColor:'#0E0E0E' },
+    author:'SACHI', handle:'@sachi_dance', bgHue:'290,55,25', bgColor:'#CC1F5A' },
   { id:'a014', layout:'sq-large', num:'014', cat:'Review', catColor:'#A8E63D',
     title:'Vol.24 — Rotterdam Night', titleJa:'ロッテルダムナイト', subtitle:null,
-    author:'LIVE PASS', handle:'@livepass', bgHue:'240,70,22', bgColor:'#0E0E0E' },
+    author:'LIVE PASS', handle:'@livepass', bgHue:'240,70,22', bgColor:'#7B2FFF' },
 ];
 
 const grid = document.getElementById('feedGrid');
@@ -754,6 +755,7 @@ function getUserArticles(){
       avatar:   USER_AVATAR, // user posts always show the current user avatar
       body:     u.body,
       cover:    u.cover,
+      bgColor:  u.bgColor || null, // from compose color picker
       bgHue:    '140,60,20',
       createdAt:u.createdAt,
       userPost: true,
@@ -987,10 +989,13 @@ function renderMagazine(posts) {
       card.dataset.id = a.id;
       card.style.cssText = `width:calc(${w.toFixed(2)}% - ${G}px);height:${h}px;flex-shrink:0`;
 
-      const bg = a.bgColor || a.cover ? '' : '#0E0E0E';
-      const txtColor = a.cover ? '#F2F0EB' : getTextColor(a.bgColor || '#0E0E0E');
-      if (!a.cover && a.bgColor) card.style.background = a.bgColor;
-      else if (!a.cover) card.style.background = '#0E0E0E';
+      // Auto-assign a palette color to no-cover articles that lack bgColor
+      if (!a.cover && !a.bgColor) {
+        a.bgColor = LP_COLORS[pi % LP_COLORS.length];
+      }
+      const cardBg = a.cover ? '' : (a.bgColor || '#1A1A1A');
+      const txtColor = a.cover ? '#F2F0EB' : getTextColor(cardBg);
+      if (cardBg) card.style.background = cardBg;
 
       const jaTitle = a.titleJa ? `<small>${a.titleJa}</small>` : '';
       const handle = a.handle ? `<div class="fc-author">${a.handle}</div>` : '';
