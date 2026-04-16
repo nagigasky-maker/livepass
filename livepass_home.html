@@ -146,15 +146,11 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 /* FEED HEADER ─────────────────────── */
 .feed-header{padding:0} /* now uses .sec-head */
 
-/* MIXED GRID FEED — Article 画角システム
-   Mobile (default): 2 columns, full-width spans for large formats
-   Tablet/Desktop (≥640px): 3 columns matching the spec  ─── */
-.feed-grid{
-  padding:0 8px 40px;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:6px;
-  grid-auto-flow:dense; /* fill gaps left by full-width rows */
+/* MAGAZINE GRID — hand-placed blocks, irregular sizes ─── */
+.mag-grid{
+  padding:0 12px 40px;
+  display:flex;flex-wrap:wrap;
+  gap:2px;
 }
 .feed-card{
   position:relative;display:block;
@@ -171,51 +167,11 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;
 }
 
-/* ─── Mobile defaults (2-col) ─── */
-/* FREE: portrait / square / wide */
-.feed-card[data-format="poster"]    {grid-column:span 1}
-.feed-card[data-format="poster"]  .fc-img{aspect-ratio:3/5}
-.feed-card[data-format="square"]    {grid-column:span 1}
-.feed-card[data-format="square"]  .fc-img{aspect-ratio:1/1}
-.feed-card[data-format="wide"]      {grid-column:1 / -1}
-.feed-card[data-format="wide"]    .fc-img{aspect-ratio:16/9}
-/* PRO: 9:16 / sq-large / cinema */
-.feed-card[data-format="9:16"]      {grid-column:span 1}
-.feed-card[data-format="9:16"]    .fc-img{aspect-ratio:9/16}
-.feed-card[data-format="sq-large"]  {grid-column:1 / -1}
-.feed-card[data-format="sq-large"] .fc-img{aspect-ratio:1/1}
-.feed-card[data-format="cinema"]    {grid-column:1 / -1}
-.feed-card[data-format="cinema"]  .fc-img{aspect-ratio:21/9}
-
-/* Bigger typography for wide/cinema/sq-large hero cards */
-.feed-card[data-format="wide"]     .fc-title,
-.feed-card[data-format="cinema"]   .fc-title,
-.feed-card[data-format="sq-large"] .fc-title{font-size:18px}
-.feed-card[data-format="wide"]     .fc-overlay,
-.feed-card[data-format="cinema"]   .fc-overlay,
-.feed-card[data-format="sq-large"] .fc-overlay{padding:18px 20px}
-
-/* ─── Tablet / Desktop (3-col) — matches the spec ─── */
-@media (min-width:640px){
-  .feed-grid{grid-template-columns:repeat(3,1fr);gap:8px;padding:0 14px 48px}
-  .feed-card[data-format="wide"]    {grid-column:span 2}
-  .feed-card[data-format="sq-large"]{grid-column:span 2}
-  .feed-card[data-format="cinema"]  {grid-column:span 3}
-}
-
-/* BIZ-only formats */
-.feed-card[data-format="zine"]        {grid-column:1 / -1}
-.feed-card[data-format="zine"]      .fc-img{aspect-ratio:9/16}
-.feed-card[data-format="cinema-tall"] {grid-column:1 / -1}
-.feed-card[data-format="cinema-tall"].fc-img,
-.feed-card[data-format="cinema-tall"] .fc-img{aspect-ratio:21/9}
-.feed-card[data-format="cinema-tri"]  {grid-column:1 / -1}
-.feed-card[data-format="cinema-tri"] .fc-img{aspect-ratio:21/9}
-@media (min-width:640px){
-  .feed-card[data-format="zine"]       {grid-column:span 1}
-  .feed-card[data-format="cinema-tall"]{grid-column:span 2}
-  .feed-card[data-format="cinema-tri"] {grid-column:span 3}
-}
+/* Magazine block sizing — each card gets width via calc(X% - gap) */
+.feed-card .fc-img{position:relative;width:100%;display:block;overflow:hidden;height:100%}
+/* Large title on big cards */
+.feed-card.mag-lg .fc-title{font-size:18px;line-height:1.15}
+.feed-card.mag-lg .fc-overlay{padding:14px 16px}
 
 /* Video play icon overlay */
 .feed-card .fc-play-icon{
@@ -593,21 +549,13 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 </div>
 
 <main class="content">
-  <!-- ═══ THIS WEEK — Schedule ═══ -->
-  <div class="sec-head">
-    <div><div class="sec-ja">今週のイベント</div><div class="sec-en">This week</div></div>
-    <a class="sec-link" href="/calendar">ALL EVENTS →</a>
-  </div>
-  <div class="sched-list" id="schedList"></div>
-
   <!-- ═══ ARTICLE FEED ═══ -->
-  <div style="border-top:0.5px solid var(--lp-border);margin:8px 20px 0"></div>
   <div class="sec-head">
     <div><div class="sec-ja">記事・キュレーション</div><div class="sec-en">Article</div></div>
     <a class="sec-link" href="/search">EXPLORE →</a>
   </div>
 
-  <div class="feed-grid" id="feedGrid"></div>
+  <div class="mag-grid" id="feedGrid"></div>
 </main>
 
 <!-- ═══ ARTICLE DETAIL MODAL ═══ -->
@@ -969,72 +917,106 @@ function getTextColor(hex){
   return (0.299*r+0.587*g+0.114*b)/255 > 0.45 ? '#0A0A0A' : '#F2F0EB';
 }
 
-/* Render feed */
-FEED.forEach(a => {
-  const format = fmtOf(a);
-  const card = document.createElement('div');
-  card.className = 'feed-card ' + format;
-  card.dataset.format = format;
-  card.dataset.id = a.id;
+/* ─────────────────────────────────────────────
+   MAGAZINE LAYOUT — hand-placed blocks
+   Each "row" is a flex row; cards get explicit width % and height.
+   The pattern repeats for user posts appended after sample data.
+   ───────────────────────────────────────────── */
+const G = 2; // gap px
+const BLOCK_PATTERN = [
+  // Row 1: portrait 5col + square 7col
+  [{ cols:5, rows:6 }, { cols:7, rows:5 }],
+  // Row 2: wide full-width
+  [{ cols:12, rows:4, cls:'mag-lg' }],
+  // Row 3: tall 4col (PRO 9:16) + right stack (8col top + 8col bottom)
+  [{ cols:4, rows:7 }, { cols:8, rows:4 }, { cols:8, rows:3 }],
+  // Row 4: 7col + 5col
+  [{ cols:7, rows:3 }, { cols:5, rows:5 }],
+  // Row 5: tall 7col + right stack
+  [{ cols:7, rows:9, cls:'mag-lg' }, { cols:5, rows:5 }, { cols:5, rows:4 }],
+];
+const ROW_UNIT = 56; // px per row unit
 
-  // Background color for magazine-style cards (user posts use cover image)
-  const bg = a.bgColor || '#0E0E0E';
-  const txtColor = a.cover ? '#F2F0EB' : getTextColor(bg);
-  card.style.background = a.cover ? '' : bg;
+function renderMagazine(posts) {
+  grid.innerHTML = '';
+  let pi = 0; // post index
+  const pat = BLOCK_PATTERN;
+  let patIdx = 0;
 
-  const jaTitle = a.titleJa ? `<small>${a.titleJa}</small>` : '';
-  const handle = a.handle ? `<div class="fc-author">${a.handle}</div>` : '';
-  const proChip = a.tier === 'pro' ? `<div class="fc-pro">PRO</div>` : '';
-  const mediaHtml = buildMediaHtml(a);
-  const catHandle = (a.cat && a.handle) ? `${a.cat} · ${a.handle.toUpperCase()}` : a.cat;
-  card.innerHTML = `
-    <div class="fc-img">
-      ${mediaHtml}
-    </div>
-    ${proChip}
-    <div class="fc-overlay" style="color:${txtColor}">
-      <div class="fc-cat">${catHandle}</div>
-      <div class="fc-title">${a.title}${jaTitle}</div>
-      ${handle}
-    </div>
-  `;
-  card.addEventListener('click', () => openDetail(a));
-  grid.appendChild(card);
+  while (pi < posts.length) {
+    const blockRow = pat[patIdx % pat.length];
+    patIdx++;
 
-  // Slideshow auto-play (2s interval)
-  if ((a.mediaType === 'slideshow') && a.extraImages && a.extraImages.length > 0) {
-    const slides = card.querySelectorAll('.fc-slide');
-    const dots = card.querySelectorAll('.fc-dot');
-    if (slides.length > 1) {
-      let cur = 0;
-      setInterval(() => {
-        slides[cur].style.opacity = '0';
-        if(dots[cur]) dots[cur].classList.remove('active');
-        cur = (cur + 1) % slides.length;
-        slides[cur].style.opacity = '1';
-        if(dots[cur]) dots[cur].classList.add('active');
-      }, 2000);
+    // Determine which blocks share a "visual row" vs stacked right column
+    // We process left-to-right; blocks with same col position stack
+    let leftCols = 0;
+    const rowDiv = document.createElement('div');
+    rowDiv.style.cssText = 'display:flex;flex-wrap:wrap;gap:'+G+'px;width:100%;margin-bottom:'+G+'px';
+
+    for (let bi = 0; bi < blockRow.length && pi < posts.length; bi++) {
+      const block = blockRow[bi];
+      const a = posts[pi]; pi++;
+      const w = (block.cols / 12 * 100);
+      const h = block.rows * ROW_UNIT + (block.rows - 1) * G;
+
+      const card = document.createElement('div');
+      card.className = 'feed-card' + (block.cls ? ' ' + block.cls : '');
+      card.dataset.id = a.id;
+      card.style.cssText = `width:calc(${w.toFixed(2)}% - ${G}px);height:${h}px;flex-shrink:0`;
+
+      const bg = a.bgColor || a.cover ? '' : '#0E0E0E';
+      const txtColor = a.cover ? '#F2F0EB' : getTextColor(a.bgColor || '#0E0E0E');
+      if (!a.cover && a.bgColor) card.style.background = a.bgColor;
+      else if (!a.cover) card.style.background = '#0E0E0E';
+
+      const jaTitle = a.titleJa ? `<small>${a.titleJa}</small>` : '';
+      const handle = a.handle ? `<div class="fc-author">${a.handle}</div>` : '';
+      const proChip = a.tier === 'pro' ? `<div class="fc-pro">PRO</div>` : '';
+      const mediaHtml = buildMediaHtml(a);
+      const catHandle = (a.cat && a.handle) ? `${a.cat} · ${a.handle.toUpperCase()}` : a.cat;
+
+      card.innerHTML = `
+        <div class="fc-img">${mediaHtml}</div>
+        ${proChip}
+        <div class="fc-overlay" style="color:${txtColor}">
+          <div class="fc-cat">${catHandle}</div>
+          <div class="fc-title">${a.title}${jaTitle}</div>
+          ${handle}
+        </div>
+      `;
+      card.addEventListener('click', () => openDetail(a));
+      rowDiv.appendChild(card);
+
+      // Slideshow
+      if (a.mediaType === 'slideshow' && a.extraImages && a.extraImages.length > 0) {
+        const slides = card.querySelectorAll('.fc-slide');
+        if (slides.length > 1) {
+          let cur = 0;
+          setInterval(() => { slides[cur].style.opacity='0'; cur=(cur+1)%slides.length; slides[cur].style.opacity='1'; }, 2000);
+        }
+      }
+      // Video autoplay
+      if (a.mediaType === 'video') {
+        const posterEl = card.querySelector('.fc-poster');
+        if (posterEl) {
+          MediaDB.get('media_' + a.id).then(blob => {
+            if (!blob) return;
+            const vid = document.createElement('video');
+            vid.src = URL.createObjectURL(blob);
+            vid.autoplay=true;vid.muted=true;vid.loop=true;vid.playsInline=true;
+            vid.style.cssText='width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0';
+            posterEl.parentNode.replaceChild(vid, posterEl);
+            const pi2 = card.querySelector('.fc-play-icon');
+            if(pi2) pi2.remove();
+          }).catch(()=>{});
+        }
+      }
     }
+    grid.appendChild(rowDiv);
   }
+}
 
-  // Video: try to load blob from IndexedDB for autoplay
-  if (a.mediaType === 'video') {
-    const posterEl = card.querySelector('.fc-poster');
-    if (posterEl) {
-      MediaDB.get('media_' + a.id).then(blob => {
-        if (!blob) return;
-        const vid = document.createElement('video');
-        vid.src = URL.createObjectURL(blob);
-        vid.autoplay = true; vid.muted = true; vid.loop = true; vid.playsInline = true;
-        vid.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0';
-        posterEl.parentNode.replaceChild(vid, posterEl);
-        // Remove play icon
-        const playIcon = card.querySelector('.fc-play-icon');
-        if(playIcon) playIcon.remove();
-      }).catch(()=>{});
-    }
-  }
-});
+renderMagazine(FEED);
 
 /* ─────────────────────────────────────────────
    LIKES / SAVES — persisted in localStorage
