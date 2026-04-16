@@ -1076,23 +1076,24 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .pm-artists{display:flex;flex-wrap:wrap;gap:8px}
 .pm-artist{
   display:flex;align-items:center;gap:10px;
-  padding:8px 14px 8px 8px;border-radius:99px;
+  padding:10px 18px 10px 10px;border-radius:99px;
   background:rgba(61,170,255,.08);
   border:0.5px solid rgba(61,170,255,.4);
   color:var(--white);cursor:pointer;
   transition:background .15s ease, transform .15s ease;
+  min-height:44px;
 }
 .pm-artist:active{background:rgba(61,170,255,.16);transform:scale(.97)}
 .pm-artist-avatar{
-  width:28px;height:28px;border-radius:50%;
+  width:34px;height:34px;border-radius:50%;
   background:linear-gradient(135deg,#3DAAFF,#bf5af2);
   display:flex;align-items:center;justify-content:center;
-  font-family:Arial,sans-serif;font-weight:900;font-size:10px;color:#000;
+  font-family:Arial,sans-serif;font-weight:900;font-size:12px;color:#000;
   flex-shrink:0;
 }
 .pm-artist-name{
   font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
-  font-size:12px;letter-spacing:.04em;
+  font-size:14px;letter-spacing:.04em;
 }
 
 /* ─────────────────────────────────────────────
@@ -1105,16 +1106,16 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   font-family:Arial,'Noto Sans JP',sans-serif;
   color:rgba(237,235,230,.85);
 }
-.pm-credits-group{margin-bottom:12px;display:flex;gap:12px;align-items:baseline}
+.pm-credits-group{margin-bottom:14px;display:flex;gap:14px;align-items:baseline}
 .pm-credits-role{
-  font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;
-  letter-spacing:.22em;text-transform:uppercase;
-  color:rgba(237,235,230,.65);
-  flex-shrink:0;min-width:96px;line-height:1.4;
+  font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;
+  letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(237,235,230,.7);
+  flex-shrink:0;min-width:100px;line-height:1.4;
 }
 .pm-credits-name{
   font-family:Arial,'Noto Sans JP',sans-serif;font-weight:600;
-  font-size:13px;letter-spacing:.02em;color:var(--white);
+  font-size:15px;letter-spacing:.02em;color:var(--white);
   line-height:1.5;flex:1;min-width:0;
   display:flex;flex-wrap:wrap;
   column-gap:14px;row-gap:3px;
@@ -1130,7 +1131,7 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .pm-credits-name a:active{color:#8fcaff;border-bottom-color:var(--blue)}
 
 /* Collaborator revenue split display */
-.pm-collab{padding:8px 22px 0}
+.pm-collab{padding:8px 22px 0;display:none}
 .pm-collab-row{
   display:flex;align-items:center;gap:12px;
   padding:10px 14px;margin-bottom:8px;
@@ -3268,6 +3269,53 @@ window.addEventListener('keydown', (e) => {
         }
       }
     });
+
+    // ── PRO/BIZ: long-press to reorder articles (iPhone-style) ──
+    const userPlan = (localStorage.getItem('livepass_plan') || 'free').toLowerCase();
+    if ((userPlan === 'pro' || userPlan === 'biz') && articles.length > 1 && !isOtherUser) {
+      let dragEl = null, dragIdx = -1, longTimer = null;
+      const cards = () => Array.from(artList.querySelectorAll('.article-card'));
+      function startReorder(card, idx) {
+        dragEl = card; dragIdx = idx;
+        card.style.opacity = '0.6';
+        card.style.outline = '2px solid var(--blue)';
+        card.style.zIndex = '10';
+        if (navigator.vibrate) navigator.vibrate(30);
+      }
+      function endReorder() {
+        if (!dragEl) return;
+        dragEl.style.opacity = ''; dragEl.style.outline = ''; dragEl.style.zIndex = '';
+        // Save new order to localStorage
+        const cardEls = cards();
+        const newOrder = cardEls.map(c => c.dataset.artIdx).filter(v => v !== undefined);
+        if (newOrder.length === articles.length) {
+          const reordered = newOrder.map(i => articles[Number(i)]);
+          try { localStorage.setItem('livepass_articles', JSON.stringify(reordered)); } catch(e){}
+        }
+        dragEl = null; dragIdx = -1;
+      }
+      cards().forEach((card, i) => {
+        card.dataset.artIdx = String(i);
+        card.addEventListener('touchstart', (e) => {
+          longTimer = setTimeout(() => { e.preventDefault(); startReorder(card, i); }, 500);
+        }, {passive: false});
+        card.addEventListener('touchmove', (e) => {
+          clearTimeout(longTimer);
+          if (!dragEl) return;
+          e.preventDefault();
+          const touch = e.touches[0];
+          const target = document.elementFromPoint(touch.clientX, touch.clientY);
+          const targetCard = target && target.closest('.article-card');
+          if (targetCard && targetCard !== dragEl && artList.contains(targetCard)) {
+            const rect = targetCard.getBoundingClientRect();
+            const after = touch.clientY > rect.top + rect.height / 2;
+            artList.insertBefore(dragEl, after ? targetCard.nextSibling : targetCard);
+          }
+        }, {passive: false});
+        card.addEventListener('touchend', () => { clearTimeout(longTimer); endReorder(); });
+        card.addEventListener('touchcancel', () => { clearTimeout(longTimer); endReorder(); });
+      });
+    }
   }
 
   /* Shared row builder for EVENT / WORKSHOP / EXHIBITION */

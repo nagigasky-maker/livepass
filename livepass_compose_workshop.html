@@ -406,12 +406,20 @@ textarea.input-box{resize:vertical;min-height:120px;line-height:1.8;font-size:13
   <div class="form-section">
     <div class="form-label">カテゴリ</div>
     <div class="pill-row" id="catRow">
-      <button class="pill active" data-cat="HOUSE">HOUSE</button>
-      <button class="pill" data-cat="BREAKING">BREAKING</button>
+      <button class="pill active" data-cat="DANCE">DANCE</button>
+      <button class="pill" data-cat="SOUL">SOUL</button>
       <button class="pill" data-cat="WAACKING">WAACKING</button>
       <button class="pill" data-cat="LOCKING">LOCKING</button>
       <button class="pill" data-cat="POPPING">POPPING</button>
+      <button class="pill" data-cat="BREAKING">BREAKING</button>
+      <button class="pill" data-cat="HIPHOP">HIPHOP</button>
+      <button class="pill" data-cat="HOUSE">HOUSE</button>
+      <button class="pill" data-cat="FREESTYLE">FREESTYLE</button>
+      <button class="pill" data-cat="JAZZ">JAZZ</button>
       <button class="pill" data-cat="DJ">DJ</button>
+      <button class="pill" data-cat="BEAT">BEAT</button>
+      <button class="pill" data-cat="ART">ART</button>
+      <button class="pill" data-cat="CUSTOM">カスタム</button>
     </div>
   </div>
 
@@ -580,7 +588,7 @@ textarea.input-box{resize:vertical;min-height:120px;line-height:1.8;font-size:13
 
 <script>
 const state = {
-  category: 'HOUSE',
+  category: 'DANCE',
   coverDataUrl: null,
   mediaType: 'image', // 'image' | 'video' | 'gif'
   mediaBlob: null,    // original video File object for IndexedDB storage

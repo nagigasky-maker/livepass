@@ -118,6 +118,32 @@ input,textarea{color:inherit;font:inherit}
 .lay-btn[data-pro="1"].active .pro-tag{
   background:rgba(255,77,0,.22);
 }
+/* BIZ-only formats — secret silhouette reveal */
+.lay-btn[data-biz="1"]{opacity:.3}
+.lay-btn[data-biz="1"].active{opacity:1}
+.lay-btn[data-biz="1"].locked .lay-box{border-style:dashed;filter:blur(2px)}
+.lay-btn[data-biz="1"].locked .lay-name{filter:blur(3px)}
+.lay-btn.lay-secret .lay-box{border-color:rgba(255,255,255,.18)}
+.lay-btn[data-layout="zine"] .lay-box{width:24px;height:50px}
+.lay-btn[data-layout="cinema-tall"] .lay-box{width:54px;height:42px}
+.lay-btn[data-layout="cinema-tri"] .lay-box{width:54px;height:18px;position:relative}
+.lay-btn[data-layout="cinema-tri"] .lay-box::before{
+  content:'';position:absolute;bottom:-6px;left:0;right:0;
+  height:1px;border-top:1px dashed rgba(255,255,255,.2);
+}
+.biz-tag{
+  display:inline-block;padding:2px 5px;border-radius:3px;
+  background:rgba(0,56,255,.14);color:var(--accent-blue);
+  font-family:'IBM Plex Mono',monospace;font-size:7px;font-weight:600;
+  letter-spacing:.12em;
+  border:0.5px solid rgba(0,56,255,.45);
+  line-height:1;
+}
+.lay-btn[data-biz="1"].active .biz-tag{background:rgba(0,56,255,.22)}
+/* cover aspect ratios for BIZ formats */
+.cover-upload[data-layout="zine"]      {aspect-ratio:9/16}
+.cover-upload[data-layout="cinema-tall"]{aspect-ratio:21/9}
+.cover-upload[data-layout="cinema-tri"] {aspect-ratio:21/9}
 
 /* PRO upgrade bottom sheet ─────────────────────── */
 #proModalOverlay{
@@ -554,6 +580,20 @@ textarea.input-box{resize:vertical;min-height:160px;line-height:1.8;font-size:13
         <div class="lay-name">Cinema<span class="pro-tag">PRO</span></div>
       </button>
     </div>
+    <div class="layout-row" id="layoutRowBiz">
+      <button class="lay-btn lay-secret" data-layout="zine" data-biz="1" type="button">
+        <div class="lay-box"></div>
+        <div class="lay-name">???<span class="biz-tag">BIZ</span></div>
+      </button>
+      <button class="lay-btn lay-secret" data-layout="cinema-tall" data-biz="1" type="button">
+        <div class="lay-box"></div>
+        <div class="lay-name">???<span class="biz-tag">BIZ</span></div>
+      </button>
+      <button class="lay-btn lay-secret" data-layout="cinema-tri" data-biz="1" type="button">
+        <div class="lay-box"></div>
+        <div class="lay-name">???<span class="biz-tag">BIZ</span></div>
+      </button>
+    </div>
   </div>
 
   <!-- Title ─────────────────────── -->
@@ -730,12 +770,11 @@ const initialsOf = (n) => (n || '?').replace(/[^A-Za-z0-9\u3040-\u30FF\u4E00-\u9
 
 /* ─── Plan check ─── */
 /* PRO features unlocked for pro OR biz tiers (biz is a superset of pro) */
-function isProUser() {
-  try {
-    const plan = (localStorage.getItem('livepass_plan') || 'free').toLowerCase();
-    return plan === 'pro' || plan === 'biz';
-  } catch (e) { return false; }
+function getUserPlan() {
+  try { return (localStorage.getItem('livepass_plan') || 'free').toLowerCase(); } catch(e){ return 'free'; }
 }
+function isProUser() { const p = getUserPlan(); return p === 'pro' || p === 'biz'; }
+function isBizUser() { return getUserPlan() === 'biz'; }
 
 /* ─── PRO upgrade sheet ─── */
 const proModalOverlay = document.getElementById('proModalOverlay');
@@ -761,8 +800,12 @@ pmUpgradeBtn.addEventListener('click', () => {
 /* Paint locked state on PRO buttons for non-PRO users */
 function refreshProLockState() {
   const isPro = isProUser();
+  const isBiz = isBizUser();
   document.querySelectorAll('.lay-btn[data-pro="1"]').forEach(b => {
     b.classList.toggle('locked', !isPro);
+  });
+  document.querySelectorAll('.lay-btn[data-biz="1"]').forEach(b => {
+    b.classList.toggle('locked', !isBiz);
   });
 }
 refreshProLockState();
@@ -770,10 +813,11 @@ refreshProLockState();
 /* Layout picker */
 document.querySelectorAll('.lay-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    const isPro = btn.dataset.pro === '1';
-    // FREE users tapping a PRO layout → show upgrade sheet, don't switch
-    if (isPro && !isProUser()) {
-      openProModal();
+    const needsPro = btn.dataset.pro === '1';
+    const needsBiz = btn.dataset.biz === '1';
+    if (needsPro && !isProUser()) { openProModal(); return; }
+    if (needsBiz && !isBizUser()) {
+      alert('この画角は BIZ プラン限定です。\n企業・ブランド・オーガナイズチーム向けの特別フォーマットです。');
       return;
     }
     document.querySelectorAll('.lay-btn').forEach(b => b.classList.remove('active'));

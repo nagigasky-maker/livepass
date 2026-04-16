@@ -260,13 +260,21 @@ function render() {
 }
 
 function buildRow(u, state) {
+  // Try to load avatar from known sources
+  const myName = localStorage.getItem('livepass_account_name') || '';
+  const myAvatar = localStorage.getItem('livepass_avatar') || null;
+  if (u.name === myName && myAvatar) u.avatar = myAvatar;
+
   const row = document.createElement('a');
   row.className = 'user-row';
   row.href = '/profile?user=' + encodeURIComponent(u.name);
   const btnClass = state; // 'following' or 'followback'
   const btnText  = state === 'following' ? 'フォロー中' : 'フォローする';
+  const avContent = u.avatar
+    ? '<img src="' + u.avatar + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block">'
+    : u.name.charAt(0);
   row.innerHTML = `
-    <div class="ur-av" style="--av-hue:${u.hue}">${u.name.charAt(0)}</div>
+    <div class="ur-av" style="--av-hue:${u.hue}">${avContent}</div>
     <div class="ur-body">
       <div class="ur-name">${u.name}</div>
       <div class="ur-role">${u.role}</div>
@@ -312,6 +320,18 @@ try {
 render();
 </script>
 
+<script>
+/* ─── Avatar sync: replace bottom-nav initial with uploaded profile photo ─── */
+(function syncBnAvatar(){
+  try {
+    var av = localStorage.getItem('livepass_avatar');
+    if (!av) return;
+    document.querySelectorAll('.bn-avatar').forEach(function(el){
+      el.innerHTML = '<img src="' + av + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block">';
+    });
+  } catch(e){}
+})();
+</script>
 <div id="__v">v66</div>
 </body>
 </html>

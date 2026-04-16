@@ -63,8 +63,13 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .conv-av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%}
 .conv-unread{
   position:absolute;top:-2px;right:-2px;
-  width:12px;height:12px;border-radius:50%;
-  background:var(--red);border:2px solid var(--black);
+  min-width:16px;height:16px;padding:0 4px;
+  border-radius:99px;
+  background:var(--red);color:#fff;
+  font-family:Arial,sans-serif;font-weight:700;font-size:9px;
+  display:flex;align-items:center;justify-content:center;
+  border:1.5px solid #000;
+  line-height:1;
 }
 .conv-body{flex:1;min-width:0}
 .conv-name{
@@ -329,7 +334,7 @@ function renderConvList(){
     item.innerHTML = `
       <div class="conv-av" style="--av-hue:${c.hue}">
         ${c.name.charAt(0)}
-        ${c.unread > 0 ? '<div class="conv-unread"></div>' : ''}
+        ${c.unread > 0 ? '<div class="conv-unread">' + c.unread + '</div>' : ''}
       </div>
       <div class="conv-body">
         <div class="conv-name">${c.name}</div>
@@ -466,6 +471,18 @@ chatInput.addEventListener('keydown', (e) => {
 });
 </script>
 
+<script>
+/* ─── Avatar sync: replace bottom-nav initial with uploaded profile photo ─── */
+(function syncBnAvatar(){
+  try {
+    var av = localStorage.getItem('livepass_avatar');
+    if (!av) return;
+    document.querySelectorAll('.bn-avatar').forEach(function(el){
+      el.innerHTML = '<img src="' + av + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block">';
+    });
+  } catch(e){}
+})();
+</script>
 <div id="__v">v66</div>
 </body>
 </html>

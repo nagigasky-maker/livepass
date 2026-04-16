@@ -148,6 +148,20 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   .feed-card[data-format="cinema"]  {grid-column:span 3}
 }
 
+/* BIZ-only formats */
+.feed-card[data-format="zine"]        {grid-column:1 / -1}
+.feed-card[data-format="zine"]      .fc-img{aspect-ratio:9/16}
+.feed-card[data-format="cinema-tall"] {grid-column:1 / -1}
+.feed-card[data-format="cinema-tall"].fc-img,
+.feed-card[data-format="cinema-tall"] .fc-img{aspect-ratio:21/9}
+.feed-card[data-format="cinema-tri"]  {grid-column:1 / -1}
+.feed-card[data-format="cinema-tri"] .fc-img{aspect-ratio:21/9}
+@media (min-width:640px){
+  .feed-card[data-format="zine"]       {grid-column:span 1}
+  .feed-card[data-format="cinema-tall"]{grid-column:span 2}
+  .feed-card[data-format="cinema-tri"] {grid-column:span 3}
+}
+
 /* Video play icon overlay */
 .feed-card .fc-play-icon{
   position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3;
