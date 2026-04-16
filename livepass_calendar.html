@@ -1523,5 +1523,17 @@ orgSheetOverlay?.addEventListener('click', (e) => { if (e.target === orgSheetOve
 </script>
 
 <div id="__v">v66</div>
+<script>
+/* ─── Avatar sync: replace bottom-nav initial with uploaded profile photo ─── */
+(function syncBnAvatar(){
+  try {
+    var av = localStorage.getItem('livepass_avatar');
+    if (!av) return;
+    document.querySelectorAll('.bn-avatar').forEach(function(el){
+      el.innerHTML = '<img src="' + av + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block">';
+    });
+  } catch(e){}
+})();
+</script>
 </body>
 </html>

@@ -299,6 +299,98 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .dm-act.sharing{animation:dmSharePulse .35s ease}
 
 /* ─────────────────────────────────────────────
+   SHARE BOTTOM SHEET
+   ───────────────────────────────────────────── */
+#shareSheetOverlay{
+  position:fixed;inset:0;z-index:1150;
+  background:rgba(0,0,0,0);pointer-events:none;opacity:0;
+  transition:background .3s ease, opacity .2s ease;
+}
+#shareSheetOverlay.active{
+  background:rgba(0,0,0,.72);pointer-events:all;opacity:1;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+}
+#shareSheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:1151;
+  background:#141414;
+  border-top:0.5px solid var(--border);
+  border-top-left-radius:20px;border-top-right-radius:20px;
+  padding:16px 20px calc(20px + var(--safe-bot));
+  transform:translateY(100%);
+  transition:transform .35s cubic-bezier(.2,.8,.2,1);
+  box-shadow:0 -12px 40px rgba(0,0,0,.7);
+}
+#shareSheetOverlay.active #shareSheet{transform:translateY(0)}
+.ss-handle{width:40px;height:4px;border-radius:99px;background:rgba(242,240,235,.2);margin:0 auto 14px}
+.ss-title{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:15px;color:var(--white);text-align:center;margin-bottom:12px;
+}
+.ss-close{
+  position:absolute;top:16px;right:18px;width:28px;height:28px;
+  display:flex;align-items:center;justify-content:center;color:var(--white);
+}
+.ss-close svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
+.ss-repost{
+  display:block;width:auto;margin:0 auto 14px;padding:10px 28px;
+  border-radius:99px;background:rgba(242,240,235,.08);
+  border:0.5px solid rgba(242,240,235,.2);
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:600;
+  font-size:13px;color:var(--white);letter-spacing:.04em;
+}
+.ss-repost:active{background:rgba(242,240,235,.14)}
+.ss-divider{height:0.5px;background:var(--border);margin:14px 0}
+.ss-section{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:13px;color:var(--white);margin-bottom:12px;
+}
+.ss-icons{
+  display:flex;gap:18px;overflow-x:auto;scrollbar-width:none;
+  padding-bottom:4px;
+}
+.ss-icons::-webkit-scrollbar{display:none}
+.ss-icon-btn{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  min-width:62px;flex-shrink:0;
+}
+.ss-icon-circle{
+  width:52px;height:52px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.08);
+}
+.ss-icon-circle svg{width:24px;height:24px;fill:currentColor;color:var(--white)}
+.ss-icon-circle img{width:28px;height:28px;border-radius:50%}
+.ss-icon-label{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
+  font-size:9px;color:rgba(242,240,235,.55);letter-spacing:.02em;
+  text-align:center;white-space:nowrap;
+}
+/* colored brand icons */
+.ss-icon-circle.embed{background:rgba(255,255,255,.12)}
+.ss-icon-circle.fb{background:#3b5998}
+.ss-icon-circle.msg{background:#0b84fe}
+.ss-icon-circle.wa{background:#25d366}
+.ss-icon-circle.x{background:#000;border:0.5px solid rgba(255,255,255,.2)}
+.ss-icon-circle.mail{background:#ea4335}
+.ss-url-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(0,0,0,.45);border:0.5px solid rgba(242,240,235,.1);
+}
+.ss-url{
+  flex:1;min-width:0;
+  font-family:'IBM Plex Mono',monospace;font-size:11px;
+  color:rgba(242,240,235,.5);letter-spacing:.02em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.ss-copy{
+  flex-shrink:0;padding:7px 16px;border-radius:8px;
+  background:var(--blue);color:#fff;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:11px;letter-spacing:.06em;
+}
+
+/* ─────────────────────────────────────────────
    COMPOSE SELECTOR BOTTOM SHEET (shared)
    ───────────────────────────────────────────── */
 #composeSheetOverlay{
@@ -428,6 +520,49 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
     <div class="dm-label">Article</div>
   </header>
   <div class="dm-body" id="dmBody"></div>
+</div>
+
+<!-- ═══ SHARE BOTTOM SHEET ═══ -->
+<div id="shareSheetOverlay" aria-hidden="true">
+  <div id="shareSheet" role="dialog" aria-label="共有">
+    <div class="ss-handle"></div>
+    <button class="ss-close" id="ssClose" aria-label="閉じる"><svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18" stroke-linecap="round"/><line x1="6" y1="18" x2="18" y2="6" stroke-linecap="round"/></svg></button>
+    <div class="ss-title">投稿で共有</div>
+    <button class="ss-repost" id="ssRepost">投稿を作成</button>
+    <div class="ss-divider"></div>
+    <div class="ss-section">共有</div>
+    <div class="ss-icons">
+      <button class="ss-icon-btn" data-share="embed">
+        <div class="ss-icon-circle embed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+        <div class="ss-icon-label">埋め込む</div>
+      </button>
+      <button class="ss-icon-btn" data-share="facebook">
+        <div class="ss-icon-circle fb"><svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" fill="#fff"/></svg></div>
+        <div class="ss-icon-label">Facebook</div>
+      </button>
+      <button class="ss-icon-btn" data-share="messages">
+        <div class="ss-icon-circle msg"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="#fff"/></svg></div>
+        <div class="ss-icon-label">メッセージ</div>
+      </button>
+      <button class="ss-icon-btn" data-share="whatsapp">
+        <div class="ss-icon-circle wa"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="#fff"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" fill="none"/></svg></div>
+        <div class="ss-icon-label">WhatsApp</div>
+      </button>
+      <button class="ss-icon-btn" data-share="x">
+        <div class="ss-icon-circle x"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="#fff"/></svg></div>
+        <div class="ss-icon-label">X</div>
+      </button>
+      <button class="ss-icon-btn" data-share="email">
+        <div class="ss-icon-circle mail"><svg viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z" fill="none" stroke="#fff" stroke-width="2"/><polyline points="3,7 12,13 21,7" fill="none" stroke="#fff" stroke-width="2"/></svg></div>
+        <div class="ss-icon-label">メール</div>
+      </button>
+    </div>
+    <div class="ss-divider"></div>
+    <div class="ss-url-row">
+      <div class="ss-url" id="ssUrl"></div>
+      <button class="ss-copy" id="ssCopy">コピー</button>
+    </div>
+  </div>
 </div>
 
 <!-- ═══ COMPOSE SELECTOR BOTTOM SHEET (shared) ═══ -->
@@ -811,25 +946,7 @@ function openDetail(a) {
         const now = toggleId('livepass_saves', a.id);
         btn.classList.toggle('saved', now);
       } else if (act === 'share') {
-        const meNow = localStorage.getItem('livepass_account_name') || 'NOBBY';
-        if ((a.author || 'NOBBY') === meNow && !a.sharedBy) {
-          alert('自分の投稿です。フォロワーのタイムラインに既に表示されています。');
-          return;
-        }
-        if (getIds('livepass_shares').includes(a.id)) {
-          alert('この記事はすでに共有済みです。');
-          return;
-        }
-        const ok = shareArticle(a);
-        if (ok) {
-          toggleId('livepass_shares', a.id);
-          btn.classList.add('shared', 'sharing');
-          setTimeout(() => btn.classList.remove('sharing'), 400);
-          if (navigator.vibrate) navigator.vibrate([12, 30, 12]);
-          alert(`共有しました。\n\n✓ あなたのARTICLEに追加されました\n✓ フォロワーに通知が送られました`);
-        } else {
-          alert('共有に失敗しました。');
-        }
+        openShareSheet(a, btn);
         return;
       }
       if (navigator.vibrate) navigator.vibrate(6);
@@ -844,6 +961,121 @@ dmClose.addEventListener('click', () => {
 window.addEventListener('keydown', e => {
   if (e.key === 'Escape' && modal.classList.contains('active')) dmClose.click();
 });
+
+/* ─────────────────────────────────────────────
+   SHARE BOTTOM SHEET — opens when "共有" is tapped
+   ───────────────────────────────────────────── */
+(function initShareSheet(){
+  const overlay = document.getElementById('shareSheetOverlay');
+  const closeBtn = document.getElementById('ssClose');
+  const repostBtn = document.getElementById('ssRepost');
+  const urlEl = document.getElementById('ssUrl');
+  const copyBtn = document.getElementById('ssCopy');
+  if (!overlay) return;
+
+  let _article = null;
+  let _shareBtn = null;
+
+  function dismiss(){
+    overlay.classList.remove('active');
+    overlay.setAttribute('aria-hidden','true');
+  }
+  window.openShareSheet = function(a, btn){
+    _article = a;
+    _shareBtn = btn;
+    // Build share URL
+    const shareUrl = location.origin + '/home#article-' + a.id;
+    urlEl.textContent = shareUrl;
+    overlay.classList.add('active');
+    overlay.setAttribute('aria-hidden','false');
+    if (navigator.vibrate) navigator.vibrate(8);
+  };
+  closeBtn.addEventListener('click', dismiss);
+  overlay.addEventListener('click', e => { if(e.target === overlay) dismiss(); });
+  window.addEventListener('keydown', e => {
+    if(e.key === 'Escape' && overlay.classList.contains('active')) dismiss();
+  });
+
+  // ── Repost to own ARTICLE timeline ──
+  repostBtn.addEventListener('click', () => {
+    if(!_article) return;
+    const meNow = localStorage.getItem('livepass_account_name') || 'NOBBY';
+    if((_article.author || 'NOBBY') === meNow && !_article.sharedBy){
+      alert('自分の投稿です。フォロワーのタイムラインに既に表示されています。');
+      return;
+    }
+    if(getIds('livepass_shares').includes(_article.id)){
+      alert('この記事はすでにリポスト済みです。');
+      dismiss();
+      return;
+    }
+    const ok = shareArticle(_article);
+    if(ok){
+      toggleId('livepass_shares', _article.id);
+      if(_shareBtn){
+        _shareBtn.classList.add('shared','sharing');
+        setTimeout(() => _shareBtn.classList.remove('sharing'), 400);
+      }
+      if(navigator.vibrate) navigator.vibrate([12,30,12]);
+      dismiss();
+      // Brief toast
+      const t = document.getElementById('shareToast');
+      if(t){ t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
+    } else {
+      alert('リポストに失敗しました（既に共有済み）。');
+    }
+  });
+
+  // ── SNS share buttons ──
+  overlay.querySelectorAll('.ss-icon-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if(!_article) return;
+      const shareUrl = location.origin + '/home#article-' + _article.id;
+      const text = _article.title || 'LIVE PASS';
+      const type = btn.dataset.share;
+      let url = '';
+      switch(type){
+        case 'embed':
+          const code = `<iframe src="${shareUrl}" width="400" height="600" frameborder="0"></iframe>`;
+          navigator.clipboard.writeText(code).then(()=>{
+            alert('埋め込みコードをコピーしました');
+          }).catch(()=> prompt('埋め込みコード:', code));
+          break;
+        case 'facebook':
+          url = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(shareUrl);
+          window.open(url,'_blank');
+          break;
+        case 'messages':
+          url = 'sms:?body=' + encodeURIComponent(text + ' ' + shareUrl);
+          location.href = url;
+          break;
+        case 'whatsapp':
+          url = 'https://wa.me/?text=' + encodeURIComponent(text + ' ' + shareUrl);
+          window.open(url,'_blank');
+          break;
+        case 'x':
+          url = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(shareUrl);
+          window.open(url,'_blank');
+          break;
+        case 'email':
+          url = 'mailto:?subject=' + encodeURIComponent(text) + '&body=' + encodeURIComponent(text + '\n\n' + shareUrl);
+          location.href = url;
+          break;
+      }
+      dismiss();
+    });
+  });
+
+  // ── Copy link ──
+  copyBtn.addEventListener('click', () => {
+    const txt = urlEl.textContent;
+    navigator.clipboard.writeText(txt).then(()=>{
+      copyBtn.textContent = '✓ コピー済';
+      setTimeout(()=>{ copyBtn.textContent = 'コピー'; }, 2000);
+    }).catch(()=> prompt('URL:', txt));
+    if(navigator.vibrate) navigator.vibrate(6);
+  });
+})();
 
 /* Top bar counters + unread badge — read from localStorage */
 (function syncCounters(){
@@ -901,6 +1133,20 @@ window.addEventListener('keydown', e => {
 })();
 </script>
 
+<div id="shareToast" style="position:fixed;top:max(20px,calc(env(safe-area-inset-top,0px)+20px));left:50%;transform:translate(-50%,-30px);z-index:1300;background:rgba(0,200,83,.15);border:0.5px solid var(--accent-green);color:var(--accent-green);padding:10px 20px;border-radius:99px;font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;font-size:11px;letter-spacing:.12em;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none">✓ ARTICLEに共有しました</div>
+<style>#shareToast.show{opacity:1;transform:translate(-50%,0)}</style>
 <div id="__v">v66</div>
+<script>
+/* ─── Avatar sync: replace bottom-nav initial with uploaded profile photo ─── */
+(function syncBnAvatar(){
+  try {
+    var av = localStorage.getItem('livepass_avatar');
+    if (!av) return;
+    document.querySelectorAll('.bn-avatar').forEach(function(el){
+      el.innerHTML = '<img src="' + av + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block">';
+    });
+  } catch(e){}
+})();
+</script>
 </body>
 </html>
