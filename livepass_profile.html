@@ -2656,7 +2656,7 @@ function openPostDetail(type, item) {
       ${artCollabHtml}
       <div class="pm-actions">
         <button class="pm-act" data-act="comment" type="button">
-          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>12
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="pm-comment-count">0</span>
         </button>
         <button class="pm-act ${liked ? 'liked' : ''}" data-act="like" type="button">
           <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>48
@@ -2668,7 +2668,13 @@ function openPostDetail(type, item) {
           <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>共有
         </button>
       </div>
-      <div style="height:20px"></div>
+      <div class="pm-comments" style="padding:0 22px 24px">
+        <div class="pm-comments-list" id="pmCommentsList" style="max-height:200px;overflow-y:auto;scrollbar-width:none;margin-bottom:12px"></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="pmCommentInput" placeholder="コメントを入力..." style="flex:1;padding:10px 14px;border-radius:99px;background:rgba(255,255,255,.06);border:0.5px solid rgba(255,255,255,.12);color:var(--white);font-family:Arial,'Noto Sans JP',sans-serif;font-size:13px;outline:none">
+          <button id="pmCommentSend" type="button" style="padding:8px 16px;border-radius:99px;background:rgba(255,255,255,.08);color:var(--white);font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;font-weight:700">送信</button>
+        </div>
+      </div>
     `;
 
     // Wire up the re-edit button for articles
@@ -2719,6 +2725,55 @@ function openPostDetail(type, item) {
         if (navigator.vibrate) navigator.vibrate(6);
       });
     });
+
+    // ── Comments for article detail ──
+    (function initPmComments(){
+      const CK = 'livepass_comments_' + item.id;
+      function getCmts(){ try{return JSON.parse(localStorage.getItem(CK)||'[]');}catch(e){return [];} }
+      function timeAgo(iso){
+        const m=Math.floor((Date.now()-new Date(iso).getTime())/60000);
+        if(m<1)return 'たった今'; if(m<60)return m+'分前';
+        const h=Math.floor(m/60); if(h<24)return h+'時間前';
+        return Math.floor(h/24)+'日前';
+      }
+      function renderCmts(){
+        const list=document.getElementById('pmCommentsList');
+        const cmts=getCmts();
+        const cnt=pmBody.querySelector('.pm-comment-count');
+        if(cnt)cnt.textContent=cmts.length;
+        if(!list)return;
+        list.innerHTML=cmts.map(c=>{
+          const av=c.avatar?'<img src="'+c.avatar+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">':c.name.charAt(0);
+          return '<div style="display:flex;gap:10px;padding:10px 0;border-bottom:0.5px solid rgba(128,128,128,.15)"><div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#3DAAFF,#1a2030);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;overflow:hidden">'+av+'</div><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:11px;margin-bottom:2px">'+c.name+'</div><div style="font-size:13px;line-height:1.5;opacity:.85">'+c.text+'</div><div style="font-size:9px;opacity:.4;margin-top:3px">'+timeAgo(c.at)+'</div></div></div>';
+        }).join('');
+        list.scrollTop=list.scrollHeight;
+      }
+      renderCmts();
+      const ci=document.getElementById('pmCommentInput');
+      const cs=document.getElementById('pmCommentSend');
+      if(ci&&cs){
+        const send=()=>{
+          const t=ci.value.trim(); if(!t)return;
+          const me=localStorage.getItem('livepass_account_name')||'User';
+          const av=localStorage.getItem('livepass_avatar')||null;
+          const cmts=getCmts();
+          cmts.push({name:me,avatar:av,text:t,at:new Date().toISOString()});
+          try{localStorage.setItem(CK,JSON.stringify(cmts));}catch(e){}
+          ci.value=''; renderCmts();
+          if(navigator.vibrate)navigator.vibrate(6);
+        };
+        cs.addEventListener('click',send);
+        ci.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();send();}});
+      }
+      // Comment button scrolls to input
+      pmBody.querySelectorAll('.pm-act[data-act="comment"]').forEach(b=>{
+        b.addEventListener('click',()=>{
+          const el=document.getElementById('pmCommentInput');
+          if(el){el.scrollIntoView({behavior:'smooth'});el.focus();}
+        });
+      });
+    })();
+
   } else {
     // EVENT / WORKSHOP / EXHIBITION — event-style layout
     pmLabel.textContent = type.charAt(0).toUpperCase() + type.slice(1);

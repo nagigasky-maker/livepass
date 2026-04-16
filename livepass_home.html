@@ -1021,11 +1021,21 @@ function renderMagazine(posts) {
     for (let bi = 0; bi < blockRow.length && pi < posts.length; bi++) {
       const block = blockRow[bi];
       const a = posts[pi]; pi++;
-      const w = (block.cols / 12 * 100);
-      const h = block.rows * ROW_UNIT + (block.rows - 1) * G;
+
+      // Override block size to match user's chosen layout format
+      let bCols = block.cols, bRows = block.rows, bCls = block.cls || '';
+      if (a.userPost && a.layout) {
+        const fm = { poster:{c:5,r:6}, square:{c:6,r:5}, wide:{c:12,r:4,cls:'mag-lg'},
+                     '9:16':{c:4,r:7}, 'sq-large':{c:12,r:5,cls:'mag-lg'}, cinema:{c:12,r:3,cls:'mag-lg'} };
+        const ov = fm[a.layout];
+        if (ov) { bCols = ov.c; bRows = ov.r; bCls = ov.cls || ''; }
+      }
+
+      const w = (bCols / 12 * 100);
+      const h = bRows * ROW_UNIT + (bRows - 1) * G;
 
       const card = document.createElement('div');
-      card.className = 'feed-card' + (block.cls ? ' ' + block.cls : '');
+      card.className = 'feed-card' + (bCls ? ' ' + bCls : '');
       card.dataset.id = a.id;
       card.style.cssText = `width:calc(${w.toFixed(2)}% - ${G}px);height:${h}px;flex-shrink:0`;
 
