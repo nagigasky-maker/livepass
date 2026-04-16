@@ -135,6 +135,7 @@ html,body{height:100%;background:var(--bg);color:var(--fg);font-family:'Inter',s
 .dash-btn:hover{background:rgba(29,158,117,.06)}
 .dash-btn:active{transform:scale(.98)}
 </style>
+<script type="module" src="/firebase-init.js"></script>
 </head>
 <body><script>
 /* PWA NAV FIX v66 — form-submission technique for iOS PWA standalone.
@@ -512,8 +513,8 @@ buildKinds();
 buildGoals();
 setTimeout(startWelcome, 500);
 
-// ─── Finish button: persist to localStorage and enter the app ──────────────
-document.getElementById('finishBtn')?.addEventListener('click', () => {
+// ─── Finish button: create Firebase account + persist to Firestore ──────────────
+document.getElementById('finishBtn')?.addEventListener('click', async () => {
   const nameJa = document.getElementById('name-ja').value.trim();
   const nameEn = document.getElementById('name-en').value.trim();
   if (!nameJa && !nameEn) {
@@ -522,11 +523,55 @@ document.getElementById('finishBtn')?.addEventListener('click', () => {
     return;
   }
   const kind = KINDS.find(k => k.id === selectedKind);
-  // English name becomes the canonical account name (used as the @handle
-  // across profile, messages, credits, etc). Default to the Japanese
-  // name uppercased if English wasn't provided.
   const accountName = (nameEn || nameJa).toUpperCase();
+
+  // ─── Firebase Auth: create anonymous-to-email account ───
+  // For now, auto-generate a temp email from the account name.
+  // Real email/password sign-up will be added in settings later.
+  const tempEmail = accountName.toLowerCase().replace(/[^a-z0-9]/g, '') + '@livepass.app';
+  const tempPass = 'LP_' + Date.now().toString(36);
+
   try {
+    // Wait for Firebase to be ready
+    if (!window.FB) await new Promise(r => window.addEventListener('fb-auth-ready', r, {once:true}));
+
+    const { auth, db, createUserWithEmailAndPassword, doc, setDoc, serverTimestamp } = window.FB;
+
+    // Create Firebase Auth user
+    const cred = await createUserWithEmailAndPassword(auth, tempEmail, tempPass);
+    const uid = cred.user.uid;
+
+    // Save profile to Firestore
+    await setDoc(doc(db, 'users', uid), {
+      name: accountName,
+      nameJa: nameJa,
+      nameEn: nameEn,
+      kind: selectedKind || null,
+      role: kind ? kind.label : '',
+      style: selectedGenre || null,
+      goals: selectedGoals,
+      plan: 'free',
+      avatar: null,
+      createdAt: serverTimestamp(),
+    });
+
+    // Also keep localStorage for backward compat
+    localStorage.setItem('livepass_account_name', accountName);
+    localStorage.setItem('livepass_account_name_ja', nameJa);
+    localStorage.setItem('livepass_account_name_en', nameEn);
+    localStorage.setItem('livepass_uid', uid);
+    if (kind) localStorage.setItem('livepass_role', kind.label);
+    if (selectedKind) localStorage.setItem('livepass_kind', selectedKind);
+    if (selectedGenre) localStorage.setItem('livepass_style', selectedGenre);
+    if (selectedGoals.length) localStorage.setItem('livepass_goals', JSON.stringify(selectedGoals));
+    localStorage.setItem('livepass_onboarded_at', new Date().toISOString());
+    localStorage.setItem('livepass_signed_in', '1');
+    // Save temp credentials so user can re-login on another device
+    localStorage.setItem('livepass_temp_email', tempEmail);
+    localStorage.setItem('livepass_temp_pass', tempPass);
+  } catch (e) {
+    console.error('Firebase signup error:', e);
+    // Fallback: still save to localStorage so app works offline
     localStorage.setItem('livepass_account_name', accountName);
     localStorage.setItem('livepass_account_name_ja', nameJa);
     localStorage.setItem('livepass_account_name_en', nameEn);
@@ -535,11 +580,7 @@ document.getElementById('finishBtn')?.addEventListener('click', () => {
     if (selectedGenre) localStorage.setItem('livepass_style', selectedGenre);
     if (selectedGoals.length) localStorage.setItem('livepass_goals', JSON.stringify(selectedGoals));
     localStorage.setItem('livepass_onboarded_at', new Date().toISOString());
-    // Mark this browser as signed in; sign-out clears this key.
     localStorage.setItem('livepass_signed_in', '1');
-  } catch (e) {
-    alert('保存に失敗しました: ' + e.message);
-    return;
   }
   if (navigator.vibrate) navigator.vibrate([18, 40, 18]);
   location.href = '/profile';
