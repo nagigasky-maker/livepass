@@ -160,7 +160,8 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   min-width:0; /* prevent grid item overflow */
 }
 .feed-card .fc-img{
-  position:relative;width:100%;display:block;overflow:hidden;background:#111;
+  position:relative;width:100%;display:block;overflow:hidden;background:transparent;
+  height:100%;
 }
 .feed-card .fc-img svg,
 .feed-card .fc-img img{
@@ -747,15 +748,15 @@ function getUserArticles(){
       num:      String(900 + i).padStart(3, '0'),
       cat:      u.category || 'Article',
       catColor: '#A8E63D',
-      title:    u.title,
+      title:    u.title || '(無題)',
+      titleJa:  null,
       subtitle: null,
-      // Author name: prefer the value at the time of posting, but if missing
-      // fall back to the CURRENT user name so renames flow forward.
       author:   u.author || USER_NAME,
-      avatar:   USER_AVATAR, // user posts always show the current user avatar
+      handle:   '@' + (u.author || USER_NAME).toLowerCase().replace(/[^a-z0-9]/g,''),
+      avatar:   USER_AVATAR,
       body:     u.body,
       cover:    u.cover,
-      bgColor:  u.bgColor || null, // from compose color picker
+      bgColor:  u.bgColor || null,
       bgHue:    '140,60,20',
       createdAt:u.createdAt,
       userPost: true,
@@ -872,10 +873,12 @@ const MediaDB = {
 /* ─── Build media HTML for a feed card (image / video / gif / slideshow) ─── */
 function buildMediaHtml(a) {
   const mt = a.mediaType || 'image';
-  const imgSrc = a.cover || placeholderSVG(a);
 
+  // No cover image → colored bg card, no media element needed
+  if (!a.cover) return '';
+
+  const imgSrc = a.cover;
   if (mt === 'video') {
-    // Show poster frame; load actual video async from IndexedDB
     return `<img src="${imgSrc}" alt="" class="fc-poster" data-video-id="${a.id}">
             <div class="fc-play-icon"><svg viewBox="0 0 24 24" fill="var(--white)" stroke="none"><polygon points="6,3 20,12 6,21"/></svg></div>`;
   }
@@ -1139,8 +1142,9 @@ function openDetail(a) {
     : SAMPLE_BODY;
 
   const hasCover = !!a.cover;
-  const heroSrc = a.cover || placeholderSVG(a);
-  const detailBg = (!hasCover && a.bgColor) ? a.bgColor : '';
+  // Auto-assign color if missing (same logic as feed)
+  if (!hasCover && !a.bgColor) a.bgColor = LP_COLORS[Math.abs(a.id.charCodeAt(1)||0) % LP_COLORS.length];
+  const detailBg = !hasCover ? (a.bgColor || '#1A1A1A') : '';
   const detailTxt = detailBg ? getTextColor(detailBg) : '#F2F0EB';
   const dateStr = a.createdAt
     ? new Date(a.createdAt).toLocaleDateString('ja-JP')
