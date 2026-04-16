@@ -9,7 +9,7 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/livepass-icon-180.png">
 <title>LIVE PASS — 記事作成</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
   --black:#000;--bg:#0A0A0A;--bg2:#111111;--bg3:#1A1A1A;
@@ -26,7 +26,31 @@
   --accent-pink:#FF2D6B;
   --safe-top:env(safe-area-inset-top,0px);
   --safe-bot:env(safe-area-inset-bottom,0px);
+  --lp-muted:#555555;
+  --lp-orange:#FF4500;--lp-blue:#0040FF;--lp-yellow:#FFD100;
+  --lp-green:#00BA4A;--lp-crimson:#CC1F5A;--lp-violet:#7B2FFF;
 }
+/* Section header pattern */
+.sec-head{
+  display:flex;justify-content:space-between;align-items:flex-end;
+  padding:20px 20px 16px;
+}
+.sec-ja{font-family:'Noto Sans JP',sans-serif;font-weight:300;font-size:11px;color:var(--lp-muted);letter-spacing:1px;margin-bottom:4px}
+.sec-en{font-family:'Syne',sans-serif;font-weight:800;font-size:34px;color:var(--white);letter-spacing:-1px;line-height:1}
+/* Color picker */
+.color-row{display:flex;gap:10px;flex-wrap:wrap;padding:0 20px}
+.color-swatch{
+  width:48px;height:48px;border-radius:10px;cursor:pointer;
+  border:2px solid transparent;transition:border-color .2s, transform .15s;
+}
+.color-swatch.active{border-color:var(--white);transform:scale(1.08)}
+.color-preview{
+  border-radius:10px;padding:20px;min-height:90px;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  margin:14px 20px 0;
+}
+.color-preview-title{font-family:'Syne',sans-serif;font-weight:800;font-size:16px;margin-bottom:4px}
+.color-preview-meta{font-family:'Noto Sans JP',sans-serif;font-weight:300;font-size:12px;opacity:.55}
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;height:100%;height:100dvh;background:var(--black);color:var(--white);
   font-family:Arial,'Noto Sans JP',sans-serif;-webkit-font-smoothing:antialiased;
@@ -550,6 +574,7 @@ textarea.input-box{resize:vertical;min-height:160px;line-height:1.8;font-size:13
 <main class="form">
 
   <!-- Layout ─────────────────────── -->
+  <div class="sec-head"><div><div class="sec-ja">記事作成・画角選択</div><div class="sec-en">Format</div></div></div>
   <div class="form-section">
     <div class="form-label">画角 / FORMAT</div>
     <div class="layout-row" id="layoutRowFree">
@@ -631,6 +656,17 @@ textarea.input-box{resize:vertical;min-height:160px;line-height:1.8;font-size:13
       <div id="multiImageGrid" style="display:flex;flex-wrap:wrap;gap:6px"></div>
       <input type="file" id="multiImageInput" accept="image/*" multiple style="display:none">
       <button type="button" id="addMoreImages" style="margin-top:8px;padding:8px 16px;border-radius:8px;background:rgba(255,255,255,.04);border:0.5px dashed rgba(255,255,255,.15);color:rgba(242,240,235,.5);font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;letter-spacing:.08em">+ 画像を追加</button>
+    </div>
+  </div>
+
+  <!-- Color picker (when no cover image) ─────────────────────── -->
+  <div style="border-top:0.5px solid var(--border);margin:12px 20px 0"></div>
+  <div class="sec-head"><div><div class="sec-ja">写真なしの場合・背景色を選択</div><div class="sec-en">Color</div></div></div>
+  <div class="form-section" style="padding-top:0">
+    <div class="color-row" id="colorRow"></div>
+    <div class="color-preview" id="colorPreview" style="background:#FF4500;color:#0A0A0A">
+      <div class="color-preview-title" id="cpTitle">記事タイトルがここに入ります</div>
+      <div class="color-preview-meta" id="cpMeta">@handle · Culture</div>
     </div>
   </div>
 
@@ -1108,6 +1144,58 @@ coverInput.addEventListener('change', async (e) => {
   });
 })();
 
+/* ─── Color picker (for no-cover articles) ─── */
+(function initColorPicker(){
+  const PALETTE = [
+    { id:'orange',  bg:'#FF4500', text:'#0A0A0A' },
+    { id:'blue',    bg:'#0040FF', text:'#F2F0EB' },
+    { id:'yellow',  bg:'#FFD100', text:'#0A0A0A' },
+    { id:'green',   bg:'#00BA4A', text:'#0A0A0A' },
+    { id:'crimson', bg:'#CC1F5A', text:'#F2F0EB' },
+    { id:'violet',  bg:'#7B2FFF', text:'#F2F0EB' },
+    { id:'dark',    bg:'#1A1A1A', text:'#F2F0EB' },
+    { id:'white',   bg:'#F2F0EB', text:'#0A0A0A' },
+  ];
+  const row = document.getElementById('colorRow');
+  const preview = document.getElementById('colorPreview');
+  const cpTitle = document.getElementById('cpTitle');
+  const cpMeta = document.getElementById('cpMeta');
+  if(!row) return;
+  state.bgColor = PALETTE[0].bg;
+  state.bgTextColor = PALETTE[0].text;
+  PALETTE.forEach((c, i) => {
+    const sw = document.createElement('div');
+    sw.className = 'color-swatch' + (i===0 ? ' active' : '');
+    sw.style.background = c.bg;
+    if(c.id==='white') sw.style.border = '1px solid rgba(255,255,255,.15)';
+    sw.addEventListener('click', () => {
+      row.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+      sw.classList.add('active');
+      state.bgColor = c.bg;
+      state.bgTextColor = c.text;
+      preview.style.background = c.bg;
+      preview.style.color = c.text;
+      if(navigator.vibrate) navigator.vibrate(4);
+    });
+    row.appendChild(sw);
+  });
+  // Sync title preview with title input
+  const tInput = document.getElementById('titleInput');
+  if(tInput){
+    tInput.addEventListener('input', () => {
+      cpTitle.textContent = tInput.value || '記事タイトルがここに入ります';
+    });
+  }
+  // Sync category + handle
+  const userName = localStorage.getItem('livepass_account_name') || 'handle';
+  cpMeta.textContent = '@' + userName.toLowerCase() + ' · ' + state.category;
+  document.querySelectorAll('#catRow .pill').forEach(p => {
+    p.addEventListener('click', () => {
+      cpMeta.textContent = '@' + userName.toLowerCase() + ' · ' + p.dataset.cat;
+    });
+  });
+})();
+
 /* AI assist — write + proofread via /api/ai-write */
 const aiWriteBtn   = document.getElementById('aiWriteBtn');
 const aiProofBtn   = document.getElementById('aiProofBtn');
@@ -1306,6 +1394,7 @@ submitBtn.addEventListener('click', () => {
     access:   state.access,
     cover:    state.coverDataUrl,
     mediaType: state.mediaType || 'image',
+    bgColor: state.coverDataUrl ? undefined : (state.bgColor || '#0E0E0E'),
     extraImages: state.extraImages.length > 0 ? state.extraImages : undefined,
     title:    titleInput.value.trim(),
     body:     bodyInput.value.trim(),
