@@ -273,7 +273,7 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   scrollbar-width:none;
 }
 .dm-body::-webkit-scrollbar{display:none}
-.dm-hero{position:relative;width:100%;aspect-ratio:9/14;background:#0a0a0a;overflow:hidden}
+.dm-hero{position:relative;width:100%;aspect-ratio:9/14;background:#0a0a0a;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end}
 .dm-hero svg,.dm-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .dm-hero::after{
   content:'';position:absolute;inset:0;
@@ -665,26 +665,7 @@ const SCHEDULE = [
   { month:'APR', day:'25', name:'B-BOY PARK TOKYO 2026', ja:'ビーボーイパーク東京', venue:'Yoyogi Park', time:'12:00–20:00 · Open air', genre:'HIP-HOP' },
   { month:'APR', day:'26', name:'BREAKS & PIECES vol.12', ja:'ブレイクス＆ピーシズ', venue:'Circus Tokyo', time:'23:00–05:00', genre:'BREAKS' },
 ];
-(function renderSchedule(){
-  const list = document.getElementById('schedList');
-  if (!list) return;
-  SCHEDULE.forEach(ev => {
-    const ts = getTagStyle(ev.genre);
-    const item = document.createElement('div');
-    item.className = 'sched-item';
-    item.innerHTML = `
-      <div class="sched-date"><div class="sched-date-m">${ev.month}</div><div class="sched-date-d">${ev.day}</div></div>
-      <div class="sched-body">
-        <div class="sched-name">${ev.name}</div>
-        <div class="sched-ja">${ev.ja}</div>
-        <div class="sched-meta">${ev.venue} · ${ev.time}</div>
-      </div>
-      <div class="sched-tag" style="background:${ts.bg};color:${ts.text}">${ev.genre}</div>
-    `;
-    item.addEventListener('click', () => { location.href = '/calendar'; });
-    list.appendChild(item);
-  });
-})();
+/* renderSchedule moved inline into renderMagazine() — injected between article rows */
 
 /* Sample article data — magazine-style colored cards */
 const ARTICLES = [
@@ -937,13 +918,55 @@ const BLOCK_PATTERN = [
 ];
 const ROW_UNIT = 56; // px per row unit
 
+function buildScheduleBlock() {
+  const block = document.createElement('div');
+  block.style.cssText = 'width:100%;padding:28px 8px 20px';
+  block.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:20px">
+      <div><div class="sec-ja">今週のイベント</div><div class="sec-en" style="font-size:32px">This week</div></div>
+      <a class="sec-link" href="/calendar">ALL EVENTS →</a>
+    </div>
+  `;
+  const list = document.createElement('div');
+  SCHEDULE.forEach(ev => {
+    const ts = getTagStyle(ev.genre);
+    const item = document.createElement('div');
+    item.className = 'sched-item';
+    item.innerHTML = `
+      <div class="sched-date"><div class="sched-date-m">${ev.month}</div><div class="sched-date-d">${ev.day}</div></div>
+      <div class="sched-body">
+        <div class="sched-name">${ev.name}</div>
+        <div class="sched-ja">${ev.ja}</div>
+        <div class="sched-meta">${ev.venue} · ${ev.time}</div>
+      </div>
+      <div class="sched-tag" style="background:${ts.bg};color:${ts.text}">${ev.genre}</div>
+    `;
+    item.style.cursor = 'pointer';
+    item.addEventListener('click', () => { location.href = '/calendar'; });
+    list.appendChild(item);
+  });
+  block.appendChild(list);
+  // Separator after
+  const sep = document.createElement('div');
+  sep.style.cssText = 'border-top:0.5px solid var(--lp-border);margin:16px 0 0';
+  block.appendChild(sep);
+  return block;
+}
+
 function renderMagazine(posts) {
   grid.innerHTML = '';
   let pi = 0; // post index
   const pat = BLOCK_PATTERN;
   let patIdx = 0;
+  let schedInserted = false;
 
   while (pi < posts.length) {
+    // Insert "This week" after 2nd pattern row (between articles)
+    if (patIdx === 2 && !schedInserted) {
+      grid.appendChild(buildScheduleBlock());
+      schedInserted = true;
+    }
+
     const blockRow = pat[patIdx % pat.length];
     patIdx++;
 
@@ -1110,7 +1133,10 @@ function openDetail(a) {
     ? a.body.split(/\n\n+/).map(p => `<p class="dm-p">${p.replace(/\n/g,'<br>')}</p>`).join('')
     : SAMPLE_BODY;
 
+  const hasCover = !!a.cover;
   const heroSrc = a.cover || placeholderSVG(a);
+  const detailBg = (!hasCover && a.bgColor) ? a.bgColor : '';
+  const detailTxt = detailBg ? getTextColor(detailBg) : '#F2F0EB';
   const dateStr = a.createdAt
     ? new Date(a.createdAt).toLocaleDateString('ja-JP')
     : '2026.04.11';
@@ -1118,24 +1144,34 @@ function openDetail(a) {
   const liked  = getIds('livepass_likes').includes(a.id);
   const saved  = getIds('livepass_saves').includes(a.id);
   const shared = getIds('livepass_shares').includes(a.id);
-  // User's own posts: show their uploaded avatar (always cropped to circle)
-  // Other authors: show the gradient dot
   const byAvatar = (a.userPost && a.avatar)
     ? `<div class="av"><img src="${a.avatar}" alt=""></div>`
     : `<div class="av"></div>`;
+  const jaHtml = a.titleJa ? `<div style="font-family:'Noto Sans JP',sans-serif;font-weight:300;font-size:13px;opacity:.65;margin-top:6px">${a.titleJa}</div>` : '';
+
+  // If no cover image, use bgColor as hero background
+  const heroStyle = detailBg
+    ? `background:${detailBg};aspect-ratio:auto;min-height:280px`
+    : '';
+  const heroImg = hasCover
+    ? `<img src="${heroSrc}" alt="">`
+    : '';
+  const heroGradient = hasCover
+    ? ''
+    : `style="background:none"`;
 
   dmBody.innerHTML = `
-    <div class="dm-hero">
-      <img src="${heroSrc}" alt="">
-      <div class="dm-hero-text">
-        <div class="dm-cat" style="color:${a.catColor}">${a.cat}</div>
-        <div class="dm-title">${a.title}${a.subtitle ? '<br><span style="font-size:20px;font-weight:700">'+a.subtitle+'</span>' : ''}</div>
-        <a class="dm-by" href="/profile?user=${encodeURIComponent(a.author)}" style="cursor:pointer">
-          ${byAvatar}${a.author} · ${dateStr}
+    <div class="dm-hero" style="${heroStyle}">
+      ${heroImg}
+      <div class="dm-hero-text" ${heroGradient}>
+        <div class="dm-cat" style="color:${detailBg ? detailTxt : (a.catColor || '#F4C0D1')};opacity:.7">${a.cat}</div>
+        <div class="dm-title" style="color:${detailTxt};font-family:'Syne',sans-serif;font-weight:800">${a.title}${a.subtitle ? '<br><span style="font-size:20px;font-weight:700">'+a.subtitle+'</span>' : ''}${jaHtml}</div>
+        <a class="dm-by" href="/profile?user=${encodeURIComponent(a.author)}" style="cursor:pointer;color:${detailTxt}">
+          ${byAvatar}${a.handle || a.author} · ${dateStr}
         </a>
       </div>
     </div>
-    <div class="dm-content">${bodyHtml}</div>
+    <div class="dm-content" ${detailBg ? 'style="background:'+detailBg+';color:'+detailTxt+'"' : ''}>${bodyHtml}</div>
     <div class="dm-actions">
       <button class="dm-act" data-act="comment"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>12</button>
       <button class="dm-act ${liked ? 'liked' : ''}" data-act="like"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>48</button>
