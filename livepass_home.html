@@ -966,6 +966,21 @@ const BLOCK_PATTERN = [
 ];
 const ROW_UNIT = 56; // px per row unit
 
+/* Block ↔ article layout matching — place articles in grid slots
+   that best match their chosen aspect ratio. */
+function blockCategory(block) {
+  const r = block.cols / block.rows;
+  if (r < 0.9) return 'portrait';
+  if (r > 1.3) return 'landscape';
+  return 'square';
+}
+function articleCategory(a) {
+  const l = a.layout || a.format || 'square';
+  if (l === 'poster' || l === '9:16' || l === 'zine' || l === 'cinema-tall') return 'portrait';
+  if (l === 'wide' || l === 'cinema' || l === 'cinema-tri') return 'landscape';
+  return 'square';
+}
+
 function buildScheduleBlock() {
   const block = document.createElement('div');
   block.style.cssText = 'width:100%;padding:28px 8px 20px';
@@ -1026,6 +1041,18 @@ function renderMagazine(posts) {
 
     for (let bi = 0; bi < blockRow.length && pi < posts.length; bi++) {
       const block = blockRow[bi];
+      // Try to match article layout to block aspect ratio (search ahead up to 4)
+      const bCat = blockCategory(block);
+      const searchEnd = Math.min(pi + 4, posts.length);
+      let bestIdx = pi;
+      for (let j = pi; j < searchEnd; j++) {
+        if (articleCategory(posts[j]) === bCat) { bestIdx = j; break; }
+      }
+      if (bestIdx !== pi) {
+        const tmp = posts[bestIdx];
+        posts.splice(bestIdx, 1);
+        posts.splice(pi, 0, tmp);
+      }
       const a = posts[pi]; pi++;
       const w = (block.cols / 12 * 100);
       const h = block.rows * ROW_UNIT + (block.rows - 1) * G;
