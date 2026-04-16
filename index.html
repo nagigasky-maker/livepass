@@ -29,18 +29,31 @@ html,body{
 <body>
 <img class="logo" src="/livepasslogo.png" alt="LIVE PASS">
 <script>
-// Hard redirect to the real app. Any cached HTML, service workers, or
-// stale PWA start_urls that still land on /index.html immediately get
-// bounced to the current home page. No iframe, no legacy shell.
+/* Entry router:
+   1. If Firebase Auth resolves to a signed-in user → /profile
+   2. Else if localStorage has livepass_account_name (legacy cache) → /profile
+   3. Else → /login (which has a signup link to /onboarding)
+   We wait up to 1.5s for Firebase to resolve before falling through to
+   the localStorage check so the first visit isn't stalled by network. */
 (function(){
-  try {
-    // If the user is already signed in, go to /home
-    // If not, go to /onboarding for the sign-up flow
-    const signedIn = !!localStorage.getItem('livepass_account_name');
-    location.replace(signedIn ? '/profile' : '/onboarding');
-  } catch(e) {
-    location.replace('/profile');
+  const hasLocalIdentity = !!localStorage.getItem('livepass_account_name');
+
+  function decide(user){
+    if (user) location.replace('/profile');
+    else if (hasLocalIdentity) location.replace('/profile');
+    else location.replace('/login');
   }
+
+  let decided = false;
+  function finish(user){
+    if (decided) return;
+    decided = true;
+    try { decide(user); } catch(e) { location.replace('/login'); }
+  }
+
+  window.addEventListener('fb-auth-ready', (e) => finish(e.detail && e.detail.user), { once:true });
+  // Fallback if firebase-init never loads
+  setTimeout(() => finish(null), 1500);
 })();
 </script>
 </body>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/livepass-icon-180.png">
+<title>LIVE PASS — ログイン</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0C0F1A;--bg2:#0f1322;--bg3:#141828;
+  --fg:#EDEBE6;--muted:#6B6A64;--muted2:rgba(237,235,230,0.1);
+  --border:rgba(237,235,230,0.08);--dim:rgba(237,235,230,0.04);
+  --red:#E8100A;--green:#1D9E75;
+}
+html,body{height:100%;background:var(--bg);color:var(--fg);font-family:'Inter',sans-serif;overflow:hidden}
+#app{max-width:430px;margin:0 auto;height:100dvh;position:relative;overflow:hidden;display:flex;flex-direction:column}
+
+/* ── NOISE TEXTURE ── */
+#app::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:.025;pointer-events:none;z-index:0}
+
+/* ── BG GLOW + GRID ── */
+.welcome-glow{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(232,16,10,.06),transparent 60%);pointer-events:none;z-index:0}
+.welcome-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse at 50% 50%,black 20%,transparent 70%);pointer-events:none;z-index:0}
+
+/* ── LOGO + EYEBROW ── */
+#logo-mark{position:absolute;top:18px;right:24px;z-index:20;opacity:.4}
+#logo-mark img{display:block;height:14px;width:auto}
+#page-eyebrow{position:absolute;top:18px;left:24px;font-size:9px;letter-spacing:3px;color:var(--muted);z-index:20}
+
+/* ── MAIN ── */
+.main{position:relative;flex:1;z-index:10;display:flex;flex-direction:column;justify-content:center;padding:0 28px;overflow-y:auto;scrollbar-width:none}
+.main::-webkit-scrollbar{display:none}
+
+.hero{margin-bottom:32px;text-align:left}
+.hero-logo{margin-bottom:28px}
+.hero-logo img{width:64px;height:auto;display:block;opacity:.9}
+.hero-eyebrow{font-size:8px;letter-spacing:5px;color:var(--red);margin-bottom:14px;font-weight:400;text-transform:uppercase}
+.hero-title{font-size:36px;font-weight:300;letter-spacing:-.5px;line-height:1.05;margin-bottom:8px;color:var(--fg)}
+.hero-title strong{font-weight:700}
+.hero-sub{font-size:12px;color:rgba(237,235,230,.4);letter-spacing:.3px;font-weight:300;line-height:1.7}
+
+/* ── FORM ── */
+.form-group{margin-bottom:16px}
+.form-label{font-size:7px;letter-spacing:3px;color:rgba(237,235,230,.28);text-transform:uppercase;font-weight:400;margin-bottom:8px;display:block}
+.form-input{width:100%;background:var(--dim);border:0.5px solid var(--border);border-radius:1px;padding:13px 14px;font-size:14px;color:var(--fg);font-family:'Inter',sans-serif;font-weight:300;outline:none;letter-spacing:.3px;transition:border-color .2s;-webkit-appearance:none}
+.form-input:focus{border-color:rgba(237,235,230,.25)}
+.form-input::placeholder{color:rgba(237,235,230,.18)}
+.form-input:disabled{opacity:.5}
+
+/* ── ERROR ── */
+.error-msg{font-size:10px;color:var(--red);letter-spacing:.3px;font-weight:400;margin:14px 0;min-height:14px;line-height:1.5;display:none}
+.error-msg.visible{display:block}
+
+/* ── INFO MSG (password reset sent) ── */
+.info-msg{font-size:10px;color:var(--green);letter-spacing:.3px;font-weight:400;margin:14px 0;min-height:14px;line-height:1.5;display:none}
+.info-msg.visible{display:block}
+
+/* ── LOGIN BUTTON ── */
+.login-btn{width:100%;padding:14px;border:0.5px solid rgba(237,235,230,.3);border-radius:1px;background:none;font-size:9px;letter-spacing:3px;color:var(--fg);cursor:pointer;font-family:'Inter',sans-serif;font-weight:500;text-transform:uppercase;transition:all .25s;margin-top:8px}
+.login-btn:hover{background:rgba(237,235,230,.04);border-color:rgba(237,235,230,.5)}
+.login-btn:active{transform:scale(.98)}
+.login-btn:disabled{opacity:.5;cursor:default;transform:none}
+
+/* ── LINKS ── */
+.forgot-link{display:block;text-align:center;font-size:9px;letter-spacing:1.5px;color:var(--muted);text-decoration:none;margin-top:14px;padding:6px;font-weight:400;transition:color .2s;background:none;border:0;width:100%;cursor:pointer;font-family:'Inter',sans-serif}
+.forgot-link:hover{color:rgba(237,235,230,.6)}
+
+.divider{display:flex;align-items:center;gap:12px;margin:28px 0 20px}
+.divider::before,.divider::after{content:'';flex:1;height:0.5px;background:var(--border)}
+.divider-text{font-size:8px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;font-weight:400}
+
+.signup-link{display:block;width:100%;padding:13px;border:0.5px solid rgba(237,235,230,.12);border-radius:1px;background:none;font-size:9px;letter-spacing:3px;color:rgba(237,235,230,.7);cursor:pointer;font-family:'Inter',sans-serif;font-weight:500;text-transform:uppercase;transition:all .25s;text-align:center;text-decoration:none}
+.signup-link:hover{background:rgba(237,235,230,.03);border-color:rgba(237,235,230,.22);color:var(--fg)}
+
+/* ── FOOTER ── */
+.footer{padding:24px 28px 28px;font-size:8px;color:rgba(237,235,230,.2);letter-spacing:1.5px;text-align:center;z-index:10;position:relative;font-weight:300}
+
+#__v{position:fixed;bottom:2px;right:2px;z-index:9999;
+  font:9px/1 'IBM Plex Mono',monospace;color:rgba(237,235,230,.18);
+  letter-spacing:.1em;pointer-events:none;user-select:none}
+</style>
+<script type="module" src="/firebase-init.js"></script>
+</head>
+<body>
+<script>
+/* PWA NAV FIX — form-submission technique for iOS PWA standalone. */
+(function(){
+  function isStandalone(){
+    return (window.navigator.standalone === true) ||
+           window.matchMedia('(display-mode: standalone)').matches ||
+           window.matchMedia('(display-mode: fullscreen)').matches;
+  }
+  if (!isStandalone()) return;
+  document.documentElement.classList.add('is-pwa');
+  document.addEventListener('click', function(e){
+    var a = e.target.closest && e.target.closest('a');
+    if (!a) return;
+    var href = a.getAttribute('href');
+    if (!href) return;
+    if (a.target && a.target !== '_self') return;
+    if (href.charAt(0) === '#') return;
+    if (/^(mailto|tel|sms):/i.test(href)) return;
+    try {
+      var u = new URL(a.href, location.href);
+      if (u.host !== location.host) return;
+    } catch(err) { return; }
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      var form = document.createElement('form');
+      form.method = 'GET';
+      form.action = a.href;
+      form.style.display = 'none';
+      document.body.appendChild(form);
+      form.submit();
+    } catch(err) { window.location.href = a.href; }
+  }, true);
+})();
+</script>
+<div id="app">
+  <div class="welcome-glow"></div>
+  <div class="welcome-grid"></div>
+  <div id="page-eyebrow">LOGIN</div>
+  <div id="logo-mark"><img src="livepasslogo.png" alt="LIVE PASS"></div>
+
+  <div class="main">
+    <div class="hero">
+      <div class="hero-logo"><img src="/assets/splash-logo.png" alt="LIVE PASS" onerror="this.style.display='none'"></div>
+      <div class="hero-eyebrow">LIVE PASS</div>
+      <div class="hero-title">おかえりなさい<br><strong>サインイン</strong></div>
+      <div class="hero-sub">メールアドレスとパスワードでログイン</div>
+    </div>
+
+    <form id="loginForm" autocomplete="on">
+      <div class="form-group">
+        <label class="form-label" for="emailInput">Email</label>
+        <input class="form-input" type="email" id="emailInput" name="email"
+               autocomplete="email" inputmode="email" autocapitalize="off"
+               spellcheck="false" placeholder="you@example.com" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="passwordInput">Password</label>
+        <input class="form-input" type="password" id="passwordInput" name="password"
+               autocomplete="current-password" placeholder="••••••••" required>
+      </div>
+
+      <div class="error-msg" id="errorMsg"></div>
+      <div class="info-msg" id="infoMsg"></div>
+
+      <button type="submit" class="login-btn" id="loginBtn">ログイン →</button>
+      <button type="button" class="forgot-link" id="forgotBtn">パスワードを忘れた</button>
+    </form>
+
+    <div class="divider"><span class="divider-text">OR</span></div>
+
+    <a href="/onboarding" class="signup-link">アカウントを作成 →</a>
+  </div>
+
+  <div class="footer">LIVE PASS © 2026 — A NEXT-GEN CULTURE INFRASTRUCTURE</div>
+</div>
+
+<script>
+(function(){
+  const emailInput   = document.getElementById('emailInput');
+  const passwordInput= document.getElementById('passwordInput');
+  const loginBtn     = document.getElementById('loginBtn');
+  const forgotBtn    = document.getElementById('forgotBtn');
+  const form         = document.getElementById('loginForm');
+  const errorMsg     = document.getElementById('errorMsg');
+  const infoMsg      = document.getElementById('infoMsg');
+
+  // ─── Prefill email from localStorage (if user previously logged in) ───
+  const savedEmail = localStorage.getItem('livepass_last_email');
+  if (savedEmail) emailInput.value = savedEmail;
+
+  function showError(msg) {
+    errorMsg.textContent = msg;
+    errorMsg.classList.add('visible');
+    infoMsg.classList.remove('visible');
+  }
+  function showInfo(msg) {
+    infoMsg.textContent = msg;
+    infoMsg.classList.add('visible');
+    errorMsg.classList.remove('visible');
+  }
+  function clearMsgs() {
+    errorMsg.classList.remove('visible');
+    infoMsg.classList.remove('visible');
+  }
+
+  function friendlyError(code) {
+    const map = {
+      'auth/invalid-email':        'メールアドレスの形式が正しくありません',
+      'auth/user-not-found':       'このメールアドレスのアカウントは見つかりません',
+      'auth/wrong-password':       'パスワードが間違っています',
+      'auth/invalid-credential':   'メールアドレスまたはパスワードが間違っています',
+      'auth/too-many-requests':    '試行回数が多すぎます。時間を置いて再度お試しください',
+      'auth/network-request-failed':'ネットワークエラー。接続を確認してください',
+      'auth/missing-password':     'パスワードを入力してください',
+    };
+    return map[code] || 'ログインに失敗しました';
+  }
+
+  // ─── Wait for Firebase to be ready ───
+  function waitForFB() {
+    return new Promise(resolve => {
+      if (window.FB && window.FB.authReady !== undefined) return resolve();
+      window.addEventListener('fb-auth-ready', () => resolve(), { once:true });
+    });
+  }
+
+  // ─── If already signed in, bounce to /profile ───
+  (async () => {
+    await waitForFB();
+    if (window.FB && window.FB.currentUser) {
+      location.replace('/profile');
+    }
+  })();
+
+  // ─── Submit: signInWithEmailAndPassword ───
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearMsgs();
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+    if (!email || !password) {
+      showError('メールアドレスとパスワードを入力してください');
+      return;
+    }
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'ログイン中…';
+    emailInput.disabled = true;
+    passwordInput.disabled = true;
+
+    try {
+      await waitForFB();
+      const { auth, signInWithEmailAndPassword } = window.FB;
+      await signInWithEmailAndPassword(auth, email, password);
+      localStorage.setItem('livepass_last_email', email);
+      if (navigator.vibrate) navigator.vibrate([18, 40, 18]);
+      // onAuthStateChanged in firebase-init.js will populate localStorage
+      // from Firestore before we navigate.
+      location.replace('/profile');
+    } catch(err) {
+      console.warn('signIn error:', err.code, err.message);
+      showError(friendlyError(err.code));
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'ログイン →';
+      emailInput.disabled = false;
+      passwordInput.disabled = false;
+    }
+  });
+
+  // ─── Forgot password ───
+  forgotBtn.addEventListener('click', async () => {
+    clearMsgs();
+    const email = emailInput.value.trim();
+    if (!email) {
+      showError('リセット用のメールアドレスを入力してください');
+      emailInput.focus();
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showError('有効なメールアドレスを入力してください');
+      return;
+    }
+    forgotBtn.disabled = true;
+    try {
+      await waitForFB();
+      const { auth, sendPasswordResetEmail } = window.FB;
+      await sendPasswordResetEmail(auth, email);
+      showInfo('リセット用のメールを送信しました。受信箱をご確認ください。');
+    } catch(err) {
+      console.warn('reset error:', err.code, err.message);
+      showError(friendlyError(err.code));
+    } finally {
+      forgotBtn.disabled = false;
+    }
+  });
+})();
+</script>
+
+<div id="__v">v67</div>
+</body>
+</html>

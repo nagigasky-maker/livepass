@@ -4,7 +4,7 @@
      <script type="module" src="/firebase-init.js"></script>
    ───────────────────────────────────────────── */
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js';
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut }
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail }
   from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js';
 import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, query, orderBy, limit, where, deleteDoc, serverTimestamp }
   from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js';
@@ -33,6 +33,7 @@ window.FB = {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  sendPasswordResetEmail,
   // Firestore helpers
   doc, getDoc, setDoc, updateDoc,
   collection, addDoc, getDocs, query, orderBy, limit, where, deleteDoc,
@@ -44,6 +45,7 @@ window.FB = {
 // ─── Auth state listener: sync to localStorage for backward compat ───
 // Only populates localStorage if the fields are EMPTY (doesn't overwrite
 // local edits made in Settings).
+window.FB.authReady = false;
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     window.FB.currentUser = user;
@@ -69,6 +71,7 @@ onAuthStateChanged(auth, async (user) => {
     window.FB.currentUser = null;
     localStorage.removeItem('livepass_uid');
   }
+  window.FB.authReady = true;
   window.dispatchEvent(new CustomEvent('fb-auth-ready', { detail: { user } }));
 });
 

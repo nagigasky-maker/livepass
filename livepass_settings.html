@@ -677,14 +677,20 @@ nameInput.addEventListener('input', () => {
 })();
 
 /* ─────────────────────────────────────────────
-   SIGN OUT — clears account identity so the next visit sends the
-   user back through /onboarding. Posts, likes, saves, reservations
-   are intentionally preserved in localStorage so the same browser
-   on sign-in (even under a new name) still sees them.
+   SIGN OUT — signs out of Firebase Auth AND clears local identity.
+   Next visit routes through /login (where user can sign in or go to
+   /onboarding for signup). Posts, likes, saves, reservations are
+   intentionally preserved in localStorage.
    ───────────────────────────────────────────── */
-document.getElementById('signOutBtn')?.addEventListener('click', () => {
+document.getElementById('signOutBtn')?.addEventListener('click', async () => {
   const name = localStorage.getItem('livepass_account_name') || '';
-  if (!confirm(`${name ? name + ' として ' : ''}サインアウトしますか？\n\n次回アクセス時はサインアップ画面に戻ります。投稿や保存済みは残ります。`)) return;
+  if (!confirm(`${name ? name + ' として ' : ''}サインアウトしますか？\n\n次回アクセス時はログイン画面に戻ります。投稿や保存済みは残ります。`)) return;
+  try {
+    // Sign out of Firebase first so the token is revoked.
+    if (window.FB && window.FB.auth) {
+      await window.FB.signOut(window.FB.auth);
+    }
+  } catch(e) { console.warn('FB signOut error:', e); }
   try {
     // Identity-only keys are cleared; content keys (articles/events/saves/
     // likes/reservations/...) stay so the browser remembers everything
@@ -698,9 +704,11 @@ document.getElementById('signOutBtn')?.addEventListener('click', () => {
     localStorage.removeItem('livepass_goals');
     localStorage.removeItem('livepass_avatar');
     localStorage.removeItem('livepass_signed_in');
+    localStorage.removeItem('livepass_uid');
+    localStorage.removeItem('livepass_plan');
   } catch(e) {}
   if (navigator.vibrate) navigator.vibrate([18, 40, 18]);
-  location.replace('/onboarding');
+  location.replace('/login');
 });
 </script>
 
