@@ -856,11 +856,10 @@ function buildBalancedFeed(posts) {
   return out;
 }
 
-const RAW_FEED = [...getUserArticles(), ...ARTICLES];
-const FEED = buildBalancedFeed(RAW_FEED);
+let RAW_FEED = [...getUserArticles(), ...ARTICLES];
+let FEED = buildBalancedFeed(RAW_FEED);
 
-/* Remember article metadata so the /profile SAVED tab can render them */
-(function writeArticleMeta(){
+function writeArticleMeta(){
   try {
     const map = {};
     FEED.forEach(a => {
@@ -882,7 +881,61 @@ const FEED = buildBalancedFeed(RAW_FEED);
     });
     localStorage.setItem('livepass_article_meta', JSON.stringify(map));
   } catch(e) {}
-})();
+}
+writeArticleMeta();
+
+function normalizeFirestorePost(u) {
+  const ts = u.createdAt;
+  const iso = ts && ts.toDate ? ts.toDate().toISOString() : (ts || null);
+  return {
+    id:       u.id,
+    layout:   u.layout || 'square',
+    num:      '900',
+    cat:      u.category || (u.type === 'article' ? 'Article' : u.type || 'Article'),
+    catColor: '#A8E63D',
+    title:    u.title || '(無題)',
+    titleJa:  null,
+    subtitle: null,
+    author:   u.author || '',
+    handle:   '@' + (u.author || '').toLowerCase().replace(/[^a-z0-9]/g,''),
+    avatar:   null,
+    body:     u.body,
+    cover:    u.cover,
+    bgColor:  u.bgColor || null,
+    bgHue:    '140,60,20',
+    createdAt:iso,
+    userPost: true,
+    mediaType: u.mediaType || 'image',
+    extraImages: u.extraImages || undefined,
+    videoUrl: u.videoUrl || undefined,
+    access:   u.access,
+    authorUid: u.authorUid || null,
+    type:     u.type || 'article',
+    venue:    u.venue,
+    date:     u.date,
+  };
+}
+
+window.addEventListener('fb-auth-ready', async ({ detail }) => {
+  if (!detail.user || !window.FB) return;
+  try {
+    const q = FB.query(FB.collection(FB.db, 'posts'), FB.orderBy('createdAt', 'desc'), FB.limit(100));
+    const snap = await FB.getDocs(q);
+    if (snap.empty) return;
+    const fbPosts = [];
+    const seenIds = new Set();
+    snap.forEach(d => {
+      const data = { id: d.id, ...d.data() };
+      fbPosts.push(normalizeFirestorePost(data));
+      seenIds.add(d.id);
+    });
+    const localOnly = getUserArticles().filter(a => !seenIds.has(a.id));
+    RAW_FEED = [...fbPosts, ...localOnly, ...ARTICLES];
+    FEED = buildBalancedFeed(RAW_FEED);
+    writeArticleMeta();
+    renderMagazine(FEED);
+  } catch(e) { console.warn('Firestore feed load failed:', e); }
+});
 
 /* ─── IndexedDB helper for reading stored video blobs ─── */
 const MediaDB = {

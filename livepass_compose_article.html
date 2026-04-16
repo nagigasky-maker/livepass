@@ -973,6 +973,16 @@ collabSuggest.addEventListener('mousedown', (e) => {
   collabSearchIn.focus();
 });
 
+/* ─── Convert data-URL to Blob for Firebase Storage upload ─── */
+function dataUrlToBlob(dataUrl) {
+  const [header, b64] = dataUrl.split(',');
+  const mime = header.match(/:(.*?);/)[1];
+  const bin = atob(b64);
+  const arr = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  return new Blob([arr], { type: mime });
+}
+
 /* ─── Media helpers for video / GIF / image / slideshow ─── */
 function downscaleImageFile(file, maxDim = 1280, quality = 0.82) {
   return new Promise((resolve, reject) => {
@@ -1385,68 +1395,105 @@ if (editingArticle) {
   updateSubmitState();
 }
 
-submitBtn.addEventListener('click', () => {
+submitBtn.addEventListener('click', async () => {
   if (submitBtn.disabled) return;
+  submitBtn.disabled = true;
+  const origLabel = submitBtn.textContent;
+  submitBtn.textContent = '投稿中…';
+
+  const user = window.FB && window.FB.currentUser;
+  const uid = user ? user.uid : null;
+
   const article = {
     id:       editingArticle ? editingArticle.id : 'a' + Date.now(),
     type:     'article',
     layout:   state.layout,
     category: state.category,
     access:   state.access,
-    cover:    state.coverDataUrl,
+    cover:    null,
     mediaType: state.mediaType || 'image',
     bgColor: state.coverDataUrl ? undefined : (state.bgColor || '#0E0E0E'),
-    extraImages: state.extraImages.length > 0 ? state.extraImages : undefined,
+    extraImages: undefined,
     title:    titleInput.value.trim(),
     body:     bodyInput.value.trim(),
     collaborators: state.collaborators.slice(),
     author:   (editingArticle && editingArticle.author) || localStorage.getItem('livepass_account_name') || 'NOBBY',
+    authorUid: uid || (editingArticle && editingArticle.authorUid) || null,
     createdAt:(editingArticle && editingArticle.createdAt) || new Date().toISOString(),
     updatedAt:editingArticle ? new Date().toISOString() : undefined,
-    // Preserve reshare metadata if present
     sharedBy:         editingArticle ? editingArticle.sharedBy : undefined,
     sharedFromId:     editingArticle ? editingArticle.sharedFromId : undefined,
     sharedFromAuthor: editingArticle ? editingArticle.sharedFromAuthor : undefined,
   };
-  function saveArticles(list) {
-    localStorage.setItem('livepass_articles', JSON.stringify(list));
+
+  let firebaseSaved = false;
+
+  // ─── Firebase Storage + Firestore ───
+  if (uid && window.FB) {
+    try {
+      if (state.coverDataUrl) {
+        const blob = dataUrlToBlob(state.coverDataUrl);
+        const ext = blob.type.split('/')[1] || 'jpg';
+        const ref = FB.storageRef(FB.storage, `posts/${article.id}/cover.${ext}`);
+        await FB.uploadBytes(ref, blob);
+        article.cover = await FB.getDownloadURL(ref);
+      }
+      if (state.extraImages.length > 0) {
+        const urls = [];
+        for (let i = 0; i < state.extraImages.length; i++) {
+          const blob = dataUrlToBlob(state.extraImages[i]);
+          const ext = blob.type.split('/')[1] || 'jpg';
+          const ref = FB.storageRef(FB.storage, `posts/${article.id}/extra_${i}.${ext}`);
+          await FB.uploadBytes(ref, blob);
+          urls.push(await FB.getDownloadURL(ref));
+        }
+        article.extraImages = urls;
+      }
+      if (state.mediaType === 'video' && state.mediaBlob) {
+        const vidRef = FB.storageRef(FB.storage, `posts/${article.id}/video.mp4`);
+        await FB.uploadBytes(vidRef, state.mediaBlob);
+        article.videoUrl = await FB.getDownloadURL(vidRef);
+      }
+      const docRef = FB.doc(FB.db, 'posts', article.id);
+      const fsDoc = Object.assign({}, article);
+      delete fsDoc.updatedAt;
+      fsDoc.updatedAt = FB.serverTimestamp();
+      if (!editingArticle) { delete fsDoc.createdAt; fsDoc.createdAt = FB.serverTimestamp(); }
+      await FB.setDoc(docRef, fsDoc, { merge: true });
+      firebaseSaved = true;
+    } catch (e) {
+      console.warn('Firebase save failed, falling back to localStorage:', e);
+    }
   }
-  function pushArticle(withCover) {
+
+  // ─── localStorage fallback (also keeps local cache) ───
+  const localArticle = { ...article };
+  if (!firebaseSaved && state.coverDataUrl) localArticle.cover = state.coverDataUrl;
+  if (!firebaseSaved && state.extraImages.length > 0) localArticle.extraImages = state.extraImages.slice();
+  function pushLocal(withCover) {
     const raw = localStorage.getItem('livepass_articles');
     const list = raw ? JSON.parse(raw) : [];
-    const payload = { ...article, cover: withCover ? article.cover : null };
+    const payload = withCover ? localArticle : { ...localArticle, cover: null };
     if (editingArticle) {
-      // Replace the existing entry in place (preserve original position)
       const idx = list.findIndex(x => x.id === editingArticle.id);
-      if (idx >= 0) list[idx] = payload;
-      else list.unshift(payload);
+      if (idx >= 0) list[idx] = payload; else list.unshift(payload);
     } else {
       list.unshift(payload);
     }
-    saveArticles(list);
+    localStorage.setItem('livepass_articles', JSON.stringify(list));
   }
   try {
-    pushArticle(true);
+    pushLocal(true);
   } catch(e) {
-    // Quota exceeded: try again without the cover image
     if (e && /quota|QUOTA/i.test(e.name + ' ' + e.message)) {
-      try {
-        pushArticle(false);
-        alert('カバー画像が大きすぎたので画像なしで投稿しました。');
-      } catch(e2) {
-        alert('投稿の保存に失敗しました (localStorage full): ' + e2.message +
-              '\n\nSettings で古い投稿を削除するか、ブラウザのストレージを消去してください。');
-        return;
-      }
-    } else {
-      alert('投稿の保存に失敗しました: ' + e.message);
-      return;
+      try { pushLocal(false); } catch(e2) { /* Firestore has the data */ }
     }
   }
-  // Store video blob in IndexedDB if present
-  if (state.mediaType === 'video' && state.mediaBlob) {
+
+  if (state.mediaType === 'video' && state.mediaBlob && !firebaseSaved) {
     MediaDB.put('media_' + article.id, state.mediaBlob).catch(() => {});
   }
+
   if (navigator.vibrate) navigator.vibrate([18, 40, 18]);
   const toast = document.getElementById('toast');
   toast.classList.add('show');

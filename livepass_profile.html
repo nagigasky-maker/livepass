@@ -3238,13 +3238,11 @@ window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && postModal.classList.contains('active')) pmClose.click();
 });
 
-(function renderScreenPanels(){
+function renderScreenPanels(overrides){
   const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
   const CAT_COLOR = {
-    // events
     DJ:'#E8100A', LIVE:'#E8100A', PARTY:'#bf5af2',
     EXHIBITION:'#00E5A0', FASHION:'#bf5af2',
-    // workshops
     HOUSE:'#00E5A0', BREAKING:'#F5C842', WAACKING:'#F4C0D1',
     LOCKING:'#F5C842', POPPING:'#F5C842',
   };
@@ -3254,6 +3252,7 @@ window.addEventListener('keydown', (e) => {
     return { m:MONTHS[d.getMonth()], d:String(d.getDate()).padStart(2,'0') };
   }
   function readList(key){
+    if (overrides && overrides[key]) return overrides[key];
     try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) { return []; }
   }
   function emptyState(typeLabel){
@@ -3440,7 +3439,30 @@ window.addEventListener('keydown', (e) => {
       exList.appendChild(row);
     });
   }
-})();
+}
+renderScreenPanels();
+
+window.addEventListener('fb-auth-ready', async ({ detail }) => {
+  if (!detail.user || !window.FB) return;
+  try {
+    const uid = detail.user.uid;
+    const q = FB.query(FB.collection(FB.db, 'posts'), FB.where('authorUid', '==', uid), FB.orderBy('createdAt', 'desc'), FB.limit(200));
+    const snap = await FB.getDocs(q);
+    if (snap.empty) return;
+    const buckets = { livepass_articles:[], livepass_events:[], livepass_workshops:[], livepass_exhibitions:[] };
+    snap.forEach(d => {
+      const data = { id: d.id, ...d.data() };
+      const ts = data.createdAt;
+      if (ts && ts.toDate) data.createdAt = ts.toDate().toISOString();
+      const ut = data.updatedAt;
+      if (ut && ut.toDate) data.updatedAt = ut.toDate().toISOString();
+      const key = { article:'livepass_articles', event:'livepass_events', workshop:'livepass_workshops', exhibition:'livepass_exhibitions' }[data.type] || 'livepass_articles';
+      buckets[key].push(data);
+    });
+    const hasData = Object.values(buckets).some(arr => arr.length > 0);
+    if (hasData) renderScreenPanels(buckets);
+  } catch(e) { console.warn('Firestore profile load failed:', e); }
+});
 
 /* ─────────────────────────────────────────────
    SUBSCRIPTION — tip amount selector + buy

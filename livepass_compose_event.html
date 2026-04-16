@@ -1218,6 +1218,16 @@ collabSuggest.addEventListener('mousedown', (e) => {
   collabSearchIn.focus();
 });
 
+/* ─── Convert data-URL to Blob for Firebase Storage upload ─── */
+function dataUrlToBlob(dataUrl) {
+  const [header, b64] = dataUrl.split(',');
+  const mime = header.match(/:(.*?);/)[1];
+  const bin = atob(b64);
+  const arr = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  return new Blob([arr], { type: mime });
+}
+
 /* ─── Media helpers for video/GIF support ─── */
 function getVideoDuration(file) {
   return new Promise((resolve, reject) => {
@@ -1347,7 +1357,7 @@ updateSubmitState();
 // Also run on any interaction inside the form as a safety net
 document.querySelector('.form').addEventListener('change', updateSubmitState);
 
-submitBtn.addEventListener('click', () => {
+submitBtn.addEventListener('click', async () => {
   updateSubmitState();
   if (submitBtn.disabled) {
     const missing = [];
@@ -1357,11 +1367,18 @@ submitBtn.addEventListener('click', () => {
     alert('以下を入力してください：\n・' + missing.join('\n・'));
     return;
   }
+  submitBtn.disabled = true;
+  const origLabel = submitBtn.textContent;
+  submitBtn.textContent = '投稿中…';
+
+  const user = window.FB && window.FB.currentUser;
+  const uid = user ? user.uid : null;
+
   const event = {
     id:              state.editingId || ('e' + Date.now()),
     type:            'event',
     category:        state.category,
-    cover:           state.coverDataUrl,
+    cover:           null,
     mediaType:       state.mediaType || 'image',
     title:           titleInput.value.trim(),
     venue:           venueInput.value.trim(),
@@ -1378,42 +1395,58 @@ submitBtn.addEventListener('click', () => {
     body:            bodyInput.value.trim(),
     tags:            document.getElementById('tagsInput').value.split(',').map(t => t.trim()).filter(Boolean),
     author:          (editingEvent && editingEvent.author) || localStorage.getItem('livepass_account_name') || 'NOBBY',
+    authorUid:       uid || (editingEvent && editingEvent.authorUid) || null,
     createdAt:       (editingEvent && editingEvent.createdAt) || new Date().toISOString(),
     updatedAt:       state.editingId ? new Date().toISOString() : undefined,
   };
 
+  let firebaseSaved = false;
+  if (uid && window.FB) {
+    try {
+      if (state.coverDataUrl) {
+        const blob = dataUrlToBlob(state.coverDataUrl);
+        const ext = blob.type.split('/')[1] || 'jpg';
+        const ref = FB.storageRef(FB.storage, `posts/${event.id}/cover.${ext}`);
+        await FB.uploadBytes(ref, blob);
+        event.cover = await FB.getDownloadURL(ref);
+      }
+      if (state.mediaType === 'video' && state.mediaBlob) {
+        const vidRef = FB.storageRef(FB.storage, `posts/${event.id}/video.mp4`);
+        await FB.uploadBytes(vidRef, state.mediaBlob);
+        event.videoUrl = await FB.getDownloadURL(vidRef);
+      }
+      const docRef = FB.doc(FB.db, 'posts', event.id);
+      const fsDoc = Object.assign({}, event);
+      delete fsDoc.updatedAt;
+      fsDoc.updatedAt = FB.serverTimestamp();
+      if (!state.editingId) { delete fsDoc.createdAt; fsDoc.createdAt = FB.serverTimestamp(); }
+      await FB.setDoc(docRef, fsDoc, { merge: true });
+      firebaseSaved = true;
+    } catch (e) {
+      console.warn('Firebase save failed, falling back to localStorage:', e);
+    }
+  }
+
+  const localEvent = { ...event };
+  if (!firebaseSaved && state.coverDataUrl) localEvent.cover = state.coverDataUrl;
   const saveList = (withCover) => {
-    if (!withCover) event.cover = null;
+    const payload = withCover ? localEvent : { ...localEvent, cover: null };
     const raw  = localStorage.getItem('livepass_events');
     const list = raw ? JSON.parse(raw) : [];
     if (state.editingId) {
-      // Replace existing entry in place (preserve original position)
       const idx = list.findIndex(e => e.id === state.editingId);
-      if (idx >= 0) list[idx] = event;
-      else list.unshift(event);
+      if (idx >= 0) list[idx] = payload; else list.unshift(payload);
     } else {
-      list.unshift(event);
+      list.unshift(payload);
     }
     localStorage.setItem('livepass_events', JSON.stringify(list));
   };
-
-  try {
-    saveList(true);
-  } catch(err) {
-    // Storage quota: retry WITHOUT the cover image (most likely culprit)
+  try { saveList(true); } catch(err) {
     if (err && /quota/i.test(err.name + ' ' + err.message)) {
-      try {
-        saveList(false);
-        alert('カバー画像が大きすぎたので画像なしで保存しました。小さい画像で保存し直すと保存できます。');
-      } catch(err2) {
-        alert('保存に失敗しました: ' + err2.message);
-        return;
-      }
-    } else {
-      alert('保存に失敗しました: ' + err.message);
-      return;
+      try { saveList(false); } catch(e2) { /* Firestore has the data */ }
     }
   }
+
   if (navigator.vibrate) navigator.vibrate([18, 40, 18]);
   document.getElementById('toast').classList.add('show');
   setTimeout(() => {
