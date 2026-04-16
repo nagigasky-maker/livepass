@@ -642,12 +642,22 @@ try {
   }
 } catch(e) {}
 roleInput.addEventListener('input', () => {
-  try { localStorage.setItem(ROLE_KEY, roleInput.value); } catch(e) {}
+  try {
+    localStorage.setItem(ROLE_KEY, roleInput.value);
+    // Sync to Firestore
+    if (window.FB && window.FB.currentUser) {
+      window.FB.updateDoc(window.FB.doc(window.FB.db, 'users', window.FB.currentUser.uid), { role: roleInput.value });
+    }
+  } catch(e) {}
 });
 nameInput.addEventListener('input', () => {
   try {
     localStorage.setItem(NAME_KEY, nameInput.value);
     document.getElementById('srName').textContent = nameInput.value || '';
+    // Sync to Firestore
+    if (window.FB && window.FB.currentUser) {
+      window.FB.updateDoc(window.FB.doc(window.FB.db, 'users', window.FB.currentUser.uid), { name: nameInput.value });
+    }
   } catch(e) {}
 });
 

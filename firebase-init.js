@@ -42,18 +42,20 @@ window.FB = {
 };
 
 // ─── Auth state listener: sync to localStorage for backward compat ───
+// Only populates localStorage if the fields are EMPTY (doesn't overwrite
+// local edits made in Settings).
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     window.FB.currentUser = user;
-    // Load user profile from Firestore
     try {
       const snap = await getDoc(doc(db, 'users', user.uid));
       if (snap.exists()) {
         const data = snap.data();
-        localStorage.setItem('livepass_account_name', data.name || '');
-        localStorage.setItem('livepass_role', data.style || '');
-        localStorage.setItem('livepass_avatar', data.avatar || '');
-        localStorage.setItem('livepass_plan', data.plan || 'free');
+        // Only set if localStorage is empty — user edits in Settings take priority
+        if (!localStorage.getItem('livepass_account_name')) localStorage.setItem('livepass_account_name', data.name || '');
+        if (!localStorage.getItem('livepass_role')) localStorage.setItem('livepass_role', data.role || '');
+        if (!localStorage.getItem('livepass_avatar') && data.avatar) localStorage.setItem('livepass_avatar', data.avatar);
+        if (!localStorage.getItem('livepass_plan')) localStorage.setItem('livepass_plan', data.plan || 'free');
         localStorage.setItem('livepass_uid', user.uid);
       }
     } catch (e) { console.warn('FB profile load error:', e); }
@@ -61,7 +63,6 @@ onAuthStateChanged(auth, async (user) => {
     window.FB.currentUser = null;
     localStorage.removeItem('livepass_uid');
   }
-  // Dispatch event so pages can react
   window.dispatchEvent(new CustomEvent('fb-auth-ready', { detail: { user } }));
 });
 
