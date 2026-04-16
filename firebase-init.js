@@ -56,6 +56,12 @@ onAuthStateChanged(auth, async (user) => {
         if (!localStorage.getItem('livepass_role')) localStorage.setItem('livepass_role', data.role || '');
         if (!localStorage.getItem('livepass_avatar') && data.avatar) localStorage.setItem('livepass_avatar', data.avatar);
         if (!localStorage.getItem('livepass_plan')) localStorage.setItem('livepass_plan', data.plan || 'free');
+        // NOBBY = promo BIZ account
+        const acctName = (data.name || localStorage.getItem('livepass_account_name') || '').toUpperCase();
+        if (acctName === 'NOBBY') {
+          localStorage.setItem('livepass_plan', 'biz');
+          if (data.plan !== 'biz') updateDoc(doc(db, 'users', user.uid), { plan: 'biz' }).catch(() => {});
+        }
         localStorage.setItem('livepass_uid', user.uid);
       }
     } catch (e) { console.warn('FB profile load error:', e); }
