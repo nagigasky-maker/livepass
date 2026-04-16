@@ -64,10 +64,10 @@ html,body{height:100%;background:var(--bg);color:var(--fg);font-family:'Inter',s
 /* ── STEP CONTENT ── */
 .step-inner{flex:1;overflow-y:auto;scrollbar-width:none;padding:90px 24px 24px}
 .step-inner::-webkit-scrollbar{display:none}
-.step-eyebrow{font-size:7px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;font-weight:400;margin-bottom:16px}
+.step-eyebrow{font-size:9px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;font-weight:400;margin-bottom:16px}
 .step-title{font-size:26px;font-weight:300;letter-spacing:-.5px;line-height:1.05;margin-bottom:6px;color:var(--fg)}
 .step-title strong{font-weight:700}
-.step-sub{font-size:11px;color:rgba(237,235,230,.35);font-weight:300;letter-spacing:.3px;line-height:1.7;margin-bottom:32px}
+.step-sub{font-size:13px;color:rgba(237,235,230,.45);font-weight:300;letter-spacing:.3px;line-height:1.7;margin-bottom:32px}
 
 /* KIND BUTTONS */
 .kind-list{display:flex;flex-direction:column;gap:8px;margin-bottom:36px}
@@ -293,13 +293,15 @@ html,body{height:100%;background:var(--bg);color:var(--fg);font-family:'Inter',s
 // ─── Redirect away if an account already exists ──────────────────
 if (localStorage.getItem('livepass_account_name')) {
   // Returning user — skip the sign-up flow entirely
-  location.replace('/home');
+  location.replace('/profile');
 }
 const KINDS = [
   {id:"dj",      label:"DJ",        sub:"Mix / Live set / Radio", color:"#9FE1CB"},
   {id:"dancer",  label:"Dancer",    sub:"Solo / Crew / Company",  color:"#AFA9EC"},
   {id:"musician",label:"Musician",  sub:"Band / Solo / Producer", color:"#EF9F27"},
   {id:"artist",  label:"Artist",    sub:"Visual / ART / Film",    color:"#F4C0D1"},
+  {id:"lover",   label:"Music Lover",sub:"Fan / Listener / Explorer", color:"#5DADE2"},
+  {id:"supporter",label:"Supporter",sub:"Organizer / Venue / Crew", color:"#F5B041"},
 ];
 const GOALS = [
   {id:"earn",    label:"活動で収益を得たい",     icon:"¥"},
@@ -307,12 +309,17 @@ const GOALS = [
   {id:"world",   label:"世界に発信したい",       icon:"◎"},
   {id:"lesson",  label:"レッスン・WSをやりたい", icon:"◈"},
   {id:"screen",  label:"映像作品を公開したい",   icon:"□"},
+  {id:"live",    label:"LIVEを体験したい",       icon:"♪"},
+  {id:"dance",   label:"無我夢中に踊りたい",     icon:"⚡"},
+  {id:"discover",label:"素晴らしい音楽に出逢いたい", icon:"♫"},
 ];
 const GENRES = {
   dj:       ["Techno","House","Ambient","EBM","HipHop","Drum & Bass","Experimental","Other"],
   dancer:   ["Locking","Popping","Waacking","Breaking","House Dance","Contemporary","Vogue","Krump","Other"],
   musician: ["Rock","Jazz","Folk","Electronic","Classical","HipHop","Funk","Other"],
   artist:   ["Graffiti","空間アート","現代アート","映像アート","インスタレーション","写真","Other"],
+  lover:    ["Techno","House","HipHop","Jazz","Rock","Electronic","Ambient","Other"],
+  supporter:["Event","Venue","Management","Media","Fashion","Other"],
 };
 const ROADMAP = {
   earn:    {step:"PASS を発行する",             desc:"会場カードを作って最初のサポーターを集める"},
@@ -320,6 +327,9 @@ const ROADMAP = {
   world:   {step:"英語プロフィールを完成させる",desc:"世界からの発見率が上がる"},
   lesson:  {step:"レッスン / WS を登録する",    desc:"予約受付を開始する"},
   screen:  {step:"SCREEN に作品を投稿する",     desc:"FILM / SERIES / SHOWCASE を公開する"},
+  live:    {step:"イベントを探す",              desc:"今週のライブ・パーティをチェックする"},
+  dance:   {step:"ワークショップに参加する",    desc:"気になるダンサーのWSを予約する"},
+  discover:{step:"アーティストをフォローする",  desc:"好きな音楽・ダンスの発信者を見つける"},
 };
 
 let selectedKind = null;
@@ -532,7 +542,7 @@ document.getElementById('finishBtn')?.addEventListener('click', () => {
     return;
   }
   if (navigator.vibrate) navigator.vibrate([18, 40, 18]);
-  location.href = '/home';
+  location.href = '/profile';
 });
 </script>
 <div id="__v">v66</div>

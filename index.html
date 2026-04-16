@@ -36,9 +36,9 @@ html,body{
     // If the user is already signed in, go to /home
     // If not, go to /onboarding for the sign-up flow
     const signedIn = !!localStorage.getItem('livepass_account_name');
-    location.replace(signedIn ? '/home' : '/onboarding');
+    location.replace(signedIn ? '/profile' : '/onboarding');
   } catch(e) {
-    location.replace('/home');
+    location.replace('/profile');
   }
 })();
 </script>
