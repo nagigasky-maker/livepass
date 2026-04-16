@@ -148,6 +148,27 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   .feed-card[data-format="cinema"]  {grid-column:span 3}
 }
 
+/* Video play icon overlay */
+.feed-card .fc-play-icon{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3;
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(0,0,0,.55);
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  pointer-events:none;
+}
+.feed-card .fc-play-icon svg{width:18px;height:18px;margin-left:2px}
+/* Slideshow dots */
+.feed-card .fc-slide-dots{
+  position:absolute;bottom:8px;left:50%;transform:translateX(-50%);z-index:3;
+  display:flex;gap:4px;
+}
+.feed-card .fc-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:rgba(255,255,255,.35);transition:background .3s;
+}
+.feed-card .fc-dot.active{background:var(--white)}
+
 /* PRO badge chip on feed cards */
 .feed-card .fc-pro{
   position:absolute;top:10px;left:12px;
@@ -777,6 +798,53 @@ const FEED = buildBalancedFeed(RAW_FEED);
   } catch(e) {}
 })();
 
+/* ─── IndexedDB helper for reading stored video blobs ─── */
+const MediaDB = {
+  _db: null,
+  open(){
+    if(this._db) return Promise.resolve();
+    return new Promise((res,rej)=>{
+      const req = indexedDB.open('livepass_media',1);
+      req.onupgradeneeded = ()=> req.result.createObjectStore('blobs');
+      req.onsuccess = ()=>{ this._db = req.result; res(); };
+      req.onerror = ()=> rej(req.error);
+    });
+  },
+  async get(key){
+    await this.open();
+    return new Promise((res,rej)=>{
+      const tx = this._db.transaction('blobs','readonly');
+      const r = tx.objectStore('blobs').get(key);
+      r.onsuccess = ()=> res(r.result || null);
+      r.onerror = ()=> rej(r.error);
+    });
+  }
+};
+
+/* ─── Build media HTML for a feed card (image / video / gif / slideshow) ─── */
+function buildMediaHtml(a) {
+  const mt = a.mediaType || 'image';
+  const imgSrc = a.cover || placeholderSVG(a);
+
+  if (mt === 'video') {
+    // Show poster frame; load actual video async from IndexedDB
+    return `<img src="${imgSrc}" alt="" class="fc-poster" data-video-id="${a.id}">
+            <div class="fc-play-icon"><svg viewBox="0 0 24 24" fill="var(--white)" stroke="none"><polygon points="6,3 20,12 6,21"/></svg></div>`;
+  }
+  if (mt === 'gif') {
+    return `<img src="${imgSrc}" alt="">`;
+  }
+  if (mt === 'slideshow' && Array.isArray(a.extraImages) && a.extraImages.length > 0) {
+    const allImgs = [imgSrc, ...a.extraImages];
+    return allImgs.map((src, i) =>
+      `<img src="${src}" alt="" class="fc-slide" style="opacity:${i===0?1:0};transition:opacity .6s ease" data-slide="${i}">`
+    ).join('') + `<div class="fc-slide-dots">${allImgs.map((_,i)=>
+      `<span class="fc-dot${i===0?' active':''}" data-dot="${i}"></span>`
+    ).join('')}</div>`;
+  }
+  return `<img src="${imgSrc}" alt="">`;
+}
+
 /* Render feed */
 FEED.forEach(a => {
   const format = fmtOf(a);
@@ -786,14 +854,14 @@ FEED.forEach(a => {
   card.style.setProperty('--cat', a.catColor);
   card.dataset.id = a.id;
   const subHtml = a.subtitle ? `<small>${a.subtitle}</small>` : '';
-  const imgSrc = a.cover || placeholderSVG(a);
   const avHtml = (a.userPost && a.avatar)
     ? `<div class="fc-author-av"><img src="${a.avatar}" alt=""></div>`
     : `<div class="fc-author-av"></div>`;
   const proChip = a.tier === 'pro' ? `<div class="fc-pro">PRO</div>` : '';
+  const mediaHtml = buildMediaHtml(a);
   card.innerHTML = `
     <div class="fc-img">
-      <img src="${imgSrc}" alt="">
+      ${mediaHtml}
     </div>
     ${proChip}
     <div class="fc-num">${a.num}</div>
@@ -805,6 +873,40 @@ FEED.forEach(a => {
   `;
   card.addEventListener('click', () => openDetail(a));
   grid.appendChild(card);
+
+  // Slideshow auto-play (2s interval)
+  if ((a.mediaType === 'slideshow') && a.extraImages && a.extraImages.length > 0) {
+    const slides = card.querySelectorAll('.fc-slide');
+    const dots = card.querySelectorAll('.fc-dot');
+    if (slides.length > 1) {
+      let cur = 0;
+      setInterval(() => {
+        slides[cur].style.opacity = '0';
+        if(dots[cur]) dots[cur].classList.remove('active');
+        cur = (cur + 1) % slides.length;
+        slides[cur].style.opacity = '1';
+        if(dots[cur]) dots[cur].classList.add('active');
+      }, 2000);
+    }
+  }
+
+  // Video: try to load blob from IndexedDB for autoplay
+  if (a.mediaType === 'video') {
+    const posterEl = card.querySelector('.fc-poster');
+    if (posterEl) {
+      MediaDB.get('media_' + a.id).then(blob => {
+        if (!blob) return;
+        const vid = document.createElement('video');
+        vid.src = URL.createObjectURL(blob);
+        vid.autoplay = true; vid.muted = true; vid.loop = true; vid.playsInline = true;
+        vid.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0';
+        posterEl.parentNode.replaceChild(vid, posterEl);
+        // Remove play icon
+        const playIcon = card.querySelector('.fc-play-icon');
+        if(playIcon) playIcon.remove();
+      }).catch(()=>{});
+    }
+  }
 });
 
 /* ─────────────────────────────────────────────

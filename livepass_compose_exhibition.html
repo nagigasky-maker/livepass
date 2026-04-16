@@ -532,10 +532,10 @@ textarea.input-box{resize:vertical;min-height:120px;line-height:1.8;font-size:13
     <div class="cover-upload" id="coverUpload">
       <div class="cover-placeholder" id="coverPh">
         <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>
-        <span>タップして画像を選択</span>
+        <span>画像・動画・GIFを選択</span>
       </div>
     </div>
-    <input type="file" id="coverInput" accept="image/*">
+    <input type="file" id="coverInput" accept="image/*,video/mp4,video/webm,video/quicktime,image/gif">
   </div>
 
   <div class="form-section">
@@ -581,6 +581,8 @@ textarea.input-box{resize:vertical;min-height:120px;line-height:1.8;font-size:13
 const state = {
   category: 'EXHIBITION',
   coverDataUrl: null,
+  mediaType: 'image', // 'image' | 'video' | 'gif'
+  mediaBlob: null,    // original video File object for IndexedDB storage
   reservation: false,
   subscriberEnabled: false,
   artists: [],        // [{ name, role }]
@@ -1215,6 +1217,47 @@ collabSuggest.addEventListener('mousedown', (e) => {
   collabSearchIn.focus();
 });
 
+/* ─── Media helpers for video/GIF support ─── */
+function getVideoDuration(file) {
+  return new Promise((resolve, reject) => {
+    const video = document.createElement('video');
+    video.preload = 'metadata';
+    video.onloadedmetadata = () => { URL.revokeObjectURL(video.src); resolve(video.duration); };
+    video.onerror = () => reject(new Error('動画を読み込めません'));
+    video.src = URL.createObjectURL(file);
+  });
+}
+function extractPosterFrame(file) {
+  return new Promise((resolve, reject) => {
+    const video = document.createElement('video');
+    video.preload = 'auto';
+    video.muted = true;
+    video.playsInline = true;
+    video.onloadeddata = () => {
+      video.currentTime = 0.5;
+    };
+    video.onseeked = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.min(video.videoWidth, 1280);
+        canvas.height = Math.round(canvas.width * video.videoHeight / video.videoWidth);
+        canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(video.src);
+        resolve(canvas.toDataURL('image/jpeg', 0.8));
+      } catch(e){ reject(e); }
+    };
+    video.onerror = () => reject(new Error('動画を読み込めません'));
+    video.src = URL.createObjectURL(file);
+  });
+}
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => resolve(e.target.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 function downscaleImageFile(file, maxDim = 1280, quality = 0.82) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -1242,13 +1285,42 @@ coverUpload.addEventListener('click', () => coverInput.click());
 coverInput.addEventListener('change', async (e) => {
   const file = e.target.files && e.target.files[0];
   if (!file) return;
+  const isVideo = file.type.startsWith('video/');
+  const isGif = file.type === 'image/gif';
+  const MAX_VIDEO_SEC = 60; // 1 min for events/workshops/exhibitions
   try {
-    const dataUrl = await downscaleImageFile(file);
-    state.coverDataUrl = dataUrl;
-    coverUpload.classList.add('has-image');
-    coverUpload.innerHTML = `<img class="cover-preview-img" src="${dataUrl}" alt="">`;
+    if (isVideo) {
+      // Validate duration
+      const duration = await getVideoDuration(file);
+      if (duration > MAX_VIDEO_SEC) {
+        alert('動画は' + MAX_VIDEO_SEC + '秒以内にしてください（現在: ' + Math.round(duration) + '秒）');
+        return;
+      }
+      // Extract poster frame
+      const poster = await extractPosterFrame(file);
+      state.coverDataUrl = poster;
+      state.mediaType = 'video';
+      state.mediaBlob = file;
+      coverUpload.classList.add('has-image');
+      coverUpload.innerHTML = '<video src="' + URL.createObjectURL(file) + '" style="width:100%;height:100%;object-fit:cover;display:block" autoplay muted loop playsinline></video>';
+    } else if (isGif) {
+      const dataUrl = await readFileAsDataUrl(file);
+      state.coverDataUrl = dataUrl;
+      state.mediaType = 'gif';
+      state.mediaBlob = null;
+      coverUpload.classList.add('has-image');
+      coverUpload.innerHTML = '<img class="cover-preview-img" src="' + dataUrl + '" alt="">';
+    } else {
+      const dataUrl = await downscaleImageFile(file);
+      state.coverDataUrl = dataUrl;
+      state.mediaType = 'image';
+      state.mediaBlob = null;
+      coverUpload.classList.add('has-image');
+      coverUpload.innerHTML = '<img class="cover-preview-img" src="' + dataUrl + '" alt="">';
+    }
+    if (navigator.vibrate) navigator.vibrate(8);
   } catch (err) {
-    alert('画像の読み込みに失敗: ' + err.message);
+    alert('メディアの読み込みに失敗しました: ' + err.message);
   }
 });
 
@@ -1289,6 +1361,7 @@ submitBtn.addEventListener('click', () => {
     type:            'exhibition',
     category:        state.category,
     cover:           state.coverDataUrl,
+    mediaType:       state.mediaType || 'image',
     title:           titleInput.value.trim(),
     venue:           venueInput.value.trim(),
     date:            dateInput.value,
