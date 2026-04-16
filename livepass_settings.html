@@ -618,7 +618,7 @@ document.querySelectorAll('.plan').forEach(p => {
     const f2 = JSON.parse(localStorage.getItem('livepass_followers') || '[]').length;
     document.querySelectorAll('[data-count="following"]').forEach(el => el.textContent = f1 || '0');
     document.querySelectorAll('[data-count="followers"]').forEach(el => el.textContent = f2 || '0');
-    const unread = parseInt(localStorage.getItem('livepass_unread_count') || '3', 10);
+    const unread = parseInt(localStorage.getItem('livepass_unread_count') || '0', 10);
     const badge = document.getElementById('msgBadge');
     if (badge) {
       if (unread > 0) { badge.textContent = unread > 99 ? '99+' : String(unread); badge.style.display = ''; }
@@ -667,7 +667,7 @@ nameInput.addEventListener('input', () => {
   if(!btn||!ov)return;
   const open=()=>{ov.classList.add('active');ov.setAttribute('aria-hidden','false');if(navigator.vibrate)navigator.vibrate(8)};
   const dismiss=()=>{ov.classList.remove('active');ov.setAttribute('aria-hidden','true')};
-  btn.addEventListener('click',open);cb.addEventListener('click',dismiss);
+  btn.addEventListener('click',open);if(cb)cb.addEventListener('click',dismiss);
   ov.addEventListener('click',e=>{if(e.target===ov)dismiss()});
   document.querySelectorAll('.cs-opt').forEach(o=>o.addEventListener('click',()=>{
     const t=o.dataset.type;if(navigator.vibrate)navigator.vibrate(12);
@@ -682,9 +682,13 @@ nameInput.addEventListener('input', () => {
    are intentionally preserved in localStorage so the same browser
    on sign-in (even under a new name) still sees them.
    ───────────────────────────────────────────── */
-document.getElementById('signOutBtn')?.addEventListener('click', () => {
+document.getElementById('signOutBtn')?.addEventListener('click', async () => {
   const name = localStorage.getItem('livepass_account_name') || '';
   if (!confirm(`${name ? name + ' として ' : ''}サインアウトしますか？\n\n次回アクセス時はサインアップ画面に戻ります。投稿や保存済みは残ります。`)) return;
+  // Sign out of Firebase Auth first
+  try {
+    if (window.FB && window.FB.auth) await window.FB.signOut(window.FB.auth);
+  } catch(e) { console.warn('Firebase signOut:', e); }
   try {
     // Identity-only keys are cleared; content keys (articles/events/saves/
     // likes/reservations/...) stay so the browser remembers everything
@@ -698,6 +702,7 @@ document.getElementById('signOutBtn')?.addEventListener('click', () => {
     localStorage.removeItem('livepass_goals');
     localStorage.removeItem('livepass_avatar');
     localStorage.removeItem('livepass_signed_in');
+    localStorage.removeItem('livepass_uid');
   } catch(e) {}
   if (navigator.vibrate) navigator.vibrate([18, 40, 18]);
   location.replace('/onboarding');

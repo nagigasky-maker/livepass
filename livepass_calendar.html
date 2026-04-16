@@ -1499,7 +1499,7 @@ orgSheetOverlay?.addEventListener('click', (e) => { if (e.target === orgSheetOve
     const f2 = JSON.parse(localStorage.getItem('livepass_followers') || '[]').length;
     document.querySelectorAll('[data-count="following"]').forEach(el => el.textContent = f1 || '0');
     document.querySelectorAll('[data-count="followers"]').forEach(el => el.textContent = f2 || '0');
-    const unread = parseInt(localStorage.getItem('livepass_unread_count') || '3', 10);
+    const unread = parseInt(localStorage.getItem('livepass_unread_count') || '0', 10);
     const badge = document.getElementById('msgBadge');
     if (badge) {
       if (unread > 0) { badge.textContent = unread > 99 ? '99+' : String(unread); badge.style.display = ''; }

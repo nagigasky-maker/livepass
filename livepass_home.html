@@ -1200,7 +1200,7 @@ function openDetail(a) {
     ? `background:${detailBg};aspect-ratio:auto;min-height:280px`
     : '';
   const heroImg = hasCover
-    ? `<img src="${heroSrc}" alt="">`
+    ? `<img src="${a.cover}" alt="">`
     : '';
   const heroGradient = hasCover
     ? ''
@@ -1447,7 +1447,7 @@ window.addEventListener('keydown', e => {
 
     // Unread DM badge — the default 3 matches the seed in messages.html
     // (2 from SACHI + 1 from DUBLA). Hide the badge if count is 0.
-    const unread = parseInt(localStorage.getItem('livepass_unread_count') || '3', 10);
+    const unread = parseInt(localStorage.getItem('livepass_unread_count') || '0', 10);
     const badge = document.getElementById('msgBadge');
     if (badge) {
       if (unread > 0) {

@@ -1262,6 +1262,40 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .pm-act.saved svg{fill:var(--gold);stroke:var(--gold)}
 .pm-act.shared{color:var(--blue)}
 .pm-act.shared svg{stroke:var(--blue)}
+.pm-comments{padding:0 22px 24px}
+.pm-comments-list{max-height:200px;overflow-y:auto;scrollbar-width:none;margin-bottom:12px}
+.pm-comments-list::-webkit-scrollbar{display:none}
+.pm-comment-item{
+  display:flex;gap:10px;padding:10px 0;
+  border-bottom:0.5px solid rgba(128,128,128,.15);
+}
+.pm-comment-av{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,#3DAAFF,#1a2030);
+  display:flex;align-items:center;justify-content:center;
+  font-family:Arial,sans-serif;font-weight:900;font-size:10px;
+  overflow:hidden;
+}
+.pm-comment-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.pm-comment-body{flex:1;min-width:0}
+.pm-comment-name{font-weight:700;font-size:11px;margin-bottom:2px}
+.pm-comment-text{font-size:13px;font-weight:400;line-height:1.5;opacity:.85}
+.pm-comment-time{font-size:9px;opacity:.4;margin-top:3px}
+.pm-comment-form{display:flex;gap:8px;align-items:center}
+.pm-comment-input{
+  flex:1;padding:10px 14px;border-radius:99px;
+  background:rgba(255,255,255,.06);border:0.5px solid rgba(255,255,255,.12);
+  color:var(--white);font-family:Arial,'Noto Sans JP',sans-serif;
+  font-size:13px;outline:none;
+}
+.pm-comment-input::placeholder{color:rgba(255,255,255,.3)}
+.pm-comment-send{
+  padding:8px 16px;border-radius:99px;
+  background:rgba(255,255,255,.08);color:var(--white);
+  font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;font-weight:700;
+  letter-spacing:.04em;border:none;cursor:pointer;
+}
+.pm-comment-send:active{background:rgba(255,255,255,.15)}
 @keyframes pmSharePulse{
   0%{transform:scale(1)}
   50%{transform:scale(1.25)}
@@ -2656,7 +2690,7 @@ function openPostDetail(type, item) {
       ${artCollabHtml}
       <div class="pm-actions">
         <button class="pm-act" data-act="comment" type="button">
-          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>12
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="pm-comment-count">0</span>
         </button>
         <button class="pm-act ${liked ? 'liked' : ''}" data-act="like" type="button">
           <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>48
@@ -2668,8 +2702,67 @@ function openPostDetail(type, item) {
           <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>共有
         </button>
       </div>
-      <div style="height:20px"></div>
+      <div class="pm-comments">
+        <div class="pm-comments-list" id="pmCommentsList"></div>
+        <div class="pm-comment-form">
+          <input class="pm-comment-input" id="pmCommentInput" placeholder="コメントを入力...">
+          <button class="pm-comment-send" id="pmCommentSend">送信</button>
+        </div>
+      </div>
     `;
+
+    // ── Comments ──
+    const PM_COMMENT_KEY = 'livepass_comments_' + item.id;
+    function pmGetComments() { try { return JSON.parse(localStorage.getItem(PM_COMMENT_KEY) || '[]'); } catch(e){ return []; } }
+    function pmTimeAgo(iso) {
+      const diff = Date.now() - new Date(iso).getTime();
+      const m = Math.floor(diff / 60000);
+      if (m < 1) return 'たった今';
+      if (m < 60) return m + '分前';
+      const h = Math.floor(m / 60);
+      if (h < 24) return h + '時間前';
+      return Math.floor(h / 24) + '日前';
+    }
+    function pmRenderComments() {
+      const list = document.getElementById('pmCommentsList');
+      const comments = pmGetComments();
+      const countEl = pmBody.querySelector('.pm-comment-count');
+      if (countEl) countEl.textContent = comments.length;
+      if (!list) return;
+      list.innerHTML = comments.map(c => {
+        const av = c.avatar ? `<img src="${c.avatar}" alt="">` : c.name.charAt(0);
+        const ago = pmTimeAgo(c.at);
+        return `<div class="pm-comment-item">
+          <div class="pm-comment-av">${av}</div>
+          <div class="pm-comment-body">
+            <div class="pm-comment-name">${c.name}</div>
+            <div class="pm-comment-text">${c.text}</div>
+            <div class="pm-comment-time">${ago}</div>
+          </div>
+        </div>`;
+      }).join('');
+      list.scrollTop = list.scrollHeight;
+    }
+    pmRenderComments();
+
+    const pmCmtInput = document.getElementById('pmCommentInput');
+    const pmCmtSend = document.getElementById('pmCommentSend');
+    if (pmCmtSend && pmCmtInput) {
+      const sendComment = () => {
+        const text = pmCmtInput.value.trim();
+        if (!text) return;
+        const me = localStorage.getItem('livepass_account_name') || 'User';
+        const myAv = localStorage.getItem('livepass_avatar') || null;
+        const comments = pmGetComments();
+        comments.push({ name: me, avatar: myAv, text, at: new Date().toISOString() });
+        try { localStorage.setItem(PM_COMMENT_KEY, JSON.stringify(comments)); } catch(e){}
+        pmCmtInput.value = '';
+        pmRenderComments();
+        if (navigator.vibrate) navigator.vibrate(6);
+      };
+      pmCmtSend.addEventListener('click', sendComment);
+      pmCmtInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); sendComment(); } });
+    }
 
     // Wire up the re-edit button for articles
     if (articleIsOwner) {
@@ -2686,7 +2779,11 @@ function openPostDetail(type, item) {
     pmBody.querySelectorAll('.pm-act').forEach(btn => {
       btn.addEventListener('click', () => {
         const act = btn.dataset.act;
-        if (act === 'like') {
+        if (act === 'comment') {
+          const ci = document.getElementById('pmCommentInput');
+          if (ci) { ci.scrollIntoView({ behavior:'smooth' }); ci.focus(); }
+          return;
+        } else if (act === 'like') {
           const now = pmToggleId('livepass_likes', item.id);
           btn.classList.toggle('liked', now);
         } else if (act === 'save') {
@@ -3465,7 +3562,7 @@ window.addEventListener('keydown', (e) => {
     const f2 = JSON.parse(localStorage.getItem('livepass_followers') || '[]').length;
     document.querySelectorAll('[data-count="following"]').forEach(el => el.textContent = f1 || '0');
     document.querySelectorAll('[data-count="followers"]').forEach(el => el.textContent = f2 || '0');
-    const unread = parseInt(localStorage.getItem('livepass_unread_count') || '3', 10);
+    const unread = parseInt(localStorage.getItem('livepass_unread_count') || '0', 10);
     const badge = document.getElementById('msgBadge');
     if (badge) {
       if (unread > 0) { badge.textContent = unread > 99 ? '99+' : String(unread); badge.style.display = ''; }

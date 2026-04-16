@@ -39,7 +39,7 @@ html,body{
     const signedIn = !!localStorage.getItem('livepass_account_name');
     location.replace(signedIn ? '/profile' : '/onboarding');
   } catch(e) {
-    location.replace('/profile');
+    location.replace('/onboarding');
   }
 })();
 </script>
