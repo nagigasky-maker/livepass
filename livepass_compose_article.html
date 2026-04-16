@@ -552,7 +552,13 @@ textarea.input-box{resize:vertical;min-height:160px;line-height:1.8;font-size:13
     try {
       var form = document.createElement('form');
       form.method = 'GET';
-      form.action = a.href;
+      var u2 = new URL(a.href, location.href);
+      form.action = u2.pathname;
+      u2.searchParams.forEach(function(v,k){
+        var inp = document.createElement('input');
+        inp.type='hidden'; inp.name=k; inp.value=v;
+        form.appendChild(inp);
+      });
       form.style.display = 'none';
       document.body.appendChild(form);
       form.submit();
@@ -1168,6 +1174,7 @@ coverInput.addEventListener('change', async (e) => {
     const sw = document.createElement('div');
     sw.className = 'color-swatch' + (i===0 ? ' active' : '');
     sw.style.background = c.bg;
+    sw.dataset.bg = c.bg;
     if(c.id==='white') sw.style.border = '1px solid rgba(255,255,255,.15)';
     sw.addEventListener('click', () => {
       row.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
@@ -1372,6 +1379,23 @@ if (editingArticle) {
     const coverUpload = document.getElementById('coverUpload');
     coverUpload.classList.add('has-image');
     coverUpload.innerHTML = `<img class="cover-preview-img" src="${editingArticle.cover}" alt="">`;
+  }
+
+  // Restore bgColor for no-cover articles
+  if (!editingArticle.cover && editingArticle.bgColor) {
+    state.bgColor = editingArticle.bgColor;
+    state.bgTextColor = editingArticle.bgTextColor || '#F2F0EB';
+    const preview = document.getElementById('colorPreview');
+    if (preview) preview.style.background = editingArticle.bgColor;
+    document.querySelectorAll('.color-swatch').forEach(sw => {
+      sw.classList.toggle('active', sw.dataset.bg === editingArticle.bgColor);
+    });
+  }
+
+  // Restore mediaType and extraImages
+  if (editingArticle.mediaType) state.mediaType = editingArticle.mediaType;
+  if (Array.isArray(editingArticle.extraImages) && editingArticle.extraImages.length) {
+    state.extraImages = editingArticle.extraImages.slice();
   }
 
   // Collaborators
