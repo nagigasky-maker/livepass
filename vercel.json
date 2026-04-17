@@ -10,6 +10,8 @@
     { "source": "/onboarding","destination": "/livepass_onboarding.html" },
     { "source": "/signup",    "destination": "/livepass_onboarding.html" },
     { "source": "/login",     "destination": "/livepass_login.html" },
+    { "source": "/terms",     "destination": "/livepass_terms.html" },
+    { "source": "/privacy",   "destination": "/livepass_privacy.html" },
     { "source": "/start",     "destination": "/livepass_home.html" },
     { "source": "/app",       "destination": "/livepass_home.html" },
     { "source": "/feed",      "destination": "/livepass_home.html" },
@@ -50,7 +52,7 @@
       ]
     },
     {
-      "source": "/(home|search|calendar|profile|settings|messages|followers|onboarding|signup|login|start|app|feed|me|test66|compose/article|compose/event|compose/workshop|compose/exhibition|checkout/success|checkout/cancel|p/amd)",
+      "source": "/(home|search|calendar|profile|settings|messages|followers|onboarding|signup|login|terms|privacy|start|app|feed|me|test66|compose/article|compose/event|compose/workshop|compose/exhibition|checkout/success|checkout/cancel|p/amd)",
       "headers": [
         { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" },
         { "key": "Pragma", "value": "no-cache" },
