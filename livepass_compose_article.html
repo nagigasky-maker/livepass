@@ -626,12 +626,12 @@ body{color:#0A0A0A !important}
 
 
 /* ── Force entire page white (no black bands) ── */
-*{background-color:transparent}
+*:not(.pal-dot):not(.title-preview):not([class*="preview"]){background-color:transparent}
 html,body,.form,.content,.main,main,section,div,footer{background-color:#FFF !important}
 .cover-upload{background:rgba(10,10,10,.03) !important}
 .title-preview,[class*="preview"]{background:inherit !important}
 #toast{background:#0A0A0A !important}
-.pal-dot{background-color:inherit !important}
+
 
 
 /* ── Compose: minimize bottom bar, expand form area ── */
