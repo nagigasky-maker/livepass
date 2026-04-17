@@ -1587,20 +1587,40 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 .content{bottom:calc(33px + var(--safe-bot) * 0.3) !important}
 
 
-/* ── Post detail modal — white ── */
-#postModal{background:#FFFFFF !important}
-#postModal *{color:inherit}
-#postModal{color:#0A0A0A !important}
+
+
+
+/* ── Post detail modal — comprehensive white ── */
+#postModal{background:#FFFFFF !important;color:#0A0A0A !important}
 .pm-header{background:#FFFFFF !important;border-bottom:0.5px solid rgba(10,10,10,.08) !important}
-.pm-close,.pm-close svg{color:#0A0A0A !important}
-.pm-edit{color:#0A0A0A !important;border-color:rgba(10,10,10,.18) !important;background:rgba(10,10,10,.04) !important}
-.pm-body{background:#FFFFFF !important;color:#0A0A0A !important}
-.pm-date,.pm-venue,.pm-meta,.pm-cat,.pm-tag{color:rgba(10,10,10,.6) !important}
+.pm-close{color:#0A0A0A !important;border-color:rgba(10,10,10,.18) !important}
+.pm-label{color:rgba(10,10,10,.4) !important}
+.pm-edit-btn{color:#0A0A0A !important;border-color:rgba(10,10,10,.18) !important;background:rgba(10,10,10,.04) !important}
+.pm-body{background:#FFFFFF !important}
+.pm-hero{background:rgba(10,10,10,.03) !important}
+.pm-hero.with-cover{background:#0a0a0a !important}
+.pm-cover{background:#f5f3ee !important}
+.pm-hero.over-cover{background:linear-gradient(to top,rgba(255,255,255,.96) 0%,rgba(255,255,255,.85) 30%,rgba(255,255,255,.45) 65%,transparent 100%) !important}
+.pm-hero.with-cover::after{background:linear-gradient(to top,rgba(255,255,255,.92) 0%,transparent 45%) !important}
+.pm-hero.with-cover .pm-hero-text *{color:#0A0A0A !important}
+.pm-date-d{color:#0A0A0A !important}
+.pm-date-m{color:var(--red) !important}
+.pm-date-dow{color:rgba(10,10,10,.5) !important}
+.pm-cat{color:var(--red) !important}
 .pm-title{color:#0A0A0A !important}
-.pm-desc,.pm-body-text{color:rgba(10,10,10,.7) !important}
+.pm-venue{color:#0A0A0A !important}
+.pm-time{color:rgba(10,10,10,.55) !important}
+.pm-tags .ev-tag{color:rgba(10,10,10,.6) !important;border-color:rgba(10,10,10,.15) !important}
+.pm-info{color:#0A0A0A !important}
+.pm-info *{color:inherit !important}
+.pm-info [class*="label"]{color:rgba(10,10,10,.5) !important}
+.pm-section{border-top-color:rgba(10,10,10,.08) !important}
 .pm-section-title{color:#0A0A0A !important}
+.pm-desc,.pm-body-text,.pm-detail-text{color:rgba(10,10,10,.7) !important}
 .pm-divider{border-color:rgba(10,10,10,.08) !important}
-.pm-reserve-btn{border-color:rgba(10,10,10,.2) !important;color:#0A0A0A !important}
+.pm-reserve-btn,.pm-action-btn{border-color:rgba(10,10,10,.2) !important;color:#0A0A0A !important;background:transparent !important}
+.pm-artist-name{color:#0A0A0A !important}
+.pm-artist-role{color:rgba(10,10,10,.5) !important}
 
 </style>
 
