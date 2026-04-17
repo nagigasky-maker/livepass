@@ -1051,7 +1051,8 @@ window.addEventListener('fb-auth-ready', async ({ detail }) => {
       seenIds.add(d.id);
     });
     const localOnly = getUserArticles().filter(a => !seenIds.has(a.id));
-    RAW_FEED = [...fbPosts, ...localOnly, ...ARTICLES];
+    const allUserPosts = [...fbPosts, ...localOnly];
+    RAW_FEED = interleave(allUserPosts, ARTICLES);
     FEED = buildBalancedFeed(RAW_FEED);
     writeArticleMeta();
     renderMagazine(FEED);
