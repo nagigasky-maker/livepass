@@ -734,7 +734,7 @@ html,body{background:#FFFFFF !important;color:#0A0A0A !important}
 </div>
 
 <nav class="bottomnav">
-  <a href="/home" class="bn-btn active" aria-label="Home"><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1v-9.5z" stroke-linejoin="round"/></svg></a>
+  <a href="/home" class="bn-btn active" aria-label="Home" onclick="event.preventDefault();document.querySelector('.content').scrollTo({top:0,behavior:'smooth'})"><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1v-9.5z" stroke-linejoin="round"/></svg></a>
   <a href="/search" class="bn-btn" aria-label="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/></svg></a>
   <a href="/calendar" class="bn-btn" aria-label="Calendar"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7" stroke-linecap="round"/><line x1="16" y1="3" x2="16" y2="7" stroke-linecap="round"/></svg></a>
   <a href="/profile" class="bn-btn" aria-label="Profile"><div class="bn-avatar"><span style="font-family:Arial,sans-serif;font-weight:900;font-size:13px;color:var(--white)">N</span></div></a>
@@ -966,7 +966,18 @@ function buildBalancedFeed(posts) {
   return out;
 }
 
-let RAW_FEED = [...getUserArticles(), ...ARTICLES];
+// Interleave user posts with sample articles (every 3rd position)
+function interleave(userPosts, samplePosts) {
+  const out = [];
+  let ui = 0, si = 0;
+  while (ui < userPosts.length || si < samplePosts.length) {
+    // Place 2-3 sample posts, then 1 user post
+    for (let n = 0; n < 3 && si < samplePosts.length; n++, si++) out.push(samplePosts[si]);
+    if (ui < userPosts.length) out.push(userPosts[ui++]);
+  }
+  return out;
+}
+let RAW_FEED = interleave(getUserArticles(), ARTICLES);
 let FEED = buildBalancedFeed(RAW_FEED);
 
 function writeArticleMeta(){
