@@ -3162,7 +3162,7 @@ function openPostDetail(type, item) {
     // ─── CTA: buy button + reservation + subscriber-only (mirrors calendar) ───
     // Only show the buy CTA for EVENT and WORKSHOP (not article/exhibition)
     const showBuyCta = (type === 'event' || type === 'workshop');
-    const buyLabel   = type === 'workshop' ? '参加申込' : 'PASS を購入';
+    const buyLabel   = type === 'workshop' ? '参加申込' : 'TICKET を購入';
     const priceNum   = parseInt((item.price || '').toString().replace(/[^\d]/g, ''), 10) || 0;
 
     // Subscription gating: read livepass_subscribed_artists from localStorage
