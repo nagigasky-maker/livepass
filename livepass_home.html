@@ -1391,6 +1391,14 @@ function openDetail(a) {
     ? ''
     : `style="background:none"`;
 
+  const isOwner = a.userPost && (a.author === USER_NAME || a.author === (localStorage.getItem('livepass_account_name')||''));
+  const ownerBtns = isOwner ? `
+    <div class="dm-owner-actions" style="display:flex;gap:10px;padding:16px 22px;background:${detailBg || '#FFF'}">
+      <a href="/compose/article?edit=${encodeURIComponent(a.id)}" class="dm-edit-btn" style="flex:1;padding:12px;border:1px solid ${detailBg ? detailTxt+'33' : 'rgba(10,10,10,.15)'};border-radius:8px;text-align:center;font-size:12px;font-weight:600;letter-spacing:.05em;color:${detailBg ? detailTxt : '#0A0A0A'};text-decoration:none">✏️ 編集</a>
+      <button class="dm-delete-btn" data-delete-id="${a.id}" style="flex:1;padding:12px;border:1px solid rgba(232,16,10,.25);border-radius:8px;text-align:center;font-size:12px;font-weight:600;letter-spacing:.05em;color:#E8100A;background:transparent">🗑 削除</button>
+    </div>
+  ` : '';
+
   dmBody.innerHTML = `
     <div class="dm-hero" style="${heroStyle}">
       ${heroImg}
@@ -1409,6 +1417,7 @@ function openDetail(a) {
       <button class="dm-act ${saved ? 'saved' : ''}" data-act="save"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>保存</button>
       <button class="dm-act ${shared ? 'shared' : ''}" data-act="share"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>共有</button>
     </div>
+    ${ownerBtns}
     <div class="dm-comments" style="background:${detailBg || '#FFF'};color:${detailBg ? detailTxt : '#0A0A0A'}">
       <div class="dm-comments-list" id="dmCommentsList"></div>
       <div class="dm-comment-form">
@@ -1499,6 +1508,33 @@ function openDetail(a) {
       if (navigator.vibrate) navigator.vibrate(6);
     });
   });
+
+  // Delete button handler
+  const delBtn = dmBody.querySelector('.dm-delete-btn');
+  if (delBtn) {
+    delBtn.addEventListener('click', async () => {
+      if (!confirm('この投稿を削除しますか？')) return;
+      // Remove from localStorage
+      try {
+        const raw = localStorage.getItem('livepass_articles');
+        if (raw) {
+          const list = JSON.parse(raw).filter(x => x.id !== a.id);
+          localStorage.setItem('livepass_articles', JSON.stringify(list));
+        }
+      } catch(e){}
+      // Remove from Firestore
+      try {
+        if (window.FB && window.FB.currentUser) {
+          await FB.deleteDoc(FB.doc(FB.db, 'posts', a.id));
+        }
+      } catch(e){ console.warn('Firestore delete failed:', e); }
+      // Close modal and reload feed
+      modal.classList.remove('active');
+      modal.setAttribute('aria-hidden','true');
+      if (navigator.vibrate) navigator.vibrate([18,40,18]);
+      setTimeout(() => location.reload(), 300);
+    });
+  }
 }
 dmClose.addEventListener('click', () => {
   modal.classList.remove('active');
