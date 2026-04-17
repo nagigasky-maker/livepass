@@ -740,7 +740,7 @@ html,body,.form,.content,.main,main,section,div,footer{background-color:#FFF !im
 
   <!-- Color picker (when no cover image) ─────────────────────── -->
   <div style="border-top:0.5px solid var(--border);margin:12px 20px 0"></div>
-  <div class="sec-head"><div><div class="sec-ja">写真なしの場合・背景色を選択</div><div class="sec-en">Color</div></div></div>
+  <div class="sec-head"><div><div class="sec-ja">背景色を選択</div><div class="sec-en">Color</div></div></div>
   <div class="form-section" style="padding-top:0">
     <div class="color-row" id="colorRow"></div>
     <div class="color-preview" id="colorPreview" style="background:#FF4500;color:#0A0A0A">
@@ -1489,7 +1489,7 @@ submitBtn.addEventListener('click', async () => {
     access:   state.access,
     cover:    null,
     mediaType: state.mediaType || 'image',
-    bgColor: state.coverDataUrl ? undefined : (state.bgColor || '#0E0E0E'),
+    bgColor: state.bgColor || '#0E0E0E',
     extraImages: undefined,
     title:    titleInput.value.trim(),
     body:     bodyInput.value.trim(),
