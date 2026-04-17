@@ -465,6 +465,11 @@ html,body,.form,.content,.main,main,section,div,footer{background-color:#FFF !im
 .form-bottom-padding{height:8px !important}
 .submit-wrap,.submit-bar,[class*="submit"]{padding-bottom:calc(4px + var(--safe-bot) * 0.3) !important;padding-top:6px !important}
 
+
+/* ── Submit button inline (no fixed bottom bar) ── */
+.form{bottom:0 !important}
+.submit-bar{position:static !important;background:transparent !important;border:none !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;padding:20px 18px calc(20px + var(--safe-bot) * 0.3) !important}
+
 </style>
 <header class="hdr">
   <a href="/profile" class="hdr-back">← Back</a>
@@ -642,12 +647,11 @@ html,body,.form,.content,.main,main,section,div,footer{background-color:#FFF !im
     <input class="input-box" id="tagsInput" placeholder="HOUSE, TECHNO, PARTY">
   </div>
 
+  <div style="padding:20px 18px calc(20px + var(--safe-bot) * 0.3)">
+    <button class="submit-btn" id="submitBtn">展示を投稿 →</button>
+  </div>
   <div class="form-bottom-padding"></div>
 </main>
-
-<div class="submit-bar">
-  <button class="submit-btn" id="submitBtn">展示を投稿 →</button>
-</div>
 
 <div id="toast">✓ 保存しました</div>
 
