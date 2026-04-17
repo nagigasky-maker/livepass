@@ -456,7 +456,7 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 
 /* ── DEMO SEED — inject sample events if none exist (remove later) ── */
 (function(){
-  if (localStorage.getItem('livepass_demo_seeded')) return;
+  if (localStorage.getItem('livepass_demo_seeded') === 'v2') return;
   const demoEvents = [
     {id:'demo_e1',type:'event',category:'DJ',title:'VOID — Resident Night',venue:'Contact Tokyo',date:'2026-04-18',time:'23:00',price:'3500',author:'VOID',tags:['TECHNO','DEEP'],cover:'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&q=80',body:'毎月第3金曜のレジデントナイト。4名のレジデントDJによるノンストップ6時間。'},
     {id:'demo_e2',type:'event',category:'PARTY',title:'DEPTH × LIVE PASS presents UNDERGROUND',venue:'WOMB, Shibuya',date:'2026-04-20',time:'22:00',price:'4000',author:'NOBBY',tags:['HOUSE','TECHNO','PARTY'],cover:'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600&q=80',body:'WOMBの全4フロアを使ったオールナイト。国内外のDJが集結。'},
@@ -470,11 +470,11 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
     {id:'demo_w2',type:'workshop',category:'BREAKING',title:'Power Move Basics',venue:'B-BOY Park Studio',date:'2026-04-22',time:'19:00',price:'2500',author:'KENJI',tags:['BREAKING','BEGINNER'],cover:'https://images.unsplash.com/photo-1535525153412-5a42439a210d?w=600&q=80',body:'ウィンドミル、トーマスの基礎を安全に学ぶ。'},
     {id:'demo_w3',type:'workshop',category:'POPPING',title:'Popping Foundation',venue:'Studio Roppongi',date:'2026-04-26',time:'14:00',price:'3000',author:'NOBBY',tags:['POPPING','ALL LEVELS'],cover:'https://images.unsplash.com/photo-1545128485-c400e7702712?w=600&q=80',body:'ヒット、ウェーブ、アイソレーション。体の使い方を基礎から。'},
   ];
-  const existing_e = JSON.parse(localStorage.getItem('livepass_events') || '[]');
-  const existing_w = JSON.parse(localStorage.getItem('livepass_workshops') || '[]');
+  const existing_e = JSON.parse(localStorage.getItem('livepass_events') || '[]').filter(e => !e.id.startsWith('demo_'));
+  const existing_w = JSON.parse(localStorage.getItem('livepass_workshops') || '[]').filter(e => !e.id.startsWith('demo_'));
   localStorage.setItem('livepass_events', JSON.stringify([...demoEvents, ...existing_e]));
   localStorage.setItem('livepass_workshops', JSON.stringify([...demoWS, ...existing_w]));
-  localStorage.setItem('livepass_demo_seeded', '1');
+  localStorage.setItem('livepass_demo_seeded', 'v2');
 })();
 /* ── END DEMO SEED ── */
 </script>
