@@ -459,6 +459,12 @@ html,body,.form,.content,.main,main,section,div,footer{background-color:#FFF !im
 #toast{background:#0A0A0A !important}
 .pal-dot{background-color:inherit !important}
 
+
+/* ── Compose: minimize bottom bar, expand form area ── */
+.form{bottom:calc(44px + var(--safe-bot) * 0.3) !important}
+.form-bottom-padding{height:8px !important}
+.submit-wrap,.submit-bar,[class*="submit"]{padding-bottom:calc(4px + var(--safe-bot) * 0.3) !important;padding-top:6px !important}
+
 </style>
 <header class="hdr">
   <a href="/calendar" class="hdr-back">← Back</a>
