@@ -217,13 +217,17 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 </head>
 <body>
 <script>
-/* AUTH GUARD — first visit redirect to /onboarding if no account exists */
+/* AUTH GUARD — wait for Firebase auth before redirecting */
 (function(){
-  try {
-    if (!localStorage.getItem('livepass_account_name')) {
-      location.replace('/onboarding');
-    }
-  } catch(e) {}
+  if (localStorage.getItem('livepass_account_name')) return;
+  // No localStorage — wait for Firebase auth to resolve
+  var timer = setTimeout(function(){ location.replace('/login'); }, 2500);
+  window.addEventListener('fb-auth-ready', function(e){
+    clearTimeout(timer);
+    if (e.detail && e.detail.user) return; // signed in via Firebase — stay
+    if (localStorage.getItem('livepass_account_name')) return; // populated by onAuthStateChanged
+    location.replace('/login');
+  }, {once:true});
 })();
 </script>
 <script>
