@@ -353,20 +353,21 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 }
 .dm-comment-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 .dm-comment-body{flex:1;min-width:0}
-.dm-comment-name{font-weight:700;font-size:11px;margin-bottom:2px}
-.dm-comment-text{font-size:13px;font-weight:400;line-height:1.5;opacity:.85}
-.dm-comment-time{font-size:9px;opacity:.4;margin-top:3px}
+.dm-comment-name{font-weight:700;font-size:11px;margin-bottom:2px;color:inherit}
+.dm-comment-text{font-size:13px;font-weight:400;line-height:1.5;color:inherit;opacity:1}
+.dm-comment-time{font-size:9px;color:inherit;opacity:.5;margin-top:3px}
 .dm-comment-form{display:flex;gap:8px;align-items:center}
 .dm-comment-input{
   flex:1;padding:10px 14px;border-radius:99px;
-  background:rgba(255,255,255,.06);border:0.5px solid rgba(255,255,255,.12);
-  color:var(--white);font-family:Arial,'Noto Sans JP',sans-serif;
-  font-size:13px;outline:none;
+  background:currentColor;border:0.5px solid currentColor;
+  color:inherit;font-family:Arial,'Noto Sans JP',sans-serif;
+  font-size:13px;outline:none;opacity:.12;
 }
-.dm-comment-input::placeholder{color:rgba(255,255,255,.3)}
+.dm-comment-input:focus{opacity:1;background:transparent;border-color:currentColor}
+.dm-comment-input::placeholder{color:inherit;opacity:.4}
 .dm-comment-send{
   padding:8px 16px;border-radius:99px;
-  background:rgba(255,255,255,.08);color:var(--white);
+  background:transparent;color:inherit;
   font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;font-weight:700;
   letter-spacing:.04em;
 }
