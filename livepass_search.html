@@ -273,8 +273,6 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   font:9px/1 'IBM Plex Mono',monospace;color:rgba(237,235,230,.18);
   letter-spacing:.1em;pointer-events:none;user-select:none}
 
-.topbar .tb-brand{height:38px !important}
-.topbar .tb-brand img{filter:brightness(0) !important}
 /* ═══ LIGHT MODE ═══ */
 html,body{background:#FFF !important;color:#0A0A0A !important}
 .topbar{background:linear-gradient(to bottom,rgba(255,255,255,.97) 70%,rgba(255,255,255,0)) !important}
@@ -313,6 +311,34 @@ html,body{background:#FFF !important;color:#0A0A0A !important}
 .event-card .title,.result-title{color:#0A0A0A !important}
 .event-card .meta,.result-meta{color:rgba(10,10,10,.5) !important}
 .match-pct{color:var(--green) !important}
+
+
+/* ── Logo: 32px centered ── */
+.topbar{justify-content:flex-end !important}
+.topbar .tb-brand{position:absolute !important;left:50% !important;top:calc(var(--safe-top,0px) + 16px) !important;transform:translateX(-50%) !important;margin:0 !important;height:32px !important}
+.topbar .tb-brand img{filter:brightness(0) !important}
+
+
+/* ── Bottom nav: shorter ── */
+.bottomnav{height:calc(28px + var(--safe-bot)) !important}
+.bn-btn svg{width:20px !important;height:20px !important}
+.bn-avatar{width:22px !important;height:22px !important}
+
+/* ── Comprehensive text visibility ── */
+h1,h2,h3,.title,.heading{color:#0A0A0A !important}
+.sub,.desc,.meta,.hint{color:rgba(10,10,10,.5) !important}
+.tip-section-title,.sub-title,.section-head{color:#0A0A0A !important}
+.tip-desc,.sub-desc{color:rgba(10,10,10,.55) !important}
+.tip-amt{color:#0A0A0A !important;border-color:rgba(10,10,10,.15) !important}
+.tip-amt.active{border-color:var(--gold) !important}
+.sub-plan-name,.sub-plan-title{color:#0A0A0A !important}
+.sub-plan-desc{color:rgba(10,10,10,.5) !important}
+.sub-plan-price{color:var(--red) !important}
+.saved-tab,.saved-tab-btn{color:rgba(10,10,10,.4) !important}
+.saved-tab.active,.saved-tab-btn.active{color:#0A0A0A !important}
+.saved-empty,.no-data{color:rgba(10,10,10,.35) !important}
+.screen-tab,.screen-tab-btn{color:rgba(10,10,10,.4) !important}
+.screen-tab.active,.screen-tab-btn.active{color:#0A0A0A !important}
 
 </style>
 

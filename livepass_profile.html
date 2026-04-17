@@ -1373,8 +1373,6 @@ html,body{background:#FFFFFF !important;color:#0A0A0A !important}
   margin:0 !important;
   height:22px;
 }
-.topbar .tb-brand{height:38px !important}
-.topbar .tb-brand img{filter:brightness(0) !important}
 .topbar .tb-icon{color:#0A0A0A !important}
 
 /* ── PROFILE HERO — centered column ── */
@@ -1546,6 +1544,34 @@ html,body{background:#FFFFFF !important;color:#0A0A0A !important}
   border-color:rgba(10,10,10,.08) !important;
   color:#0A0A0A !important;
 }
+
+/* ── Logo: 32px centered ── */
+.topbar{justify-content:flex-end !important}
+.topbar .tb-brand{position:absolute !important;left:50% !important;top:calc(var(--safe-top,0px) + 16px) !important;transform:translateX(-50%) !important;margin:0 !important;height:32px !important}
+.topbar .tb-brand img{filter:brightness(0) !important}
+
+
+/* ── Bottom nav: shorter ── */
+.bottomnav{height:calc(28px + var(--safe-bot)) !important}
+.bn-btn svg{width:20px !important;height:20px !important}
+.bn-avatar{width:22px !important;height:22px !important}
+
+/* ── Comprehensive text visibility ── */
+h1,h2,h3,.title,.heading{color:#0A0A0A !important}
+.sub,.desc,.meta,.hint{color:rgba(10,10,10,.5) !important}
+.tip-section-title,.sub-title,.section-head{color:#0A0A0A !important}
+.tip-desc,.sub-desc{color:rgba(10,10,10,.55) !important}
+.tip-amt{color:#0A0A0A !important;border-color:rgba(10,10,10,.15) !important}
+.tip-amt.active{border-color:var(--gold) !important}
+.sub-plan-name,.sub-plan-title{color:#0A0A0A !important}
+.sub-plan-desc{color:rgba(10,10,10,.5) !important}
+.sub-plan-price{color:var(--red) !important}
+.saved-tab,.saved-tab-btn{color:rgba(10,10,10,.4) !important}
+.saved-tab.active,.saved-tab-btn.active{color:#0A0A0A !important}
+.saved-empty,.no-data{color:rgba(10,10,10,.35) !important}
+.screen-tab,.screen-tab-btn{color:rgba(10,10,10,.4) !important}
+.screen-tab.active,.screen-tab-btn.active{color:#0A0A0A !important}
+
 </style>
 
 

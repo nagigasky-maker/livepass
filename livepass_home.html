@@ -582,8 +582,6 @@ html,body{background:#FFFFFF !important;color:#0A0A0A !important}
   border-bottom:none !important;
 }
 .topbar .tb-icon{color:#0A0A0A !important}
-.topbar .tb-brand{height:38px !important}
-.topbar .tb-brand img{filter:brightness(0) !important}
 
 .bottomnav{
   background:rgba(255,255,255,.97) !important;
@@ -1621,7 +1619,35 @@ window.addEventListener('keydown', e => {
 </script>
 
 <div id="shareToast" style="position:fixed;top:max(20px,calc(env(safe-area-inset-top,0px)+20px));left:50%;transform:translate(-50%,-30px);z-index:1300;background:rgba(0,200,83,.15);border:0.5px solid var(--accent-green);color:var(--accent-green);padding:10px 20px;border-radius:99px;font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;font-size:11px;letter-spacing:.12em;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none">✓ ARTICLEに共有しました</div>
-<style>#shareToast.show{opacity:1;transform:translate(-50%,0)}</style>
+<style>#shareToast.show{opacity:1;transform:translate(-50%,0)}
+/* ── Logo: 32px centered ── */
+.topbar{justify-content:flex-end !important}
+.topbar .tb-brand{position:absolute !important;left:50% !important;top:calc(var(--safe-top,0px) + 16px) !important;transform:translateX(-50%) !important;margin:0 !important;height:32px !important}
+.topbar .tb-brand img{filter:brightness(0) !important}
+
+
+/* ── Bottom nav: shorter ── */
+.bottomnav{height:calc(28px + var(--safe-bot)) !important}
+.bn-btn svg{width:20px !important;height:20px !important}
+.bn-avatar{width:22px !important;height:22px !important}
+
+/* ── Comprehensive text visibility ── */
+h1,h2,h3,.title,.heading{color:#0A0A0A !important}
+.sub,.desc,.meta,.hint{color:rgba(10,10,10,.5) !important}
+.tip-section-title,.sub-title,.section-head{color:#0A0A0A !important}
+.tip-desc,.sub-desc{color:rgba(10,10,10,.55) !important}
+.tip-amt{color:#0A0A0A !important;border-color:rgba(10,10,10,.15) !important}
+.tip-amt.active{border-color:var(--gold) !important}
+.sub-plan-name,.sub-plan-title{color:#0A0A0A !important}
+.sub-plan-desc{color:rgba(10,10,10,.5) !important}
+.sub-plan-price{color:var(--red) !important}
+.saved-tab,.saved-tab-btn{color:rgba(10,10,10,.4) !important}
+.saved-tab.active,.saved-tab-btn.active{color:#0A0A0A !important}
+.saved-empty,.no-data{color:rgba(10,10,10,.35) !important}
+.screen-tab,.screen-tab-btn{color:rgba(10,10,10,.4) !important}
+.screen-tab.active,.screen-tab-btn.active{color:#0A0A0A !important}
+
+</style>
 <div id="__v">v66</div>
 <script>
 /* ─── Avatar sync: replace bottom-nav initial with uploaded profile photo ─── */
