@@ -353,7 +353,7 @@ html,body{background:#FFF !important;color:#0A0A0A !important}
 
 
 /* ── Bottom nav: shorter ── */
-.bottomnav{height:calc(18px + var(--safe-bot)) !important}
+.bottomnav{height:calc(15px + var(--safe-bot)) !important}
 .bn-btn svg{width:25px !important;height:25px !important}
 .bn-avatar{width:25px !important;height:25px !important}
 
@@ -416,6 +416,26 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 
 /* Sign out button */
 #signOutBtn{color:var(--red) !important;border-color:rgba(232,16,10,.25) !important}
+
+
+/* ── Force all settings content text dark ── */
+.content{color:#0A0A0A !important}
+.content *{color:inherit}
+.content [style*="color"]{color:inherit}
+.content .sr-label,.content .sr-value,.content .sr-input,
+.content .pr-name,.content .pr-role,.content .pr-sub,
+.content .sh-title,.content .sh-label,.content .sec-label,
+.content .plan-pill,.content .plan-price,
+.content span,.content div,.content p,.content label,
+.content input,.content button,.content a{color:inherit !important}
+.content .sr-value,.content .pr-sub,.content .pr-role,
+.content .sh-label,.content .sec-label{opacity:.55 !important}
+.content .sr-icon svg,.content svg{color:inherit !important;stroke:currentColor !important}
+.content .sr-btn,.content .change-btn{border-color:rgba(10,10,10,.2) !important}
+.content .plan.active .plan-pill{color:#000 !important;background:var(--gold) !important}
+.content .plan-icon{opacity:.5}
+.content .plan.active .plan-icon{opacity:1;color:var(--gold) !important}
+#signOutBtn{color:var(--red) !important;opacity:1 !important}
 
 </style>
 

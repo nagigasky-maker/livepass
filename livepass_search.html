@@ -320,7 +320,7 @@ html,body{background:#FFF !important;color:#0A0A0A !important}
 
 
 /* ── Bottom nav: shorter ── */
-.bottomnav{height:calc(18px + var(--safe-bot)) !important}
+.bottomnav{height:calc(15px + var(--safe-bot)) !important}
 .bn-btn svg{width:25px !important;height:25px !important}
 .bn-avatar{width:25px !important;height:25px !important}
 
@@ -339,6 +339,16 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 .saved-empty,.no-data{color:rgba(10,10,10,.35) !important}
 .screen-tab,.screen-tab-btn{color:rgba(10,10,10,.4) !important}
 .screen-tab.active,.screen-tab-btn.active{color:#0A0A0A !important}
+
+
+/* ── Force all search content text dark ── */
+.content{color:#0A0A0A !important}
+.content *{color:inherit}
+.content span,.content div,.content p,.content h1,.content h2,.content h3,
+.content a,.content label,.content input{color:inherit !important}
+.content input::placeholder{color:rgba(10,10,10,.3) !important}
+.content [class*="sub"],.content [class*="meta"],.content [class*="role"]{opacity:.5 !important}
+.content [class*="artist-name"],.content [class*="name"]{opacity:1 !important}
 
 </style>
 
