@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#FFFFFF">
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/livepass-icon-180.png">
 <title>LIVE PASS — 記事作成</title>
@@ -566,6 +566,41 @@ textarea.input-box{resize:vertical;min-height:160px;line-height:1.8;font-size:13
 #__v{position:fixed;bottom:2px;right:2px;z-index:9999;
   font:9px/1 'IBM Plex Mono',monospace;color:rgba(237,235,230,.18);
   letter-spacing:.1em;pointer-events:none;user-select:none}
+
+/* ═══ LIGHT MODE ═══ */
+html,body{background:#FFF !important;color:#0A0A0A !important}
+.header{background:rgba(255,255,255,.97) !important;border-bottom:0.5px solid rgba(10,10,10,.06) !important}
+.header .back-btn,.header .hdr-title{color:#0A0A0A !important}
+.form{background:transparent !important}
+.form-label,.field-label{color:rgba(10,10,10,.4) !important}
+.form-input,.field-input,textarea{color:#0A0A0A !important;background:transparent !important;border-color:rgba(10,10,10,.12) !important}
+.form-input::placeholder,.field-input::placeholder,textarea::placeholder{color:rgba(10,10,10,.2) !important}
+.form-input:focus,.field-input:focus,textarea:focus{border-color:rgba(10,10,10,.4) !important}
+.form-hint{color:rgba(10,10,10,.3) !important}
+.lay-btn{color:rgba(10,10,10,.5) !important;border-color:rgba(10,10,10,.1) !important;background:rgba(10,10,10,.02) !important}
+.lay-btn.active{color:#0A0A0A !important;border-color:#0A0A0A !important;background:rgba(10,10,10,.04) !important}
+.lay-btn.locked{opacity:.45 !important}
+.cat-btn,.genre-tag,.tag-btn{color:rgba(10,10,10,.5) !important;border-color:rgba(10,10,10,.1) !important;background:transparent !important}
+.cat-btn.active,.genre-tag.selected,.tag-btn.active{color:#0A0A0A !important;border-color:#0A0A0A !important;background:rgba(10,10,10,.04) !important}
+.submit-btn,#submitBtn{color:#0A0A0A !important;border-color:rgba(10,10,10,.25) !important;background:transparent !important}
+.submit-btn:disabled,#submitBtn:disabled{color:rgba(10,10,10,.25) !important;border-color:rgba(10,10,10,.08) !important}
+.cover-upload,#coverUpload{border-color:rgba(10,10,10,.12) !important;background:rgba(10,10,10,.02) !important}
+.cover-ph{color:rgba(10,10,10,.3) !important}
+.sec-title{color:#0A0A0A !important}
+.sec-sub{color:rgba(10,10,10,.45) !important}
+.toggle-row{border-bottom-color:rgba(10,10,10,.06) !important}
+.toggle-label{color:#0A0A0A !important}
+.toggle-sub{color:rgba(10,10,10,.4) !important}
+.collab-item{border-color:rgba(10,10,10,.08) !important;background:rgba(10,10,10,.02) !important}
+.collab-name{color:#0A0A0A !important}
+.collab-share{color:rgba(10,10,10,.5) !important}
+.collab-search input{color:#0A0A0A !important;border-color:rgba(10,10,10,.12) !important;background:transparent !important}
+.access-btn{color:rgba(10,10,10,.5) !important;border-color:rgba(10,10,10,.1) !important}
+.access-btn.active{color:#0A0A0A !important;border-color:#0A0A0A !important}
+#toast{background:#0A0A0A !important;color:#FFF !important}
+.pal-dot{border-color:rgba(10,10,10,.12) !important}
+.pal-dot.active{border-color:#0A0A0A !important}
+
 </style>
 <header class="hdr">
   <a href="/home" class="hdr-back">← Back</a>

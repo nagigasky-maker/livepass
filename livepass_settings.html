@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#FFFFFF">
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/livepass-icon-180.png">
 <title>LIVE PASS — Settings / 管理画面</title>
@@ -308,6 +308,43 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 #__v{position:fixed;bottom:2px;right:2px;z-index:9999;
   font:9px/1 'IBM Plex Mono',monospace;color:rgba(237,235,230,.18);
   letter-spacing:.1em;pointer-events:none;user-select:none}
+
+/* ═══ LIGHT MODE ═══ */
+html,body{background:#FFF !important;color:#0A0A0A !important}
+.topbar{background:linear-gradient(to bottom,rgba(255,255,255,.97) 70%,rgba(255,255,255,0)) !important}
+.topbar .tb-brand{position:absolute !important;left:50% !important;top:calc(var(--safe-top,0px) + 16px) !important;transform:translateX(-50%) !important;margin:0 !important}
+.topbar .tb-icon{color:#0A0A0A !important}
+.bottomnav{background:rgba(255,255,255,.97) !important;border-top:0.5px solid rgba(10,10,10,.08) !important}
+.bn-btn{color:rgba(10,10,10,.32) !important}
+.bn-btn.active{color:#0A0A0A !important}
+.bn-avatar{background:linear-gradient(135deg,#F5F3EE,#E8E5DF) !important;border-color:rgba(10,10,10,.18) !important}
+.bn-btn.active .bn-avatar{border-color:#0A0A0A !important}
+#composeSheet{background:#FFF !important;border-top:0.5px solid rgba(10,10,10,.1) !important;box-shadow:0 -12px 40px rgba(0,0,0,.08) !important}
+.cs-handle{background:rgba(10,10,10,.18) !important}
+.cs-title{color:rgba(10,10,10,.4) !important}
+.cs-opt{background:rgba(10,10,10,.02) !important;border-color:rgba(10,10,10,.08) !important;color:#0A0A0A !important}
+.cs-opt-title{color:#0A0A0A !important}
+.cs-opt-sub{color:rgba(10,10,10,.45) !important}
+.cs-close{background:rgba(10,10,10,.03) !important;border-color:rgba(10,10,10,.08) !important;color:#0A0A0A !important}
+
+.settings-header,.sh-title{color:#0A0A0A !important}
+.sh-label,.sec-label{color:rgba(10,10,10,.35) !important}
+.sh-back{color:rgba(10,10,10,.55) !important;border-color:rgba(10,10,10,.15) !important}
+.profile-row{border-bottom-color:rgba(10,10,10,.08) !important}
+.pr-avatar{background:linear-gradient(135deg,#F5F3EE,#E8E5DF) !important;border-color:rgba(10,10,10,.12) !important}
+.pr-name{color:#0A0A0A !important}
+.pr-role{color:rgba(10,10,10,.45) !important}
+.pr-sub{color:rgba(10,10,10,.4) !important}
+.plan{background:#F8F8F6 !important;border-color:rgba(10,10,10,.08) !important}
+.plan.active{background:#FFF !important;border-color:var(--gold) !important}
+.plan-pill{background:rgba(10,10,10,.06) !important;color:rgba(10,10,10,.5) !important}
+.plan.active .plan-pill{background:var(--gold) !important;color:#000 !important}
+.plan-price{color:rgba(10,10,10,.5) !important}
+.plan-price strong{color:#0A0A0A !important}
+.sr-row{border-bottom-color:rgba(10,10,10,.06) !important}
+.sr-label{color:rgba(10,10,10,.5) !important}
+.sr-value,.sr-input{color:#0A0A0A !important;background:transparent !important;border-bottom-color:rgba(10,10,10,.1) !important}
+
 </style>
 
 
@@ -316,8 +353,6 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   <a class="tb-brand" href="/home" aria-label="LIVE PASS"><img src="/livepasslogo.png" alt="LIVE PASS"></a>
   <button class="tb-icon" id="tbCreate" aria-label="Create"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round"/></svg></button>
   <a class="tb-icon" href="/messages" aria-label="Messages"><svg viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><polyline points="3,7 12,13 21,7"/></svg><span class="badge" id="msgBadge">0</span></a>
-  <a class="tb-stat" href="/followers?tab=following"><div class="tb-stat-n" data-count="following">0</div><div class="tb-stat-l">フォロー中</div></a>
-  <a class="tb-stat" href="/followers?tab=followers"><div class="tb-stat-n" data-count="followers">0</div><div class="tb-stat-l">フォロワー</div></a>
   <a class="tb-icon" href="/settings" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a>
 </div>
 
