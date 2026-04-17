@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#FFFFFF">
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/livepass-icon-180.png">
 <title>LIVE PASS — Profile</title>
@@ -1350,8 +1350,201 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 </script>
 <style>
 #__v{position:fixed;bottom:2px;right:2px;z-index:9999;
-  font:9px/1 'IBM Plex Mono',monospace;color:rgba(237,235,230,.18);
+  font:9px/1 'IBM Plex Mono',monospace;color:rgba(10,10,10,.14);
   letter-spacing:.1em;pointer-events:none;user-select:none}
+
+/* ═══ LIGHT MODE — profile page ═══ */
+html,body{background:#FFFFFF !important;color:#0A0A0A !important}
+
+/* ── TOPBAR — centered logo, icons right ── */
+.topbar{
+  background:linear-gradient(to bottom,rgba(255,255,255,.97) 70%,rgba(255,255,255,0)) !important;
+  border-bottom:none !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:14px;
+}
+.topbar .tb-brand{
+  position:absolute !important;
+  left:50% !important;
+  top:calc(var(--safe-top,0px) + 16px) !important;
+  transform:translateX(-50%) !important;
+  margin:0 !important;
+  height:22px;
+}
+.topbar .tb-brand img{filter:none !important}
+.topbar .tb-icon{color:#0A0A0A !important}
+
+/* ── PROFILE HERO — centered column ── */
+.profile-hero{
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:22px !important;
+  padding:40px 20px 32px !important;
+  text-align:center;
+}
+.ph-avatar{
+  width:108px !important;
+  height:108px !important;
+}
+.ph-avatar-inner{
+  background:#0A0F1F !important;
+  border:none !important;
+}
+.ph-name-block{
+  flex:none !important;
+  align-items:center !important;
+  text-align:center;
+  gap:2px !important;
+}
+.ph-name{
+  font-family:'Inter','Noto Sans JP',sans-serif !important;
+  font-weight:800 !important;
+  font-size:26px !important;
+  letter-spacing:.04em !important;
+  color:#0A0A0A !important;
+  line-height:1.1 !important;
+}
+.ph-role{
+  color:rgba(10,10,10,.38) !important;
+  font-weight:400 !important;
+}
+.ph-role:empty{display:none}
+
+/* ── SUB-TABS — icons on white ── */
+.subtabs{
+  border-bottom:0.5px solid rgba(10,10,10,.08) !important;
+  padding:16px 32px 14px !important;
+}
+.st-btn{color:rgba(10,10,10,.28) !important}
+.st-btn.active{color:#0A0A0A !important}
+
+/* ── PASS COLLECTION HEADER ── */
+.pass-header{padding:0 2px}
+.ph-label-ywt{
+  font-family:'Inter','Noto Sans JP',sans-serif !important;
+  font-weight:700 !important;
+  font-size:13px !important;
+  letter-spacing:.16em !important;
+  color:#E8410A !important;
+  line-height:1.1 !important;
+}
+.ph-label-pass{
+  font-family:'Inter','Noto Sans JP',sans-serif !important;
+  font-weight:600 !important;
+  font-size:13px !important;
+  letter-spacing:.12em !important;
+  color:#6D5AA8 !important;
+  margin-top:6px !important;
+}
+.ph-count{
+  font-family:'Inter','Noto Sans JP',sans-serif !important;
+  font-weight:600 !important;
+  font-size:13px !important;
+  letter-spacing:.12em !important;
+  color:#6D5AA8 !important;
+}
+
+/* ── PASS CARDS — light shadow ── */
+.pf-card{
+  background:#F5F3EE !important;
+  border:0.5px solid rgba(10,10,10,.08) !important;
+  box-shadow:0 14px 34px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.06) !important;
+}
+.pf-card.empty{background:linear-gradient(135deg,#F5F3EE,#E8E5DF) !important}
+.pf-card.next-live{
+  background:linear-gradient(160deg,rgba(10,10,10,.02),rgba(10,10,10,.06)) !important;
+  border:1.5px dashed rgba(10,10,10,.18) !important;
+  box-shadow:none !important;
+}
+.pf-card.next-live .nl-plus{stroke:#0A0A0A !important}
+.pf-card.next-live .nl-label{color:rgba(10,10,10,.5) !important}
+.pf-card.next-live .nl-sub{color:rgba(10,10,10,.3) !important}
+
+/* ── BOTTOM NAV ── */
+.bottomnav{
+  background:rgba(255,255,255,.97) !important;
+  border-top:0.5px solid rgba(10,10,10,.08) !important;
+}
+.bn-btn{color:rgba(10,10,10,.32) !important}
+.bn-btn.active{color:#0A0A0A !important}
+.bn-avatar{
+  background:linear-gradient(135deg,#F5F3EE,#E8E5DF) !important;
+  border-color:rgba(10,10,10,.18) !important;
+}
+.bn-btn.active .bn-avatar{border-color:#0A0A0A !important}
+
+/* ── SUB-PANELS — various content styling ── */
+.sub-panel{color:#0A0A0A}
+.sub-placeholder{
+  color:rgba(10,10,10,.35) !important;
+  border:0.5px dashed rgba(10,10,10,.14) !important;
+  background:transparent !important;
+}
+.sub-placeholder .big{color:#0A0A0A !important}
+
+/* Article cards in SCREEN panel */
+.article-card{
+  background:#F5F3EE !important;
+  border:0.5px solid rgba(10,10,10,.06) !important;
+}
+.article-card .ac-cat{color:rgba(255,255,255,.85) !important}
+.article-card .ac-title{color:#fff !important}
+
+/* Event/workshop/exhibition rows */
+.ev-item{
+  border-bottom:0.5px solid rgba(10,10,10,.08) !important;
+}
+.ev-title{color:#0A0A0A !important}
+.ev-meta{color:rgba(10,10,10,.5) !important}
+.ev-cat{color:rgba(10,10,10,.55) !important}
+.ev-tag{
+  background:rgba(10,10,10,.04) !important;
+  color:rgba(10,10,10,.55) !important;
+  border:0.5px solid rgba(10,10,10,.08) !important;
+}
+.ev-date .m{color:rgba(10,10,10,.4) !important}
+.ev-date .d{color:#0A0A0A !important}
+.ev-thumb-empty{
+  background:rgba(10,10,10,.04) !important;
+  color:rgba(10,10,10,.3) !important;
+}
+
+/* Sub-headers inside panels */
+.panel-head,.sec-en,.sec-label{color:#0A0A0A !important}
+.sec-ja,.panel-sub{color:rgba(10,10,10,.45) !important}
+
+/* Modals & sheets — light */
+#postModal,#cardSheetOverlay .cs-sheet,#orgSheetOverlay .cs-sheet,
+#composeSheet,#zoomOverlay{
+  background:#FFFFFF !important;
+}
+#postModal *,#composeSheet *{color:inherit}
+#postModal .dm-hero-text .dm-cat,#postModal .dm-title,#postModal .dm-by{color:#0A0A0A !important}
+#postModal .dm-content,#postModal .dm-p{color:#0A0A0A !important}
+#postModal .dm-close{color:#0A0A0A !important}
+
+/* Compose sheet — light */
+#composeSheet{
+  border-top:0.5px solid rgba(10,10,10,.1) !important;
+  box-shadow:0 -12px 40px rgba(0,0,0,.08) !important;
+}
+.cs-handle{background:rgba(10,10,10,.18) !important}
+.cs-title{color:rgba(10,10,10,.4) !important}
+.cs-opt{
+  background:rgba(10,10,10,.02) !important;
+  border-color:rgba(10,10,10,.08) !important;
+  color:#0A0A0A !important;
+}
+.cs-opt-title{color:#0A0A0A !important}
+.cs-opt-sub{color:rgba(10,10,10,.45) !important}
+.cs-close{
+  background:rgba(10,10,10,.03) !important;
+  border-color:rgba(10,10,10,.08) !important;
+  color:#0A0A0A !important;
+}
 </style>
 
 
@@ -1371,18 +1564,6 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
     <span class="badge" id="msgBadge">0</span>
   </a>
 
-  <!-- Following -->
-  <a class="tb-stat" href="/followers?tab=following">
-    <div class="tb-stat-n" data-count="following">0</div>
-    <div class="tb-stat-l">フォロー中</div>
-  </a>
-
-  <!-- Followers -->
-  <a class="tb-stat" href="/followers?tab=followers">
-    <div class="tb-stat-n" data-count="followers">0</div>
-    <div class="tb-stat-l">フォロワー</div>
-  </a>
-
   <!-- Settings (gear) → /settings -->
   <a class="tb-icon" href="/settings" aria-label="Settings" title="設定">
     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -1392,19 +1573,18 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 <!-- ═══ CONTENT ═══ -->
 <main class="content">
 
-  <!-- Hero: avatar + name/role + follow/DM buttons -->
+  <!-- Hero: centered avatar + name (own profile) -->
   <div class="profile-hero">
     <div class="ph-avatar" id="phAvatar">
       <div class="ph-avatar-inner"></div>
-      <span class="pro" id="phPlanBadge">FREE</span>
+      <span class="pro" id="phPlanBadge" style="display:none">FREE</span>
     </div>
     <div class="ph-name-block">
       <div class="ph-name"></div>
       <div class="ph-role"></div>
     </div>
-    <!-- Own profile: follow button is hidden (can't follow yourself).
-         Still shows DM icon as a future "messages" shortcut. -->
-    <div class="ph-actions" id="phActions">
+    <!-- Follow / DM only shown when viewing another user's profile via ?user= -->
+    <div class="ph-actions" id="phActions" style="display:none">
       <button class="ph-follow-btn" id="phFollowBtn" style="display:none">フォロー</button>
       <button class="ph-dm-btn" id="phDmBtn" aria-label="Messages">
         <svg viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><polyline points="3,7 12,13 21,7"/></svg>
