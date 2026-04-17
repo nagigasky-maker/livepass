@@ -706,6 +706,38 @@ if (editId) {
   } catch (e) {}
 }
 
+// If not found in localStorage, try Firestore
+if (editId && !editingEvent) {
+  (async () => {
+    try {
+      if (!window.FB) await new Promise(r => window.addEventListener('fb-auth-ready', r, {once:true}));
+      const snap = await FB.getDoc(FB.doc(FB.db, 'posts', editId));
+      if (snap.exists()) {
+        const data = snap.data();
+        const ts = data.createdAt;
+        if (ts && ts.toDate) data.createdAt = ts.toDate().toISOString();
+        editingEvent = { id: editId, ...data };
+        state.editingId = editId;
+        document.getElementById('hdrTitle').textContent = 'イベント編集';
+        document.getElementById('submitBtn').textContent = '変更を保存 →';
+        // Prefill form fields
+        if (editingEvent.title) document.getElementById('titleInput').value = editingEvent.title;
+        if (editingEvent.venue) document.getElementById('venueInput').value = editingEvent.venue;
+        if (editingEvent.date) document.getElementById('dateInput').value = editingEvent.date;
+        if (editingEvent.time) document.getElementById('timeInput').value = editingEvent.time;
+        if (editingEvent.price) document.getElementById('priceInput').value = editingEvent.price;
+        if (editingEvent.body) document.getElementById('bodyInput').value = editingEvent.body;
+        if (editingEvent.cover) {
+          state.coverDataUrl = editingEvent.cover;
+          const cu = document.getElementById('coverUpload');
+          if (cu) { cu.classList.add('has-image'); cu.innerHTML = '<img style="width:100%;height:100%;object-fit:cover;display:block" src="' + editingEvent.cover + '" alt="">'; }
+        }
+        updateSubmitState();
+      }
+    } catch(e) { console.warn('Firestore edit load failed:', e); }
+  })();
+}
+
 // Update header and submit button when in edit mode
 if (editingEvent) {
   document.getElementById('hdrTitle').textContent = 'イベント編集';
