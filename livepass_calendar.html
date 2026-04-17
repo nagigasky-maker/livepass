@@ -630,15 +630,17 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 .em-artist-role{color:rgba(10,10,10,.5) !important}
 
 
-/* ── Cover: clean image + info below (no gradient overlay) ── */
-.em-cover{position:relative;width:100%;max-height:70vh;overflow:hidden;background:#f5f3ee !important}
-.em-hero.over-cover{position:static !important;padding:24px 22px 20px !important;background:#FFF !important;
-  background:linear-gradient(transparent,transparent) !important}
-.em-hero.over-cover .em-date-d{color:#0A0A0A !important}
-.em-hero.over-cover .em-title{color:#0A0A0A !important;text-shadow:none !important}
-.em-hero.over-cover .em-venue{color:#0A0A0A !important;text-shadow:none !important}
-.em-hero.over-cover .em-time{color:rgba(10,10,10,.55) !important;text-shadow:none !important}
-.em-cover::after{display:none !important}
+
+
+
+/* ── Cover: uniform dark overlay + white text ── */
+.em-cover{background:#0a0a0a !important}
+.em-hero.over-cover{background:rgba(0,0,0,.4) !important}
+.em-hero.over-cover .em-date-d{color:#FFF !important}
+.em-hero.over-cover .em-title{color:#FFF !important;text-shadow:none !important}
+.em-hero.over-cover .em-venue{color:rgba(255,255,255,.9) !important;text-shadow:none !important}
+.em-hero.over-cover .em-time{color:rgba(255,255,255,.7) !important;text-shadow:none !important}
+.em-hero.over-cover .ev-tag{color:rgba(255,255,255,.85) !important;border-color:rgba(255,255,255,.3) !important}
 
 </style>
 
