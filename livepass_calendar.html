@@ -688,6 +688,14 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 .em-save-share button{color:#0A0A0A !important}
 .em-section{border-color:rgba(10,10,10,.08) !important}
 
+
+/* ── Cover entrance animation ── */
+.em-cover img{animation:coverFadeIn .6s ease-out !important}
+.em-hero.over-cover{animation:heroSlideUp .5s ease-out .2s both !important}
+.em-hero{animation:heroSlideUp .5s ease-out .1s both}
+@keyframes coverFadeIn{from{opacity:0;transform:scale(1.05)}to{opacity:1;transform:scale(1)}}
+@keyframes heroSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
 </style>
 
 
