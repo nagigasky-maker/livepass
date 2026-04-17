@@ -1052,8 +1052,19 @@ window.addEventListener('fb-auth-ready', async ({ detail }) => {
     const seenIds = new Set();
     snap.forEach(d => {
       const data = { id: d.id, ...d.data() };
+      const ts = data.createdAt;
+      if (ts && ts.toDate) data.createdAt = ts.toDate().toISOString();
+      const ut = data.updatedAt;
+      if (ut && ut.toDate) data.updatedAt = ut.toDate().toISOString();
       fbPosts.push(normalizeFirestorePost(data));
       seenIds.add(d.id);
+      // Sync to localStorage so edit can find them
+      const t = data.type || 'article';
+      const key = {article:'livepass_articles',event:'livepass_events',workshop:'livepass_workshops',exhibition:'livepass_exhibitions'}[t] || 'livepass_articles';
+      try {
+        const ls = JSON.parse(localStorage.getItem(key) || '[]');
+        if (!ls.some(x => x.id === d.id)) { ls.unshift(data); localStorage.setItem(key, JSON.stringify(ls)); }
+      } catch(e){}
     });
     const localOnly = getUserArticles().filter(a => !seenIds.has(a.id));
     const allUserPosts = [...fbPosts, ...localOnly];
