@@ -1622,6 +1622,18 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 .pm-artist-name{color:#0A0A0A !important}
 .pm-artist-role{color:rgba(10,10,10,.5) !important}
 
+
+/* ── Cover: clean image + info below (no gradient overlay) ── */
+.pm-cover-clean{position:relative;width:100%;max-height:70vh;overflow:hidden;background:#f5f3ee !important}
+.pm-cover-clean .pm-cover-bg{filter:blur(40px) brightness(.5) !important}
+.pm-cover-clean .pm-cover-fg{object-fit:contain !important}
+.pm-hero-below{position:static !important;padding:24px 22px 20px !important;background:#FFF !important}
+.pm-hero-below .pm-date-d{color:#0A0A0A !important}
+.pm-hero-below .pm-title{color:#0A0A0A !important;text-shadow:none !important;font-size:28px !important}
+.pm-hero-below .pm-venue{color:#0A0A0A !important;text-shadow:none !important}
+.pm-hero-below .pm-time{color:rgba(10,10,10,.55) !important;text-shadow:none !important}
+.pm-hero.over-cover{display:none !important}
+
 </style>
 
 
@@ -3103,13 +3115,13 @@ function openPostDetail(type, item) {
     const ownerActionsOnHero    = !item.cover ? ownerActionsHtml : '';
 
     const coverAndHeroHtml = item.cover ? `
-      <div class="pm-cover">
+      <div class="pm-cover pm-cover-clean">
         ${ownerActionsOverCover}
         <img class="pm-cover-bg" src="${item.cover}" alt="" aria-hidden="true">
         <img class="pm-cover-fg" src="${item.cover}" alt="">
-        <div class="pm-hero over-cover" style="--cat-color:${color};--cat-color-soft:${soft}">
-          ${heroContentHtml}
-        </div>
+      </div>
+      <div class="pm-hero pm-hero-below" style="--cat-color:${color};--cat-color-soft:${soft}">
+        ${heroContentHtml}
       </div>
     ` : `
       <div class="pm-hero" style="--cat-color:${color};--cat-color-soft:${soft};position:relative">
