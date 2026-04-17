@@ -1627,9 +1627,9 @@ window.addEventListener('keydown', e => {
 
 
 /* ── Bottom nav: shorter ── */
-.bottomnav{height:calc(28px + var(--safe-bot)) !important}
-.bn-btn svg{width:20px !important;height:20px !important}
-.bn-avatar{width:22px !important;height:22px !important}
+.bottomnav{height:calc(24px + var(--safe-bot)) !important}
+.bn-btn svg{width:25px !important;height:25px !important}
+.bn-avatar{width:25px !important;height:25px !important}
 
 /* ── Comprehensive text visibility ── */
 h1,h2,h3,.title,.heading{color:#0A0A0A !important}
@@ -1653,6 +1653,16 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 .sched-ja{color:rgba(10,10,10,.6) !important}
 .sched-venue,.sched-meta{color:rgba(10,10,10,.55) !important}
 .sched-cat{color:inherit !important}
+
+
+/* ── Schedule item text — force black ── */
+.sched-item *{color:inherit}
+.sched-item .sched-date-m{color:rgba(10,10,10,.5) !important}
+.sched-item .sched-date-d{color:#0A0A0A !important}
+.sched-item a,.sched-item .title,.sched-item [class*="title"]{color:#0A0A0A !important}
+.sched-item .venue,.sched-item .meta,.sched-item [class*="meta"]{color:rgba(10,10,10,.55) !important}
+.sched-item .ja,.sched-item [class*="ja"]{color:rgba(10,10,10,.6) !important}
+.sched-item .cat-pill,.sched-item .genre-pill{border-color:rgba(10,10,10,.15) !important;color:rgba(10,10,10,.55) !important}
 
 </style>
 <div id="__v">v66</div>
