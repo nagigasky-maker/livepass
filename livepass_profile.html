@@ -1598,11 +1598,8 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 .pm-edit-btn{color:#0A0A0A !important;border-color:rgba(10,10,10,.18) !important;background:rgba(10,10,10,.04) !important}
 .pm-body{background:#FFFFFF !important}
 .pm-hero{background:rgba(10,10,10,.03) !important}
-.pm-hero.with-cover{background:#0a0a0a !important}
-.pm-cover{background:#0a0a0a !important}
 
 
-.pm-hero.with-cover .pm-hero-text *{color:#FFFFFF !important}
 .pm-date-d{color:#0A0A0A !important}
 .pm-date-m{color:var(--red) !important}
 .pm-date-dow{color:rgba(10,10,10,.5) !important}
@@ -1627,26 +1624,40 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 
 
 /* ── Cover: uniform dark overlay + white text ── */
-.pm-cover{background:#0a0a0a !important}
-.pm-hero.over-cover{background:rgba(0,0,0,.4) !important}
-.pm-hero.over-cover .pm-date-d{color:#FFF !important}
 .pm-hero.over-cover .pm-title{color:#FFF !important}
 .pm-hero.over-cover .pm-venue{color:rgba(255,255,255,.9) !important}
 .pm-hero.over-cover .pm-time{color:rgba(255,255,255,.7) !important}
-.pm-hero.over-cover .ev-tag{color:rgba(255,255,255,.85) !important;border-color:rgba(255,255,255,.3) !important}
 
 
 /* ── Cover: full bleed image + uniform dark overlay + white text ── */
-.pm-cover{background:transparent !important;height:auto !important;min-height:auto !important;max-height:none !important}
-.pm-cover-bg{display:none !important}
-.pm-cover img.pm-cover-fg{position:relative !important;width:100% !important;height:auto !important;object-fit:cover !important;display:block !important}
+
+
+/* ── Event cover: dark overlay + white text (single source of truth) ── */
+.pm-cover{position:relative !important;background:#111 !important}
 .pm-cover::after{content:'' !important;position:absolute !important;inset:0 !important;background:rgba(0,0,0,.35) !important;z-index:1 !important;pointer-events:none !important}
-.pm-hero.over-cover{position:absolute !important;inset:0 !important;z-index:2 !important;display:flex !important;flex-direction:column !important;justify-content:flex-end !important;padding:24px 22px !important;background:transparent !important}
-.pm-hero.over-cover .pm-date-d{color:#FFF !important}
-.pm-hero.over-cover .pm-title{color:#FFF !important;text-shadow:none !important}
-.pm-hero.over-cover .pm-venue{color:rgba(255,255,255,.9) !important;text-shadow:none !important}
-.pm-hero.over-cover .pm-time{color:rgba(255,255,255,.7) !important;text-shadow:none !important}
-.pm-hero.over-cover .ev-tag{color:rgba(255,255,255,.85) !important;border-color:rgba(255,255,255,.3) !important}
+.pm-hero.over-cover{z-index:2 !important;background:transparent !important}
+.pm-hero.over-cover *{color:#FFF !important;text-shadow:none !important}
+.pm-hero.over-cover .ev-tag{border-color:rgba(255,255,255,.3) !important}
+.pm-hero.with-cover{background:#111 !important}
+.pm-hero.with-cover::after{background:rgba(0,0,0,.35) !important}
+.pm-hero.with-cover .pm-hero-text *{color:#FFF !important}
+
+/* Event detail info below cover — dark text on white */
+.pm-info,.pm-info *{color:#0A0A0A !important}
+.pm-info [class*="label"]{color:rgba(10,10,10,.5) !important}
+.pm-info [class*="value"],.pm-info [class*="name"]{color:#0A0A0A !important}
+.pm-price-chip{background:rgba(10,10,10,.04) !important;border-color:rgba(10,10,10,.1) !important}
+.pm-price-chip-label{color:rgba(10,10,10,.5) !important}
+.pm-price-chip-value{color:#0A0A0A !important}
+.pm-section{border-color:rgba(10,10,10,.08) !important}
+.pm-section-title{color:rgba(10,10,10,.45) !important}
+.pm-body-text,.pm-desc{color:rgba(10,10,10,.7) !important}
+.pm-artist-chip{border-color:rgba(10,10,10,.1) !important}
+.pm-artist-name{color:#0A0A0A !important}
+.pm-artist-role{color:rgba(10,10,10,.5) !important}
+.pm-buy-btn{color:#FFF !important}
+.pm-save-share{border-color:rgba(10,10,10,.08) !important}
+.pm-save-share button{color:#0A0A0A !important}
 
 </style>
 
