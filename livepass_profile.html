@@ -1673,11 +1673,12 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 .pm-owner-actions{display:none !important}
 
 
-/* ── Cover: prevent layout shift + smooth entrance ── */
+/* ── Cover: entrance animation + layout shift prevention ── */
 .pm-cover{min-height:300px !important;background:#f0eeea !important}
-.pm-cover img{opacity:0;transition:opacity .4s ease !important}
-.pm-cover img[src]{opacity:1 !important}
-.pm-hero.over-cover{transition:opacity .3s ease .1s !important}
+.pm-cover img{animation:coverFadeIn .6s ease-out !important}
+.pm-hero.over-cover{animation:heroSlideUp .5s ease-out .2s both !important}
+@keyframes coverFadeIn{from{opacity:0;transform:scale(1.05)}to{opacity:1;transform:scale(1)}}
+@keyframes heroSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
 </style>
 
