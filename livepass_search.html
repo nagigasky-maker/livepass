@@ -451,18 +451,18 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 <script>
 /* Sample AI suggestion data */
 const ARTISTS = [
-  { name:'NOBBY',   sub:'Dancer · DJ',   hue:'200,80,25' },
-  { name:'SACHI',   sub:'Waacking',      hue:'320,70,30' },
-  { name:'ALI',     sub:'House',         hue:'0,70,30' },
-  { name:'DUBLA®',  sub:'Fashion',       hue:'280,60,30' },
-  { name:'CREW NRG',sub:'Breaking',      hue:'45,70,30' },
-  { name:'DJ KEITA',sub:'Techno',        hue:'220,70,20' },
+  { name:'NOBBY',   sub:'Dancer · DJ',   hue:'200,80,25', cover:'https://images.unsplash.com/photo-1545128485-c400e7702712?w=400&q=80' },
+  { name:'SACHI',   sub:'Waacking',      hue:'320,70,30', cover:'https://images.unsplash.com/photo-1550684376-efcbd6e3f031?w=400&q=80' },
+  { name:'ALI',     sub:'House',         hue:'0,70,30',   cover:'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=400&q=80' },
+  { name:'DUBLA®',  sub:'Fashion',       hue:'280,60,30', cover:'https://images.unsplash.com/photo-1558171813-4c088753af8f?w=400&q=80' },
+  { name:'CREW NRG',sub:'Breaking',      hue:'45,70,30',  cover:'https://images.unsplash.com/photo-1535525153412-5a42439a210d?w=400&q=80' },
+  { name:'DJ KEITA',sub:'Techno',        hue:'220,70,20', cover:'https://images.unsplash.com/photo-1461784180009-21121b2f204c?w=400&q=80' },
 ];
 const EVENTS = [
-  { cat:'EVENT',    catColor:'#E8100A', name:'All Must Dance', meta:'May 4 · Club Asia',  hue:'0,70,30',  score:'97%' },
-  { cat:'WORKSHOP', catColor:'#F4C0D1', name:'Waacking Lab',   meta:'May 18 · 代官山',    hue:'320,70,30',score:'92%' },
-  { cat:'EVENT',    catColor:'#bf5af2', name:'DUBLA Launch',   meta:'Jun 1 · WOMB',       hue:'280,60,30',score:'89%' },
-  { cat:'WORKSHOP', catColor:'#F5C842', name:'Cypher Lab',     meta:'Jun 1 · WOMB 2F',    hue:'45,70,30', score:'86%' },
+  { cat:'EVENT',    catColor:'#E8100A', name:'All Must Dance', meta:'May 4 · Club Asia',  hue:'0,70,30',  score:'97%', cover:'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=400&q=80' },
+  { cat:'WORKSHOP', catColor:'#F4C0D1', name:'Waacking Lab',   meta:'May 18 · 代官山',    hue:'320,70,30',score:'92%', cover:'https://images.unsplash.com/photo-1504805572947-34fad45aed93?w=400&q=80' },
+  { cat:'EVENT',    catColor:'#bf5af2', name:'DUBLA Launch',   meta:'Jun 1 · WOMB',       hue:'280,60,30',score:'89%', cover:'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&q=80' },
+  { cat:'WORKSHOP', catColor:'#F5C842', name:'Cypher Lab',     meta:'Jun 1 · WOMB 2F',    hue:'45,70,30', score:'86%', cover:'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400&q=80' },
 ];
 const STUDIOS = [
   { name:'代官山 Studio A', sub:'House · Waacking', hue:'160,60,25' },
@@ -496,7 +496,7 @@ ARTISTS.forEach(a => {
   const card = document.createElement('div');
   card.className = 'sr-card';
   card.innerHTML = `
-    <div class="sr-av"><img src="${phSVG(a.hue, a.name.charAt(0))}" alt="" style="width:100%;height:100%;object-fit:cover"></div>
+    <div class="sr-av"><img src="${a.cover || phSVG(a.hue, a.name.charAt(0))}" alt="" style="width:100%;height:100%;object-fit:cover"></div>
     <div class="sr-name">${a.name}</div>
     <div class="sr-sub">${a.sub}</div>
   `;
@@ -511,7 +511,7 @@ EVENTS.forEach(e => {
   card.style.setProperty('--sug-color', e.catColor);
   card.innerHTML = `
     <div class="sug-img">
-      <img src="${phSVG(e.hue, e.cat)}" alt="">
+      <img src="${e.cover || phSVG(e.hue, e.cat)}" alt="">
       <div class="sug-score">${e.score}</div>
     </div>
     <div class="sug-body">

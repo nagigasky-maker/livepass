@@ -458,17 +458,17 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 (function(){
   if (localStorage.getItem('livepass_demo_seeded')) return;
   const demoEvents = [
-    {id:'demo_e1',type:'event',category:'DJ',title:'VOID — Resident Night',venue:'Contact Tokyo',date:'2026-04-18',time:'23:00',price:'3500',author:'VOID',tags:['TECHNO','DEEP'],body:'毎月第3金曜のレジデントナイト。4名のレジデントDJによるノンストップ6時間。'},
-    {id:'demo_e2',type:'event',category:'PARTY',title:'DEPTH × LIVE PASS presents UNDERGROUND',venue:'WOMB, Shibuya',date:'2026-04-20',time:'22:00',price:'4000',author:'NOBBY',tags:['HOUSE','TECHNO','PARTY'],body:'WOMBの全4フロアを使ったオールナイト。国内外のDJが集結。'},
-    {id:'demo_e3',type:'event',category:'LIVE',title:'B-BOY PARK TOKYO 2026',venue:'Yoyogi Park',date:'2026-04-25',time:'12:00',price:'0',author:'KENJI',tags:['HIP-HOP','BREAKING','DANCE'],body:'日本最大のブレイキンの祭典。エントリー無料、観覧無料。'},
-    {id:'demo_e4',type:'event',category:'DJ',title:'Golden Week: NOBBY × KEITA',venue:'Liquidroom',date:'2026-05-02',time:'22:00',price:'4500',author:'NOBBY',tags:['DJ','HOUSE','TECHNO'],body:'GW特別2マン。NOBBYとDJ KEITAが4時間ずつ。'},
-    {id:'demo_e5',type:'event',category:'PARTY',title:'ALL MUST DANCE™ vol.26',venue:'clubasia',date:'2026-05-04',time:'23:00',price:'4500',author:'NOBBY',tags:['PARTY','ART','FASHION','MUSIC'],body:'クラブアジア全フロア。アート展示、ファッション、ライブペイント、DJの全部入り。'},
-    {id:'demo_e6',type:'event',category:'EXHIBITION',title:'DUBLA® SS26 Launch Party',venue:'Shibuya WOMB',date:'2026-06-01',time:'20:00',price:'0',author:'DUBLA®',tags:['PARTY','FASHION'],body:'DUBLA®の新作コレクション発表パーティ。入場無料、1ドリンク付き。'},
+    {id:'demo_e1',type:'event',category:'DJ',title:'VOID — Resident Night',venue:'Contact Tokyo',date:'2026-04-18',time:'23:00',price:'3500',author:'VOID',tags:['TECHNO','DEEP'],cover:'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&q=80',body:'毎月第3金曜のレジデントナイト。4名のレジデントDJによるノンストップ6時間。'},
+    {id:'demo_e2',type:'event',category:'PARTY',title:'DEPTH × LIVE PASS presents UNDERGROUND',venue:'WOMB, Shibuya',date:'2026-04-20',time:'22:00',price:'4000',author:'NOBBY',tags:['HOUSE','TECHNO','PARTY'],cover:'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600&q=80',body:'WOMBの全4フロアを使ったオールナイト。国内外のDJが集結。'},
+    {id:'demo_e3',type:'event',category:'LIVE',title:'B-BOY PARK TOKYO 2026',venue:'Yoyogi Park',date:'2026-04-25',time:'12:00',price:'0',author:'KENJI',tags:['HIP-HOP','BREAKING','DANCE'],cover:'https://images.unsplash.com/photo-1535525153412-5a42439a210d?w=600&q=80',body:'日本最大のブレイキンの祭典。エントリー無料、観覧無料。'},
+    {id:'demo_e4',type:'event',category:'DJ',title:'Golden Week: NOBBY × KEITA',venue:'Liquidroom',date:'2026-05-02',time:'22:00',price:'4500',author:'NOBBY',tags:['DJ','HOUSE','TECHNO'],cover:'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=600&q=80',body:'GW特別2マン。NOBBYとDJ KEITAが4時間ずつ。'},
+    {id:'demo_e5',type:'event',category:'PARTY',title:'ALL MUST DANCE™ vol.26',venue:'clubasia',date:'2026-05-04',time:'23:00',price:'4500',author:'NOBBY',tags:['PARTY','ART','FASHION','MUSIC'],cover:'https://images.unsplash.com/photo-1492684223f8-e1f7e12d4fa0?w=600&q=80',body:'クラブアジア全フロア。アート展示、ファッション、ライブペイント、DJの全部入り。'},
+    {id:'demo_e6',type:'event',category:'EXHIBITION',title:'DUBLA® SS26 Launch Party',venue:'Shibuya WOMB',date:'2026-06-01',time:'20:00',price:'0',author:'DUBLA®',tags:['PARTY','FASHION'],cover:'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80',body:'DUBLA®の新作コレクション発表パーティ。入場無料、1ドリンク付き。'},
   ];
   const demoWS = [
-    {id:'demo_w1',type:'workshop',category:'HOUSE',title:'Waacking Intensive',venue:'代官山スタジオ',date:'2026-05-18',time:'13:00',price:'3000',author:'SACHI',tags:['WAACKING','ALL LEVELS'],body:'3時間の集中ワークショップ。基礎からバトル実践まで。'},
-    {id:'demo_w2',type:'workshop',category:'BREAKING',title:'Power Move Basics',venue:'B-BOY Park Studio',date:'2026-04-22',time:'19:00',price:'2500',author:'KENJI',tags:['BREAKING','BEGINNER'],body:'ウィンドミル、トーマスの基礎を安全に学ぶ。'},
-    {id:'demo_w3',type:'workshop',category:'POPPING',title:'Popping Foundation',venue:'Studio Roppongi',date:'2026-04-26',time:'14:00',price:'3000',author:'NOBBY',tags:['POPPING','ALL LEVELS'],body:'ヒット、ウェーブ、アイソレーション。体の使い方を基礎から。'},
+    {id:'demo_w1',type:'workshop',category:'HOUSE',title:'Waacking Intensive',venue:'代官山スタジオ',date:'2026-05-18',time:'13:00',price:'3000',author:'SACHI',tags:['WAACKING','ALL LEVELS'],cover:'https://images.unsplash.com/photo-1550684376-efcbd6e3f031?w=600&q=80',body:'3時間の集中ワークショップ。基礎からバトル実践まで。'},
+    {id:'demo_w2',type:'workshop',category:'BREAKING',title:'Power Move Basics',venue:'B-BOY Park Studio',date:'2026-04-22',time:'19:00',price:'2500',author:'KENJI',tags:['BREAKING','BEGINNER'],cover:'https://images.unsplash.com/photo-1535525153412-5a42439a210d?w=600&q=80',body:'ウィンドミル、トーマスの基礎を安全に学ぶ。'},
+    {id:'demo_w3',type:'workshop',category:'POPPING',title:'Popping Foundation',venue:'Studio Roppongi',date:'2026-04-26',time:'14:00',price:'3000',author:'NOBBY',tags:['POPPING','ALL LEVELS'],cover:'https://images.unsplash.com/photo-1545128485-c400e7702712?w=600&q=80',body:'ヒット、ウェーブ、アイソレーション。体の使い方を基礎から。'},
   ];
   const existing_e = JSON.parse(localStorage.getItem('livepass_events') || '[]');
   const existing_w = JSON.parse(localStorage.getItem('livepass_workshops') || '[]');
