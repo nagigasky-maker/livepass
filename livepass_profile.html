@@ -1025,13 +1025,12 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 
 /* Author-only re-edit button floating over the hero */
 .pm-edit-btn{
-  /* position is inherited from the .pm-owner-actions flex wrapper — no absolute */
   display:flex;align-items:center;gap:6px;
-  padding:7px 13px 7px 11px;border-radius:99px;
-  background:rgba(0,0,0,.72);border:0.5px solid rgba(255,255,255,.22);
-  color:var(--white);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
-  font-size:10px;letter-spacing:.08em;
+  padding:6px 14px;border-radius:99px;
+  background:rgba(255,255,255,.8);border:0.5px solid rgba(10,10,10,.18);
+  color:#0A0A0A;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:600;
+  font-size:10px;letter-spacing:.05em;
 }
 .pm-edit-btn svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2}
 
@@ -1599,7 +1598,7 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 .pm-header{background:#FFFFFF !important;border-bottom:0.5px solid rgba(10,10,10,.08) !important}
 .pm-close{color:#0A0A0A !important;border-color:rgba(10,10,10,.18) !important}
 .pm-label{color:rgba(10,10,10,.4) !important}
-.pm-edit-btn{color:#0A0A0A !important;border-color:rgba(10,10,10,.18) !important;background:rgba(10,10,10,.04) !important}
+.pm-edit-btn{color:#0A0A0A !important;border-color:rgba(10,10,10,.18) !important;background:rgba(255,255,255,.8) !important}
 .pm-body{background:#FFFFFF !important}
 .pm-hero{background:rgba(10,10,10,.03) !important}
 
@@ -1872,6 +1871,10 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 <div id="postModal" aria-hidden="true">
   <header class="pm-header">
     <button class="pm-close" id="pmClose" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18" stroke-linecap="round"/><line x1="6" y1="18" x2="18" y2="6" stroke-linecap="round"/></svg></button>
+    <div class="pm-header-actions" id="pmHeaderActions" style="display:none">
+      <a id="pmEditLink" href="#" style="font-size:10px;font-weight:600;letter-spacing:.05em;color:#0A0A0A;padding:6px 14px;border-radius:99px;text-decoration:none;background:rgba(255,255,255,.8);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:0.5px solid rgba(10,10,10,.18)"><svg viewBox="0 0 24 24" width="14" height="14" style="stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></a>
+      <button id="pmDeleteBtn" style="font-size:10px;font-weight:600;letter-spacing:.05em;color:#E8100A;padding:6px 14px;border-radius:99px;background:rgba(255,255,255,.8);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:0.5px solid rgba(232,16,10,.25)"><svg viewBox="0 0 24 24" width="14" height="14" style="stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+    </div>
     <div class="pm-label" id="pmLabel">Article</div>
   </header>
   <div class="pm-body" id="pmBody"></div>
@@ -2855,6 +2858,29 @@ function openPostDetail(type, item) {
     HOUSE:'#00E5A0', BREAKING:'#F5C842', WAACKING:'#F4C0D1',
     LOCKING:'#F5C842', POPPING:'#F5C842',
   };
+
+  // Header edit/delete buttons
+  const me = localStorage.getItem('livepass_account_name') || '';
+  const isOwner = (item.author || '').toUpperCase() === me.toUpperCase();
+  const pmHdrActions = document.getElementById('pmHeaderActions');
+  const pmEditLink = document.getElementById('pmEditLink');
+  const pmDelBtn = document.getElementById('pmDeleteBtn');
+  if (isOwner) {
+    pmHdrActions.style.display = 'flex';
+    const editUrl = type === 'article' ? '/compose/article?edit=' : type === 'event' ? '/compose/event?edit=' : type === 'workshop' ? '/compose/workshop?edit=' : '/compose/exhibition?edit=';
+    pmEditLink.href = editUrl + encodeURIComponent(item.id);
+    pmDelBtn.onclick = async () => {
+      if (!confirm('この投稿を削除しますか？')) return;
+      const storageKey = {article:'livepass_articles',event:'livepass_events',workshop:'livepass_workshops',exhibition:'livepass_exhibitions'}[type];
+      try { const list = JSON.parse(localStorage.getItem(storageKey)||'[]').filter(x=>x.id!==item.id); localStorage.setItem(storageKey,JSON.stringify(list)); } catch(e){}
+      try { if(window.FB&&window.FB.currentUser) await FB.deleteDoc(FB.doc(FB.db,'posts',item.id)); } catch(e){}
+      document.getElementById('postModal').classList.remove('active');
+      if(navigator.vibrate) navigator.vibrate([18,40,18]);
+      setTimeout(()=>location.reload(),300);
+    };
+  } else {
+    pmHdrActions.style.display = 'none';
+  }
 
   if (type === 'article') {
     pmLabel.textContent = 'Article';
