@@ -642,6 +642,19 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 .em-hero.over-cover .em-time{color:rgba(255,255,255,.7) !important;text-shadow:none !important}
 .em-hero.over-cover .ev-tag{color:rgba(255,255,255,.85) !important;border-color:rgba(255,255,255,.3) !important}
 
+
+/* ── Cover: full bleed + dark overlay + white text ── */
+.em-cover{background:transparent !important}
+.em-cover-bg{display:none !important}
+.em-cover img.em-cover-fg{position:relative !important;width:100% !important;height:auto !important;object-fit:cover !important;display:block !important}
+.em-cover::after{content:'' !important;position:absolute !important;inset:0 !important;background:rgba(0,0,0,.35) !important;z-index:1 !important;pointer-events:none !important}
+.em-hero.over-cover{position:absolute !important;inset:0 !important;z-index:2 !important;display:flex !important;flex-direction:column !important;justify-content:flex-end !important;padding:24px 22px !important;background:transparent !important}
+.em-hero.over-cover .em-date-d{color:#FFF !important}
+.em-hero.over-cover .em-title{color:#FFF !important;text-shadow:none !important}
+.em-hero.over-cover .em-venue{color:rgba(255,255,255,.9) !important;text-shadow:none !important}
+.em-hero.over-cover .em-time{color:rgba(255,255,255,.7) !important;text-shadow:none !important}
+.em-hero.over-cover .ev-tag{color:rgba(255,255,255,.85) !important;border-color:rgba(255,255,255,.3) !important}
+
 </style>
 
 

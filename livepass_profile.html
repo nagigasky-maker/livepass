@@ -1601,7 +1601,7 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 .pm-hero.with-cover{background:#0a0a0a !important}
 .pm-cover{background:#0a0a0a !important}
 
-.pm-hero.with-cover::after{background:rgba(0,0,0,.35) !important}
+
 .pm-hero.with-cover .pm-hero-text *{color:#FFFFFF !important}
 .pm-date-d{color:#0A0A0A !important}
 .pm-date-m{color:var(--red) !important}
@@ -1633,6 +1633,19 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 .pm-hero.over-cover .pm-title{color:#FFF !important}
 .pm-hero.over-cover .pm-venue{color:rgba(255,255,255,.9) !important}
 .pm-hero.over-cover .pm-time{color:rgba(255,255,255,.7) !important}
+.pm-hero.over-cover .ev-tag{color:rgba(255,255,255,.85) !important;border-color:rgba(255,255,255,.3) !important}
+
+
+/* ── Cover: full bleed image + uniform dark overlay + white text ── */
+.pm-cover{background:transparent !important;height:auto !important;min-height:auto !important;max-height:none !important}
+.pm-cover-bg{display:none !important}
+.pm-cover img.pm-cover-fg{position:relative !important;width:100% !important;height:auto !important;object-fit:cover !important;display:block !important}
+.pm-cover::after{content:'' !important;position:absolute !important;inset:0 !important;background:rgba(0,0,0,.35) !important;z-index:1 !important;pointer-events:none !important}
+.pm-hero.over-cover{position:absolute !important;inset:0 !important;z-index:2 !important;display:flex !important;flex-direction:column !important;justify-content:flex-end !important;padding:24px 22px !important;background:transparent !important}
+.pm-hero.over-cover .pm-date-d{color:#FFF !important}
+.pm-hero.over-cover .pm-title{color:#FFF !important;text-shadow:none !important}
+.pm-hero.over-cover .pm-venue{color:rgba(255,255,255,.9) !important;text-shadow:none !important}
+.pm-hero.over-cover .pm-time{color:rgba(255,255,255,.7) !important;text-shadow:none !important}
 .pm-hero.over-cover .ev-tag{color:rgba(255,255,255,.85) !important;border-color:rgba(255,255,255,.3) !important}
 
 </style>
