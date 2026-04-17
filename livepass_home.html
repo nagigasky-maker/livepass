@@ -342,14 +342,13 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .dm-comments-list::-webkit-scrollbar{display:none}
 .dm-comment-item{
   display:flex;gap:10px;padding:10px 0;
-  border-bottom:0.5px solid currentColor;opacity:1;
 }
 .dm-comment-av{
   width:28px;height:28px;border-radius:50%;flex-shrink:0;
-  background:linear-gradient(135deg,#3DAAFF,#1a2030);
   display:flex;align-items:center;justify-content:center;
   font-family:Arial,sans-serif;font-weight:900;font-size:10px;
   overflow:hidden;
+}
 }
 .dm-comment-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 .dm-comment-body{flex:1;min-width:0}
@@ -1364,15 +1363,17 @@ function openDetail(a) {
     const countEl = dmBody.querySelector('.dm-comment-count');
     if (countEl) countEl.textContent = comments.length;
     if (!list) return;
+    const cmtColor = detailBg ? detailTxt : '#0A0A0A';
+    const cmtBorder = detailBg ? detailTxt + '22' : 'rgba(10,10,10,.1)';
     list.innerHTML = comments.map(c => {
       const av = c.avatar ? `<img src="${c.avatar}" alt="">` : c.name.charAt(0);
       const ago = timeAgo(c.at);
-      return `<div class="dm-comment-item">
-        <div class="dm-comment-av">${av}</div>
+      return `<div class="dm-comment-item" style="border-bottom:0.5px solid ${cmtBorder};color:${cmtColor}">
+        <div class="dm-comment-av" style="border:1px solid ${cmtColor}33;color:${cmtColor}">${av}</div>
         <div class="dm-comment-body">
-          <div class="dm-comment-name">${c.name}</div>
-          <div class="dm-comment-text">${c.text}</div>
-          <div class="dm-comment-time">${ago}</div>
+          <div class="dm-comment-name" style="color:${cmtColor}">${c.name}</div>
+          <div class="dm-comment-text" style="color:${cmtColor};opacity:.85">${c.text}</div>
+          <div class="dm-comment-time" style="color:${cmtColor};opacity:.5">${ago}</div>
         </div>
       </div>`;
     }).join('');
