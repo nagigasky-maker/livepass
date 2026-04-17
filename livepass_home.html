@@ -342,7 +342,7 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .dm-comments-list::-webkit-scrollbar{display:none}
 .dm-comment-item{
   display:flex;gap:10px;padding:10px 0;
-  border-bottom:0.5px solid rgba(128,128,128,.15);
+  border-bottom:0.5px solid currentColor;opacity:1;
 }
 .dm-comment-av{
   width:28px;height:28px;border-radius:50%;flex-shrink:0;
@@ -359,15 +359,11 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .dm-comment-form{display:flex;gap:8px;align-items:center}
 .dm-comment-input{
   flex:1;padding:10px 14px;border-radius:99px;
-  background:currentColor;border:0.5px solid currentColor;
-  color:inherit;font-family:Arial,'Noto Sans JP',sans-serif;
-  font-size:13px;outline:none;opacity:.12;
+  font-family:Arial,'Noto Sans JP',sans-serif;
+  font-size:13px;outline:none;
 }
-.dm-comment-input:focus{opacity:1;background:transparent;border-color:currentColor}
-.dm-comment-input::placeholder{color:inherit;opacity:.4}
 .dm-comment-send{
   padding:8px 16px;border-radius:99px;
-  background:transparent;color:inherit;
   font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;font-weight:700;
   letter-spacing:.04em;
 }
@@ -1349,8 +1345,8 @@ function openDetail(a) {
     <div class="dm-comments" style="background:${detailBg || '#FFF'};color:${detailBg ? detailTxt : '#0A0A0A'}">
       <div class="dm-comments-list" id="dmCommentsList"></div>
       <div class="dm-comment-form">
-        <input class="dm-comment-input" id="dmCommentInput" placeholder="コメントを入力..." style="background:${detailBg ? detailTxt+'11' : 'rgba(10,10,10,.04)'};color:inherit;border-color:${detailBg ? detailTxt+'22' : 'rgba(10,10,10,.1)'}">
-        <button class="dm-comment-send" id="dmCommentSend" >送信</button>
+        <input class="dm-comment-input" id="dmCommentInput" placeholder="コメントを入力..." style="background:${detailBg ? detailTxt+'18' : 'rgba(10,10,10,.06)'};color:${detailBg ? detailTxt : '#0A0A0A'};border:1px solid ${detailBg ? detailTxt+'33' : 'rgba(10,10,10,.15)'}">
+        <button class="dm-comment-send" id="dmCommentSend" style="color:${detailBg ? detailTxt : '#0A0A0A'};background:${detailBg ? detailTxt+'15' : 'rgba(10,10,10,.06)'}">送信</button>
       </div>
     </div>
   `;
