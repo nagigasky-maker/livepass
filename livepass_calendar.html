@@ -1069,6 +1069,11 @@ function openEventDetail(e) {
     emHdrActions.style.display = 'flex';
     const editUrl = e.type === 'workshop' ? '/compose/workshop?edit=' : e.type === 'exhibition' ? '/compose/exhibition?edit=' : '/compose/event?edit=';
     emEditLink.href = editUrl + encodeURIComponent(e.id);
+    emEditLink.onclick = (ev) => {
+      ev.preventDefault();
+      sessionStorage.setItem('livepass_edit_post', JSON.stringify(e));
+      location.href = emEditLink.href;
+    };
     emDelBtn.onclick = async () => {
       if (!confirm('この投稿を削除しますか？')) return;
       const key = {event:'livepass_events',workshop:'livepass_workshops',exhibition:'livepass_exhibitions'}[e.type] || 'livepass_events';

@@ -692,6 +692,10 @@ const editId = new URLSearchParams(location.search).get('edit');
 let editingEvent = null;
 if (editId) {
   try {
+    const sess = sessionStorage.getItem('livepass_edit_post');
+    if (sess) { editingEvent = JSON.parse(sess); sessionStorage.removeItem('livepass_edit_post'); }
+  } catch(e){}
+  if (!editingEvent) try {
     const raw = localStorage.getItem('livepass_events');
     const list = raw ? JSON.parse(raw) : [];
     editingEvent = list.find(e => e.id === editId) || null;
@@ -704,9 +708,9 @@ if (editId) {
       }
     }
   } catch (e) {}
-}
+  }
 
-// If not found in localStorage, try Firestore
+// If not found, try Firestore
 if (editId && !editingEvent) {
   (async () => {
     try {

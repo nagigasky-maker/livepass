@@ -1437,7 +1437,13 @@ updateSubmitState();
 const editId = new URLSearchParams(location.search).get('edit');
 let editingArticle = null;
 if (editId) {
+  // 1. Try sessionStorage (set by edit button click)
   try {
+    const sess = sessionStorage.getItem('livepass_edit_post');
+    if (sess) { editingArticle = JSON.parse(sess); sessionStorage.removeItem('livepass_edit_post'); }
+  } catch(e){}
+  // 2. Fallback: localStorage
+  if (!editingArticle) try {
     const raw = localStorage.getItem('livepass_articles');
     const list = raw ? JSON.parse(raw) : [];
     editingArticle = list.find(a => a.id === editId) || null;
@@ -1449,9 +1455,9 @@ if (editId) {
       }
     }
   } catch(e) {}
-}
+  }
 
-// If not found in localStorage, try Firestore
+// If not found, try Firestore
 if (editId && !editingArticle) {
   (async () => {
     try {
