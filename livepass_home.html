@@ -1233,6 +1233,7 @@ function renderMagazine(posts) {
       const card = document.createElement('div');
       card.className = 'feed-card' + (bCls ? ' ' + bCls : '');
       card.dataset.id = a.id;
+      card.dataset.layout = a.layout || 'square';
       card.style.cssText = `width:calc(${w.toFixed(2)}% - ${G}px);height:${h}px;flex-shrink:0`;
 
       // Auto-assign a palette color to no-cover articles that lack bgColor
@@ -1893,6 +1894,37 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 .topbar{min-height:calc(var(--safe-top,0px) + 48px) !important;padding:calc(var(--safe-top,0px) + 6px) 18px 10px !important}
 .topbar .tb-icon{display:none !important}
 .topbar .tb-brand{position:relative !important;left:auto !important;top:auto !important;transform:none !important;margin:0 auto !important;height:32px !important}
+
+
+/* ── SCREEN display: match Profile's article grid layout ── */
+#feedGrid{
+  padding:10px 10px 40px !important;
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:10px !important;
+}
+.feed-card{
+  width:auto !important;height:auto !important;
+  position:relative !important;
+  border-radius:10px !important;overflow:hidden !important;
+  flex-shrink:initial !important;
+  min-width:0 !important;
+}
+.feed-card .fc-img{aspect-ratio:1/1;position:relative;width:100%;overflow:hidden}
+.feed-card .fc-img img,.feed-card .fc-img svg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.feed-card[data-layout="poster"]{grid-column:1 / -1}
+.feed-card[data-layout="poster"] .fc-img{aspect-ratio:9/14}
+.feed-card[data-layout="square"] .fc-img{aspect-ratio:1/1}
+.feed-card[data-layout="wide"]{grid-column:1 / -1}
+.feed-card[data-layout="wide"] .fc-img{aspect-ratio:16/9}
+.feed-card[data-layout="9:16"] .fc-img{aspect-ratio:9/16}
+.feed-card[data-layout="sq-large"]{grid-column:1 / -1}
+.feed-card[data-layout="sq-large"] .fc-img{aspect-ratio:1/1}
+.feed-card[data-layout="cinema"]{grid-column:1 / -1}
+.feed-card[data-layout="cinema"] .fc-img{aspect-ratio:21/9}
+/* Disable magazine row layout */
+.mag-row{display:contents !important}
+.mag-row-gap{display:none !important}
 
 </style>
 <div id="__v">v66</div>
