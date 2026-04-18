@@ -1270,6 +1270,7 @@ function renderMagazine(posts) {
     // We process left-to-right; blocks with same col position stack
     let leftCols = 0;
     const rowDiv = document.createElement('div');
+    rowDiv.className = 'mag-row';
     rowDiv.style.cssText = 'display:flex;flex-wrap:wrap;gap:'+G+'px;width:100%;margin-bottom:'+G+'px';
 
     for (let bi = 0; bi < blockRow.length && pi < posts.length; bi++) {
