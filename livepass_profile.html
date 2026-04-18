@@ -1702,12 +1702,12 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 .ph-role{font-size:10px !important;letter-spacing:.18em !important;color:rgba(10,10,10,.45) !important}
 .ph-heart-btn{
   position:absolute !important;right:20px !important;top:50% !important;transform:translateY(-50%) !important;
-  width:40px;height:40px;border-radius:50%;
+  width:52px;height:52px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   background:rgba(10,10,10,.04);border:1px solid rgba(10,10,10,.15);
   color:#0A0A0A;cursor:pointer;transition:background .2s;
 }
-.ph-heart-btn svg{width:20px;height:20px;fill:none;stroke:currentColor}
+.ph-heart-btn svg,.ph-heart-btn img{width:30px;height:30px;fill:none;stroke:currentColor;object-fit:contain;display:block}
 .ph-heart-btn:active{background:rgba(10,10,10,.08)}
 
 
@@ -1812,7 +1812,7 @@ body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;c
     </div>
     <!-- Heart icon — opens subscription/tip section (own profile) -->
     <button class="ph-heart-btn" id="phHeartBtn" aria-label="サブスク・投げ銭" onclick="document.body.classList.toggle('show-sub');this.classList.toggle('active');document.querySelector('.content')?.scrollTo({top:0,behavior:'smooth'})">
-      <img src="/sub.png" alt="Subscription" style="width:20px;height:20px;object-fit:contain;display:block">
+      <img src="/sub.png" alt="Subscription" style="width:30px;height:30px;object-fit:contain;display:block">
     </button>
     <!-- Follow / DM only shown when viewing another user's profile via ?user= -->
     <div class="ph-actions" id="phActions" style="display:none">
