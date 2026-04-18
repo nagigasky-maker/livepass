@@ -2106,6 +2106,13 @@ document.querySelectorAll('.st-btn').forEach(btn => {
   });
 });
 
+// If we arrived via the /saved route (bottom-nav bookmark icon), open the
+// SAVED sub-tab by default instead of the usual PASS COLLECTION.
+if (location.pathname === '/saved' || new URLSearchParams(location.search).get('sub') === 'saved') {
+  const savedBtn = document.querySelector('.st-btn[data-sub="saved"]');
+  if (savedBtn) savedBtn.click();
+}
+
 /* ─────────────────────────────────────────────
    SAVED PANEL — read likes/saves from localStorage
    ───────────────────────────────────────────── */
