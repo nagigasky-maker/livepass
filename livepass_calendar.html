@@ -496,10 +496,16 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
     e.stopPropagation();
     // Use form submission — iOS PWA treats this as in-app navigation
     try {
+      var u2 = new URL(a.href, location.href);
       var form = document.createElement('form');
       form.method = 'GET';
-      form.action = a.href;
+      form.action = u2.origin + u2.pathname;
       form.style.display = 'none';
+      u2.searchParams.forEach(function(value, key){
+        var inp = document.createElement('input');
+        inp.type = 'hidden'; inp.name = key; inp.value = value;
+        form.appendChild(inp);
+      });
       document.body.appendChild(form);
       form.submit();
     } catch(err) {
@@ -860,50 +866,7 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 
 <script>
 /* Sample schedule data — mix of events & workshops from following */
-const SCHEDULE = [
-  { id:'e1', type:'event', cat:'EVENT', catColor:'#E8100A',
-    m:'MAY', d:'03', weekday:'SAT', title:'All Must Dance Vol.25',
-    venue:'LIQUIDROOM TOKYO', time:'2026.05.03 21:00 — 28:00',
-    by:'NOBBY / SPACE COOKING™', meta:'NOBBY · 21:00 — · LIQUIDROOM TOKYO',
-    price:'¥3,000',
-    tags:['DJ','HOUSE','TECHNO'],
-    desc:'東京・恵比寿 LIQUIDROOM で開催される NOBBY 主催の定番パーティ第25回。フロアは2階構成、EXPASS ホルダーは専用エントランス。' },
-  { id:'e2', type:'workshop', cat:'WORKSHOP', catColor:'#F4C0D1',
-    m:'MAY', d:'18', weekday:'SUN', title:'Waacking Intensive',
-    venue:'代官山スタジオ', time:'2026.05.18 13:00 — 17:00',
-    by:'SACHI', meta:'SACHI · 13:00 — 17:00 · 代官山スタジオ',
-    price:'¥6,000',
-    tags:['WAACKING','ALL LEVELS'],
-    desc:'SACHI が指導する Waacking 集中講座。基礎技法から振付まで4時間で完結。全レベル対応・見学可。' },
-  { id:'e3', type:'event', cat:'EVENT', catColor:'#bf5af2',
-    m:'JUN', d:'01', weekday:'MON', title:'DUBLA® Launch Party',
-    venue:'Shibuya WOMB', time:'2026.06.01 20:00 — 26:00',
-    by:'NOBBY + SACHI', meta:'NOBBY + SACHI · 20:00 — · Shibuya WOMB',
-    price:'¥2,500',
-    tags:['PARTY','FASHION'],
-    desc:'DUBLA® ブランドローンチパーティ。限定アイテム販売 + ライブセット。' },
-  { id:'e4', type:'workshop', cat:'WORKSHOP', catColor:'#F5C842',
-    m:'JUN', d:'01', weekday:'MON', title:'Breaking — Cypher Lab',
-    venue:'渋谷 WOMB 2F', time:'2026.06.01 15:00 — 19:00',
-    by:'CREW NRG', meta:'CREW NRG · 15:00 — 19:00 · 渋谷 WOMB 2F',
-    price:'¥5,000',
-    tags:['BREAKING','INTERMEDIATE'],
-    desc:'CREW NRG によるブレイキン中級者向け Cypher Lab。ムーブの質を高める実践型セッション。' },
-  { id:'e5', type:'workshop', cat:'WORKSHOP', catColor:'#00E5A0',
-    m:'JUN', d:'08', weekday:'MON', title:'House Dance × DJ Lab',
-    venue:'渋谷 Studio A', time:'2026.06.08 14:00 — 18:00',
-    by:'NOBBY + DJ KEITA', meta:'NOBBY + DJ KEITA · 14:00 — 18:00',
-    price:'¥7,000',
-    tags:['HOUSE','DJ','COLLAB'],
-    desc:'NOBBY と DJ KEITA によるハウスダンス × DJ コラボレーション・ラボ。踊る側と選曲側の対話を体感する実験的ワークショップ。' },
-  { id:'e6', type:'event', cat:'EVENT', catColor:'#E8100A',
-    m:'JUL', d:'05', weekday:'SAT', title:'All Must Dance Vol.26',
-    venue:'LIQUIDROOM TOKYO', time:'2026.07.05 21:00 — 28:00',
-    by:'NOBBY', meta:'NOBBY · 21:00 — · LIQUIDROOM TOKYO',
-    price:'¥3,000',
-    tags:['DJ','HOUSE','TECHNO'],
-    desc:'All Must Dance 夏の陣。Vol.26 はゲスト DJ 陣を拡大、朝6時まで開催。' },
-];
+const SCHEDULE = [];
 
 /* Populate following list */
 /* Merge user-posted events + workshops from localStorage
