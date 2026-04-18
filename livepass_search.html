@@ -256,6 +256,38 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   letter-spacing:.22em;text-transform:uppercase;
   color:rgba(237,235,230,.35);
 }
+
+/* ── Manual account add ─────────────────────── */
+.account-add-wrap{padding:0 18px 28px;}
+.account-add-btn{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 16px;border-radius:99px;
+  background:rgba(255,255,255,.03);
+  border:0.5px dashed rgba(237,235,230,.18);
+  color:rgba(237,235,230,.65);
+  font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;
+}
+.account-add-btn:active{background:rgba(255,255,255,.06)}
+.account-add-btn svg{stroke:currentColor}
+.account-add-form{display:none;padding:14px 16px;margin-top:10px;border:0.5px solid rgba(237,235,230,.12);border-radius:12px;background:rgba(255,255,255,.03)}
+.account-add-form.open{display:block}
+.account-add-form input{
+  display:block;width:100%;padding:10px 14px;margin-bottom:10px;
+  background:rgba(255,255,255,.04);border:0.5px solid rgba(237,235,230,.12);
+  border-radius:8px;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-size:12px;color:var(--white);
+  outline:none;
+}
+.account-add-form input:focus{border-color:var(--blue)}
+.account-add-form input::placeholder{color:rgba(237,235,230,.35)}
+.account-add-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:4px}
+.account-add-cancel,.account-add-save{
+  padding:8px 16px;border-radius:99px;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;font-weight:600;letter-spacing:.04em;
+}
+.account-add-cancel{background:none;border:0.5px solid rgba(237,235,230,.18);color:rgba(237,235,230,.55)}
+.account-add-save{background:var(--blue);color:#fff;border:1px solid var(--blue)}
+.account-add-save:disabled{opacity:.5}
 </style>
 <script type="module" src="/firebase-init.js"></script>
 </head>
@@ -471,6 +503,22 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 
   <!-- Account search results (friend discovery) -->
   <div id="accountResults" class="account-results"></div>
+
+  <!-- Manual account add (for friends not yet in the directory) -->
+  <div class="account-add-wrap">
+    <button id="accountAddToggle" type="button" class="account-add-btn">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      新しいアカウントを追加
+    </button>
+    <div id="accountAddForm" class="account-add-form">
+      <input type="text" id="accountAddName" placeholder="アカウント名（例: TARO）" autocomplete="off">
+      <input type="text" id="accountAddRole" placeholder="役割・肩書き（例: Photographer）" autocomplete="off">
+      <div class="account-add-actions">
+        <button type="button" id="accountAddCancel" class="account-add-cancel">キャンセル</button>
+        <button type="button" id="accountAddSave" class="account-add-save">追加してフォロー</button>
+      </div>
+    </div>
+  </div>
 
   <div class="tag-row">
     <button class="tag-pill active">ALL</button>
@@ -748,6 +796,11 @@ document.querySelectorAll('.tag-pill').forEach(p => {
   function buildDirectory(){
     const map = new Map();
     KNOWN_ACCOUNTS.forEach(a => map.set(a.name, a));
+    // User-added custom accounts (manual adds) come first so their role wins
+    getList('livepass_custom_accounts').forEach(u => {
+      const name = typeof u === 'string' ? u : u && u.name;
+      if (name) map.set(name, { name, role: (u && u.role) || 'Custom' });
+    });
     // Past authors from any post type
     const postKeys = ['livepass_articles','livepass_events','livepass_workshops','livepass_exhibitions'];
     postKeys.forEach(k => {
@@ -771,7 +824,8 @@ document.querySelectorAll('.tag-pill').forEach(p => {
     return Array.from(map.values()).filter(a => (a.name || '').toUpperCase() !== me);
   }
 
-  const DIRECTORY = buildDirectory();
+  let DIRECTORY = buildDirectory();
+  function refreshDirectory(){ DIRECTORY = buildDirectory(); }
 
   function render(q){
     const query = (q || '').trim().toLowerCase();
@@ -819,6 +873,46 @@ document.querySelectorAll('.tag-pill').forEach(p => {
       location.href = '/profile?user=' + encodeURIComponent(name);
     }
   });
+
+  // ── Manual account add (for friends not yet in the directory) ──
+  const addBtn    = document.getElementById('accountAddToggle');
+  const addForm   = document.getElementById('accountAddForm');
+  const addName   = document.getElementById('accountAddName');
+  const addRole   = document.getElementById('accountAddRole');
+  const addCancel = document.getElementById('accountAddCancel');
+  const addSave   = document.getElementById('accountAddSave');
+  if (addBtn && addForm) {
+    addBtn.addEventListener('click', () => {
+      addForm.classList.toggle('open');
+      if (addForm.classList.contains('open')) {
+        addName.value = (input.value || '').trim();
+        addRole.value = '';
+        setTimeout(() => addName.focus(), 50);
+      }
+    });
+    addCancel.addEventListener('click', () => addForm.classList.remove('open'));
+    addSave.addEventListener('click', () => {
+      const name = (addName.value || '').trim();
+      const role = (addRole.value || '').trim();
+      if (!name) { addName.focus(); return; }
+      // Normalize name to uppercase, dedupe against the current directory
+      const uname = name.toUpperCase();
+      const me = (localStorage.getItem('livepass_account_name') || '').toUpperCase();
+      if (uname === me) { alert('自分のアカウント名は追加できません'); return; }
+      const list = getList('livepass_custom_accounts');
+      if (!list.some(u => (u.name || '').toUpperCase() === uname)) {
+        list.unshift({ name: uname, role });
+        saveList('livepass_custom_accounts', list);
+      }
+      // Auto-follow the new account
+      if (!isFollowing(uname)) toggleFollow(uname, role);
+      refreshDirectory();
+      addForm.classList.remove('open');
+      input.value = uname;
+      render(uname);
+      if (navigator.vibrate) navigator.vibrate([10, 30, 10]);
+    });
+  }
 })();
 </script>
 </body>
