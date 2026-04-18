@@ -1752,6 +1752,9 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 body.show-sub #panel-pass{display:none !important}
 body.show-sub #panel-sub{display:block !important}
 body.show-sub .profile-hero{border-bottom:0.5px solid rgba(10,10,10,.08)}
+/* /saved route: show the SAVED panel instead of PASS COLLECTION */
+body.on-saved-route #panel-pass{display:none !important}
+body.on-saved-route #panel-saved{display:block !important}
 .ph-heart-btn.active{background:rgba(10,10,10,.08) !important}
 /* Close icon when sub is shown */
 body.show-sub .ph-heart-btn svg{opacity:0}
@@ -1836,7 +1839,7 @@ body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;c
       <div class="pass-header">
         <div>
           <div class="ph-label-ywt">YOU WERE THERE</div>
-          <div class="ph-label-pass">PASS HOLDER</div>
+          <div class="ph-label-pass">EXPASS HOLDER</div>
         </div>
         <div class="ph-count" id="phCount">3 PASSES</div>
       </div>
@@ -2106,11 +2109,11 @@ document.querySelectorAll('.st-btn').forEach(btn => {
   });
 });
 
-// If we arrived via the /saved route (bottom-nav bookmark icon), open the
-// SAVED sub-tab by default instead of the usual PASS COLLECTION.
+// If we arrived via the /saved route (bottom-nav bookmark icon), tag body
+// so CSS swaps PASS COLLECTION for the SAVED panel, and kick off its render.
 if (location.pathname === '/saved' || new URLSearchParams(location.search).get('sub') === 'saved') {
-  const savedBtn = document.querySelector('.st-btn[data-sub="saved"]');
-  if (savedBtn) savedBtn.click();
+  document.body.classList.add('on-saved-route');
+  if (typeof renderSavedGrid === 'function') renderSavedGrid();
 }
 
 /* ─────────────────────────────────────────────
