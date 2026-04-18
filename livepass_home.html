@@ -69,8 +69,10 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;
   touch-action:pan-y;overscroll-behavior-x:none;max-width:100vw;}
 
-/* SCREEN: hide the topbar entirely and let the cover image live at the top */
-.topbar{display:none !important}
+/* SCREEN: hide the topbar chrome (logo, messages, settings) but keep the + button floating over the cover. */
+.topbar{background:transparent !important;border:none !important;pointer-events:none !important;min-height:0 !important;padding:0 !important;}
+.topbar .tb-brand{display:none !important}
+.topbar #tbCreate{pointer-events:auto !important;background:rgba(0,0,0,.35) !important;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:0.5px solid rgba(255,255,255,.25) !important;border-radius:50% !important;color:#fff !important;right:14px !important;top:calc(var(--safe-top,0px) + 14px) !important}
 .content{padding-top:var(--safe-top,0px) !important}
 .screen-top-cover{position:relative;width:100%;aspect-ratio:16/9;background:#0a0a0a;overflow:hidden;border-bottom:0.5px solid rgba(255,255,255,.06);cursor:pointer;}
 .screen-top-cover .stc-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
