@@ -724,9 +724,10 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 .pr-role{font-size:11px !important}
 
 
-/* ── Header: logo only, centered ── */
+/* ── Header: logo only, centered (keep + create icon visible) ── */
 .topbar{min-height:calc(var(--safe-top,0px) + 48px) !important;padding:calc(var(--safe-top,0px) + 6px) 18px 10px !important}
-.topbar .tb-icon{display:none !important}
+.topbar .tb-icon:not(#tbCreate){display:none !important}
+.topbar #tbCreate{position:absolute !important;right:18px !important;top:calc(var(--safe-top,0px) + 10px) !important;}
 .topbar .tb-brand{position:relative !important;left:auto !important;top:auto !important;transform:none !important;margin:0 auto !important;height:32px !important}
 
 </style>
