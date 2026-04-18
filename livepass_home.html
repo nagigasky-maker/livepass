@@ -1074,12 +1074,19 @@ window.addEventListener('fb-auth-ready', async ({ detail }) => {
         if (!ls.some(x => x.id === d.id)) { ls.unshift(data); localStorage.setItem(key, JSON.stringify(ls)); }
       } catch(e){}
     });
-    // SCREEN shows only the current user's own posts
+    // SCREEN shows only the current user's own posts.
+    // localStorage is treated as the source of truth (anything compose just
+    // saved is always kept), then Firestore posts that match the user are
+    // added on top — but never duplicate or override what's already local.
     const myUid = detail.user.uid;
     const myName = (localStorage.getItem('livepass_account_name') || '').toUpperCase();
-    const myPosts = fbPosts.filter(p => p.authorUid === myUid || (p.author || '').toUpperCase() === myName);
-    const localOnly = getUserArticles().filter(a => !seenIds.has(a.id));
-    RAW_FEED = [...myPosts, ...localOnly];
+    const localArticles = getUserArticles();
+    const localIds = new Set(localArticles.map(a => a.id));
+    const myPosts = fbPosts.filter(p =>
+      !localIds.has(p.id) &&
+      (p.authorUid === myUid || (p.author || '').toUpperCase() === myName)
+    );
+    RAW_FEED = [...localArticles, ...myPosts];
     FEED = buildBalancedFeed(RAW_FEED);
     writeArticleMeta();
     renderMagazine(FEED);
