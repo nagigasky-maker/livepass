@@ -106,7 +106,7 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 /* Event list — shared with Profile SCREEN */
 .ev-list{padding:4px 0 30px}
 .ev-item{
-  display:flex;padding:14px 20px;gap:12px;
+  display:flex;padding:16px 20px;gap:12px;
   border-bottom:0.5px solid rgba(255,255,255,.04);
   position:relative;cursor:pointer;align-items:center;
 }
@@ -116,7 +116,7 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 }
 /* Flyer thumbnail on the left of each row */
 .ev-thumb{
-  flex-shrink:0;width:68px;height:88px;border-radius:8px;
+  flex-shrink:0;width:78px;height:100px;border-radius:8px;
   overflow:hidden;background:#0a0a0a;
   border:0.5px solid rgba(255,255,255,.08);
   position:relative;
@@ -131,26 +131,26 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   font-size:18px;color:rgba(237,235,230,.12);
   background:linear-gradient(135deg,rgba(255,255,255,.02),rgba(255,255,255,.05));
 }
-.ev-date{flex-shrink:0;width:46px;text-align:left;line-height:1}
+.ev-date{flex-shrink:0;width:50px;text-align:left;line-height:1}
 .ev-date .m{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
-  font-size:10px;letter-spacing:.12em;
+  font-size:11px;letter-spacing:.12em;
   color:var(--cat-color,var(--muted));text-transform:uppercase;}
 .ev-date .d{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
-  font-size:28px;color:var(--white);margin-top:2px;}
+  font-size:32px;color:var(--white);margin-top:2px;}
 .ev-body{flex:1;min-width:0}
 .ev-cat{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
   font-size:9px;letter-spacing:.22em;
   color:var(--cat-color,var(--muted));text-transform:uppercase;margin-bottom:3px;}
 .ev-title{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
-  font-size:13px;color:var(--white);margin-bottom:3px;line-height:1.2;
+  font-size:15px;color:var(--white);margin-bottom:4px;line-height:1.2;
   overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
 .ev-meta{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
-  font-size:9px;color:rgba(237,235,230,.45);letter-spacing:.02em;line-height:1.5;
+  font-size:11px;color:rgba(237,235,230,.45);letter-spacing:.02em;line-height:1.5;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .ev-tags{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
 .ev-tag{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
-  font-size:7px;letter-spacing:.12em;
-  padding:2px 8px;border-radius:99px;
+  font-size:8px;letter-spacing:.12em;
+  padding:3px 9px;border-radius:99px;
   border:1px solid var(--cat-color,var(--muted));
   color:var(--cat-color,var(--muted));text-transform:uppercase;}
 .ev-right{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
@@ -166,10 +166,11 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   padding:max(14px,calc(var(--safe-top) + 12px)) 18px 12px;
   display:flex;align-items:center;gap:14px;
   background:rgba(0,0,0,.96);border-bottom:0.5px solid var(--border);}
-.em-close{width:36px;height:36px;border-radius:50%;
+.em-close,.em-iconbtn{width:36px;height:36px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;color:var(--white);
-  border:0.5px solid rgba(255,255,255,.15);}
-.em-close svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
+  border:0.5px solid rgba(255,255,255,.15);background:transparent;padding:0;}
+.em-close svg,.em-iconbtn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.em-header-actions{display:flex;align-items:center;gap:8px;}
 .em-label{font-family:'IBM Plex Mono',monospace;font-size:8px;
   letter-spacing:.32em;text-transform:uppercase;
   color:rgba(237,235,230,.3);margin-left:auto;}
@@ -454,29 +455,16 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   } catch(e) {}
 })();
 
-/* ── DEMO SEED — inject sample events if none exist (remove later) ── */
+/* ── CALENDAR RESET v1 — clear all posts once, disable demo seed ── */
 (function(){
-  if (localStorage.getItem('livepass_demo_seeded') === 'v2') return;
-  const demoEvents = [
-    {id:'demo_e1',type:'event',category:'DJ',title:'VOID — Resident Night',venue:'Contact Tokyo',date:'2026-04-18',time:'23:00',price:'3500',author:'VOID',tags:['TECHNO','DEEP'],cover:'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&q=80',body:'毎月第3金曜のレジデントナイト。4名のレジデントDJによるノンストップ6時間。'},
-    {id:'demo_e2',type:'event',category:'PARTY',title:'DEPTH × EXPASS presents UNDERGROUND',venue:'WOMB, Shibuya',date:'2026-04-20',time:'22:00',price:'4000',author:'NOBBY',tags:['HOUSE','TECHNO','PARTY'],cover:'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600&q=80',body:'WOMBの全4フロアを使ったオールナイト。国内外のDJが集結。'},
-    {id:'demo_e3',type:'event',category:'LIVE',title:'B-BOY PARK TOKYO 2026',venue:'Yoyogi Park',date:'2026-04-25',time:'12:00',price:'0',author:'KENJI',tags:['HIP-HOP','BREAKING','DANCE'],cover:'https://images.unsplash.com/photo-1535525153412-5a42439a210d?w=600&q=80',body:'日本最大のブレイキンの祭典。エントリー無料、観覧無料。'},
-    {id:'demo_e4',type:'event',category:'DJ',title:'Golden Week: NOBBY × KEITA',venue:'Liquidroom',date:'2026-05-02',time:'22:00',price:'4500',author:'NOBBY',tags:['DJ','HOUSE','TECHNO'],cover:'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=600&q=80',body:'GW特別2マン。NOBBYとDJ KEITAが4時間ずつ。'},
-    {id:'demo_e5',type:'event',category:'PARTY',title:'ALL MUST DANCE™ vol.26',venue:'clubasia',date:'2026-05-04',time:'23:00',price:'4500',author:'NOBBY',tags:['PARTY','ART','FASHION','MUSIC'],cover:'https://images.unsplash.com/photo-1492684223f8-e1f7e12d4fa0?w=600&q=80',body:'クラブアジア全フロア。アート展示、ファッション、ライブペイント、DJの全部入り。'},
-    {id:'demo_e6',type:'event',category:'EXHIBITION',title:'DUBLA® SS26 Launch Party',venue:'Shibuya WOMB',date:'2026-06-01',time:'20:00',price:'0',author:'DUBLA®',tags:['PARTY','FASHION'],cover:'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80',body:'DUBLA®の新作コレクション発表パーティ。入場無料、1ドリンク付き。'},
-  ];
-  const demoWS = [
-    {id:'demo_w1',type:'workshop',category:'HOUSE',title:'Waacking Intensive',venue:'代官山スタジオ',date:'2026-05-18',time:'13:00',price:'3000',author:'SACHI',tags:['WAACKING','ALL LEVELS'],cover:'https://images.unsplash.com/photo-1550684376-efcbd6e3f031?w=600&q=80',body:'3時間の集中ワークショップ。基礎からバトル実践まで。'},
-    {id:'demo_w2',type:'workshop',category:'BREAKING',title:'Power Move Basics',venue:'B-BOY Park Studio',date:'2026-04-22',time:'19:00',price:'2500',author:'KENJI',tags:['BREAKING','BEGINNER'],cover:'https://images.unsplash.com/photo-1535525153412-5a42439a210d?w=600&q=80',body:'ウィンドミル、トーマスの基礎を安全に学ぶ。'},
-    {id:'demo_w3',type:'workshop',category:'POPPING',title:'Popping Foundation',venue:'Studio Roppongi',date:'2026-04-26',time:'14:00',price:'3000',author:'NOBBY',tags:['POPPING','ALL LEVELS'],cover:'https://images.unsplash.com/photo-1545128485-c400e7702712?w=600&q=80',body:'ヒット、ウェーブ、アイソレーション。体の使い方を基礎から。'},
-  ];
-  const existing_e = JSON.parse(localStorage.getItem('livepass_events') || '[]').filter(e => !e.id.startsWith('demo_'));
-  const existing_w = JSON.parse(localStorage.getItem('livepass_workshops') || '[]').filter(e => !e.id.startsWith('demo_'));
-  localStorage.setItem('livepass_events', JSON.stringify([...demoEvents, ...existing_e]));
-  localStorage.setItem('livepass_workshops', JSON.stringify([...demoWS, ...existing_w]));
-  localStorage.setItem('livepass_demo_seeded', 'v2');
+  if (localStorage.getItem('livepass_calendar_reset') === 'v1') return;
+  localStorage.removeItem('livepass_events');
+  localStorage.removeItem('livepass_workshops');
+  localStorage.removeItem('livepass_exhibitions');
+  localStorage.removeItem('livepass_demo_seeded');
+  localStorage.setItem('livepass_calendar_reset', 'v1');
 })();
-/* ── END DEMO SEED ── */
+/* ── END RESET ── */
 </script>
 <script>
 /* PWA NAV FIX v66 — form-submission technique for iOS PWA standalone.
@@ -508,10 +496,16 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
     e.stopPropagation();
     // Use form submission — iOS PWA treats this as in-app navigation
     try {
+      var u2 = new URL(a.href, location.href);
       var form = document.createElement('form');
       form.method = 'GET';
-      form.action = a.href;
+      form.action = u2.origin + u2.pathname;
       form.style.display = 'none';
+      u2.searchParams.forEach(function(value, key){
+        var inp = document.createElement('input');
+        inp.type = 'hidden'; inp.name = key; inp.value = value;
+        form.appendChild(inp);
+      });
       document.body.appendChild(form);
       form.submit();
     } catch(err) {
@@ -628,7 +622,7 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 /* ── Event detail modal — white ── */
 #eventModal{background:#FFFFFF !important;color:#0A0A0A !important}
 .em-header{background:#FFFFFF !important;border-bottom:0.5px solid rgba(10,10,10,.08) !important}
-.em-close{color:#0A0A0A !important;border-color:rgba(10,10,10,.18) !important}
+.em-close,.em-iconbtn{color:#0A0A0A !important;border-color:rgba(10,10,10,.18) !important}
 .em-label{color:rgba(10,10,10,.4) !important}
 .em-body{background:#FFFFFF !important}
 .em-hero{background:rgba(10,10,10,.03) !important}
@@ -730,9 +724,10 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 .pr-role{font-size:11px !important}
 
 
-/* ── Header: logo only, centered ── */
+/* ── Header: logo only, centered (keep + create icon visible) ── */
 .topbar{min-height:calc(var(--safe-top,0px) + 48px) !important;padding:calc(var(--safe-top,0px) + 6px) 18px 10px !important}
-.topbar .tb-icon{display:none !important}
+.topbar .tb-icon:not(#tbCreate){display:none !important}
+.topbar #tbCreate{position:absolute !important;right:18px !important;top:calc(var(--safe-top,0px) + 10px) !important;}
 .topbar .tb-brand{position:relative !important;left:auto !important;top:auto !important;transform:none !important;margin:0 auto !important;height:32px !important}
 
 </style>
@@ -777,8 +772,8 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
   <header class="em-header">
     <button class="em-close" id="emClose" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18" stroke-linecap="round"/><line x1="6" y1="18" x2="18" y2="6" stroke-linecap="round"/></svg></button>
     <div class="em-header-actions" id="emHeaderActions" style="display:none">
-      <a id="emEditLink" href="#" style="font-size:10px;font-weight:600;letter-spacing:.05em;color:#0A0A0A;padding:6px 14px;border-radius:99px;text-decoration:none;background:rgba(255,255,255,.8);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:0.5px solid rgba(10,10,10,.18)"><svg viewBox="0 0 24 24" width="14" height="14" style="stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></a>
-      <button id="emDeleteBtn" style="font-size:10px;font-weight:600;letter-spacing:.05em;color:#E8100A;padding:6px 14px;border-radius:99px;background:rgba(255,255,255,.8);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:0.5px solid rgba(232,16,10,.25)"><svg viewBox="0 0 24 24" width="14" height="14" style="stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+      <a id="emEditLink" class="em-iconbtn" href="#" aria-label="Edit"><svg viewBox="0 0 24 24"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></a>
+      <button id="emDeleteBtn" class="em-iconbtn" type="button" aria-label="Delete"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
     </div>
     <div class="em-label" id="emLabel">Event</div>
   </header>
@@ -872,50 +867,7 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 
 <script>
 /* Sample schedule data — mix of events & workshops from following */
-const SCHEDULE = [
-  { id:'e1', type:'event', cat:'EVENT', catColor:'#E8100A',
-    m:'MAY', d:'03', weekday:'SAT', title:'All Must Dance Vol.25',
-    venue:'LIQUIDROOM TOKYO', time:'2026.05.03 21:00 — 28:00',
-    by:'NOBBY / SPACE COOKING™', meta:'NOBBY · 21:00 — · LIQUIDROOM TOKYO',
-    price:'¥3,000',
-    tags:['DJ','HOUSE','TECHNO'],
-    desc:'東京・恵比寿 LIQUIDROOM で開催される NOBBY 主催の定番パーティ第25回。フロアは2階構成、EXPASS ホルダーは専用エントランス。' },
-  { id:'e2', type:'workshop', cat:'WORKSHOP', catColor:'#F4C0D1',
-    m:'MAY', d:'18', weekday:'SUN', title:'Waacking Intensive',
-    venue:'代官山スタジオ', time:'2026.05.18 13:00 — 17:00',
-    by:'SACHI', meta:'SACHI · 13:00 — 17:00 · 代官山スタジオ',
-    price:'¥6,000',
-    tags:['WAACKING','ALL LEVELS'],
-    desc:'SACHI が指導する Waacking 集中講座。基礎技法から振付まで4時間で完結。全レベル対応・見学可。' },
-  { id:'e3', type:'event', cat:'EVENT', catColor:'#bf5af2',
-    m:'JUN', d:'01', weekday:'MON', title:'DUBLA® Launch Party',
-    venue:'Shibuya WOMB', time:'2026.06.01 20:00 — 26:00',
-    by:'NOBBY + SACHI', meta:'NOBBY + SACHI · 20:00 — · Shibuya WOMB',
-    price:'¥2,500',
-    tags:['PARTY','FASHION'],
-    desc:'DUBLA® ブランドローンチパーティ。限定アイテム販売 + ライブセット。' },
-  { id:'e4', type:'workshop', cat:'WORKSHOP', catColor:'#F5C842',
-    m:'JUN', d:'01', weekday:'MON', title:'Breaking — Cypher Lab',
-    venue:'渋谷 WOMB 2F', time:'2026.06.01 15:00 — 19:00',
-    by:'CREW NRG', meta:'CREW NRG · 15:00 — 19:00 · 渋谷 WOMB 2F',
-    price:'¥5,000',
-    tags:['BREAKING','INTERMEDIATE'],
-    desc:'CREW NRG によるブレイキン中級者向け Cypher Lab。ムーブの質を高める実践型セッション。' },
-  { id:'e5', type:'workshop', cat:'WORKSHOP', catColor:'#00E5A0',
-    m:'JUN', d:'08', weekday:'MON', title:'House Dance × DJ Lab',
-    venue:'渋谷 Studio A', time:'2026.06.08 14:00 — 18:00',
-    by:'NOBBY + DJ KEITA', meta:'NOBBY + DJ KEITA · 14:00 — 18:00',
-    price:'¥7,000',
-    tags:['HOUSE','DJ','COLLAB'],
-    desc:'NOBBY と DJ KEITA によるハウスダンス × DJ コラボレーション・ラボ。踊る側と選曲側の対話を体感する実験的ワークショップ。' },
-  { id:'e6', type:'event', cat:'EVENT', catColor:'#E8100A',
-    m:'JUL', d:'05', weekday:'SAT', title:'All Must Dance Vol.26',
-    venue:'LIQUIDROOM TOKYO', time:'2026.07.05 21:00 — 28:00',
-    by:'NOBBY', meta:'NOBBY · 21:00 — · LIQUIDROOM TOKYO',
-    price:'¥3,000',
-    tags:['DJ','HOUSE','TECHNO'],
-    desc:'All Must Dance 夏の陣。Vol.26 はゲスト DJ 陣を拡大、朝6時まで開催。' },
-];
+const SCHEDULE = [];
 
 /* Populate following list */
 /* Merge user-posted events + workshops from localStorage
