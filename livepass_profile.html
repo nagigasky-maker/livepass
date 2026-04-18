@@ -1707,6 +1707,12 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
   background:rgba(10,10,10,.04);border:1px solid rgba(10,10,10,.15);
   color:#0A0A0A;cursor:pointer;transition:background .2s;
 }
+/* When the SUB button lives in the topbar, anchor it to the left. */
+.topbar .ph-heart-btn{
+  position:absolute !important;left:14px !important;right:auto !important;
+  top:calc(var(--safe-top,0px) + 2px) !important;transform:none !important;
+}
+.topbar{min-height:calc(var(--safe-top,0px) + 60px) !important;padding-top:calc(var(--safe-top,0px) + 4px) !important}
 .ph-heart-btn svg,.ph-heart-btn img{width:50px;height:50px;fill:none;stroke:currentColor;object-fit:contain;display:block}
 .ph-heart-btn:active{background:rgba(10,10,10,.08)}
 
@@ -1778,6 +1784,11 @@ body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;c
 
 <!-- ═══ TOP BAR ═══ -->
 <div class="topbar">
+  <!-- SUB (subscription/tip) — toggles PASS ↔ SUB panel -->
+  <button class="ph-heart-btn" id="phHeartBtn" aria-label="サブスク・投げ銭" onclick="document.body.classList.toggle('show-sub');this.classList.toggle('active');document.querySelector('.content')?.scrollTo({top:0,behavior:'smooth'})">
+    <img src="/sub.png" alt="Subscription" style="width:50px;height:50px;object-fit:contain;display:block">
+  </button>
+
   <a class="tb-brand" href="/screen" aria-label="EXPASS"><img src="/expass_icon.png" alt="EXPASS"></a>
 
   <!-- + Create -->
@@ -1810,10 +1821,6 @@ body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;c
       <div class="ph-name"></div>
       <div class="ph-role"></div>
     </div>
-    <!-- Heart icon — opens subscription/tip section (own profile) -->
-    <button class="ph-heart-btn" id="phHeartBtn" aria-label="サブスク・投げ銭" onclick="document.body.classList.toggle('show-sub');this.classList.toggle('active');document.querySelector('.content')?.scrollTo({top:0,behavior:'smooth'})">
-      <img src="/sub.png" alt="Subscription" style="width:50px;height:50px;object-fit:contain;display:block">
-    </button>
     <!-- Follow / DM only shown when viewing another user's profile via ?user= -->
     <div class="ph-actions" id="phActions" style="display:none">
       <button class="ph-follow-btn" id="phFollowBtn" style="display:none">フォロー</button>
