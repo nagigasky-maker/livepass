@@ -1738,10 +1738,18 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 .pr-role{font-size:11px !important}
 
 
-/* ── Remove sub-tabs, show only PASS panel + sub section always ── */
+/* ── Remove sub-tabs; panel-pass default, panel-sub only when handshake is active ── */
 .subtabs{display:none !important}
-.sub-panel{display:block !important}
+#panel-pass{display:block !important}
 #panel-screen,#panel-saved{display:none !important}
+#panel-sub{display:none !important;padding-top:20px}
+body.show-sub #panel-pass{display:none !important}
+body.show-sub #panel-sub{display:block !important}
+body.show-sub .profile-hero{border-bottom:0.5px solid rgba(10,10,10,.08)}
+.ph-heart-btn.active{background:rgba(10,10,10,.08) !important}
+/* Close icon when sub is shown */
+body.show-sub .ph-heart-btn svg{opacity:0}
+body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;color:#0A0A0A;position:absolute;line-height:1}
 
 </style>
 
@@ -1782,7 +1790,7 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
       <div class="ph-role"></div>
     </div>
     <!-- Heart icon — opens subscription/tip section (own profile) -->
-    <button class="ph-heart-btn" id="phHeartBtn" aria-label="サブスク・投げ銭" onclick="document.getElementById('panel-sub')?.scrollIntoView({behavior:'smooth'})">
+    <button class="ph-heart-btn" id="phHeartBtn" aria-label="サブスク・投げ銭" onclick="document.body.classList.toggle('show-sub');this.classList.toggle('active');document.querySelector('.content')?.scrollTo({top:0,behavior:'smooth'})">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"/><path d="m21 3 1 11h-2"/><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"/><path d="M3 4h8"/></svg>
     </button>
     <!-- Follow / DM only shown when viewing another user's profile via ?user= -->
