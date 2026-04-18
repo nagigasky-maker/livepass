@@ -1018,12 +1018,11 @@ pmUpgradeBtn.addEventListener('click', () => {
   closeProModal();
 });
 
-/* Paint locked state on PRO buttons for non-PRO users */
+/* Paint locked state on BIZ buttons only (PRO layouts are unlocked during prototype) */
 function refreshProLockState() {
-  const isPro = isProUser();
   const isBiz = isBizUser();
   document.querySelectorAll('.lay-btn[data-pro="1"]').forEach(b => {
-    b.classList.toggle('locked', !isPro);
+    b.classList.remove('locked');
   });
   document.querySelectorAll('.lay-btn[data-biz="1"]').forEach(b => {
     b.classList.toggle('locked', !isBiz);
@@ -1031,12 +1030,11 @@ function refreshProLockState() {
 }
 refreshProLockState();
 
-/* Layout picker */
+/* Layout picker — PRO gate is disabled during prototype so cinema etc.
+   can be selected without opening the upgrade modal. */
 document.querySelectorAll('.lay-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    const needsPro = btn.dataset.pro === '1';
     const needsBiz = btn.dataset.biz === '1';
-    if (needsPro && !isProUser()) { openProModal(); return; }
     if (needsBiz && !isBizUser()) {
       alert('この画角は BIZ プラン限定です。\n企業・ブランド・オーガナイズチーム向けの特別フォーマットです。');
       return;
