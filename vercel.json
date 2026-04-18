@@ -3,9 +3,13 @@
     { "source": "/p/amd",    "destination": "/livepass_flashback.html" },
     { "source": "/",         "destination": "/livepass_home.html" },
     { "source": "/home",     "destination": "/livepass_home.html" },
+    { "source": "/screen",   "destination": "/livepass_home.html" },
     { "source": "/search",   "destination": "/livepass_search.html" },
+    { "source": "/discovery","destination": "/livepass_search.html" },
     { "source": "/calendar", "destination": "/livepass_calendar.html" },
     { "source": "/profile",  "destination": "/livepass_profile.html" },
+    { "source": "/collection","destination": "/livepass_profile.html" },
+    { "source": "/subscription","destination": "/livepass_subscription.html" },
     { "source": "/settings", "destination": "/livepass_settings.html" },
     { "source": "/onboarding","destination": "/livepass_onboarding.html" },
     { "source": "/signup",    "destination": "/livepass_onboarding.html" },
@@ -52,7 +56,7 @@
       ]
     },
     {
-      "source": "/(home|search|calendar|profile|settings|messages|followers|onboarding|signup|login|terms|privacy|start|app|feed|me|test66|compose/article|compose/event|compose/workshop|compose/exhibition|checkout/success|checkout/cancel|p/amd)",
+      "source": "/(home|screen|search|discovery|calendar|profile|collection|subscription|settings|messages|followers|onboarding|signup|login|terms|privacy|start|app|feed|me|test66|compose/article|compose/event|compose/workshop|compose/exhibition|checkout/success|checkout/cancel|p/amd)",
       "headers": [
         { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" },
         { "key": "Pragma", "value": "no-cache" },
