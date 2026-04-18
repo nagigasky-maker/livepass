@@ -39,8 +39,8 @@ html,body{
   const hasLocalIdentity = !!localStorage.getItem('livepass_account_name');
 
   function decide(user){
-    if (user) location.replace('/profile');
-    else if (hasLocalIdentity) location.replace('/profile');
+    if (user) location.replace('/screen');
+    else if (hasLocalIdentity) location.replace('/screen');
     else location.replace('/login');
   }
 
