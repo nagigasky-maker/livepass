@@ -642,6 +642,29 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
     <div class="field-chevron">›</div>
   </div>
 
+  <!-- ═══ MULTI-ACCOUNT ═══ -->
+  <div class="sec-label">ACCOUNTS</div>
+  <div id="accountsList" style="padding:0 20px 10px"></div>
+  <div style="padding:0 20px 30px">
+    <button id="addAccountToggle" type="button"
+      style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:99px;background:rgba(255,255,255,.03);border:0.5px dashed rgba(237,235,230,.18);color:rgba(237,235,230,.65);font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      新規別アカウントを作成
+    </button>
+    <div id="addAccountForm" style="display:none;padding:14px 16px;margin-top:10px;border:0.5px solid rgba(237,235,230,.12);border-radius:12px;background:rgba(255,255,255,.03)">
+      <input type="text" id="newAccountName" placeholder="アカウント名（例: NOBBY_ALT）" autocomplete="off"
+        style="display:block;width:100%;padding:10px 14px;margin-bottom:10px;background:rgba(255,255,255,.04);border:0.5px solid rgba(237,235,230,.12);border-radius:8px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:12px;color:var(--white);outline:none">
+      <input type="text" id="newAccountRole" placeholder="スタイル（例: Artist）" autocomplete="off"
+        style="display:block;width:100%;padding:10px 14px;margin-bottom:10px;background:rgba(255,255,255,.04);border:0.5px solid rgba(237,235,230,.12);border-radius:8px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:12px;color:var(--white);outline:none">
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button type="button" id="addAccountCancel"
+          style="padding:8px 16px;border-radius:99px;background:none;border:0.5px solid rgba(237,235,230,.18);color:rgba(237,235,230,.55);font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;font-weight:600">キャンセル</button>
+        <button type="button" id="addAccountSave"
+          style="padding:8px 16px;border-radius:99px;background:var(--blue);color:#fff;border:1px solid var(--blue);font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;font-weight:600">作成して切替</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ═══ SUBSCRIPTION ═══ -->
   <div class="sec-label">SUBSCRIPTION</div>
   <div style="padding:20px 20px 20px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;color:rgba(237,235,230,.35);letter-spacing:.02em;line-height:1.8">
@@ -938,6 +961,122 @@ document.getElementById('signOutBtn')?.addEventListener('click', async () => {
       el.innerHTML = '<img src="' + av + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block">';
     });
   } catch(e){}
+})();
+
+/* ─────────────────────────────────────────────
+   MULTI-ACCOUNT — create and switch between
+   additional local accounts on this device.
+   ───────────────────────────────────────────── */
+(function initMultiAccount(){
+  const listEl   = document.getElementById('accountsList');
+  const toggle   = document.getElementById('addAccountToggle');
+  const form     = document.getElementById('addAccountForm');
+  const nameIn   = document.getElementById('newAccountName');
+  const roleIn   = document.getElementById('newAccountRole');
+  const cancelBt = document.getElementById('addAccountCancel');
+  const saveBt   = document.getElementById('addAccountSave');
+  if (!listEl || !toggle) return;
+  const STORE = 'livepass_accounts_list';
+  const getList = () => { try { return JSON.parse(localStorage.getItem(STORE) || '[]'); } catch(e){ return []; } };
+  const saveListArr = (list) => localStorage.setItem(STORE, JSON.stringify(list));
+
+  // Seed the current account into the list the first time this runs so the
+  // user can always switch back to it.
+  function ensureSelfInList(){
+    const me = (localStorage.getItem('livepass_account_name') || '').trim();
+    if (!me) return;
+    const list = getList();
+    if (!list.some(a => (a.name || '').toUpperCase() === me.toUpperCase())) {
+      list.unshift({
+        name: me,
+        role: localStorage.getItem('livepass_role') || '',
+        avatar: localStorage.getItem('livepass_avatar') || '',
+      });
+      saveListArr(list);
+    }
+  }
+
+  function render(){
+    ensureSelfInList();
+    const me = (localStorage.getItem('livepass_account_name') || '').toUpperCase();
+    const list = getList();
+    listEl.innerHTML = list.map(a => {
+      const active = (a.name || '').toUpperCase() === me;
+      const initial = (a.name || '?').slice(0, 2).toUpperCase();
+      return `
+        <div class="account-card" style="display:flex;align-items:center;gap:12px;padding:12px 14px;margin-bottom:8px;background:rgba(255,255,255,.03);border:0.5px solid ${active ? 'rgba(61,170,255,.4)' : 'rgba(237,235,230,.1)'};border-radius:12px">
+          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#3DAAFF,#0a1020);border:1px solid rgba(237,235,230,.15);display:flex;align-items:center;justify-content:center;font-family:Arial,sans-serif;font-weight:900;font-size:14px;color:var(--white);overflow:hidden;flex-shrink:0">
+            ${a.avatar ? `<img src="${a.avatar}" alt="" style="width:100%;height:100%;object-fit:cover">` : initial}
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;font-size:13px;color:var(--white)">${a.name}${active ? ' <span style="font-size:9px;letter-spacing:.2em;color:var(--blue);margin-left:8px">ACTIVE</span>' : ''}</div>
+            <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;font-size:10px;color:rgba(237,235,230,.45)">${a.role || '—'}</div>
+          </div>
+          ${active
+            ? ''
+            : `<button type="button" data-switch="${encodeURIComponent(a.name)}" style="padding:6px 12px;border-radius:99px;background:var(--blue);color:#fff;border:1px solid var(--blue);font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;font-weight:600;letter-spacing:.04em">切替</button>
+               <button type="button" data-remove="${encodeURIComponent(a.name)}" aria-label="削除" style="width:28px;height:28px;border-radius:50%;background:none;border:0.5px solid rgba(237,235,230,.18);color:rgba(237,235,230,.45);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                 <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+               </button>`}
+        </div>
+      `;
+    }).join('');
+  }
+
+  listEl.addEventListener('click', (e) => {
+    const sw = e.target.closest('[data-switch]');
+    const rm = e.target.closest('[data-remove]');
+    if (sw) {
+      const name = decodeURIComponent(sw.dataset.switch);
+      // Snapshot the currently active account before leaving it
+      ensureSelfInList();
+      const list = getList();
+      const target = list.find(a => (a.name || '').toUpperCase() === name.toUpperCase());
+      if (!target) return;
+      localStorage.setItem('livepass_account_name', target.name);
+      if (target.role) localStorage.setItem('livepass_role', target.role); else localStorage.removeItem('livepass_role');
+      if (target.avatar) localStorage.setItem('livepass_avatar', target.avatar); else localStorage.removeItem('livepass_avatar');
+      if (navigator.vibrate) navigator.vibrate([10, 40, 10]);
+      location.reload();
+      return;
+    }
+    if (rm) {
+      const name = decodeURIComponent(rm.dataset.remove);
+      if (!confirm(`「${name}」をアカウント一覧から削除しますか？\n（このアカウントの投稿や設定は消えません）`)) return;
+      const list = getList().filter(a => (a.name || '').toUpperCase() !== name.toUpperCase());
+      saveListArr(list);
+      render();
+    }
+  });
+
+  toggle.addEventListener('click', () => {
+    const open = form.style.display !== 'none';
+    form.style.display = open ? 'none' : 'block';
+    if (!open) { nameIn.value = ''; roleIn.value = ''; setTimeout(() => nameIn.focus(), 50); }
+  });
+  cancelBt.addEventListener('click', () => { form.style.display = 'none'; });
+  saveBt.addEventListener('click', () => {
+    const name = (nameIn.value || '').trim();
+    const role = (roleIn.value || '').trim();
+    if (!name) { nameIn.focus(); return; }
+    const uname = name.toUpperCase();
+    ensureSelfInList();
+    const list = getList();
+    if (list.some(a => (a.name || '').toUpperCase() === uname)) {
+      alert('同名のアカウントが既に登録されています。');
+      return;
+    }
+    list.unshift({ name: uname, role, avatar: '' });
+    saveListArr(list);
+    // Switch to the newly created account immediately
+    localStorage.setItem('livepass_account_name', uname);
+    if (role) localStorage.setItem('livepass_role', role); else localStorage.removeItem('livepass_role');
+    localStorage.removeItem('livepass_avatar');
+    if (navigator.vibrate) navigator.vibrate([18, 40, 18]);
+    location.reload();
+  });
+
+  render();
 })();
 </script>
 </body>
