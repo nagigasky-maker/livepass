@@ -1736,8 +1736,13 @@ submitBtn.addEventListener('click', async () => {
   try {
     pushLocal(true);
   } catch(e) {
+    console.warn('localStorage save failed:', e);
     if (e && /quota|QUOTA/i.test(e.name + ' ' + e.message)) {
-      try { pushLocal(false); } catch(e2) { /* Firestore has the data */ }
+      try { pushLocal(false); }
+      catch(e2) { console.warn('localStorage save (no cover) also failed:', e2); }
+    } else {
+      try { pushLocal(false); }
+      catch(e2) { console.warn('localStorage save (no cover fallback) failed:', e2); }
     }
   }
 
