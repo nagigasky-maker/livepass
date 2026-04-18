@@ -555,6 +555,16 @@ html,body,.form,.content,.main,main,section,div,footer{background-color:#FFF !im
   </div>
 
   <div class="form-section">
+    <div class="form-label">レベル</div>
+    <div class="pill-row" id="levelRow">
+      <button class="pill active" data-level="ALL LEVELS">ALL LEVELS</button>
+      <button class="pill" data-level="BEGINNER">BEGINNER</button>
+      <button class="pill" data-level="INTERMEDIATE">INTERMEDIATE</button>
+      <button class="pill" data-level="ADVANCED">ADVANCED</button>
+    </div>
+  </div>
+
+  <div class="form-section">
     <div class="form-label">会場</div>
     <input class="input-box" id="venueInput" placeholder="代官山 Studio A / 渋谷 WOMB 2F など">
   </div>
@@ -719,6 +729,7 @@ html,body,.form,.content,.main,main,section,div,footer{background-color:#FFF !im
 <script>
 const state = {
   category: 'DANCE',
+  level:    'ALL LEVELS',
   coverDataUrl: null,
   mediaType: 'image', // 'image' | 'video' | 'gif'
   mediaBlob: null,    // original video File object for IndexedDB storage
@@ -795,6 +806,14 @@ document.querySelectorAll('#catRow .pill').forEach(p => {
     document.querySelectorAll('#catRow .pill').forEach(x => x.classList.remove('active'));
     p.classList.add('active');
     state.category = p.dataset.cat;
+  });
+});
+
+document.querySelectorAll('#levelRow .pill').forEach(p => {
+  p.addEventListener('click', () => {
+    document.querySelectorAll('#levelRow .pill').forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+    state.level = p.dataset.level;
   });
 });
 
@@ -1546,6 +1565,7 @@ submitBtn.addEventListener('click', async () => {
     id:              state.editingId || ('w' + Date.now()),
     type:            'workshop',
     category:        state.category,
+    level:           state.level || 'ALL LEVELS',
     cover:           null,
     mediaType:       state.mediaType || 'image',
     title:           titleInput.value.trim(),
@@ -1639,6 +1659,13 @@ if (editingEvent) {
   state.category = cat;
   document.querySelectorAll('#catRow .pill').forEach(p => {
     p.classList.toggle('active', p.dataset.cat === cat);
+  });
+
+  // Level pill
+  const lvl = editingEvent.level || 'ALL LEVELS';
+  state.level = lvl;
+  document.querySelectorAll('#levelRow .pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.level === lvl);
   });
 
   // Cover preview
