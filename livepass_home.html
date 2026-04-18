@@ -661,7 +661,53 @@ html,body{background:#FFFFFF !important;color:#0A0A0A !important}
   </div>
 
   <div class="mag-grid" id="feedGrid"></div>
+  <div id="diagPanel" style="margin:20px 14px 80px;padding:14px 16px;border:0.5px solid rgba(237,235,230,.2);border-radius:10px;background:rgba(255,255,255,.03);font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.8;color:rgba(237,235,230,.75);display:none;white-space:pre-wrap;word-break:break-all;"></div>
 </main>
+
+<script>
+(function diagPanel(){
+  const panel = document.getElementById('diagPanel');
+  if (!panel) return;
+  const getCount = (key) => {
+    try { return JSON.parse(localStorage.getItem(key) || '[]').length; }
+    catch(e) { return -1; }
+  };
+  const get1st = (key) => {
+    try {
+      const list = JSON.parse(localStorage.getItem(key) || '[]');
+      if (!list.length) return '—';
+      const a = list[0];
+      return `${a.id || '?'} / author:${a.author || '?'} / uid:${a.authorUid || '—'}`;
+    } catch(e) { return 'parse error'; }
+  };
+  const render = () => {
+    const lines = [
+      'DIAG PANEL (temporary)',
+      `account: ${localStorage.getItem('livepass_account_name') || '(not set)'}`,
+      `avatar:  ${localStorage.getItem('livepass_avatar') ? 'set' : '(not set)'}`,
+      `FB user: ${window.FB && window.FB.currentUser ? window.FB.currentUser.uid : '(not signed in)'}`,
+      `articles: ${getCount('livepass_articles')}  first: ${get1st('livepass_articles')}`,
+      `events:   ${getCount('livepass_events')}  first: ${get1st('livepass_events')}`,
+      `workshop: ${getCount('livepass_workshops')}`,
+      `exhibit:  ${getCount('livepass_exhibitions')}`,
+    ];
+    panel.textContent = lines.join('\n');
+  };
+  // Only show the panel when the feed is empty (so it disappears once articles appear)
+  const check = () => {
+    const grid = document.getElementById('feedGrid');
+    if (grid && grid.children.length === 0) {
+      panel.style.display = 'block';
+      render();
+    } else {
+      panel.style.display = 'none';
+    }
+  };
+  check();
+  window.addEventListener('fb-auth-ready', () => setTimeout(check, 200));
+  setTimeout(check, 1500);
+})();
+</script>
 
 <!-- ═══ ARTICLE DETAIL MODAL ═══ -->
 <div id="detailModal" aria-hidden="true">
