@@ -212,17 +212,14 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 /* Event cover hero — poster-style layout: hero info overlaid on cover image */
 .em-cover{
   position:relative;width:100%;
-  height:min(80vh, 720px);min-height:480px;
   background:#0a0a0a;overflow:hidden;
 }
 .em-cover-bg{
-  position:absolute;inset:0;width:100%;height:100%;
-  object-fit:cover;filter:blur(40px) brightness(.35);
-  transform:scale(1.15);opacity:.7;z-index:0;
+  display:none;
 }
 .em-cover img.em-cover-fg{
-  position:absolute;inset:0;z-index:1;
-  display:block;width:100%;height:100%;object-fit:contain;
+  position:relative;
+  display:block;width:100%;height:auto;object-fit:contain;
 }
 /* Hero info overlaid on the cover at bottom */
 .em-hero.over-cover{
