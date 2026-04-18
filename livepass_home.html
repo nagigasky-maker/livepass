@@ -1441,6 +1441,22 @@ function openDetail(a) {
       </div>
     </div>
     <div class="dm-content" style="background:${detailBg || '#FFF'};color:${detailBg ? detailTxt : '#0A0A0A'}">${bodyHtml}</div>
+    ${Array.isArray(a.tickets) && a.tickets.length > 0 ? `
+    <div class="dm-tickets" style="padding:20px 22px;background:${detailBg || '#FFF'};display:flex;flex-direction:column;gap:10px">
+      ${a.tickets.map(t => `
+        <button class="dm-ticket-btn" data-ticket-type="${t.type}" data-ticket-price="${t.price||0}" style="
+          display:flex;align-items:center;justify-content:space-between;
+          padding:16px 20px;border-radius:12px;
+          background:${detailBg ? detailTxt : '#0A0A0A'};color:${detailBg ? detailBg : '#FFF'};
+          border:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:14px;
+          letter-spacing:.04em;width:100%;
+        ">
+          <span>${t.label}</span>
+          ${t.price > 0 ? `<span style="font-size:13px;opacity:.85">¥${Number(t.price).toLocaleString()}</span>` : ''}
+        </button>
+      `).join('')}
+    </div>
+    ` : ''}
     <div class="dm-actions" style="background:${detailBg || '#FFF'};color:${detailBg ? detailTxt : '#0A0A0A'};border-color:${detailBg ? detailTxt+'22' : 'rgba(10,10,10,.08)'}">
       <button class="dm-act" data-act="comment"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="dm-comment-count">0</span></button>
       <button class="dm-act ${liked ? 'liked' : ''}" data-act="like"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span class="dm-like-count">0</span></button>
