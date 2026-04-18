@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#FFFFFF">
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/livepass-icon-180.png">
-<title>LIVE PASS — Home</title>
+<title>EXPASS — Home</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -639,7 +639,7 @@ html,body{background:#FFFFFF !important;color:#0A0A0A !important}
 
 
 <div class="topbar">
-  <a class="tb-brand" href="/home" aria-label="LIVE PASS"><img src="/livepasslogo.png" alt="LIVE PASS"></a>
+  <a class="tb-brand" href="/home" aria-label="EXPASS"><img src="/livepasslogo.png" alt="EXPASS"></a>
   <button class="tb-icon" id="tbCreate" aria-label="Create"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round"/></svg></button>
   <a class="tb-icon" href="/messages" aria-label="Messages"><svg viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><polyline points="3,7 12,13 21,7"/></svg><span class="badge" id="msgBadge">0</span></a>
   <a class="tb-icon" href="/settings" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a>
@@ -788,7 +788,7 @@ const ARTICLES = [
     body:'初めてのインタビューから15年。矢部は今もなお東京でDJとして精力的に活動している。何度も彼のプレイを目にし、時には同じ現場に立つこともあった。長い時間が経った今だからこそ、改めてじっくり話を聞くべきタイミングだと感じ、このインタビューが実現した。' },
   { id:'a002', layout:'square', num:'002', cat:'Interview', catColor:'#00BA4A',
     title:'DJ KEITA — 20 Years of Vinyl Only', titleJa:'ヴァイナルオンリー20年の軌跡', subtitle:null,
-    author:'LIVE PASS', handle:'@livepass', bgHue:'120,60,25', bgColor:'#00BA4A',
+    author:'EXPASS', handle:'@livepass', bgHue:'120,60,25', bgColor:'#00BA4A',
     cover:'https://images.unsplash.com/photo-1461784180009-21121b2f204c?w=800&q=80',
     body:'東京のクラブシーンを20年間ヴァイナルだけで駆け抜けてきたDJ KEITA。デジタル全盛の今、なぜレコードにこだわり続けるのか。' },
   // DJ / Events
@@ -827,7 +827,7 @@ const ARTICLES = [
     title:'VOID × LP New Drop', titleJa:'新作コラボ', subtitle:null,
     author:'DUBLA®', handle:'@void_studio', bgHue:'280,60,30', bgColor:'#CC1F5A',
     cover:'https://images.unsplash.com/photo-1558171813-4c088753af8f?w=800&q=80',
-    body:'VOIDとLIVE PASSの初コラボレーション。限定100着のオーバーサイズフーディーとトートバッグ。4/20発売。' },
+    body:'VOIDとEXPASSの初コラボレーション。限定100着のオーバーサイズフーディーとトートバッグ。4/20発売。' },
   { id:'a022', layout:'wide', num:'010', cat:'Fashion', catColor:'#1A1A1A',
     title:'DUBLA® SS26 Collection', titleJa:'SS26コレクション', subtitle:null,
     author:'DUBLA®', handle:'@dubla_official', bgHue:'0,0,15', bgColor:'#1A1A1A',
@@ -1366,7 +1366,7 @@ const dmClose = document.getElementById('dmClose');
 
 /* Default paragraphs for sample articles (user posts render their own body) */
 const SAMPLE_BODY = `
-  <p class="dm-p">LIVE PASS上の投稿は、フォロー中のアーティストから流れてくる「読みたくなる」コンテンツを中心に設計されています。ARTICLEタイプの投稿は、タイトル・カテゴリ・カバー画像・本文で構成され、縦長 / 正方形 / 横長の3種類のレイアウトから選べます。</p>
+  <p class="dm-p">EXPASS上の投稿は、フォロー中のアーティストから流れてくる「読みたくなる」コンテンツを中心に設計されています。ARTICLEタイプの投稿は、タイトル・カテゴリ・カバー画像・本文で構成され、縦長 / 正方形 / 横長の3種類のレイアウトから選べます。</p>
   <p class="dm-p">この記事はサンプルデータで表示されています。実際の投稿機能は / 投稿ボタン（＋アイコン）から ARTICLE を選択して作成できます。投稿後は Home フィードに表示されます。</p>
   <p class="dm-p">アーティスト自身が発信することを前提として、中間搾取を減らし、ファンとの距離を縮めます。投稿にはコメント・いいね・保存・SNS共有の4つのアクションが用意されています。</p>
 `;
@@ -1650,7 +1650,7 @@ window.addEventListener('keydown', e => {
     btn.addEventListener('click', () => {
       if(!_article) return;
       const shareUrl = location.origin + '/home#article-' + _article.id;
-      const text = _article.title || 'LIVE PASS';
+      const text = _article.title || 'EXPASS';
       const type = btn.dataset.share;
       let url = '';
       switch(type){

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>YOU WERE THERE — LIVE PASS Flashback</title>
+<title>YOU WERE THERE — EXPASS Flashback</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;700;900&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
@@ -159,7 +159,7 @@ html,body{width:100%;height:100%;background:var(--black);overflow:hidden;
 
 <!-- ═══ TRIGGER STATE ═══ -->
 <div id="trigger">
-  <div class="trigger-label">Live Pass Purchase</div>
+  <div class="trigger-label">EXPASS Purchase</div>
   <div class="trigger-title">ALL MUST DANCE</div>
   <div class="trigger-venue">May 4, 2026 · Club Asia Tokyo</div>
   <div class="trigger-card">
@@ -317,7 +317,7 @@ function playKick() {
 }
 
 /* ═══════════════════════════════════════
-   ACCOUNT — auto-create a LIVE PASS holder record
+   ACCOUNT — auto-create a EXPASS holder record
    in localStorage on first NFC tap. Idempotent.
    ═══════════════════════════════════════ */
 const ACCOUNT_KEY = 'livepass_holder';
@@ -381,7 +381,7 @@ function startFlashback() {
   const ctx = audio();
   if (ctx && ctx.state === 'suspended') ctx.resume();
 
-  // Auto-create LIVE PASS holder + apply real edition number to the DOM
+  // Auto-create EXPASS holder + apply real edition number to the DOM
   const holder = getOrCreateHolder();
   const myEdition = (holder.passes && holder.passes[0] && holder.passes[0].edition) || 43;
   applyEditionToDom(myEdition);

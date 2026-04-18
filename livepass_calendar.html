@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#FFFFFF">
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/livepass-icon-180.png">
-<title>LIVE PASS — Calendar</title>
+<title>EXPASS — Calendar</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -459,7 +459,7 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   if (localStorage.getItem('livepass_demo_seeded') === 'v2') return;
   const demoEvents = [
     {id:'demo_e1',type:'event',category:'DJ',title:'VOID — Resident Night',venue:'Contact Tokyo',date:'2026-04-18',time:'23:00',price:'3500',author:'VOID',tags:['TECHNO','DEEP'],cover:'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&q=80',body:'毎月第3金曜のレジデントナイト。4名のレジデントDJによるノンストップ6時間。'},
-    {id:'demo_e2',type:'event',category:'PARTY',title:'DEPTH × LIVE PASS presents UNDERGROUND',venue:'WOMB, Shibuya',date:'2026-04-20',time:'22:00',price:'4000',author:'NOBBY',tags:['HOUSE','TECHNO','PARTY'],cover:'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600&q=80',body:'WOMBの全4フロアを使ったオールナイト。国内外のDJが集結。'},
+    {id:'demo_e2',type:'event',category:'PARTY',title:'DEPTH × EXPASS presents UNDERGROUND',venue:'WOMB, Shibuya',date:'2026-04-20',time:'22:00',price:'4000',author:'NOBBY',tags:['HOUSE','TECHNO','PARTY'],cover:'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600&q=80',body:'WOMBの全4フロアを使ったオールナイト。国内外のDJが集結。'},
     {id:'demo_e3',type:'event',category:'LIVE',title:'B-BOY PARK TOKYO 2026',venue:'Yoyogi Park',date:'2026-04-25',time:'12:00',price:'0',author:'KENJI',tags:['HIP-HOP','BREAKING','DANCE'],cover:'https://images.unsplash.com/photo-1535525153412-5a42439a210d?w=600&q=80',body:'日本最大のブレイキンの祭典。エントリー無料、観覧無料。'},
     {id:'demo_e4',type:'event',category:'DJ',title:'Golden Week: NOBBY × KEITA',venue:'Liquidroom',date:'2026-05-02',time:'22:00',price:'4500',author:'NOBBY',tags:['DJ','HOUSE','TECHNO'],cover:'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=600&q=80',body:'GW特別2マン。NOBBYとDJ KEITAが4時間ずつ。'},
     {id:'demo_e5',type:'event',category:'PARTY',title:'ALL MUST DANCE™ vol.26',venue:'clubasia',date:'2026-05-04',time:'23:00',price:'4500',author:'NOBBY',tags:['PARTY','ART','FASHION','MUSIC'],cover:'https://images.unsplash.com/photo-1492684223f8-e1f7e12d4fa0?w=600&q=80',body:'クラブアジア全フロア。アート展示、ファッション、ライブペイント、DJの全部入り。'},
@@ -701,7 +701,7 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 
 
 <div class="topbar">
-  <a class="tb-brand" href="/home" aria-label="LIVE PASS"><img src="/livepasslogo.png" alt="LIVE PASS"></a>
+  <a class="tb-brand" href="/home" aria-label="EXPASS"><img src="/livepasslogo.png" alt="EXPASS"></a>
   <button class="tb-icon" id="tbCreate" aria-label="Create"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round"/></svg></button>
   <a class="tb-icon" href="/messages" aria-label="Messages"><svg viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><polyline points="3,7 12,13 21,7"/></svg><span class="badge" id="msgBadge">0</span></a>
   <a class="tb-icon" href="/settings" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a>
@@ -840,7 +840,7 @@ const SCHEDULE = [
     by:'NOBBY / SPACE COOKING™', meta:'NOBBY · 21:00 — · LIQUIDROOM TOKYO',
     price:'¥3,000',
     tags:['DJ','HOUSE','TECHNO'],
-    desc:'東京・恵比寿 LIQUIDROOM で開催される NOBBY 主催の定番パーティ第25回。フロアは2階構成、LIVE PASS ホルダーは専用エントランス。' },
+    desc:'東京・恵比寿 LIQUIDROOM で開催される NOBBY 主催の定番パーティ第25回。フロアは2階構成、EXPASS ホルダーは専用エントランス。' },
   { id:'e2', type:'workshop', cat:'WORKSHOP', catColor:'#F4C0D1',
     m:'MAY', d:'18', weekday:'SUN', title:'Waacking Intensive',
     venue:'代官山スタジオ', time:'2026.05.18 13:00 — 17:00',
