@@ -1687,6 +1687,28 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 /* No-cover hero animation */
 .pm-hero:not(.over-cover):not(.with-cover){animation:heroSlideUp .4s ease-out !important}
 
+
+/* ── Collection: smaller avatar/name + inline SUB row ── */
+.profile-hero{flex-direction:row !important;gap:14px !important;padding:20px 20px 16px !important;align-items:center !important;text-align:left !important}
+.ph-avatar{width:64px !important;height:64px !important}
+.ph-name-block{flex:1 !important;gap:2px !important;align-items:flex-start !important;text-align:left !important}
+.ph-name{font-size:18px !important;letter-spacing:.02em !important}
+.ph-role{font-size:10px !important;letter-spacing:.18em !important;color:rgba(10,10,10,.45) !important}
+
+/* SUB/Tip compact row near avatar */
+.collection-sub-row{display:flex;gap:8px;padding:0 20px 20px;align-items:center}
+.collection-sub-row .sub-btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:10px 12px;border-radius:99px;
+  border:1px solid rgba(10,10,10,.12);background:rgba(10,10,10,.02);
+  font-family:'Inter','Noto Sans JP',sans-serif;font-weight:600;
+  font-size:11px;color:#0A0A0A;cursor:pointer;
+}
+.collection-sub-row .sub-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+.collection-sub-row .sub-btn.tip{background:rgba(245,200,66,.08);border-color:rgba(245,200,66,.35)}
+.collection-sub-row .sub-btn.subscribe{background:rgba(232,16,10,.06);border-color:rgba(232,16,10,.3);color:var(--red)}
+.collection-sub-row .sub-btn.subscribe svg{fill:currentColor;stroke:none}
+
 </style>
 
 
@@ -1732,6 +1754,18 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
         <svg viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><polyline points="3,7 12,13 21,7"/></svg>
       </button>
     </div>
+  </div>
+
+  <!-- SUB/TIP compact actions near avatar -->
+  <div class="collection-sub-row">
+    <button class="sub-btn tip" onclick="document.getElementById('panel-sub')?.scrollIntoView({behavior:'smooth'})">
+      <svg viewBox="0 0 24 24"><path d="M12 2l2.5 6.5L22 10l-5.5 5 1.5 7-6-3.5-6 3.5 1.5-7L2 10l7.5-1.5z"/></svg>
+      投げ銭
+    </button>
+    <button class="sub-btn subscribe" onclick="document.getElementById('panel-sub')?.scrollIntoView({behavior:'smooth'})">
+      <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      サブスク
+    </button>
   </div>
 
   <!-- 4 sub-tab icons: PASS COLLECTION / SCREEN / SUBSCRIPTION / SAVED -->
