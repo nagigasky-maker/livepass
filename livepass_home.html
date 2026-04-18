@@ -51,6 +51,10 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .tb-brand img{height:100%;width:auto;display:block;image-rendering:-webkit-optimize-contrast}
 .tb-icon{background:none;border:none;cursor:pointer;position:relative;
   width:26px;height:26px;display:flex;align-items:center;justify-content:center;color:var(--white);}
+/* Hide all topbar icons except the + (tbCreate) at first paint to prevent
+   a flash of the old icons before the late style block loads. */
+.topbar .tb-icon:not(#tbCreate){display:none}
+.topbar #tbCreate{position:absolute;right:18px;top:calc(var(--safe-top,0px) + 10px);}
 .tb-icon svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
 .tb-icon .badge{position:absolute;top:-4px;right:-6px;background:var(--red);color:#fff;
   font-size:8px;font-weight:700;min-width:14px;height:14px;padding:0 3px;border-radius:99px;
