@@ -1202,15 +1202,8 @@ function renderMagazine(posts) {
   let pi = 0; // post index
   const pat = BLOCK_PATTERN;
   let patIdx = 0;
-  let schedInserted = false;
 
   while (pi < posts.length) {
-    // Insert "This week" after 2nd pattern row (between articles)
-    if (patIdx === 2 && !schedInserted) {
-      grid.appendChild(buildScheduleBlock());
-      schedInserted = true;
-    }
-
     const blockRow = pat[patIdx % pat.length];
     patIdx++;
 
