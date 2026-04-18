@@ -1273,13 +1273,19 @@ coverInput.addEventListener('change', async (e) => {
       coverUpload.innerHTML = `<video src="${URL.createObjectURL(file)}" style="width:100%;height:100%;object-fit:cover;display:block" autoplay muted loop playsinline></video>`;
       document.getElementById('multiImageSection').style.display = 'none';
     } else if (isGif) {
-      const dataUrl = await readFileAsDataUrl(file);
-      state.coverDataUrl = dataUrl;
+      // Keep a small JPEG of the first frame as the cover thumbnail so the
+      // article record fits in localStorage. The full animated GIF goes
+      // into IndexedDB (state.mediaBlob) and SCREEN swaps it in at render.
+      const previewUrl = await readFileAsDataUrl(file);
+      let thumbUrl;
+      try { thumbUrl = await downscaleImageFile(file); }
+      catch(e){ thumbUrl = previewUrl; }
+      state.coverDataUrl = thumbUrl;
       state.mediaType = 'gif';
-      state.mediaBlob = null;
+      state.mediaBlob = file;
       state.extraImages = [];
       coverUpload.classList.add('has-image');
-      coverUpload.innerHTML = `<img class="cover-preview-img" src="${dataUrl}" alt="">`;
+      coverUpload.innerHTML = `<img class="cover-preview-img" src="${previewUrl}" alt="">`;
       document.getElementById('multiImageSection').style.display = 'none';
     } else {
       const dataUrl = await downscaleImageFile(file);
@@ -1744,7 +1750,7 @@ submitBtn.addEventListener('click', async () => {
     }
   }
 
-  if (state.mediaType === 'video' && state.mediaBlob && !firebaseSaved) {
+  if ((state.mediaType === 'video' || state.mediaType === 'gif') && state.mediaBlob && !firebaseSaved) {
     MediaDB.put('media_' + article.id, state.mediaBlob).catch(() => {});
   }
 

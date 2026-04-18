@@ -1375,6 +1375,16 @@ function renderMagazine(posts) {
           }).catch(()=>{});
         }
       }
+      // GIF: cover is a JPEG thumbnail stored inline; the animated GIF lives
+      // in IndexedDB. Swap the static img for the animated GIF once it's read.
+      if (a.mediaType === 'gif') {
+        const imgEl = card.querySelector('.fc-img img');
+        if (imgEl) {
+          MediaDB.get('media_' + a.id).then(blob => {
+            if (blob) imgEl.src = URL.createObjectURL(blob);
+          }).catch(()=>{});
+        }
+      }
     }
     grid.appendChild(rowDiv);
   }
