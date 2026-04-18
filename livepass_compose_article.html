@@ -1437,58 +1437,45 @@ updateSubmitState();
 const editId = new URLSearchParams(location.search).get('edit');
 let editingArticle = null;
 if (editId) {
-  // 1. Try sessionStorage (set by edit button click)
+  // 1. Try sessionStorage (set when modal opens)
   try {
     const sess = sessionStorage.getItem('livepass_edit_post');
     if (sess) { editingArticle = JSON.parse(sess); sessionStorage.removeItem('livepass_edit_post'); }
   } catch(e){}
   // 2. Fallback: localStorage
-  if (!editingArticle) try {
-    const raw = localStorage.getItem('livepass_articles');
-    const list = raw ? JSON.parse(raw) : [];
-    editingArticle = list.find(a => a.id === editId) || null;
-    if (editingArticle) {
-      const me = localStorage.getItem('livepass_account_name') || 'NOBBY';
-      if ((editingArticle.author || 'NOBBY') !== me) {
-        alert('この記事を編集する権限がありません');
-        location.href = '/profile';
-      }
-    }
-  } catch(e) {}
-
-// If not found, try Firestore
-if (editId && !editingArticle) {
-  (async () => {
+  if (!editingArticle) {
     try {
-      if (!window.FB) await new Promise(r => window.addEventListener('fb-auth-ready', r, {once:true}));
-      const snap = await FB.getDoc(FB.doc(FB.db, 'posts', editId));
-      if (snap.exists()) {
-        const data = snap.data();
-        const ts = data.createdAt;
-        if (ts && ts.toDate) data.createdAt = ts.toDate().toISOString();
-        editingArticle = { id: editId, ...data };
-        prefillEditForm();
-      }
-    } catch(e) { console.warn('Firestore edit load failed:', e); }
-  })();
+      const raw = localStorage.getItem('livepass_articles');
+      const list = raw ? JSON.parse(raw) : [];
+      editingArticle = list.find(a => a.id === editId) || null;
+    } catch(e) {}
+  }
+  // 3. Fallback: Firestore (async)
+  if (!editingArticle) {
+    (async () => {
+      try {
+        if (!window.FB) await new Promise(r => window.addEventListener('fb-auth-ready', r, {once:true}));
+        const snap = await FB.getDoc(FB.doc(FB.db, 'posts', editId));
+        if (snap.exists()) {
+          const data = snap.data();
+          if (data.createdAt && data.createdAt.toDate) data.createdAt = data.createdAt.toDate().toISOString();
+          editingArticle = { id: editId, ...data };
+          prefillEditForm();
+        }
+      } catch(e) { console.warn('Firestore edit load failed:', e); }
+    })();
+  }
 }
 
 function prefillEditForm() {
   if (!editingArticle) return;
-  const hdr = document.getElementById('hdrTitle');
-  if (hdr) hdr.textContent = '記事編集';
+  document.getElementById('hdrTitle').textContent = '記事編集';
   state.layout = editingArticle.layout || 'poster';
-  document.querySelectorAll('.lay-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.layout === state.layout);
-  });
-  state.category = editingArticle.category || 'Culture';
-  document.querySelectorAll('.cat-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.cat === state.category);
-  });
+  document.querySelectorAll('.lay-btn').forEach(b => b.classList.toggle('active', b.dataset.layout === state.layout));
+  state.category = editingArticle.category || editingArticle.cat || 'Culture';
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === state.category));
   state.access = editingArticle.access || 'free';
-  document.querySelectorAll('.access-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.access === state.access);
-  });
+  document.querySelectorAll('.access-btn').forEach(b => b.classList.toggle('active', b.dataset.access === state.access));
   titleInput.value = editingArticle.title || '';
   bodyInput.value  = editingArticle.body  || '';
   if (editingArticle.cover) {
@@ -1498,19 +1485,15 @@ function prefillEditForm() {
     coverUpload.innerHTML = `<img class="cover-preview-img" src="${editingArticle.cover}" alt="">`;
   }
   if (Array.isArray(editingArticle.collaborators)) {
-    state.collaborators = editingArticle.collaborators.map(c => ({
-      name: c.name || c, share: Number(c.share) || 0,
-    }));
+    state.collaborators = editingArticle.collaborators.map(c => ({ name: c.name || c, share: Number(c.share) || 0 }));
     renderCollabList();
   }
-  const submitBtn = document.getElementById('submitBtn');
-  if (submitBtn) submitBtn.textContent = '変更を保存 →';
+  document.getElementById('submitBtn').textContent = '変更を保存 →';
   updateSubmitState();
 }
 
 if (editingArticle) {
-  document.getElementById('hdrTitle').textContent = '記事編集';
-  submitBtn.textContent = '変更を保存 →';
+  prefillEditForm();
 
   // Layout
   state.layout = editingArticle.layout || 'poster';

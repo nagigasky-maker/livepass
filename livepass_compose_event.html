@@ -691,54 +691,49 @@ const DEFAULT_CANCEL_DEADLINE_H = 24;
 const editId = new URLSearchParams(location.search).get('edit');
 let editingEvent = null;
 if (editId) {
+  // 1. sessionStorage
   try {
     const sess = sessionStorage.getItem('livepass_edit_post');
-    if (sess) { editingEvent = JSON.parse(sess); sessionStorage.removeItem('livepass_edit_post'); }
+    if (sess) { editingEvent = JSON.parse(sess); sessionStorage.removeItem('livepass_edit_post'); state.editingId = editingEvent.id; }
   } catch(e){}
-  if (!editingEvent) try {
-    const raw = localStorage.getItem('livepass_events');
-    const list = raw ? JSON.parse(raw) : [];
-    editingEvent = list.find(e => e.id === editId) || null;
-    if (editingEvent) {
-      state.editingId = editingEvent.id;
-      const currentUser = localStorage.getItem('livepass_account_name') || 'NOBBY';
-      if ((editingEvent.author || 'NOBBY') !== currentUser) {
-        alert('このイベントを編集する権限がありません');
-        location.href = '/profile';
-      }
-    }
-  } catch (e) {}
-
-// If not found, try Firestore
-if (editId && !editingEvent) {
-  (async () => {
+  // 2. localStorage
+  if (!editingEvent) {
     try {
-      if (!window.FB) await new Promise(r => window.addEventListener('fb-auth-ready', r, {once:true}));
-      const snap = await FB.getDoc(FB.doc(FB.db, 'posts', editId));
-      if (snap.exists()) {
-        const data = snap.data();
-        const ts = data.createdAt;
-        if (ts && ts.toDate) data.createdAt = ts.toDate().toISOString();
-        editingEvent = { id: editId, ...data };
-        state.editingId = editId;
-        document.getElementById('hdrTitle').textContent = 'イベント編集';
-        document.getElementById('submitBtn').textContent = '変更を保存 →';
-        // Prefill form fields
-        if (editingEvent.title) document.getElementById('titleInput').value = editingEvent.title;
-        if (editingEvent.venue) document.getElementById('venueInput').value = editingEvent.venue;
-        if (editingEvent.date) document.getElementById('dateInput').value = editingEvent.date;
-        if (editingEvent.time) document.getElementById('timeInput').value = editingEvent.time;
-        if (editingEvent.price) document.getElementById('priceInput').value = editingEvent.price;
-        if (editingEvent.body) document.getElementById('bodyInput').value = editingEvent.body;
-        if (editingEvent.cover) {
-          state.coverDataUrl = editingEvent.cover;
-          const cu = document.getElementById('coverUpload');
-          if (cu) { cu.classList.add('has-image'); cu.innerHTML = '<img style="width:100%;height:100%;object-fit:cover;display:block" src="' + editingEvent.cover + '" alt="">'; }
+      const raw = localStorage.getItem('livepass_events');
+      const list = raw ? JSON.parse(raw) : [];
+      editingEvent = list.find(e => e.id === editId) || null;
+      if (editingEvent) state.editingId = editingEvent.id;
+    } catch(e) {}
+  }
+  // 3. Firestore
+  if (!editingEvent) {
+    (async () => {
+      try {
+        if (!window.FB) await new Promise(r => window.addEventListener('fb-auth-ready', r, {once:true}));
+        const snap = await FB.getDoc(FB.doc(FB.db, 'posts', editId));
+        if (snap.exists()) {
+          const data = snap.data();
+          if (data.createdAt && data.createdAt.toDate) data.createdAt = data.createdAt.toDate().toISOString();
+          editingEvent = { id: editId, ...data };
+          state.editingId = editId;
+          document.getElementById('hdrTitle').textContent = editingEvent.type === 'workshop' ? 'ワークショップ編集' : editingEvent.type === 'exhibition' ? '展示編集' : 'イベント編集';
+          document.getElementById('submitBtn').textContent = '変更を保存 →';
+          if (editingEvent.title) document.getElementById('titleInput').value = editingEvent.title;
+          if (editingEvent.venue) document.getElementById('venueInput').value = editingEvent.venue;
+          if (editingEvent.date) document.getElementById('dateInput').value = editingEvent.date;
+          if (editingEvent.time) document.getElementById('timeInput').value = editingEvent.time;
+          if (editingEvent.price) document.getElementById('priceInput').value = editingEvent.price;
+          if (editingEvent.body) document.getElementById('bodyInput').value = editingEvent.body;
+          if (editingEvent.cover) {
+            state.coverDataUrl = editingEvent.cover;
+            var cu = document.getElementById('coverUpload');
+            if (cu) { cu.classList.add('has-image'); cu.innerHTML = '<img style="width:100%;height:100%;object-fit:cover;display:block" src="' + editingEvent.cover + '">'; }
+          }
+          updateSubmitState();
         }
-        updateSubmitState();
-      }
-    } catch(e) { console.warn('Firestore edit load failed:', e); }
-  })();
+      } catch(e) { console.warn('Firestore edit load failed:', e); }
+    })();
+  }
 }
 
 // Update header and submit button when in edit mode
