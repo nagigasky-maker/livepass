@@ -166,10 +166,11 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   padding:max(14px,calc(var(--safe-top) + 12px)) 18px 12px;
   display:flex;align-items:center;gap:14px;
   background:rgba(0,0,0,.96);border-bottom:0.5px solid var(--border);}
-.em-close{width:36px;height:36px;border-radius:50%;
+.em-close,.em-iconbtn{width:36px;height:36px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;color:var(--white);
-  border:0.5px solid rgba(255,255,255,.15);}
-.em-close svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
+  border:0.5px solid rgba(255,255,255,.15);background:transparent;padding:0;}
+.em-close svg,.em-iconbtn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.em-header-actions{display:flex;align-items:center;gap:8px;}
 .em-label{font-family:'IBM Plex Mono',monospace;font-size:8px;
   letter-spacing:.32em;text-transform:uppercase;
   color:rgba(237,235,230,.3);margin-left:auto;}
@@ -628,7 +629,7 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 /* ── Event detail modal — white ── */
 #eventModal{background:#FFFFFF !important;color:#0A0A0A !important}
 .em-header{background:#FFFFFF !important;border-bottom:0.5px solid rgba(10,10,10,.08) !important}
-.em-close{color:#0A0A0A !important;border-color:rgba(10,10,10,.18) !important}
+.em-close,.em-iconbtn{color:#0A0A0A !important;border-color:rgba(10,10,10,.18) !important}
 .em-label{color:rgba(10,10,10,.4) !important}
 .em-body{background:#FFFFFF !important}
 .em-hero{background:rgba(10,10,10,.03) !important}
@@ -777,8 +778,8 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
   <header class="em-header">
     <button class="em-close" id="emClose" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18" stroke-linecap="round"/><line x1="6" y1="18" x2="18" y2="6" stroke-linecap="round"/></svg></button>
     <div class="em-header-actions" id="emHeaderActions" style="display:none">
-      <a id="emEditLink" href="#" style="font-size:10px;font-weight:600;letter-spacing:.05em;color:#0A0A0A;padding:6px 14px;border-radius:99px;text-decoration:none;background:rgba(255,255,255,.8);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:0.5px solid rgba(10,10,10,.18)"><svg viewBox="0 0 24 24" width="14" height="14" style="stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></a>
-      <button id="emDeleteBtn" style="font-size:10px;font-weight:600;letter-spacing:.05em;color:#E8100A;padding:6px 14px;border-radius:99px;background:rgba(255,255,255,.8);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:0.5px solid rgba(232,16,10,.25)"><svg viewBox="0 0 24 24" width="14" height="14" style="stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+      <a id="emEditLink" class="em-iconbtn" href="#" aria-label="Edit"><svg viewBox="0 0 24 24"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></a>
+      <button id="emDeleteBtn" class="em-iconbtn" type="button" aria-label="Delete"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
     </div>
     <div class="em-label" id="emLabel">Event</div>
   </header>
