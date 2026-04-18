@@ -212,6 +212,50 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .cs-opt.workshop svg{color:var(--gold)}
 .cs-opt.exhibition svg{color:var(--mint)}
 .cs-close{display:block;width:100%;padding:14px;background:none;border:0.5px solid rgba(237,235,230,.12);border-radius:99px;margin-top:16px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;color:rgba(237,235,230,.5)}
+
+/* ── Account search results (friend discovery) ─────────────── */
+.account-results{padding:0 18px 18px;display:none}
+.account-results.open{display:block}
+.account-row{
+  display:flex;align-items:center;gap:14px;
+  padding:12px 14px;margin-bottom:8px;
+  background:rgba(255,255,255,.03);
+  border:0.5px solid rgba(255,255,255,.08);
+  border-radius:12px;cursor:pointer;
+}
+.account-row:active{background:rgba(255,255,255,.06)}
+.account-av{
+  width:44px;height:44px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--av-hue,#3DAAFF),#0a1020);
+  border:1px solid rgba(237,235,230,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-family:Arial,sans-serif;font-weight:900;font-size:16px;color:var(--white);
+  overflow:hidden;
+}
+.account-body{flex:1;min-width:0}
+.account-name{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:14px;color:var(--white);margin-bottom:2px;
+}
+.account-role{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
+  font-size:11px;color:rgba(237,235,230,.45);letter-spacing:.04em;
+}
+.account-follow{
+  flex-shrink:0;padding:7px 16px;border-radius:99px;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;font-weight:600;
+  background:var(--blue);color:#fff;border:1px solid var(--blue);
+  cursor:pointer;letter-spacing:.04em;
+}
+.account-follow.following{
+  background:rgba(61,170,255,.1);color:var(--blue);border-color:var(--blue);
+}
+.account-empty{
+  padding:30px 20px;text-align:center;
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(237,235,230,.35);
+}
 </style>
 <script type="module" src="/firebase-init.js"></script>
 </head>
@@ -422,8 +466,11 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 
   <div class="search-bar">
     <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <input type="text" placeholder="DJ・スタジオ・イベント・アーティストを検索…">
+    <input type="text" id="accountSearchInput" placeholder="アカウント名で検索してつながる…" autocomplete="off">
   </div>
+
+  <!-- Account search results (friend discovery) -->
+  <div id="accountResults" class="account-results"></div>
 
   <div class="tag-row">
     <button class="tag-pill active">ALL</button>
@@ -653,6 +700,125 @@ document.querySelectorAll('.tag-pill').forEach(p => {
       el.innerHTML = '<img src="' + av + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block">';
     });
   } catch(e){}
+})();
+
+/* ─────────────────────────────────────────────
+   ACCOUNT SEARCH — find & follow other accounts
+   ───────────────────────────────────────────── */
+(function initAccountSearch(){
+  const input = document.getElementById('accountSearchInput');
+  const results = document.getElementById('accountResults');
+  if (!input || !results) return;
+
+  const KNOWN_ACCOUNTS = [
+    { name: 'NOBBY',         role: 'Founder / DJ' },
+    { name: 'MOZYSKYE',      role: 'Artist / Illustrator' },
+    { name: 'KENJI',         role: 'DJ / Producer' },
+    { name: 'SAKURA',        role: 'Dancer / Choreographer' },
+    { name: 'YUKI',          role: 'Photographer' },
+    { name: 'TAKUYA',        role: 'DJ / House' },
+    { name: 'MARI',          role: 'VJ / Visual Artist' },
+    { name: 'REN',           role: 'DJ / Techno' },
+    { name: 'AMI',           role: 'Vocalist' },
+    { name: 'KOTA',          role: 'Live Band' },
+    { name: 'HARUKA',        role: 'DJ / Disco' },
+    { name: 'RYO',           role: 'Producer' },
+    { name: 'SPACE COOKING', role: 'Collective' },
+  ];
+
+  function getList(key){
+    try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch(e){ return []; }
+  }
+  function saveList(key, list){
+    try { localStorage.setItem(key, JSON.stringify(list)); } catch(e){}
+  }
+  function isFollowing(name){
+    return getList('livepass_following').some(u => (typeof u === 'string' ? u : u && u.name) === name);
+  }
+  function toggleFollow(name, role){
+    const key = 'livepass_following';
+    const list = getList(key);
+    const i = list.findIndex(u => (typeof u === 'string' ? u : u && u.name) === name);
+    if (i >= 0) list.splice(i, 1);
+    else list.unshift({ name, role: role || '' });
+    saveList(key, list);
+    return i < 0; // returns true if now following
+  }
+
+  function buildDirectory(){
+    const map = new Map();
+    KNOWN_ACCOUNTS.forEach(a => map.set(a.name, a));
+    // Past authors from any post type
+    const postKeys = ['livepass_articles','livepass_events','livepass_workshops','livepass_exhibitions'];
+    postKeys.forEach(k => {
+      getList(k).forEach(p => {
+        if (p && p.author && !map.has(p.author)) map.set(p.author, { name: p.author, role: 'Creator' });
+        if (Array.isArray(p && p.artists)) p.artists.forEach(a => {
+          const n = typeof a === 'string' ? a : a && a.name;
+          if (n && !map.has(n)) map.set(n, { name: n, role: 'Featured Artist' });
+        });
+      });
+    });
+    // Already followed / followers (just in case they're not in any post)
+    ['livepass_following','livepass_followers'].forEach(k => {
+      getList(k).forEach(u => {
+        const name = typeof u === 'string' ? u : u && u.name;
+        if (name && !map.has(name)) map.set(name, { name, role: (u && u.role) || '' });
+      });
+    });
+    // Exclude the current user
+    const me = (localStorage.getItem('livepass_account_name') || '').toUpperCase();
+    return Array.from(map.values()).filter(a => (a.name || '').toUpperCase() !== me);
+  }
+
+  const DIRECTORY = buildDirectory();
+
+  function render(q){
+    const query = (q || '').trim().toLowerCase();
+    if (!query) { results.classList.remove('open'); results.innerHTML = ''; return; }
+    const matches = DIRECTORY
+      .filter(a => (a.name || '').toLowerCase().includes(query) || (a.role || '').toLowerCase().includes(query))
+      .slice(0, 12);
+    results.classList.add('open');
+    if (matches.length === 0) {
+      results.innerHTML = `<div class="account-empty">No accounts match "${query}"</div>`;
+      return;
+    }
+    results.innerHTML = matches.map(a => {
+      const initial = (a.name || '?').slice(0, 2).toUpperCase();
+      const following = isFollowing(a.name);
+      return `
+        <div class="account-row" data-name="${encodeURIComponent(a.name)}">
+          <div class="account-av">${initial}</div>
+          <div class="account-body">
+            <div class="account-name">${a.name}</div>
+            <div class="account-role">${a.role || ''}</div>
+          </div>
+          <button class="account-follow ${following ? 'following' : ''}" data-name="${encodeURIComponent(a.name)}" data-role="${encodeURIComponent(a.role || '')}" type="button">${following ? 'フォロー中' : 'フォロー'}</button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  input.addEventListener('input', () => render(input.value));
+  results.addEventListener('click', (e) => {
+    const btn = e.target.closest('.account-follow');
+    const row = e.target.closest('.account-row');
+    if (btn) {
+      e.stopPropagation();
+      const name = decodeURIComponent(btn.dataset.name);
+      const role = decodeURIComponent(btn.dataset.role || '');
+      const nowFollowing = toggleFollow(name, role);
+      btn.classList.toggle('following', nowFollowing);
+      btn.textContent = nowFollowing ? 'フォロー中' : 'フォロー';
+      if (navigator.vibrate) navigator.vibrate(10);
+      return;
+    }
+    if (row) {
+      const name = decodeURIComponent(row.dataset.name);
+      location.href = '/profile?user=' + encodeURIComponent(name);
+    }
+  });
 })();
 </script>
 </body>
