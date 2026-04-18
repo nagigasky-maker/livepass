@@ -1083,6 +1083,11 @@ function openEventDetail(e) {
     } catch(err){}
     emDelBtn.onclick = async () => {
       if (!confirm('この投稿を削除しますか？')) return;
+      // Add to deleted-id blacklist so SCREEN's Firestore sync cannot restore it
+      try {
+        const ids = JSON.parse(localStorage.getItem('livepass_deleted_ids') || '[]');
+        if (!ids.includes(e.id)) { ids.push(e.id); localStorage.setItem('livepass_deleted_ids', JSON.stringify(ids)); }
+      } catch(err){}
       const key = {event:'livepass_events',workshop:'livepass_workshops',exhibition:'livepass_exhibitions'}[e.type] || 'livepass_events';
       try { const list = JSON.parse(localStorage.getItem(key)||'[]').filter(x=>x.id!==e.id); localStorage.setItem(key,JSON.stringify(list)); } catch(err){}
       try { if(window.FB&&window.FB.currentUser) await FB.deleteDoc(FB.doc(FB.db,'posts',e.id)); } catch(err){}

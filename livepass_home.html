@@ -1108,9 +1108,15 @@ window.addEventListener('fb-auth-ready', async ({ detail }) => {
     const q = FB.query(FB.collection(FB.db, 'posts'), FB.orderBy('createdAt', 'desc'), FB.limit(100));
     const snap = await FB.getDocs(q);
     if (snap.empty) return;
+    const deletedIds = new Set(JSON.parse(localStorage.getItem('livepass_deleted_ids') || '[]'));
     const fbPosts = [];
     const seenIds = new Set();
     snap.forEach(d => {
+      // If this post was deleted locally, purge it from Firestore too and skip it
+      if (deletedIds.has(d.id)) {
+        try { FB.deleteDoc(FB.doc(FB.db, 'posts', d.id)).catch(()=>{}); } catch(e){}
+        return;
+      }
       const data = { id: d.id, ...d.data() };
       const ts = data.createdAt;
       if (ts && ts.toDate) data.createdAt = ts.toDate().toISOString();
@@ -1631,6 +1637,11 @@ function openDetail(a) {
   if (isOwner && deleteBtn) {
     deleteBtn.onclick = async () => {
       if (!confirm('この投稿を削除しますか？')) return;
+      // Add to deleted-id blacklist so fb-auth-ready cannot restore it
+      try {
+        const ids = JSON.parse(localStorage.getItem('livepass_deleted_ids') || '[]');
+        if (!ids.includes(a.id)) { ids.push(a.id); localStorage.setItem('livepass_deleted_ids', JSON.stringify(ids)); }
+      } catch(e){}
       // Remove from localStorage
       try {
         const raw = localStorage.getItem('livepass_articles');
