@@ -2888,7 +2888,15 @@ function openPostDetail(type, item) {
     pmHdrActions.style.display = 'flex';
     const editUrl = type === 'article' ? '/compose/article?edit=' : type === 'event' ? '/compose/event?edit=' : type === 'workshop' ? '/compose/workshop?edit=' : '/compose/exhibition?edit=';
     pmEditLink.href = editUrl + encodeURIComponent(item.id);
-    sessionStorage.setItem('livepass_edit_post', JSON.stringify(item));
+    // Ensure post is in localStorage for edit page to find
+    try {
+      const lsKey = {article:'livepass_articles',event:'livepass_events',workshop:'livepass_workshops',exhibition:'livepass_exhibitions'}[type];
+      if (lsKey) {
+        const raw = localStorage.getItem(lsKey);
+        const list = raw ? JSON.parse(raw) : [];
+        if (!list.some(x => x.id === item.id)) { list.unshift(item); localStorage.setItem(lsKey, JSON.stringify(list)); }
+      }
+    } catch(e){}
     pmDelBtn.onclick = async () => {
       if (!confirm('この投稿を削除しますか？')) return;
       const storageKey = {article:'livepass_articles',event:'livepass_events',workshop:'livepass_workshops',exhibition:'livepass_exhibitions'}[type];

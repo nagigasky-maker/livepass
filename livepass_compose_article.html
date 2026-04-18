@@ -1437,21 +1437,25 @@ updateSubmitState();
 const editId = new URLSearchParams(location.search).get('edit');
 let editingArticle = null;
 if (editId) {
+  console.log('[edit] editId from URL:', editId);
   // 1. Try sessionStorage (set when modal opens)
   try {
     const sess = sessionStorage.getItem('livepass_edit_post');
+    console.log('[edit] sessionStorage data:', sess ? 'found' : 'empty');
     if (sess) { editingArticle = JSON.parse(sess); sessionStorage.removeItem('livepass_edit_post'); }
-  } catch(e){}
+  } catch(e){ console.warn('[edit] sessionStorage error:', e); }
   // 2. Fallback: localStorage
   if (!editingArticle) {
     try {
       const raw = localStorage.getItem('livepass_articles');
       const list = raw ? JSON.parse(raw) : [];
       editingArticle = list.find(a => a.id === editId) || null;
-    } catch(e) {}
+      console.log('[edit] localStorage lookup:', editingArticle ? 'found' : 'not found', 'list size:', list.length);
+    } catch(e) { console.warn('[edit] localStorage error:', e); }
   }
   // 3. Fallback: Firestore (async)
   if (!editingArticle) {
+    console.log('[edit] trying Firestore...');
     (async () => {
       try {
         if (!window.FB) await new Promise(r => window.addEventListener('fb-auth-ready', r, {once:true}));
@@ -1460,10 +1464,15 @@ if (editId) {
           const data = snap.data();
           if (data.createdAt && data.createdAt.toDate) data.createdAt = data.createdAt.toDate().toISOString();
           editingArticle = { id: editId, ...data };
+          console.log('[edit] Firestore found');
           prefillEditForm();
+        } else {
+          console.warn('[edit] Firestore: doc not found');
         }
-      } catch(e) { console.warn('Firestore edit load failed:', e); }
+      } catch(e) { console.warn('[edit] Firestore error:', e); }
     })();
+  } else {
+    console.log('[edit] editingArticle set, title:', editingArticle.title);
   }
 }
 

@@ -1414,7 +1414,12 @@ function openDetail(a) {
   if (isOwner) {
     headerActions.style.display = 'flex';
     editLink.href = '/compose/article?edit=' + encodeURIComponent(a.id);
-    sessionStorage.setItem('livepass_edit_post', JSON.stringify(a));
+    // Ensure post is in localStorage for edit page to find
+    try {
+      const raw = localStorage.getItem('livepass_articles');
+      const list = raw ? JSON.parse(raw) : [];
+      if (!list.some(x => x.id === a.id)) { list.unshift(a); localStorage.setItem('livepass_articles', JSON.stringify(list)); }
+    } catch(e){}
   } else {
     headerActions.style.display = 'none';
   }
