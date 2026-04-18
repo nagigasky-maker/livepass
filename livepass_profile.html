@@ -1688,20 +1688,21 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 .pm-hero:not(.over-cover):not(.with-cover){animation:heroSlideUp .4s ease-out !important}
 
 
-/* ── Collection: smaller avatar/name + heart btn inline ── */
-.profile-hero{flex-direction:row !important;gap:14px !important;padding:20px 20px 16px !important;align-items:center !important;text-align:left !important}
-.ph-avatar{width:64px !important;height:64px !important}
-.ph-name-block{flex:1 !important;gap:2px !important;align-items:flex-start !important;text-align:left !important}
-.ph-name{font-size:18px !important;letter-spacing:.02em !important}
+/* ── Collection: centered avatar/name (smaller) + heart btn on right ── */
+.profile-hero{flex-direction:column !important;gap:10px !important;padding:24px 20px 14px !important;align-items:center !important;text-align:center !important;position:relative !important}
+.ph-avatar{width:72px !important;height:72px !important}
+.ph-name-block{flex:none !important;gap:2px !important;align-items:center !important;text-align:center !important}
+.ph-name{font-size:18px !important;letter-spacing:.04em !important}
 .ph-role{font-size:10px !important;letter-spacing:.18em !important;color:rgba(10,10,10,.45) !important}
 .ph-heart-btn{
-  width:42px;height:42px;border-radius:50%;flex-shrink:0;
+  position:absolute !important;right:20px !important;top:50% !important;transform:translateY(-50%) !important;
+  width:38px;height:38px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   background:rgba(232,16,10,.06);border:1px solid rgba(232,16,10,.25);
-  color:var(--red);cursor:pointer;transition:all .2s;
+  color:var(--red);cursor:pointer;transition:background .2s;
 }
-.ph-heart-btn svg{width:20px;height:20px;fill:currentColor}
-.ph-heart-btn:active{transform:scale(.92);background:rgba(232,16,10,.12)}
+.ph-heart-btn svg{width:18px;height:18px;fill:currentColor}
+.ph-heart-btn:active{background:rgba(232,16,10,.12)}
 
 </style>
 

@@ -648,7 +648,7 @@ html,body{background:#FFFFFF !important;color:#0A0A0A !important}
 <main class="content">
   <!-- ═══ ARTICLE FEED ═══ -->
   <div class="sec-head">
-    <div><div class="sec-ja">記事・キュレーション</div><div class="sec-en">Article</div></div>
+    <div><div class="sec-ja">あなたの投稿</div><div class="sec-en">Screen</div></div>
     <a class="sec-link" href="/search">EXPLORE →</a>
   </div>
 
@@ -983,7 +983,8 @@ function interleave(userPosts, samplePosts) {
   }
   return out;
 }
-let RAW_FEED = interleave(getUserArticles(), ARTICLES);
+// SCREEN = my own articles only (no sample feed, no followed users)
+let RAW_FEED = getUserArticles();
 let FEED = buildBalancedFeed(RAW_FEED);
 
 function writeArticleMeta(){
@@ -1067,9 +1068,12 @@ window.addEventListener('fb-auth-ready', async ({ detail }) => {
         if (!ls.some(x => x.id === d.id)) { ls.unshift(data); localStorage.setItem(key, JSON.stringify(ls)); }
       } catch(e){}
     });
+    // SCREEN shows only the current user's own posts
+    const myUid = detail.user.uid;
+    const myName = (localStorage.getItem('livepass_account_name') || '').toUpperCase();
+    const myPosts = fbPosts.filter(p => p.authorUid === myUid || (p.author || '').toUpperCase() === myName);
     const localOnly = getUserArticles().filter(a => !seenIds.has(a.id));
-    const allUserPosts = [...fbPosts, ...localOnly];
-    RAW_FEED = interleave(allUserPosts, ARTICLES);
+    RAW_FEED = [...myPosts, ...localOnly];
     FEED = buildBalancedFeed(RAW_FEED);
     writeArticleMeta();
     renderMagazine(FEED);
