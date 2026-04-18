@@ -68,6 +68,17 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   padding-top:calc(var(--safe-top) + 42px);
   overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;
   touch-action:pan-y;overscroll-behavior-x:none;max-width:100vw;}
+
+/* SCREEN: hide the topbar entirely and let the cover image live at the top */
+.topbar{display:none !important}
+.content{padding-top:var(--safe-top,0px) !important}
+.screen-top-cover{position:relative;width:100%;aspect-ratio:16/9;background:#0a0a0a;overflow:hidden;border-bottom:0.5px solid rgba(255,255,255,.06);cursor:pointer;}
+.screen-top-cover .stc-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.screen-top-cover .stc-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:rgba(237,235,230,.45);}
+.screen-top-cover .stc-text{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.28em;text-transform:uppercase}
+.screen-top-cover.has-image .stc-placeholder{display:none}
+.screen-top-cover.has-image .stc-edit{display:flex !important}
+.screen-top-cover .stc-edit{position:absolute;right:12px;bottom:12px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.55);border:0.5px solid rgba(255,255,255,.3);color:#fff;display:none;align-items:center;justify-content:center;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:2;}
 .content::-webkit-scrollbar{display:none}
 
 /* BOTTOM NAV ─────────────────────── */
@@ -658,10 +669,17 @@ html,body{background:#FFFFFF !important;color:#0A0A0A !important}
 </div>
 
 <main class="content">
-  <!-- ═══ ARTICLE FEED ═══ -->
-  <div class="sec-head">
-    <div><div class="sec-en">Screen</div></div>
-    <a class="sec-link" href="/search">EXPLORE →</a>
+  <!-- ═══ TOP IMAGE (user-uploadable cover) ═══ -->
+  <div id="screenTopCover" class="screen-top-cover" role="button" aria-label="カバー画像を設定">
+    <div class="stc-placeholder">
+      <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>
+      <div class="stc-text">タップして画像を追加</div>
+    </div>
+    <img class="stc-img" alt="" style="display:none">
+    <button class="stc-edit" type="button" aria-label="画像を変更" style="display:none">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+    </button>
+    <input type="file" id="screenTopFile" accept="image/*" style="display:none">
   </div>
 
   <div class="mag-grid" id="feedGrid"></div>
@@ -803,7 +821,7 @@ html,body{background:#FFFFFF !important;color:#0A0A0A !important}
 <nav class="bottomnav">
   <a href="/screen" class="bn-btn active" aria-label="Screen"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21" stroke-linecap="round"/><line x1="12" y1="18" x2="12" y2="21"/></svg></a>
   <a href="/calendar" class="bn-btn" aria-label="Calendar"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7" stroke-linecap="round"/><line x1="16" y1="3" x2="16" y2="7" stroke-linecap="round"/></svg></a>
-  <a href="/collection" class="bn-btn" aria-label="Collection"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="14" height="14" rx="2"/><rect x="7" y="9" width="14" height="14" rx="2" fill="currentColor" fill-opacity="0.3"/></svg></a>
+  <a href="/collection" class="bn-btn" aria-label="Collection"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="14" height="14" rx="2"/><rect x="7" y="9" width="14" height="14" rx="2" fill="currentColor" fill-opacity="0.18"/></svg></a>
   <a href="/saved" class="bn-btn" aria-label="Saved"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></a>
   <a href="/discovery" class="bn-btn" aria-label="Discovery"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/></svg></a>
 </nav>
@@ -1361,6 +1379,36 @@ function renderMagazine(posts) {
 }
 
 renderMagazine(FEED);
+
+/* ─────────────────────────────────────────────
+   TOP COVER — user-uploadable image at the top of SCREEN.
+   Stored as a base64 dataUrl in localStorage.
+   ───────────────────────────────────────────── */
+(function initScreenTopCover(){
+  const box = document.getElementById('screenTopCover');
+  const img = box && box.querySelector('.stc-img');
+  const file = document.getElementById('screenTopFile');
+  if (!box || !img || !file) return;
+  const STORAGE_KEY = 'livepass_screen_top_image';
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) { img.src = saved; img.style.display = 'block'; box.classList.add('has-image'); }
+  box.addEventListener('click', () => file.click());
+  file.addEventListener('change', async () => {
+    const f = file.files && file.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = String(reader.result || '');
+      if (!dataUrl) return;
+      img.src = dataUrl;
+      img.style.display = 'block';
+      box.classList.add('has-image');
+      try { localStorage.setItem(STORAGE_KEY, dataUrl); }
+      catch(e) { console.warn('Top cover save failed (quota?):', e); }
+    };
+    reader.readAsDataURL(f);
+  });
+})();
 
 /* ─────────────────────────────────────────────
    LIKES / SAVES — persisted in localStorage
