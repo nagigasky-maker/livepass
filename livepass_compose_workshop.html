@@ -552,6 +552,7 @@ html,body,.form,.content,.main,main,section,div,footer{background-color:#FFF !im
       <button class="pill" data-cat="ART">ART</button>
       <button class="pill" data-cat="CUSTOM">カスタム</button>
     </div>
+    <input class="input-box" id="customCatInput" placeholder="カスタムカテゴリを入力" style="display:none;margin-top:10px">
   </div>
 
   <div class="form-section">
@@ -801,12 +802,23 @@ if (editingEvent) {
   document.getElementById('submitBtn').textContent = '変更を保存 →';
 }
 
+const customCatInput = document.getElementById('customCatInput');
 document.querySelectorAll('#catRow .pill').forEach(p => {
   p.addEventListener('click', () => {
     document.querySelectorAll('#catRow .pill').forEach(x => x.classList.remove('active'));
     p.classList.add('active');
-    state.category = p.dataset.cat;
+    if (p.dataset.cat === 'CUSTOM') {
+      customCatInput.style.display = 'block';
+      state.category = (customCatInput.value || '').trim().toUpperCase() || 'CUSTOM';
+      customCatInput.focus();
+    } else {
+      customCatInput.style.display = 'none';
+      state.category = p.dataset.cat;
+    }
   });
+});
+customCatInput.addEventListener('input', () => {
+  state.category = (customCatInput.value || '').trim().toUpperCase() || 'CUSTOM';
 });
 
 document.querySelectorAll('#levelRow .pill').forEach(p => {
@@ -1654,12 +1666,20 @@ if (editingEvent) {
   bodyInput.value = editingEvent.body || '';
   document.getElementById('tagsInput').value = (editingEvent.tags || []).join(', ');
 
-  // Category pill
+  // Category pill (falls back to CUSTOM + input when cat isn't a preset)
   const cat = editingEvent.category || 'DJ';
   state.category = cat;
-  document.querySelectorAll('#catRow .pill').forEach(p => {
-    p.classList.toggle('active', p.dataset.cat === cat);
-  });
+  const preset = Array.from(document.querySelectorAll('#catRow .pill'))
+    .find(p => p.dataset.cat === cat && p.dataset.cat !== 'CUSTOM');
+  document.querySelectorAll('#catRow .pill').forEach(p => p.classList.remove('active'));
+  if (preset) {
+    preset.classList.add('active');
+    customCatInput.style.display = 'none';
+  } else {
+    document.querySelector('#catRow .pill[data-cat="CUSTOM"]').classList.add('active');
+    customCatInput.style.display = 'block';
+    customCatInput.value = cat;
+  }
 
   // Level pill
   const lvl = editingEvent.level || 'ALL LEVELS';
