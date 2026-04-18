@@ -19,7 +19,7 @@
   --border:rgba(255,255,255,.07);
   --safe-top:env(safe-area-inset-top,0px);
   --safe-bot:env(safe-area-inset-bottom,0px);
-  --nav-h:36px;
+  --nav-h:52px;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;max-width:100vw;height:100%;height:100dvh;
@@ -59,9 +59,9 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);}
 .bn-btn{flex:1;height:100%;display:flex;align-items:center;justify-content:center;
   color:rgba(237,235,230,.35);text-decoration:none;position:relative;}
-.bn-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
+.bn-btn svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.8}
 .bn-btn.active{color:var(--white)}
-.bn-avatar{width:26px;height:26px;border-radius:50%;
+.bn-avatar{width:30px;height:30px;border-radius:50%;
   background:linear-gradient(135deg,#1a2030,#0a1020);
   border:1.5px solid rgba(237,235,230,.25);
   overflow:hidden;display:flex;align-items:center;justify-content:center;}
@@ -922,7 +922,7 @@ document.getElementById('signOutBtn')?.addEventListener('click', async () => {
 <nav class="bottomnav">
   <a href="/screen" class="bn-btn" aria-label="Screen"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21" stroke-linecap="round"/><line x1="12" y1="18" x2="12" y2="21"/></svg></a>
   <a href="/calendar" class="bn-btn" aria-label="Calendar"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7" stroke-linecap="round"/><line x1="16" y1="3" x2="16" y2="7" stroke-linecap="round"/></svg></a>
-  <a href="/collection" class="bn-btn" aria-label="Collection"><img src="/expass_botom_icon.png" alt="Collection" style="width:22px;height:22px;object-fit:contain;display:block"></a>
+  <a href="/collection" class="bn-btn" aria-label="Collection"><img src="/expass_botom_icon.png" alt="Collection" style="width:26px;height:26px;object-fit:contain;display:block"></a>
   <a href="/saved" class="bn-btn" aria-label="Saved"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></a>
   <a href="/discovery" class="bn-btn" aria-label="Discovery"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/></svg></a>
 </nav>
