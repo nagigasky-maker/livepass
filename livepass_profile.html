@@ -1752,9 +1752,14 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 body.show-sub #panel-pass{display:none !important}
 body.show-sub #panel-sub{display:block !important}
 body.show-sub .profile-hero{border-bottom:0.5px solid rgba(10,10,10,.08)}
-/* /saved route: show the SAVED panel instead of PASS COLLECTION */
+/* /saved route: hide the profile hero entirely (Saved is the user's own
+   private page, not a profile view) and show the SAVED panel. */
+body.on-saved-route .profile-hero,
+body.on-saved-route .profile-stats,
+body.on-saved-route .subtabs,
 body.on-saved-route #panel-pass{display:none !important}
-body.on-saved-route #panel-saved{display:block !important}
+body.on-saved-route #panel-saved{display:block !important;padding-top:14px}
+body.on-saved-route .content{padding-top:calc(var(--safe-top,0px) + 56px) !important}
 .ph-heart-btn.active{background:rgba(10,10,10,.08) !important}
 /* Close icon when sub is shown */
 body.show-sub .ph-heart-btn svg{opacity:0}
