@@ -734,10 +734,13 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 .pr-role{font-size:11px !important}
 
 
-/* ── Header: logo only, centered (keep + create icon visible) ── */
-.topbar{min-height:calc(var(--safe-top,0px) + 48px) !important;padding:calc(var(--safe-top,0px) + 6px) 18px 10px !important}
+/* ── Header: hide the topbar chrome, float only the + button over the cover ── */
+.topbar{background:transparent !important;border:none !important;pointer-events:none !important;min-height:0 !important;padding:0 !important}
+.topbar .tb-brand{display:none !important}
 .topbar .tb-icon:not(#tbCreate){display:none !important}
-.topbar #tbCreate{position:absolute !important;right:18px !important;top:calc(var(--safe-top,0px) + 10px) !important;}
+.topbar #tbCreate{pointer-events:auto !important;background:rgba(0,0,0,.35) !important;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:0.5px solid rgba(255,255,255,.25) !important;border-radius:50% !important;color:#fff !important;position:absolute !important;right:14px !important;top:calc(var(--safe-top,0px) + 14px) !important}
+.cal-header{display:none !important}
+.content{padding-top:var(--safe-top,0px) !important}
 .topbar .tb-brand{position:relative !important;left:auto !important;top:auto !important;transform:none !important;margin:0 auto !important;height:32px !important}
 
 </style>
