@@ -709,7 +709,7 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 
 <main class="content">
   <header class="cal-header">
-    <div class="ch-label">Schedule · Your Following + AI</div>
+    <div class="ch-label">あなたのイベント</div>
     <div class="ch-title">CALENDAR</div>
   </header>
 
@@ -900,8 +900,16 @@ function getUserSchedule(){
       weekday: WD[d.getDay()],
     };
   };
+  // Own-events filter: show only events authored by the current user
+  const myName = (localStorage.getItem('livepass_account_name') || '').toUpperCase();
+  const myUid  = localStorage.getItem('livepass_uid') || '';
+  const isMine = (e) => {
+    const a = (e.author || '').toUpperCase();
+    const u = e.authorUid || '';
+    return a === myName || (u && u === myUid);
+  };
   try {
-    const events = JSON.parse(localStorage.getItem('livepass_events') || '[]');
+    const events = JSON.parse(localStorage.getItem('livepass_events') || '[]').filter(isMine);
     events.forEach(e => {
       const pd = parseDate(e.date);
       const cat = (e.category || 'EVENT').toUpperCase();
@@ -932,7 +940,7 @@ function getUserSchedule(){
     });
   } catch(err) {}
   try {
-    const workshops = JSON.parse(localStorage.getItem('livepass_workshops') || '[]');
+    const workshops = JSON.parse(localStorage.getItem('livepass_workshops') || '[]').filter(isMine);
     workshops.forEach(w => {
       const pd = parseDate(w.date);
       const cat = (w.category || 'WORKSHOP').toUpperCase();
@@ -963,7 +971,7 @@ function getUserSchedule(){
     });
   } catch(err) {}
   try {
-    const exhibitions = JSON.parse(localStorage.getItem('livepass_exhibitions') || '[]');
+    const exhibitions = JSON.parse(localStorage.getItem('livepass_exhibitions') || '[]').filter(isMine);
     exhibitions.forEach(x => {
       const pd = parseDate(x.date);
       const cat = (x.category || 'EXHIBITION').toUpperCase();
