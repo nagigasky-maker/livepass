@@ -189,27 +189,16 @@
   }
   #tribute .reel {
     position: absolute;
-    top: 53%;
-    width: 11.5%;
+    top: 44.4%;
+    width: 14.6%;
     aspect-ratio: 1 / 1;
     translate: -50% -50%;
-    border-radius: 50%;
-    background: conic-gradient(
-      from 0deg,
-      rgba(255,255,255,0.22) 0deg 7deg, transparent 7deg 60deg,
-      rgba(255,255,255,0.22) 60deg 67deg, transparent 67deg 120deg,
-      rgba(255,255,255,0.22) 120deg 127deg, transparent 127deg 180deg,
-      rgba(255,255,255,0.22) 180deg 187deg, transparent 187deg 240deg,
-      rgba(255,255,255,0.22) 240deg 247deg, transparent 247deg 300deg,
-      rgba(255,255,255,0.22) 300deg 307deg, transparent 307deg 360deg
-    );
-    mix-blend-mode: screen;
     pointer-events: none;
-    animation: reel-spin 7s linear infinite;
+    animation: reel-spin 9s linear infinite;
     will-change: rotate;
   }
-  #tribute .reel-left  { left: 20%; }
-  #tribute .reel-right { left: 62.5%; }
+  #tribute .reel-left  { left: 30%; }
+  #tribute .reel-right { left: 71.3%; animation-duration: 11s; }
   @keyframes reel-spin { to { rotate: 360deg; } }
   @media (prefers-reduced-motion: reduce) {
     #tribute .reel { animation: none; }
@@ -563,8 +552,8 @@
     <div class="cassette-wrap reveal">
       <div class="cassette-stage">
         <img src="cassette.png" alt="Jazzin' DJ MIX TAPE by YABE TADASHI" class="cassette">
-        <span class="reel reel-left" aria-hidden="true"></span>
-        <span class="reel reel-right" aria-hidden="true"></span>
+        <img src="reel.png" class="reel reel-left" alt="" aria-hidden="true">
+        <img src="reel.png" class="reel reel-right" alt="" aria-hidden="true">
       </div>
       <div class="cassette-caption">
         <strong>JAZZIN'  ·  DJ MIX TAPE BY YABE TADASHI</strong><br>
