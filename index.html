@@ -2,59 +2,986 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#000000">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-<link rel="manifest" href="/manifest.json">
-<link rel="apple-touch-icon" href="/livepass-icon-180.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EXPASS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-html,body{
-  margin:0;padding:0;width:100%;height:100%;height:100dvh;
-  background:#000;color:#EDEBE6;
-  font-family:Arial,'Noto Sans JP',sans-serif;
-  -webkit-font-smoothing:antialiased;
-  overflow:hidden;
-  display:flex;align-items:center;justify-content:center;
-}
-.logo{height:32px;width:auto;opacity:.85;filter:drop-shadow(0 2px 16px rgba(0,0,0,.6))}
+  :root {
+    --bg: #fafaf7;
+    --fg: #0f0f0f;
+    --fg-soft: #555;
+    --fg-faded: #999;
+    --line: #e6e4de;
+    --panel: #f3f1ea;
+    --gold: #8a7340;
+    --font: 'Noto Sans JP', 'Noto Sans CJK JP', sans-serif;
+
+    --dark-bg: #0a0a0a;
+    --dark-fg: #f0ece4;
+    --dark-soft: #8a867e;
+    --dark-faded: #4a4843;
+    --dark-line: #222;
+    --dark-panel: #141411;
+    --dark-gold: #b89a5e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font);
+    line-height: 1.9;
+    letter-spacing: 0.03em;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.5s ease, color 0.5s ease;
+  }
+  body.dark { background: var(--dark-bg); color: var(--dark-fg); }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 28px;
+    background: rgba(250, 250, 247, 0.92);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+    transition: background 0.5s ease, border-color 0.5s ease;
+  }
+  body.dark nav {
+    background: rgba(10, 10, 10, 0.85);
+    border-bottom-color: var(--dark-line);
+  }
+  .logo img { height: 20px; display: block; }
+  body.dark .logo img { filter: invert(1) brightness(1.2); }
+  .tabs { display: flex; gap: 4px; }
+  .tab {
+    font-family: var(--font); font-size: 12px; letter-spacing: 0.12em;
+    padding: 8px 14px; background: transparent; color: var(--fg-soft);
+    border: none; cursor: pointer; transition: color 0.2s;
+  }
+  body.dark .tab { color: var(--dark-soft); }
+  .tab:hover { color: var(--fg); }
+  body.dark .tab:hover { color: var(--dark-fg); }
+  .tab.active { color: var(--gold); }
+  body.dark .tab.active { color: var(--dark-gold); }
+  @media (max-width: 540px) {
+    nav { padding: 12px 16px; }
+    .logo img { height: 16px; }
+    .tab { font-size: 10px; padding: 6px 8px; letter-spacing: 0.08em; }
+  }
+
+  /* VIEWS */
+  .view { display: none; padding-top: 56px; }
+  .view.active { display: block; }
+
+  /* REVEAL */
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.8s ease, transform 0.8s ease; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  /* HOME */
+  .home-hero {
+    min-height: 88vh;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    text-align: center; padding: 8vh 6vw 4vh;
+  }
+  .eyebrow {
+    font-size: 12px; letter-spacing: 0.3em; color: var(--gold);
+    text-transform: uppercase; margin-bottom: 20px;
+  }
+  .hero-logo {
+    width: clamp(220px, 40vw, 400px); height: auto;
+    display: block; margin: 0 auto 28px;
+  }
+  .hero-lead {
+    font-size: clamp(16px, 1.8vw, 20px); color: var(--fg-soft);
+    line-height: 2; max-width: 540px;
+  }
+  .rule {
+    width: 40px; height: 1px; background: var(--gold); margin: 32px auto;
+  }
+  .sub-meta { font-size: 11px; letter-spacing: 0.25em; color: var(--fg-faded); }
+
+  .hero-select {
+    display: grid; grid-template-columns: 1fr; gap: 14px;
+    margin: 48px auto 0; max-width: 820px; width: 100%;
+  }
+  @media (min-width: 720px) { .hero-select { grid-template-columns: repeat(3, 1fr); } }
+  .card {
+    padding: 28px 22px; border: 1px solid var(--line);
+    text-align: left; cursor: pointer; transition: all 0.25s ease;
+    background: transparent; color: var(--fg); font-family: var(--font);
+  }
+  .card:hover { border-color: var(--gold); background: var(--panel); }
+  .card-num { font-size: 11px; letter-spacing: 0.3em; color: var(--gold); margin-bottom: 14px; font-weight: 600; }
+  .card-title { font-size: 20px; font-weight: 700; letter-spacing: 0.06em; margin-bottom: 10px; line-height: 1.4; }
+  .card-desc { font-size: 12px; color: var(--fg-faded); line-height: 1.8; }
+  .card-arrow { margin-top: 18px; font-size: 12px; color: var(--gold); letter-spacing: 0.2em; }
+
+  /* TRIBUTE (dark, cinematic) */
+  #tribute { background: var(--dark-bg); color: var(--dark-fg); }
+  #tribute .tribute-section {
+    padding: 12vh 6vw; max-width: 720px; margin: 0 auto;
+  }
+  #tribute .center {
+    min-height: 92vh; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; text-align: center;
+  }
+  #tribute h1 {
+    font-size: clamp(48px, 10vw, 108px); font-weight: 700;
+    letter-spacing: 0.1em; line-height: 1.1; margin-bottom: 20px;
+    color: var(--dark-fg);
+  }
+  #tribute h2 {
+    font-size: clamp(26px, 4vw, 38px); font-weight: 700;
+    letter-spacing: 0.06em; margin-bottom: 16px; color: var(--dark-fg);
+  }
+  #tribute .chapter-num {
+    font-size: 13px; letter-spacing: 0.4em; color: var(--dark-gold); margin-bottom: 8px;
+  }
+  #tribute .eyebrow { color: var(--dark-gold); }
+  #tribute .rule { background: var(--dark-gold); margin: 24px auto 40px; }
+  #tribute .sub-meta { color: var(--dark-faded); margin-top: 32px; }
+  #tribute p {
+    font-size: clamp(15px, 1.4vw, 17px); line-height: 2;
+    color: var(--dark-soft); margin-bottom: 24px;
+  }
+  #tribute p.lead {
+    font-size: clamp(17px, 1.8vw, 20px); color: var(--dark-fg); line-height: 1.9;
+  }
+  #tribute p strong { color: var(--dark-fg); font-weight: 600; }
+  #tribute p em { color: var(--dark-gold); font-style: normal; font-weight: 600; }
+  #tribute .panel {
+    background: var(--dark-panel); border: 1px solid var(--dark-line);
+    padding: 40px 32px; margin: 32px 0; text-align: center;
+  }
+  #tribute .panel p {
+    color: var(--dark-fg); font-size: clamp(16px, 1.8vw, 20px);
+    line-height: 2; margin: 0; font-weight: 500;
+  }
+  #tribute .panel p + p { margin-top: 6px; }
+  #tribute .panel .accent { color: var(--dark-gold); font-weight: 600; }
+  #tribute .timeline { margin: 32px 0; }
+  #tribute .timeline-row {
+    display: grid; grid-template-columns: 100px 1fr; gap: 24px;
+    padding: 18px 0; border-bottom: 1px solid var(--dark-line);
+  }
+  #tribute .timeline-row:last-child { border-bottom: none; }
+  #tribute .t-year {
+    font-size: 14px; letter-spacing: 0.1em; color: var(--dark-gold); font-weight: 600;
+  }
+  #tribute .t-body { font-size: 14px; line-height: 1.9; color: var(--dark-soft); }
+  @media (max-width: 540px) {
+    #tribute .timeline-row { grid-template-columns: 80px 1fr; gap: 16px; }
+  }
+  #tribute .cassette-wrap { margin: 40px auto; max-width: 500px; text-align: center; }
+  #tribute .cassette {
+    width: 100%; height: auto; display: block;
+    border: 1px solid var(--dark-line);
+  }
+  #tribute .cassette-caption {
+    margin-top: 16px; font-size: 11px; letter-spacing: 0.22em;
+    color: var(--dark-faded); line-height: 2;
+  }
+  #tribute .cassette-caption strong { color: var(--dark-soft); letter-spacing: 0.15em; }
+  #tribute .slogan {
+    font-size: clamp(18px, 2.4vw, 26px); font-weight: 600;
+    line-height: 2; letter-spacing: 0.12em; margin: 4px 0;
+    color: var(--dark-fg);
+  }
+  #tribute .dots { color: var(--dark-faded); letter-spacing: 0.8em; margin: 40px 0; }
+  #tribute .footer-meta {
+    font-size: 11px; letter-spacing: 0.25em; color: var(--dark-faded); margin-top: 12px;
+  }
+
+  /* FIRST-MATERIAL LAYOUT (investment, master) */
+  .doc-hero {
+    max-width: 1100px; margin: 0 auto; padding: 10vh 6vw 4vh;
+  }
+  .doc-hero-eyebrow {
+    font-size: 11px; letter-spacing: 0.35em; color: var(--gold);
+    text-transform: uppercase; margin-bottom: 16px; font-weight: 600;
+  }
+  .doc-hero-title {
+    font-size: clamp(36px, 5.5vw, 60px); font-weight: 700;
+    letter-spacing: 0.04em; line-height: 1.2; margin-bottom: 20px; color: var(--fg);
+  }
+  .doc-hero-tagline {
+    font-size: clamp(15px, 1.7vw, 19px); line-height: 1.9;
+    color: var(--fg-soft); max-width: 720px; margin-bottom: 40px;
+  }
+  .doc-hero-tagline strong { color: var(--fg); font-weight: 600; }
+
+  .fact-strip {
+    display: grid; grid-template-columns: 1fr;
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    margin: 32px 0 0;
+  }
+  @media (min-width: 720px) { .fact-strip { grid-template-columns: repeat(4, 1fr); } }
+  .fact { padding: 24px 22px; border-bottom: 1px solid var(--line); }
+  .fact:last-child { border-bottom: none; }
+  @media (min-width: 720px) {
+    .fact { border-bottom: none; border-right: 1px solid var(--line); }
+    .fact:last-child { border-right: none; }
+  }
+  .fact-label {
+    font-size: 10px; letter-spacing: 0.25em; color: var(--gold);
+    text-transform: uppercase; margin-bottom: 10px; font-weight: 700;
+  }
+  .fact-value {
+    font-size: clamp(16px, 1.7vw, 18px); font-weight: 700;
+    color: var(--fg); line-height: 1.4;
+  }
+  .fact-desc { font-size: 11px; color: var(--fg-faded); line-height: 1.6; margin-top: 6px; }
+
+  .doc-section { max-width: 1100px; margin: 0 auto; padding: 5vh 6vw; }
+  .doc-section-head {
+    display: flex; align-items: baseline; gap: 14px;
+    margin-bottom: 28px; padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .doc-section-num {
+    font-size: 11px; letter-spacing: 0.3em; color: var(--gold);
+    font-weight: 700; min-width: 24px;
+  }
+  .doc-section-title {
+    font-size: clamp(20px, 2.4vw, 26px); font-weight: 700;
+    letter-spacing: 0.05em; color: var(--fg); flex: 1;
+  }
+  .doc-section-intro {
+    font-size: 14px; color: var(--fg-soft); line-height: 1.9;
+    margin-bottom: 24px; max-width: 720px;
+  }
+  .doc-section-intro strong { color: var(--fg); font-weight: 600; }
+
+  .tile-grid { display: grid; gap: 12px; grid-template-columns: 1fr; }
+  @media (min-width: 600px) { .tile-grid.cols-2 { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 720px) { .tile-grid.cols-3 { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 900px) {
+    .tile-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+    .tile-grid.cols-5 { grid-template-columns: repeat(5, 1fr); }
+  }
+  .tile {
+    padding: 20px; border: 1px solid var(--line);
+    background: var(--bg); transition: all 0.25s ease;
+  }
+  .tile:hover { border-color: var(--gold); background: var(--panel); }
+  .tile-tag {
+    font-size: 10px; letter-spacing: 0.25em; color: var(--gold);
+    font-weight: 700; margin-bottom: 10px;
+  }
+  .tile-name { font-size: 15px; font-weight: 700; color: var(--fg); margin-bottom: 8px; }
+  .tile-desc { font-size: 12px; color: var(--fg-soft); line-height: 1.7; }
+  .tile-desc + .tile-desc { margin-top: 6px; color: var(--fg-faded); font-size: 11px; }
+
+  .plan-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  @media (min-width: 720px) { .plan-row { grid-template-columns: repeat(3, 1fr); } }
+  .plan-card { padding: 24px 22px; border: 1px solid var(--line); background: var(--bg); }
+  .plan-card.featured { border-color: var(--gold); background: var(--panel); }
+  .plan-name {
+    font-size: 11px; letter-spacing: 0.25em; color: var(--gold);
+    font-weight: 700; margin-bottom: 12px;
+  }
+  .plan-price {
+    font-size: clamp(26px, 3.5vw, 32px); font-weight: 700;
+    color: var(--fg); line-height: 1;
+  }
+  .plan-price .unit { font-size: 12px; color: var(--fg-faded); font-weight: 400; }
+  .plan-desc {
+    font-size: 12px; color: var(--fg-soft); line-height: 1.8;
+    margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line);
+  }
+
+  .doc-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+  .doc-table th {
+    text-align: left; padding: 12px 14px;
+    background: var(--panel); border-bottom: 2px solid var(--line);
+    font-size: 10px; letter-spacing: 0.2em; color: var(--gold);
+    font-weight: 700; text-transform: uppercase;
+  }
+  .doc-table td {
+    padding: 14px; border-bottom: 1px solid var(--line);
+    color: var(--fg-soft); line-height: 1.6;
+  }
+  .doc-table td strong { color: var(--fg); }
+  .doc-table td.num {
+    text-align: right; font-variant-numeric: tabular-nums;
+    font-weight: 600; color: var(--fg);
+  }
+  .doc-table tr:last-child td { border-bottom: none; }
+  .doc-table tr.total td { background: var(--panel); font-weight: 700; color: var(--fg); }
+  .doc-table tr.total td.num { color: var(--gold); font-size: 15px; }
+  @media (max-width: 540px) {
+    .doc-table { font-size: 12px; }
+    .doc-table th, .doc-table td { padding: 10px 8px; }
+  }
+
+  .phases { display: grid; grid-template-columns: 1fr; gap: 10px; margin: 24px 0; }
+  @media (min-width: 720px) { .phases { grid-template-columns: repeat(3, 1fr); } }
+  .phase { padding: 20px; border: 1px solid var(--line); background: var(--bg); }
+  .phase.active { border-color: var(--gold); background: var(--panel); }
+  .phase-num {
+    font-size: 10px; letter-spacing: 0.3em; color: var(--gold);
+    font-weight: 700; margin-bottom: 6px;
+  }
+  .phase-when {
+    font-size: 12px; color: var(--fg); margin-bottom: 10px;
+    font-weight: 600; letter-spacing: 0.04em;
+  }
+  .phase-what { font-size: 12px; color: var(--fg-soft); line-height: 1.7; }
+
+  .ask-hero {
+    text-align: center; padding: 44px 24px;
+    border: 2px solid var(--gold); background: var(--panel); margin: 24px 0;
+  }
+  .ask-label {
+    font-size: 11px; letter-spacing: 0.3em; color: var(--gold);
+    margin-bottom: 14px; text-transform: uppercase; font-weight: 600;
+  }
+  .ask-amount {
+    font-size: clamp(40px, 7vw, 64px); font-weight: 700;
+    color: var(--fg); line-height: 1; margin-bottom: 12px;
+  }
+  .ask-note { font-size: 13px; color: var(--fg-soft); line-height: 1.7; max-width: 420px; margin: 0 auto; }
+
+  .budget-list { margin: 20px 0; }
+  .budget-item {
+    display: grid; grid-template-columns: 90px 1fr; gap: 18px;
+    padding: 16px 0; border-bottom: 1px solid var(--line); align-items: baseline;
+  }
+  .budget-amount {
+    font-size: 15px; font-weight: 700; color: var(--gold);
+    font-variant-numeric: tabular-nums;
+  }
+  .budget-detail strong { display: block; color: var(--fg); font-size: 13px; margin-bottom: 4px; }
+  .budget-detail span { font-size: 11px; color: var(--fg-faded); line-height: 1.6; }
+
+  .problems { margin: 24px 0; }
+  .prob {
+    padding: 20px 0; border-bottom: 1px solid var(--line);
+    display: grid; grid-template-columns: 40px 1fr; gap: 16px;
+  }
+  .prob:last-child { border-bottom: none; }
+  .prob-n { font-size: 22px; color: var(--gold); font-weight: 700; line-height: 1; }
+  .prob-body strong {
+    display: block; color: var(--fg); font-size: 15px;
+    font-weight: 700; margin-bottom: 6px;
+  }
+  .prob-body span { font-size: 12px; color: var(--fg-soft); line-height: 1.7; }
+
+  .matrix { margin: 20px 0; border: 1px solid var(--line); }
+  .matrix-row {
+    display: grid; grid-template-columns: 1.8fr 1fr 1fr 1fr 1fr;
+    border-bottom: 1px solid var(--line); font-size: 12px;
+  }
+  .matrix-row:last-child { border-bottom: none; }
+  .matrix-row.head {
+    background: var(--panel); font-size: 10px; letter-spacing: 0.2em;
+    color: var(--gold); font-weight: 700; text-transform: uppercase;
+  }
+  .matrix-row.featured { background: var(--panel); }
+  .matrix-row.featured .matrix-cell { color: var(--fg); font-weight: 700; }
+  .matrix-row.featured .check { color: var(--gold); }
+  .matrix-cell { padding: 12px; color: var(--fg-soft); text-align: center; }
+  .matrix-cell:first-child { text-align: left; }
+  .check { color: var(--gold); font-weight: 700; font-size: 16px; }
+  .no-check { color: var(--fg-faded); font-weight: 400; }
+  @media (max-width: 640px) {
+    .matrix-row { grid-template-columns: 1.6fr repeat(4, 0.6fr); font-size: 10px; }
+    .matrix-cell { padding: 10px 4px; }
+  }
+
+  .final-footer {
+    text-align: center; padding: 8vh 6vw 6vh;
+    border-top: 1px solid var(--line); margin-top: 40px;
+  }
+  .dots { color: var(--fg-faded); letter-spacing: 0.8em; margin: 20px 0 32px; font-size: 12px; }
+  .slogan {
+    font-size: clamp(17px, 2vw, 22px); font-weight: 600;
+    line-height: 1.8; letter-spacing: 0.12em; margin: 2px 0; color: var(--fg);
+  }
+  .footer-meta { font-size: 10px; letter-spacing: 0.25em; color: var(--fg-faded); margin-top: 8px; }
+  .footer-logo { width: 80px; height: auto; display: block; margin: 28px auto 14px; opacity: 0.55; }
 </style>
-<script type="module" src="/firebase-init.js"></script>
 </head>
 <body>
-<img class="logo" src="/livepasslogo.png" alt="EXPASS">
+
+<nav>
+  <div class="logo"><img src="logo.png" alt="EXPASS"></div>
+  <div class="tabs">
+    <button class="tab active" data-view="home">HOME</button>
+    <button class="tab" data-view="tribute">追悼</button>
+    <button class="tab" data-view="investment">出資</button>
+    <button class="tab" data-view="master">プラン</button>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div class="view active" id="home">
+  <section class="home-hero">
+    <div class="eyebrow reveal">A Platform for Culture</div>
+    <img src="logo.png" alt="EXPASS" class="hero-logo reveal">
+    <p class="hero-lead reveal">
+      アーティストが稼ぎながら、<br>文化を残せる。<br>日本初のオールインワン・プラットフォーム。
+    </p>
+    <div class="rule reveal"></div>
+    <p class="sub-meta reveal">NOBBY  ·  SPACE COOKING™  ·  ALL MUST DANCE™</p>
+
+    <div class="hero-select reveal">
+      <button class="card" data-view="tribute">
+        <div class="card-num">I</div>
+        <div class="card-title">追悼<br>矢部 直</div>
+        <div class="card-desc">師であり親友だった男。<br>カセットテープに残された、最後の音。</div>
+        <div class="card-arrow">読む →</div>
+      </button>
+      <button class="card" data-view="investment">
+        <div class="card-num">II</div>
+        <div class="card-title">出資の<br>ご案内</div>
+        <div class="card-desc">ローンチまでのランニングコスト。<br>¥100 〜 300万のお願い。</div>
+        <div class="card-arrow">読む →</div>
+      </button>
+      <button class="card" data-view="master">
+        <div class="card-num">III</div>
+        <div class="card-title">マスター<br>プラン</div>
+        <div class="card-desc">プラットフォーム全体の設計。<br>5種類のユーザー、3年の収支計画。</div>
+        <div class="card-arrow">読む →</div>
+      </button>
+    </div>
+  </section>
+</div>
+
+<!-- TRIBUTE (dark cinematic) -->
+<div class="view" id="tribute">
+  <section class="tribute-section center">
+    <div class="eyebrow reveal">In Memory of</div>
+    <h1 class="reveal">矢部 直</h1>
+    <p class="reveal" style="color: var(--dark-soft); letter-spacing: 0.15em; margin-top: 8px;">Tadashi Yabe</p>
+    <p class="sub-meta reveal">1965  —  2024</p>
+    <div class="rule reveal"></div>
+    <p class="reveal" style="color: var(--dark-soft); font-size: 13px; letter-spacing: 0.18em;">DJ  /  Producer  /  U.F.O.</p>
+    <p class="reveal" style="color: var(--dark-faded); font-size: 12px; letter-spacing: 0.1em; margin-top: 8px;">United Future Organization</p>
+  </section>
+
+  <section class="tribute-section">
+    <div class="panel reveal">
+      <p>僕の音楽と芸術の師であり、</p>
+      <p><span class="accent">親友だった。</span></p>
+    </div>
+    <p class="reveal" style="text-align: center; margin-top: 40px;">
+      日本のクラブ・ジャズを、世界と地続きにした男。<br>
+      楽器を弾かない三人のDJが、<br>
+      東京の夜から、世界のフロアへとジャズを解き放った。
+    </p>
+  </section>
+
+  <section class="tribute-section">
+    <div class="chapter-num reveal">I</div>
+    <h2 class="reveal">軌跡</h2>
+    <div class="rule reveal" style="margin: 24px 0 40px; width: 40px;"></div>
+
+    <div class="timeline">
+      <div class="timeline-row reveal"><div class="t-year">1990</div><div class="t-body">ラファエル・セバーグ、松浦俊夫とともに United Future Organization (U.F.O.) を結成。日本発のクラブ・ジャズのパイオニアとして、東京のアンダーグラウンドから活動を始める。</div></div>
+      <div class="timeline-row reveal"><div class="t-year">1991</div><div class="t-body">デビュー曲「I Love My Baby (My Baby Loves Jazz)」をリリース。</div></div>
+      <div class="timeline-row reveal"><div class="t-year">1992</div><div class="t-body">「Loud Minority」を発表。ロンドン、ハンブルク、ニューヨークのフロアで熱狂的な支持を得て、U.F.O. の名を世界へと広げた代表作となる。</div></div>
+      <div class="timeline-row reveal"><div class="t-year">1993</div><div class="t-body">アルバム『Jazzin' 91–93』発表。ロンドン〈Fridge〉にて英国デビュー公演。</div></div>
+      <div class="timeline-row reveal"><div class="t-year">1994</div><div class="t-body">Verve Forecast から米国デビュー盤『United Future Organization』リリース。『Stolen Moments: Red Hot + Cool』(TIME誌 Album of the Year) に参加。</div></div>
+      <div class="timeline-row reveal"><div class="t-year">1990s</div><div class="t-body">芝浦〈GOLD〉、西麻布〈YELLOW〉、南青山〈Blue〉で伝説的パーティ〈Jazzin'〉をオーガナイズ。ジャズで踊らせるという思想を体現し、東京のクラブ・シーンを切り拓いた。</div></div>
+      <div class="timeline-row reveal"><div class="t-year">Montreux</div><div class="t-body">演奏家以外としては史上初となるDJとして、モントルー・ジャズ・フェスティヴァルに出演。</div></div>
+      <div class="timeline-row reveal"><div class="t-year">晩年</div><div class="t-body">神宮前〈bonobo〉での月一回のパーティ〈weneed〉を主宰。世代とジャンルを越えた交流の場として、多くのアーティストに影響を与え続けた。</div></div>
+    </div>
+  </section>
+
+  <section class="tribute-section">
+    <div class="chapter-num reveal">II</div>
+    <h2 class="reveal">彼が残したもの</h2>
+    <div class="rule reveal" style="margin: 24px 0 40px; width: 40px;"></div>
+
+    <p class="lead reveal">矢部直は、技術や演奏の巧さに頼らずに、「聴く耳」と「選ぶ目」だけで、世界に通用する音楽をつくれることを証明した、最初の日本人の一人だった。</p>
+    <p class="reveal">DJという存在を、フロアで曲をかける人から、文化そのものを編集し、プロデュースし、発信する人へと、静かに、しかし確かに再定義した。</p>
+    <p class="reveal">U.F.O. は楽器を弾かない三人のDJだけでアルバムをつくり、海外のレーベルからリリースし、モントルーのステージに立った。当時の日本の音楽シーンにおいて、前例のない出来事だった。</p>
+    <p class="reveal">音楽だけにとどまらず、アートワーク、写真、ファッション、パーティの演出までを、ひとつの美意識で貫く姿勢は、日本のクラブ・カルチャーに「思想」を持ち込んだ。彼のその姿勢は、EXPASSが目指す「アーティストが自分の作品と文化をまるごと管理し、世界に届ける」という思想の、<em>静かな源流</em>となっている。</p>
+  </section>
+
+  <section class="tribute-section">
+    <div class="chapter-num reveal">III</div>
+    <h2 class="reveal">最後のプレイ</h2>
+    <div class="rule reveal" style="margin: 24px 0 40px; width: 40px;"></div>
+
+    <p class="lead reveal">二〇二四年七月十九日、渋谷 clubasia。</p>
+    <p class="reveal">矢部直が、生前最後にターンテーブルに向かったのは、NOBBYとともに立ち上げた〈ALL MUST DANCE™〉だった。</p>
+    <p class="reveal">その六日後、七月二十五日。<br><strong>彼は、逝った。</strong></p>
+    <p class="reveal">後日、〈Jazzin'〉の追悼パーティが開かれた。会場で、その夜に居合わせた者だけに、一本のカセットテープが手渡された。七月十九日の、彼の最後のセットが収録されていた。</p>
+
+    <div class="cassette-wrap reveal">
+      <img src="cassette.png" alt="Jazzin' DJ MIX TAPE by YABE TADASHI" class="cassette">
+      <div class="cassette-caption">
+        <strong>JAZZIN'  ·  DJ MIX TAPE BY YABE TADASHI</strong><br>
+        ALL MUST DANCE @ CLUBASIA  ·  2024.7.19 REC  ·  NOT FOR SALE
+      </div>
+    </div>
+  </section>
+
+  <section class="tribute-section">
+    <div class="chapter-num reveal">IV</div>
+    <h2 class="reveal">受け継ぐもの</h2>
+    <div class="rule reveal" style="margin: 24px 0 40px; width: 40px;"></div>
+
+    <p class="lead reveal">その夜、そこにいた人だけが持てる、彼の最後の音。</p>
+
+    <div class="panel reveal">
+      <p>これがまさに、</p>
+      <p>EXPASS の PASS カードが</p>
+      <p>残そうとしているもの、</p>
+      <p class="accent" style="margin-top: 12px; font-size: 22px;">そのものだ。</p>
+    </div>
+
+    <p class="reveal">「その夜、そこにいた」という事実。その場で交わされた音、空気、記憶。それを、誰かが後から奪えない形で、残す。</p>
+    <p class="reveal">偶然ではなく、彼から受け取ったものが、この仕組みの、ひそやかな根っこにある。</p>
+    <p class="reveal">彼が残した思想、音、そして東京の夜にいた人たちの記憶を、次の世代のダンサー、DJ、ミュージシャンに、渡したい。<br><em>それが、EXPASSをつくっている理由だ。</em></p>
+  </section>
+
+  <section class="tribute-section center">
+    <div class="dots reveal">· · ·</div>
+    <p class="slogan reveal">心を踊らせ。</p>
+    <p class="slogan reveal">文化を育て。</p>
+    <p class="slogan reveal">世界を和へ。</p>
+    <p class="reveal" style="color: var(--dark-faded); font-size: 14px; margin-top: 40px;">天国でも、ジャズを。</p>
+    <p class="footer-meta reveal">EXPASS™  ·  ALL MUST DANCE™  ·  SPACE COOKING™</p>
+  </section>
+</div>
+
+<!-- INVESTMENT (first-read material) -->
+<div class="view" id="investment">
+  <div class="doc-hero">
+    <div class="doc-hero-eyebrow reveal">出資のご案内  ·  2026.04</div>
+    <h1 class="doc-hero-title reveal">アプリ完成まで、<br>あと一歩。</h1>
+    <p class="doc-hero-tagline reveal">
+      <strong>EXPASS</strong> は、アーティストが稼ぎながら文化を残せる、日本初のオールインワン・プラットフォーム。本番ローンチまでのランニングコストとして、<strong>¥100 〜 300万</strong> のご支援をお願いしたいと思います。
+    </p>
+
+    <div class="fact-strip reveal">
+      <div class="fact">
+        <div class="fact-label">何のアプリ</div>
+        <div class="fact-value">アーティスト向け<br>オールインワン</div>
+        <div class="fact-desc">稼ぎながら、文化を残せる。</div>
+      </div>
+      <div class="fact">
+        <div class="fact-label">現在の状況</div>
+        <div class="fact-value">MVP 稼働中</div>
+        <div class="fact-desc">expass.app で動作確認可能。</div>
+      </div>
+      <div class="fact">
+        <div class="fact-label">必要資金</div>
+        <div class="fact-value">¥100 〜 300万</div>
+        <div class="fact-desc">補助金と投資でほぼ賄える計画。</div>
+      </div>
+      <div class="fact">
+        <div class="fact-label">初収益日</div>
+        <div class="fact-value">2026.05.04</div>
+        <div class="fact-desc">ALL MUST DANCE™ @ CLUB ASIA。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-section">
+    <div class="doc-section-head">
+      <div class="doc-section-num reveal">I</div>
+      <div class="doc-section-title reveal">EXPASS は、何を解決するか</div>
+    </div>
+    <p class="doc-section-intro reveal">NOBBYは東京で20年以上、ダンサーとして活動してきた。その中で、ずっと見続けてきた問題がある。</p>
+
+    <div class="problems">
+      <div class="prob reveal">
+        <div class="prob-n">01</div>
+        <div class="prob-body"><strong>才能があっても、稼げない。</strong><span>アルバイトをしながら活動している人がほとんど。活動を諦める人が、後を絶たない。</span></div>
+      </div>
+      <div class="prob reveal">
+        <div class="prob-n">02</div>
+        <div class="prob-body"><strong>クレジットが、消える。</strong><span>振付や楽曲を誰が作ったか、記録されないまま、文化が忘れられていく。</span></div>
+      </div>
+      <div class="prob reveal">
+        <div class="prob-n">03</div>
+        <div class="prob-body"><strong>世界に、届かない。</strong><span>日本語でしか発信できず、海外から発見されない。</span></div>
+      </div>
+    </div>
+
+    <p class="doc-section-intro reveal" style="margin-top: 28px;">EXPASSは、この三つを同時に解決する。ライブ会場限定のPASSカード、映像アーカイブ、レッスン予約、グッズ販売、AI機能、多言語対応——<strong>全てをひとつのアプリに統合</strong>している。</p>
+  </div>
+
+  <div class="doc-section">
+    <div class="doc-section-head">
+      <div class="doc-section-num reveal">II</div>
+      <div class="doc-section-title reveal">7つの機能</div>
+    </div>
+
+    <div class="tile-grid cols-4 reveal">
+      <div class="tile"><div class="tile-tag">PASS</div><div class="tile-name">会場限定カード</div><div class="tile-desc">ライブ収益と月額サポートが両立。</div></div>
+      <div class="tile"><div class="tile-tag">SCREEN</div><div class="tile-name">映像アーカイブ</div><div class="tile-desc">誰が何を作ったかが永久に記録。</div></div>
+      <div class="tile"><div class="tile-tag">SCHEDULE</div><div class="tile-name">レッスン予約</div><div class="tile-desc">教えることでも安定収入。</div></div>
+      <div class="tile"><div class="tile-tag">STORE</div><div class="tile-name">EC・直販</div><div class="tile-desc">中間業者なしで売上が入る。</div></div>
+      <div class="tile"><div class="tile-tag">AI STUDIO</div><div class="tile-name">AI機能</div><div class="tile-desc">チラシ自動生成、スタジオ検索。</div></div>
+      <div class="tile"><div class="tile-tag">GLOBAL</div><div class="tile-name">多言語対応</div><div class="tile-desc">英語・韓国語で世界へ発信。</div></div>
+      <div class="tile"><div class="tile-tag">REVENUE</div><div class="tile-name">収益ダッシュボード</div><div class="tile-desc">今月の収入が一目で分かる。</div></div>
+      <div class="tile" style="background:var(--panel); border-color:var(--gold);"><div class="tile-tag" style="color:var(--fg);">7-in-1</div><div class="tile-name">統合設計</div><div class="tile-desc">世界で類似サービスは存在しない。</div></div>
+    </div>
+  </div>
+
+  <div class="doc-section">
+    <div class="doc-section-head">
+      <div class="doc-section-num reveal">III</div>
+      <div class="doc-section-title reveal">競合比較</div>
+    </div>
+    <p class="doc-section-intro reveal">既存のプラットフォームはどれも単機能。EXPASSは全部入り。</p>
+
+    <div class="matrix reveal">
+      <div class="matrix-row head">
+        <div class="matrix-cell">Service</div>
+        <div class="matrix-cell">ライブ連携</div>
+        <div class="matrix-cell">映像保存</div>
+        <div class="matrix-cell">多言語</div>
+        <div class="matrix-cell">ダンス特化</div>
+      </div>
+      <div class="matrix-row"><div class="matrix-cell">Spotify</div><div class="matrix-cell no-check">—</div><div class="matrix-cell no-check">—</div><div class="matrix-cell no-check">—</div><div class="matrix-cell no-check">—</div></div>
+      <div class="matrix-row"><div class="matrix-cell">YouTube</div><div class="matrix-cell no-check">—</div><div class="matrix-cell no-check">—</div><div class="matrix-cell no-check">—</div><div class="matrix-cell no-check">—</div></div>
+      <div class="matrix-row"><div class="matrix-cell">Patreon</div><div class="matrix-cell no-check">—</div><div class="matrix-cell no-check">—</div><div class="matrix-cell no-check">—</div><div class="matrix-cell no-check">—</div></div>
+      <div class="matrix-row"><div class="matrix-cell">Bandcamp</div><div class="matrix-cell no-check">—</div><div class="matrix-cell no-check">—</div><div class="matrix-cell no-check">—</div><div class="matrix-cell no-check">—</div></div>
+      <div class="matrix-row featured"><div class="matrix-cell">EXPASS</div><div class="matrix-cell check">◯</div><div class="matrix-cell check">◯</div><div class="matrix-cell check">◯</div><div class="matrix-cell check">◯</div></div>
+    </div>
+  </div>
+
+  <div class="doc-section">
+    <div class="doc-section-head">
+      <div class="doc-section-num reveal">IV</div>
+      <div class="doc-section-title reveal">アーティストは、いくら稼げるか</div>
+    </div>
+    <p class="doc-section-intro reveal">「ファン200人、年4回ライブ、週1レッスン」という現実的な規模で試算。</p>
+
+    <table class="doc-table reveal">
+      <thead><tr><th>収益</th><th style="text-align:right">年間売上</th><th style="text-align:right">取り分</th></tr></thead>
+      <tbody>
+        <tr><td>月額サブスク</td><td class="num">¥2,352,000</td><td class="num">¥1,881,600</td></tr>
+        <tr><td>会場PASSカード</td><td class="num">¥600,000</td><td class="num">¥510,000</td></tr>
+        <tr><td>レッスン</td><td class="num">¥1,440,000</td><td class="num">¥1,224,000</td></tr>
+        <tr><td>ワークショップ・グッズ・NFT</td><td class="num">¥600,000</td><td class="num">¥510,000</td></tr>
+        <tr class="total"><td>合計</td><td class="num">¥4,992,000</td><td class="num">¥4,125,600</td></tr>
+      </tbody>
+    </table>
+
+    <div class="ask-hero reveal">
+      <div class="ask-label">アーティストの年間取り分</div>
+      <div class="ask-amount">約 420万円</div>
+      <div class="ask-note">ファン200人規模で到達可能な、現実的な設計。</div>
+    </div>
+  </div>
+
+  <div class="doc-section">
+    <div class="doc-section-head">
+      <div class="doc-section-num reveal">V</div>
+      <div class="doc-section-title reveal">プラットフォーム収支 (3年)</div>
+    </div>
+
+    <table class="doc-table reveal">
+      <thead><tr><th>項目</th><th style="text-align:right">2026</th><th style="text-align:right">2027</th><th style="text-align:right">2028</th></tr></thead>
+      <tbody>
+        <tr><td>アーティスト数</td><td class="num">50</td><td class="num">200</td><td class="num">500+</td></tr>
+        <tr><td>手数料収入</td><td class="num">¥460万</td><td class="num">¥3,380万</td><td class="num">¥12,900万</td></tr>
+        <tr><td>助成金・補助金</td><td class="num">¥200万</td><td class="num">¥750万</td><td class="num">¥500万</td></tr>
+        <tr><td>エンジェル・VC</td><td class="num">—</td><td class="num">¥750万</td><td class="num">¥5,000万</td></tr>
+        <tr><td><strong>収益合計</strong></td><td class="num"><strong>¥760万</strong></td><td class="num"><strong>¥4,880万</strong></td><td class="num"><strong>¥18,400万</strong></td></tr>
+        <tr><td><strong>支出合計</strong></td><td class="num"><strong>¥670万</strong></td><td class="num"><strong>¥2,450万</strong></td><td class="num"><strong>¥6,000万</strong></td></tr>
+        <tr class="total"><td>営業利益</td><td class="num">¥90万</td><td class="num">¥2,430万</td><td class="num">¥12,400万</td></tr>
+      </tbody>
+    </table>
+
+    <div class="ask-hero reveal">
+      <div class="ask-label">2028年度 営業利益見込み</div>
+      <div class="ask-amount">約 1億 2,400万円</div>
+      <div class="ask-note">2026年度から黒字。安定した成長カーブ。</div>
+    </div>
+  </div>
+
+  <div class="doc-section">
+    <div class="doc-section-head">
+      <div class="doc-section-num reveal">VI</div>
+      <div class="doc-section-title reveal">資金調達計画</div>
+    </div>
+    <p class="doc-section-intro reveal">EXPASSは<strong>返済不要のお金 (補助金・助成金)</strong> を中心に資金を集める。銀行融資には頼らない。</p>
+
+    <table class="doc-table reveal">
+      <thead><tr><th>調達手段</th><th style="text-align:right">金額</th><th>返済</th></tr></thead>
+      <tbody>
+        <tr><td>持続化補助金 (商工会議所)</td><td class="num">¥200万</td><td>不要</td></tr>
+        <tr><td>IT導入補助金 (経産省)</td><td class="num">¥450万</td><td>不要</td></tr>
+        <tr><td>東京都スタートアップ助成</td><td class="num">¥300万</td><td>不要</td></tr>
+        <tr><td>文化庁 文化芸術振興費</td><td class="num">¥500万</td><td>不要</td></tr>
+        <tr><td>エンジェル投資家</td><td class="num">¥500〜750万</td><td>不要</td></tr>
+        <tr class="total"><td>姉からのご支援 (今回)</td><td class="num">¥100〜300万</td><td>ご相談</td></tr>
+      </tbody>
+    </table>
+    <p class="doc-section-intro reveal" style="font-size:12px; color:var(--fg-faded); margin-top:12px;">補助金合計 ¥1,450万 (返済不要)。エンジェル投資は株式の一部をお渡しするが、NOBBYが筆頭株主として経営権を維持。</p>
+  </div>
+
+  <div class="doc-section">
+    <div class="doc-section-head">
+      <div class="doc-section-num reveal">VII</div>
+      <div class="doc-section-title reveal">今回のお願い</div>
+    </div>
+
+    <div class="ask-hero reveal">
+      <div class="ask-label">ご支援のお願い</div>
+      <div class="ask-amount">¥100 〜 300万</div>
+      <div class="ask-note">ローンチまでのランニングコストとして。</div>
+    </div>
+
+    <p class="doc-section-intro reveal" style="margin-top:32px; color:var(--gold); font-weight:600; letter-spacing:0.1em; font-size:13px; text-transform:uppercase;">何に使うか</p>
+
+    <div class="budget-list">
+      <div class="budget-item reveal">
+        <div class="budget-amount">¥80万</div>
+        <div class="budget-detail"><strong>Stripe決済実装費用</strong><span>アプリ内で決済が動くようにするためのシステム開発。</span></div>
+      </div>
+      <div class="budget-item reveal">
+        <div class="budget-amount">¥30万</div>
+        <div class="budget-detail"><strong>インフラ・サーバー費</strong><span>本番環境のサーバー、ドメイン、各種ツール (年額)。</span></div>
+      </div>
+      <div class="budget-item reveal">
+        <div class="budget-amount">¥80万</div>
+        <div class="budget-detail"><strong>マーケティング費用</strong><span>ローンチイベントの告知、SNS広告、撮影費。</span></div>
+      </div>
+      <div class="budget-item reveal">
+        <div class="budget-amount">¥60万</div>
+        <div class="budget-detail"><strong>法人設立・初期費用</strong><span>合同会社設立、法人口座、法務、会計費用。</span></div>
+      </div>
+      <div class="budget-item reveal">
+        <div class="budget-amount">¥60万</div>
+        <div class="budget-detail"><strong>運転資金 (3ヶ月)</strong><span>NOBBY自身の活動費、外部スタッフへの支払い。</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-section">
+    <div class="doc-section-head">
+      <div class="doc-section-num reveal">VIII</div>
+      <div class="doc-section-title reveal">最後に</div>
+    </div>
+    <p class="doc-section-intro reveal" style="font-size:15px; color:var(--fg); line-height:1.9;">
+      EXPASSは、NOBBYが20年以上かけて見てきたことへの、答えです。才能があっても食えない、作ったものが誰のものかわからなくなる、世界に届かない——そういう現実を変えたくて、作り始めました。
+    </p>
+    <p class="doc-section-intro reveal" style="font-size:15px; color:var(--fg); line-height:1.9;">
+      最初のきっかけは、音楽と芸術の師であり親友だった<strong style="color:var(--gold);">矢部直</strong>の死でした。一緒に ALL MUST DANCE™ を立ち上げた彼が残したものを、ちゃんと形にして次の世代に渡したい。それがこのプラットフォームの核心にあります。
+    </p>
+    <p class="doc-section-intro reveal" style="font-size:15px; color:var(--fg); line-height:1.9;">
+      お金の話だけではなく、この文化の話に共感してもらえたら、一緒に歩んでほしいと思っています。
+    </p>
+  </div>
+
+  <div class="final-footer">
+    <div class="dots">· · ·</div>
+    <p class="slogan">心を踊らせ。</p>
+    <p class="slogan">文化を育て。</p>
+    <p class="slogan">世界を和へ。</p>
+    <img src="logo.png" alt="EXPASS" class="footer-logo">
+    <p class="footer-meta">NOBBY  ·  SPACE COOKING™  ·  ALL MUST DANCE™</p>
+    <p class="footer-meta">expass.app  ·  contact@expass.app</p>
+  </div>
+</div>
+
+<!-- MASTERPLAN (first-read material) -->
+<div class="view" id="master">
+  <div class="doc-hero">
+    <div class="doc-hero-eyebrow reveal">Platform Design  ·  拡張ユーザー設計版</div>
+    <h1 class="doc-hero-title reveal">マスタープラン</h1>
+    <p class="doc-hero-tagline reveal">
+      EXPASSは「アーティストだけのアプリ」から、<strong>文化に関わる全員のインフラ</strong> へ。5種類のユーザーが、それぞれの目的でこの場所を使い、互いに連携する設計。
+    </p>
+
+    <div class="fact-strip reveal">
+      <div class="fact">
+        <div class="fact-label">ユーザー</div>
+        <div class="fact-value">5 種類</div>
+        <div class="fact-desc">アーティスト / ファン / オーガナイザー / ブランド / スタジオ</div>
+      </div>
+      <div class="fact">
+        <div class="fact-label">フェーズ</div>
+        <div class="fact-value">3 段階</div>
+        <div class="fact-desc">Phase 1 〜 Phase 3 (2026-2028+)</div>
+      </div>
+      <div class="fact">
+        <div class="fact-label">2027 試算</div>
+        <div class="fact-value">¥3,500万</div>
+        <div class="fact-desc">拡張後の年間収益 (概算)</div>
+      </div>
+      <div class="fact">
+        <div class="fact-label">2028 利益</div>
+        <div class="fact-value">¥1.24 億</div>
+        <div class="fact-desc">営業利益見込み</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-section">
+    <div class="doc-section-head">
+      <div class="doc-section-num reveal">I</div>
+      <div class="doc-section-title reveal">5種類のユーザー</div>
+    </div>
+    <p class="doc-section-intro reveal">Phase 1 でアーティスト×ファンの核心を固めてから、Phase 2 でビジネスユーザーへ拡張する。<strong>順番を守ること。</strong></p>
+
+    <div class="tile-grid cols-5 reveal">
+      <div class="tile" style="border-color:var(--gold); background:var(--panel);"><div class="tile-tag">Phase 1</div><div class="tile-name">アーティスト</div><div class="tile-desc">稼ぐ・発信・作品を記録</div><div class="tile-desc">PASS / SCREEN / 収益管理</div></div>
+      <div class="tile" style="border-color:var(--gold); background:var(--panel);"><div class="tile-tag">Phase 1</div><div class="tile-name">ファン</div><div class="tile-desc">応援・体験を記録</div><div class="tile-desc">サブスク / PASS / 投げ銭</div></div>
+      <div class="tile"><div class="tile-tag">Phase 2</div><div class="tile-name">オーガナイザー</div><div class="tile-desc">イベント・売上分配</div><div class="tile-desc">PASS一括発行 / 自動分配</div></div>
+      <div class="tile"><div class="tile-tag">Phase 2</div><div class="tile-name">アパレルブランド</div><div class="tile-desc">文化圏への露出</div><div class="tile-desc">EC / PASS連動 / 協賛</div></div>
+      <div class="tile"><div class="tile-tag">Phase 2</div><div class="tile-name">スタジオ・施設</div><div class="tile-desc">予約集客・管理</div><div class="tile-desc">SCHEDULE / AI検索</div></div>
+    </div>
+  </div>
+
+  <div class="doc-section">
+    <div class="doc-section-head">
+      <div class="doc-section-num reveal">II</div>
+      <div class="doc-section-title reveal">アーティスト向けプラン</div>
+    </div>
+    <p class="doc-section-intro reveal">アーティストはアプリを無料で使える。活動規模に応じてアップグレード。<strong>課金は容量と機能の拡張のみ。</strong></p>
+
+    <div class="plan-row reveal">
+      <div class="plan-card">
+        <div class="plan-name">Free</div>
+        <div class="plan-price">¥0 <span class="unit">/月</span></div>
+        <div class="plan-desc">プロフィール、PASSカード販売、収益ダッシュボード、基本投稿 (音源5本・動画3本)</div>
+      </div>
+      <div class="plan-card featured">
+        <div class="plan-name">Standard</div>
+        <div class="plan-price">¥980 <span class="unit">/月</span></div>
+        <div class="plan-desc">音源無制限、動画HD、SCREEN掲載、分析データ基本版</div>
+      </div>
+      <div class="plan-card">
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">¥2,480 <span class="unit">/月</span></div>
+        <div class="plan-desc">4K動画、無制限ストレージ、AI機能フル、詳細分析、優先サポート</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-section">
+    <div class="doc-section-head">
+      <div class="doc-section-num reveal">III</div>
+      <div class="doc-section-title reveal">ビジネスユーザー向けプラン</div>
+    </div>
+    <p class="doc-section-intro reveal">2027年以降、オーガナイザー、アパレルブランド、スタジオへと展開。</p>
+
+    <div class="tile-grid cols-3 reveal">
+      <div class="tile">
+        <div class="tile-tag">Organizer</div>
+        <div class="tile-name">イベント主催者向け</div>
+        <div class="tile-desc"><strong style="color:var(--fg);">BASIC ¥2,980</strong> — PASS500枚、出演者3名</div>
+        <div class="tile-desc"><strong style="color:var(--fg);">PRO ¥4,980</strong> — PASS・出演者無制限、ライブ配信連携</div>
+      </div>
+      <div class="tile">
+        <div class="tile-tag">Brand</div>
+        <div class="tile-name">アパレルブランド向け</div>
+        <div class="tile-desc"><strong style="color:var(--fg);">STANDARD ¥4,980</strong> — EC10点、PASS連動割引</div>
+        <div class="tile-desc"><strong style="color:var(--fg);">PRO ¥9,800</strong> — 商品無制限、SCREEN露出、協賛枠</div>
+      </div>
+      <div class="tile">
+        <div class="tile-tag">Studio</div>
+        <div class="tile-name">スタジオ・施設向け</div>
+        <div class="tile-desc"><strong style="color:var(--fg);">¥2,980</strong> — SCHEDULE掲載、AI検索、予約受付</div>
+        <div class="tile-desc">収益レポート、講師複数登録</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-section">
+    <div class="doc-section-head">
+      <div class="doc-section-num reveal">IV</div>
+      <div class="doc-section-title reveal">拡張後の収益構造 (2027年試算)</div>
+    </div>
+    <p class="doc-section-intro reveal">ユーザー種別が増えることで、収益の柱が増える。単一の手数料から、<strong>多層的で安定した基盤</strong> へ。</p>
+
+    <table class="doc-table reveal">
+      <thead><tr><th>収益源</th><th>単価</th><th>規模</th><th style="text-align:right">年間</th></tr></thead>
+      <tbody>
+        <tr><td>アーティスト STANDARD / PRO</td><td>¥980〜2,480/月</td><td>100名</td><td class="num">¥150〜300万</td></tr>
+        <tr><td>ファン→アーティスト サブスク</td><td>10〜15%</td><td>200名規模</td><td class="num">¥2,400万</td></tr>
+        <tr><td>PASS・EC手数料</td><td>10〜15%</td><td>年間販売</td><td class="num">¥480万</td></tr>
+        <tr><td>ORGANIZER</td><td>¥2,980〜4,980/月</td><td>20社</td><td class="num">¥70〜120万</td></tr>
+        <tr><td>BRAND</td><td>¥4,980〜9,800/月</td><td>10社</td><td class="num">¥60〜120万</td></tr>
+        <tr><td>STUDIO</td><td>¥2,980/月</td><td>30社</td><td class="num">¥100万</td></tr>
+        <tr class="total"><td>合計 (概算)</td><td></td><td></td><td class="num">¥3,260〜3,520万</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="doc-section">
+    <div class="doc-section-head">
+      <div class="doc-section-num reveal">V</div>
+      <div class="doc-section-title reveal">実装フェーズ</div>
+    </div>
+
+    <div class="phases">
+      <div class="phase active reveal"><div class="phase-num">Phase 0</div><div class="phase-when">現在</div><div class="phase-what">MVP稼働。全UIプロトタイプ完成。</div></div>
+      <div class="phase active reveal"><div class="phase-num">Phase 1</div><div class="phase-when">2026 Q2-Q3</div><div class="phase-what">Stripe決済、PASSカード本番、ALL MUST DANCE™ ローンチ。アーティスト50名、初収益。</div></div>
+      <div class="phase reveal"><div class="phase-num">Phase 1b</div><div class="phase-when">2026 Q4</div><div class="phase-what">SCREEN映像、NFT証明書、アーティストプラン課金開始。200名、月収益¥300万。</div></div>
+      <div class="phase reveal"><div class="phase-num">Phase 2a</div><div class="phase-when">2027 Q1-Q2</div><div class="phase-what">オーガナイザープラン、スタジオプラン。提携20社。</div></div>
+      <div class="phase reveal"><div class="phase-num">Phase 2b</div><div class="phase-when">2027 Q3</div><div class="phase-what">ブランドプラン、多言語、海外展開。提携10社、海外50名。</div></div>
+      <div class="phase reveal"><div class="phase-num">Phase 3</div><div class="phase-when">2028 —</div><div class="phase-what">全機能、グローバル、Series A。5,000名。</div></div>
+    </div>
+
+    <div class="ask-hero reveal" style="margin-top:32px;">
+      <div class="ask-label">設計の原則</div>
+      <div class="ask-amount" style="font-size:clamp(22px, 3.5vw, 32px); letter-spacing:0.1em;">順番を守ること。</div>
+      <div class="ask-note">アーティスト×ファンの核心が固まってから、ビジネスユーザーへ展開する。</div>
+    </div>
+  </div>
+
+  <div class="final-footer">
+    <div class="dots">· · ·</div>
+    <p class="slogan">心を踊らせ。</p>
+    <p class="slogan">文化を育て。</p>
+    <p class="slogan">世界を和へ。</p>
+    <img src="logo.png" alt="EXPASS" class="footer-logo">
+    <p class="footer-meta">EXPASS™  ·  ALL MUST DANCE™  ·  SPACE COOKING™</p>
+    <p class="footer-meta">expass.app</p>
+  </div>
+</div>
+
 <script>
-/* Entry router:
-   1. If Firebase Auth resolves to a signed-in user → /profile
-   2. Else if localStorage has livepass_account_name (legacy cache) → /profile
-   3. Else → /login (which has a signup link to /onboarding)
-   We wait up to 1.5s for Firebase to resolve before falling through to
-   the localStorage check so the first visit isn't stalled by network. */
-(function(){
-  const hasLocalIdentity = !!localStorage.getItem('livepass_account_name');
+  const tabs = document.querySelectorAll('.tab');
+  const views = document.querySelectorAll('.view');
+  const cards = document.querySelectorAll('.card');
 
-  function decide(user){
-    if (user) location.replace('/screen');
-    else if (hasLocalIdentity) location.replace('/screen');
-    else location.replace('/login');
+  function switchView(targetId) {
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.view === targetId));
+    views.forEach(v => v.classList.toggle('active', v.id === targetId));
+    document.body.classList.toggle('dark', targetId === 'tribute');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    initReveal();
   }
 
-  let decided = false;
-  function finish(user){
-    if (decided) return;
-    decided = true;
-    try { decide(user); } catch(e) { location.replace('/login'); }
+  tabs.forEach(tab => tab.addEventListener('click', () => switchView(tab.dataset.view)));
+  cards.forEach(card => card.addEventListener('click', () => switchView(card.dataset.view)));
+
+  let observer;
+  function initReveal() {
+    if (observer) observer.disconnect();
+    const reveals = document.querySelectorAll('.view.active .reveal');
+    reveals.forEach(el => el.classList.remove('in'));
+
+    observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('in'), 60);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -80px 0px' });
+
+    reveals.forEach(el => observer.observe(el));
   }
 
-  window.addEventListener('fb-auth-ready', (e) => finish(e.detail && e.detail.user), { once:true });
-  // Fallback if firebase-init never loads
-  setTimeout(() => finish(null), 1500);
-})();
+  initReveal();
 </script>
 </body>
 </html>
