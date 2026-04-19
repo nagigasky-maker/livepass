@@ -977,7 +977,18 @@ function getUserArticles(){
     const raw = localStorage.getItem('livepass_articles');
     if (!raw) return [];
     const list = JSON.parse(raw);
-    return list.map((u, i) => ({
+    const me = (localStorage.getItem('livepass_account_name') || '').toUpperCase();
+    const myUid = localStorage.getItem('livepass_uid') || '';
+    // SCREEN = only the current user's own articles — filter out rows that
+    // belong to other accounts saved on the same device (e.g. NOBBY posts
+    // left over after signing in as a different user).
+    const mine = list.filter(u => {
+      if (u.authorUid && myUid) return u.authorUid === myUid;
+      const author = (u.author || '').toUpperCase();
+      if (!author) return !me; // unattributed post → only show if I have no name
+      return author === me;
+    });
+    return mine.map((u, i) => ({
       id:       u.id,
       layout:   u.layout || 'square',
       num:      String(900 + i).padStart(3, '0'),
