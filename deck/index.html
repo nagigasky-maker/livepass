@@ -177,13 +177,53 @@
   @media (max-width: 540px) {
     #tribute .timeline-row { grid-template-columns: 80px 1fr; gap: 16px; }
   }
-  #tribute .cassette-wrap { margin: 40px auto; max-width: 500px; text-align: center; }
+  #tribute .cassette-wrap { margin: 56px auto 40px; max-width: 520px; text-align: center; }
+  #tribute .cassette-stage {
+    position: relative; display: block;
+    filter:
+      drop-shadow(0 34px 48px rgba(0,0,0,0.55))
+      drop-shadow(0 10px 18px rgba(0,0,0,0.45));
+  }
   #tribute .cassette {
     width: 100%; height: auto; display: block;
-    border: 1px solid var(--dark-line);
+  }
+  #tribute .reel {
+    position: absolute;
+    top: 53%;
+    width: 11.5%;
+    aspect-ratio: 1 / 1;
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 0deg,
+      rgba(255,255,255,0.22) 0deg 7deg, transparent 7deg 60deg,
+      rgba(255,255,255,0.22) 60deg 67deg, transparent 67deg 120deg,
+      rgba(255,255,255,0.22) 120deg 127deg, transparent 127deg 180deg,
+      rgba(255,255,255,0.22) 180deg 187deg, transparent 187deg 240deg,
+      rgba(255,255,255,0.22) 240deg 247deg, transparent 247deg 300deg,
+      rgba(255,255,255,0.22) 300deg 307deg, transparent 307deg 360deg
+    );
+    mix-blend-mode: screen;
+    pointer-events: none;
+    animation: reel-spin 7s linear infinite;
+    will-change: rotate;
+  }
+  #tribute .reel-left  { left: 20%; }
+  #tribute .reel-right { left: 62.5%; }
+  @keyframes reel-spin { to { rotate: 360deg; } }
+  @media (prefers-reduced-motion: reduce) {
+    #tribute .reel { animation: none; }
+  }
+  #tribute .sticker-wrap { margin: 56px auto 40px; max-width: 260px; text-align: center; }
+  #tribute .sticker {
+    width: 100%; height: auto; display: block;
+    transform: rotate(-4deg);
+    filter:
+      drop-shadow(0 22px 36px rgba(0,0,0,0.55))
+      drop-shadow(0 6px 12px rgba(0,0,0,0.4));
   }
   #tribute .cassette-caption {
-    margin-top: 16px; font-size: 11px; letter-spacing: 0.22em;
+    margin-top: 20px; font-size: 11px; letter-spacing: 0.22em;
     color: var(--dark-faded); line-height: 2;
   }
   #tribute .cassette-caption strong { color: var(--dark-soft); letter-spacing: 0.15em; }
@@ -512,11 +552,20 @@
 
     <p class="lead reveal">二〇二四年七月十九日、渋谷 clubasia。</p>
     <p class="reveal">矢部直が、生前最後にターンテーブルに向かったのは、NOBBYとともに立ち上げた〈ALL MUST DANCE™〉だった。</p>
+
+    <div class="sticker-wrap reveal">
+      <img src="amd_sticker.png" alt="ALL MUST DANCE TOKYO sticker" class="sticker">
+    </div>
+
     <p class="reveal">その六日後、七月二十五日。<br><strong>彼は、逝った。</strong></p>
     <p class="reveal">後日、〈Jazzin'〉の追悼パーティが開かれた。会場で、その夜に居合わせた者だけに、一本のカセットテープが手渡された。七月十九日の、彼の最後のセットが収録されていた。</p>
 
     <div class="cassette-wrap reveal">
-      <img src="cassette.png" alt="Jazzin' DJ MIX TAPE by YABE TADASHI" class="cassette">
+      <div class="cassette-stage">
+        <img src="cassette.png" alt="Jazzin' DJ MIX TAPE by YABE TADASHI" class="cassette">
+        <span class="reel reel-left" aria-hidden="true"></span>
+        <span class="reel reel-right" aria-hidden="true"></span>
+      </div>
       <div class="cassette-caption">
         <strong>JAZZIN'  ·  DJ MIX TAPE BY YABE TADASHI</strong><br>
         ALL MUST DANCE @ CLUBASIA  ·  2024.7.19 REC  ·  NOT FOR SALE
