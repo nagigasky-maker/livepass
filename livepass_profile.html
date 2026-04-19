@@ -1861,12 +1861,9 @@ body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;c
 
     <div class="pass-fan-viewport" id="passFanViewport">
       <div class="pass-fan-track" id="passFanTrack">
-        <div class="pf-card" data-card="card01">
-          <img src="/expass_visual.jpg" alt="EXPASS Card">
-        </div>
-        <!-- NEXT LIVE teaser — semi-transparent placeholder that invites the
-             user to go to the next live event to claim the 4th card. Tap
-             routes to /calendar (discover upcoming events). -->
+        <!-- NEXT LIVE placed FIRST in DOM so that when the fan transforms
+             cause cards to overlap visually, real cards paint on top (later
+             DOM wins at the same z-index) and stay easy to grab/drag. -->
         <a class="pf-card next-live" data-card="next" href="/calendar">
           <div class="nl-stage">
             <div class="nl-ring"></div>
@@ -1876,6 +1873,9 @@ body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;c
           <div class="nl-label">NEXT LIVE</div>
           <div class="nl-sub">GET YOUR PASS<br>AT THE EVENT</div>
         </a>
+        <div class="pf-card" data-card="card01">
+          <img src="/expass_visual.jpg" alt="EXPASS Card">
+        </div>
       </div>
     </div>
   </section>
