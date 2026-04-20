@@ -123,10 +123,23 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   perspective:1400px;
 }
 
-.lb-jacket,.lb-vinyl{
+.lb-jacket,.lb-vinyl-tilt{
   position:absolute;top:50%;left:50%;
   width:min(64vw, 340px);aspect-ratio:1/1;
   transform:translate(-50%,-50%);
+}
+/* Two-layer split: the outer .lb-vinyl-tilt owns the "tilt appearance"
+   (fakes it with scaleY so the spin stays wobble-free), and the inner
+   .lb-vinyl handles pure Z rotation. Real 3D tilt + Z spin would wobble
+   — a faked tilt keeps the look but makes the rotation stable. */
+.lb-vinyl-tilt{
+  z-index:3;
+  pointer-events:none;
+}
+.lb-vinyl{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  will-change:transform;
 }
 .lb-jacket{
   z-index:1;
@@ -220,7 +233,6 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 
 /* Vinyl (a realistic black disc with grooves + colored label) */
 .lb-vinyl{
-  z-index:3;
   border-radius:50%;
   background:
     radial-gradient(circle, #191919 0%, #0a0a0a 18%, #151515 19%, #0a0a0a 22%, #151515 23%, #0a0a0a 26%, #151515 27%, #0a0a0a 30%, #151515 31%, #0a0a0a 34%, #151515 35%, #0a0a0a 38%, #151515 39%, #0a0a0a 42%, #151515 43%, #0a0a0a 46%, #151515 47%, #0a0a0a 50%, #151515 51%, #0a0a0a 54%, #151515 55%, #0a0a0a 58%, #151515 59%, #0a0a0a 62%, #151515 63%, #0a0a0a 66%, #151515 67%, #0a0a0a 70%, #151515 71%, #0a0a0a 74%, #151515 75%, #0a0a0a 78%, #151515 79%, #0a0a0a 82%, #151515 83%, #0a0a0a 86%, #151515 87%, #0a0a0a 90%, #151515 91%, #0a0a0a 94%, #151515 95%, #0a0a0a 100%);
@@ -403,8 +415,10 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
       </div>
       <div class="jk-face jk-front"><div class="rj-art" id="lbJacketArt"></div></div>
     </div>
-    <div class="lb-vinyl" id="lbVinyl"></div>
-    <div class="lb-label-text" id="lbLabelText"><span class="lt-artist" id="lbLtArtist"></span><span class="lt-title" id="lbLtTitle"></span></div>
+    <div class="lb-vinyl-tilt" id="lbVinylTilt">
+      <div class="lb-vinyl" id="lbVinyl"></div>
+      <div class="lb-label-text" id="lbLabelText"><span class="lt-artist" id="lbLtArtist"></span><span class="lt-title" id="lbLtTitle"></span></div>
+    </div>
     <div class="lb-light" id="lbLight"></div>
     <div class="lb-shine" id="lbShine"></div>
   </div>
@@ -476,6 +490,7 @@ const lbClose   = document.getElementById('lbClose');
 const lbJacket  = document.getElementById('lbJacket');
 const lbJacketA = document.getElementById('lbJacketArt');
 const lbVinyl   = document.getElementById('lbVinyl');
+const lbVinylT  = document.getElementById('lbVinylTilt');
 const lbLabel   = document.getElementById('lbLabelText');
 const lbLtA     = document.getElementById('lbLtArtist');
 const lbLtT     = document.getElementById('lbLtTitle');
@@ -515,29 +530,33 @@ function openLightbox(rec){
   lb.classList.add('open');
   lb.setAttribute('aria-hidden','false');
 
-  // Reset: jacket front-facing, vinyl hidden behind it.
+  // Reset: jacket front-facing, vinyl tilt wrapper untilted, vinyl hidden.
   gsap.set(lbJacket, { rotationY:0, rotationX:0, opacity:1 });
-  gsap.set(lbVinyl,  { x:0, y:0, scale:0.7, rotation:0, rotationY:0, opacity:0 });
-  gsap.set(lbLabel,  { x:0, y:0, scale:0.7, rotation:0, rotationY:0, opacity:0 });
+  gsap.set(lbVinylT, { rotationY:0, scaleY:1 });
+  gsap.set(lbVinyl,  { x:0, y:0, scale:0.7, rotation:0, opacity:0 });
+  gsap.set(lbLabel,  { x:0, y:0, scale:0.7, rotation:0, opacity:0 });
 
   // Tap = play trigger. Sequence:
   //  1. Vinyl slides out from behind the jacket (to the right, scales up).
   //  2. Jacket flips 200° left — back face is a turntable.
-  //  3. Vinyl returns to center and tilts 210° (10° past the jacket) so
-  //     the disc sits at a slightly different angle than the turntable,
-  //     reinforcing depth.
-  //  4. Spin tween kicks in (360° continuous, matches the cassette-hole feel).
+  //  3. The disc flips with the same motion (real rotationY from 0 to
+  //     -210°) so you see it physically tilt during the reveal.
+  //  4. At settle, rotationY is swapped for scaleY:0.88 — this preserves
+  //     the "slightly tilted" silhouette but the disc is now flat in 3D,
+  //     so the continuous Z spin reads as a stable circular motion with
+  //     no up-down wobble.
   const tl = gsap.timeline({
     onComplete: () => {
+      // Swap the real 3D tilt for a scale-based fake tilt so Z spin is clean.
+      gsap.set(lbVinylT, { rotationY:0, scaleY:0.88 });
       startSpin();
       setPlaying(true);
     }
   });
   tl.to(lbVinyl, { x:'24%', scale:1.0, opacity:1, duration:0.7, ease:'power3.out' }, 0.05)
     .to(lbLabel, { x:'24%', scale:1.0, opacity:1, duration:0.7, ease:'power3.out' }, 0.05)
-    .to(lbJacket,{ rotationY:-200, duration:1.1, ease:'power2.inOut' }, 0.35)
-    .to(lbVinyl, { rotationY:-210, duration:1.1, ease:'power2.inOut' }, 0.45)
-    .to(lbLabel, { rotationY:-210, duration:1.1, ease:'power2.inOut' }, 0.45)
+    .to(lbJacket, { rotationY:-200, duration:1.1, ease:'power2.inOut' }, 0.35)
+    .to(lbVinylT, { rotationY:-210, duration:1.1, ease:'power2.inOut' }, 0.45)
     .to(lbVinyl, { x:'0%', duration:0.8, ease:'power2.inOut' }, 0.95)
     .to(lbLabel, { x:'0%', duration:0.8, ease:'power2.inOut' }, 0.95);
 
