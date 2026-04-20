@@ -268,26 +268,21 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   pointer-events:none;z-index:4;text-align:center;
 }
 
-/* Light overlays — the vinyl is slightly convex and lacquer-glossy, so the
-   light is composed of a tight specular highlight, a broader ambient sheen,
-   a thin rim light on the far side, and a gentle outer vignette to suggest
-   curvature. None of these rotate with the vinyl; they feel like a real
-   fixed light source catching the spinning surface. */
+/* Light overlay — sits inside .lb-vinyl-tilt so it inherits the disc's
+   tilt. To avoid any perceived misalignment when the wrapper flips,
+   every gradient layer is concentric/symmetric — no directional
+   highlight that would appear shifted after the -210° rotation. */
 .lb-light{
-  /* Sits inside .lb-vinyl-tilt so it inherits the disc's tilt —
-     no misalignment between the highlight and the tilted silhouette. */
   position:absolute;inset:0;
   border-radius:50%;
   pointer-events:none;
   z-index:5;
   opacity:0;
   background:
-    /* Broad diffused sheen — cooler, wraps the upper half. */
-    radial-gradient(ellipse 70% 55% at 32% 32%, rgba(210,230,255,.22) 0%, rgba(210,230,255,.08) 40%, transparent 70%),
-    /* Counter rim light — bottom-right edge, very faint cold blue. */
-    radial-gradient(ellipse 55% 45% at 78% 82%, rgba(180,210,255,.12) 0%, transparent 55%),
-    /* Curvature vignette — slight edge darkening so the disc feels convex. */
-    radial-gradient(circle at 50% 50%, transparent 60%, rgba(0,0,0,.3) 95%, rgba(0,0,0,.45) 100%);
+    /* Soft central glow — the vinyl catches ambient light overall. */
+    radial-gradient(circle at 50% 50%, rgba(220,235,255,.14) 0%, rgba(220,235,255,.06) 30%, transparent 60%),
+    /* Curvature vignette — slight edge darkening for convex feel. */
+    radial-gradient(circle at 50% 50%, transparent 62%, rgba(0,0,0,.3) 95%, rgba(0,0,0,.45) 100%);
   mix-blend-mode:screen;
   transition:opacity .6s ease;
 }
