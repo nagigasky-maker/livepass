@@ -92,6 +92,40 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   text-transform:uppercase;color:rgba(237,235,230,.35);
 }
 
+/* CREATE card — single row entry point to /compose/record. */
+.create-card{
+  margin:10px 22px 32px;display:flex;align-items:center;gap:14px;
+  padding:18px;border-radius:14px;
+  background:
+    radial-gradient(120% 80% at 0% 0%, rgba(61,170,255,.14), transparent 60%),
+    linear-gradient(160deg,#0c0c14,#050508);
+  border:0.5px solid rgba(61,170,255,.28);
+  text-decoration:none;color:inherit;
+  transition:transform .18s ease, border-color .2s ease;
+}
+.create-card:active{transform:scale(.99);border-color:rgba(61,170,255,.5)}
+.create-card .cc-plus{
+  width:46px;height:46px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(61,170,255,.12);border:1px solid rgba(61,170,255,.3);color:var(--blue);
+}
+.create-card .cc-plus svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2}
+.create-card .cc-text{flex:1;min-width:0}
+.create-card .cc-title{
+  font-family:'Inter',sans-serif;font-weight:700;font-size:15px;letter-spacing:-0.005em;
+  margin-bottom:2px;
+}
+.create-card .cc-sub{
+  font-size:11px;line-height:1.6;color:rgba(237,235,230,.5);
+  overflow:hidden;text-overflow:ellipsis;
+}
+.create-card .cc-chev{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.04);color:rgba(237,235,230,.6);
+}
+.create-card .cc-chev svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2}
+
 /* ═══════════════════════════════════════════════════════
    FULLSCREEN LIGHTBOX PLAYER
    ═══════════════════════════════════════════════════════ */
@@ -369,8 +403,15 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   <div class="shelf-label">NEW ARRIVALS</div>
   <div class="shelf" id="shelf"></div>
 
-  <div class="shelf-label">STAFF PICKS</div>
-  <div class="shelf" id="shelfB"></div>
+  <div class="shelf-label">CREATE</div>
+  <a class="create-card" href="/compose/record" aria-label="Create a record">
+    <div class="cc-plus"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round"/></svg></div>
+    <div class="cc-text">
+      <div class="cc-title">新しいレコードを作る</div>
+      <div class="cc-sub">ジャケ・音源・ラベル色・テキスト登録 → SCREENへ</div>
+    </div>
+    <div class="cc-chev"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
 </main>
 
 <!-- ═══ FULLSCREEN LIGHTBOX PLAYER ═══ -->
@@ -437,20 +478,33 @@ const RECORDS = [
   { id:'r5', artist:'U.F.O.',       title:'Tokyo Echo',      price:'¥2,800',
     grad:'linear-gradient(150deg,#F4C0D1 0%,#F5C842 50%,#E8100A 100%)', label:'#2a2a2a', text:'Echo' },
 ];
-const RECORDS_B = [
-  { id:'r6', artist:'KENJI',        title:'Boundary Glide',  price:'¥1,200',
-    grad:'linear-gradient(135deg,#E0E2EA 0%,#8E93A0 50%,#F2F4F8 100%)', label:'#3DAAFF', text:'Glide' },
-  { id:'r7', artist:'SAKURA',       title:'Cipher',          price:'¥2,100',
-    grad:'linear-gradient(200deg,#F4C0D1 0%,#E8100A 100%)', label:'#0A0A0A', text:'Cipher' },
-  { id:'r8', artist:'RYO',          title:'Drift Frequency', price:'¥1,800',
-    grad:'linear-gradient(120deg,#0a0a0a 0%,#3DAAFF 100%)', label:'#F5C842', text:'Drift' },
-];
+// Pull anything the artist has composed via /compose/record. Each saved
+// record has {jacketSrc, title, artist, labelColor} — we adapt it into
+// the same shape as the hardcoded samples so renderShelf + the lightbox
+// can treat both the same way.
+function loadUserRecords(){
+  try {
+    const raw = localStorage.getItem('livepass_records');
+    if (!raw) return [];
+    const list = JSON.parse(raw);
+    return list.map(r => ({
+      id:     r.id,
+      artist: r.artist || '',
+      title:  r.title  || '',
+      price:  r.price  || '—',
+      // Use the uploaded image as the jacket background (fallback gradient if none).
+      grad:   r.jacketSrc ? `url("${r.jacketSrc}") center/cover, #000` : 'linear-gradient(135deg,#1a1a1a,#050505)',
+      label:  r.labelColor || '#3DAAFF',
+      text:   '', // user images don't need the big placeholder letters
+    }));
+  } catch(e){ return []; }
+}
 
-// ── Render shelves ─────────────────────────────────────
+// ── Render shelf ───────────────────────────────────────
 function renderShelf(el, list){
   el.innerHTML = list.map(r => `
     <div class="rec-card" data-id="${r.id}">
-      <div class="rec-jacket" style="background:${r.grad}"><div class="rj-art">${r.text}</div></div>
+      <div class="rec-jacket" style="background:${r.grad}"><div class="rj-art">${r.text || ''}</div></div>
       <div class="rec-meta">
         <div class="rec-artist">${r.artist}</div>
         <div class="rec-name">${r.title}</div>
@@ -459,11 +513,11 @@ function renderShelf(el, list){
     </div>
   `).join('');
 }
-renderShelf(document.getElementById('shelf'),  RECORDS);
-renderShelf(document.getElementById('shelfB'), RECORDS_B);
+const USER_RECORDS = loadUserRecords();
+renderShelf(document.getElementById('shelf'), [...USER_RECORDS, ...RECORDS]);
 
 // ── Lightbox ───────────────────────────────────────────
-const ALL = [...RECORDS, ...RECORDS_B];
+const ALL = [...USER_RECORDS, ...RECORDS];
 const lb        = document.getElementById('lightbox');
 const lbClose   = document.getElementById('lbClose');
 const lbJacket  = document.getElementById('lbJacket');
