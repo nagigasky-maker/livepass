@@ -29,6 +29,56 @@ html,body{width:100%;max-width:100vw;height:100%;height:100dvh;
 a{color:inherit;text-decoration:none}
 button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 
+/* Lab-ish backdrop: a dark base, a faint blueprint grid, a scattering of
+   schematic marks (rings, crosshairs, dashes), and a pair of slow-drifting
+   "fume" glows. All pure CSS + one tiny inline SVG layer. */
+body::before, body::after, .lab-fume{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;}
+body::before{
+  /* Blueprint grid: a small 24px grid overlayed on a 120px major grid. */
+  background-image:
+    linear-gradient(rgba(0,229,160,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,160,.035) 1px, transparent 1px),
+    linear-gradient(rgba(0,229,160,.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,160,.055) 1px, transparent 1px);
+  background-size: 24px 24px, 24px 24px, 120px 120px, 120px 120px;
+  background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
+  mask-image: radial-gradient(ellipse 90% 75% at 50% 45%, #000 50%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 75% at 50% 45%, #000 50%, transparent 100%);
+  opacity:.75;
+}
+body::after{
+  /* Schematic marks: faint rings, crosshairs, dashes — drawn as an inline SVG
+     tile. Low-opacity cyan so it sits back behind the cards. */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='480' height='480' viewBox='0 0 480 480'><g fill='none' stroke='%2300E5A0' stroke-width='1' opacity='0.28'><circle cx='60' cy='80' r='14'/><circle cx='60' cy='80' r='22' stroke-dasharray='2 3'/><line x1='52' y1='80' x2='68' y2='80'/><line x1='60' y1='72' x2='60' y2='88'/><circle cx='390' cy='70' r='8'/><circle cx='390' cy='70' r='16' stroke-dasharray='1 3'/><line x1='150' y1='180' x2='190' y2='180' stroke-dasharray='4 4'/><line x1='170' y1='160' x2='170' y2='200'/><circle cx='170' cy='180' r='3' fill='%2300E5A0'/><circle cx='320' cy='260' r='26' stroke-dasharray='3 5'/><circle cx='320' cy='260' r='4' fill='%2300E5A0'/><line x1='320' y1='230' x2='320' y2='220'/><line x1='320' y1='300' x2='320' y2='290'/><line x1='80' y1='330' x2='120' y2='330' stroke-dasharray='2 4'/><circle cx='100' cy='330' r='6'/><circle cx='420' cy='400' r='12'/><circle cx='420' cy='400' r='20' stroke-dasharray='2 4'/><text x='30' y='50' fill='%2300E5A0' font-family='monospace' font-size='8' opacity='0.9'>A-01</text><text x='360' y='140' fill='%23F5C842' font-family='monospace' font-size='8' opacity='0.9'>REV 02</text><text x='210' y='420' fill='%2300E5A0' font-family='monospace' font-size='8' opacity='0.9'>LAB.00</text></g></svg>");
+  background-size: 480px 480px;
+  opacity:.5;
+  mask-image: radial-gradient(ellipse 100% 85% at 50% 50%, #000 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 100% 85% at 50% 50%, #000 40%, transparent 100%);
+}
+.lab-fume{
+  /* Two slow-drifting color glows so the room feels "alive". */
+  background:
+    radial-gradient(ellipse 55% 40% at 18% 30%, rgba(0,229,160,.13), transparent 60%),
+    radial-gradient(ellipse 50% 35% at 82% 75%, rgba(245,200,66,.10), transparent 60%);
+  filter:blur(8px);
+  animation: labFume 22s ease-in-out infinite alternate;
+}
+@keyframes labFume {
+  0%   { transform: translate3d(0,0,0) scale(1); }
+  50%  { transform: translate3d(-2%,1%,0) scale(1.06); }
+  100% { transform: translate3d(1%,-2%,0) scale(1.02); }
+}
+/* Corner vignette, gently darker edges to frame the content. */
+.lab-vignette{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 120% 90% at 50% 50%, transparent 55%, rgba(0,0,0,.55) 100%);
+}
+
+/* Lift content above the backdrop layers. */
+.topbar, .content, .bottomnav { position:fixed; z-index:100; }
+.content{ z-index:1 !important; }
+.topbar, .bottomnav { z-index:100 !important; }
+
 .topbar{position:fixed;top:0;left:0;right:0;z-index:100;
   padding:calc(var(--safe-top) + 4px) 18px 8px;
   display:flex;align-items:center;gap:14px;
@@ -137,6 +187,9 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 </style>
 </head>
 <body>
+
+<div class="lab-fume" aria-hidden="true"></div>
+<div class="lab-vignette" aria-hidden="true"></div>
 
 <div class="topbar">
   <span class="tb-spacer"></span>
