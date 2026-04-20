@@ -9,6 +9,8 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/livepass-icon-180.png">
 <title>EXPASS — Settings / 管理画面</title>
+<script>try{if(localStorage.getItem('livepass_tier')==='user')document.documentElement.classList.add('tier-user')}catch(e){}</script>
+<style>html.tier-user .bn-btn[aria-label="Lab"],html.tier-user .bn-btn[aria-label="Atelier"]{display:none!important}</style>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -642,6 +644,26 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
     <div class="field-chevron">›</div>
   </div>
 
+  <!-- ═══ MODE (ARTIST / USER) ═══ -->
+  <div class="sec-label">MODE</div>
+  <div style="padding:0 20px 8px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;line-height:1.7;color:rgba(237,235,230,.35);letter-spacing:.02em">
+    この端末のアカウントがどんな役割かを選びます。いつでも切替えできます。
+  </div>
+  <div style="padding:6px 20px 30px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <button type="button" data-tier="artist" class="tier-btn"
+      style="display:block;padding:14px 14px;border-radius:12px;background:rgba(255,255,255,.02);border:0.5px solid rgba(237,235,230,.1);text-align:left;color:var(--white);transition:background .18s,border-color .18s">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.28em;color:var(--mint);margin-bottom:6px">ARTIST</div>
+      <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:800;font-size:13px;margin-bottom:4px">出す人</div>
+      <div style="font-size:10px;line-height:1.5;color:rgba(237,235,230,.4)">Atelier・投稿・レコード作成まで</div>
+    </button>
+    <button type="button" data-tier="user" class="tier-btn"
+      style="display:block;padding:14px 14px;border-radius:12px;background:rgba(255,255,255,.02);border:0.5px solid rgba(237,235,230,.1);text-align:left;color:var(--white);transition:background .18s,border-color .18s">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.28em;color:var(--blue);margin-bottom:6px">USER</div>
+      <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:800;font-size:13px;margin-bottom:4px">見る人</div>
+      <div style="font-size:10px;line-height:1.5;color:rgba(237,235,230,.4)">SCREEN・CALENDAR・COLLECTION</div>
+    </button>
+  </div>
+
   <!-- ═══ MULTI-ACCOUNT ═══ -->
   <div class="sec-label">ACCOUNTS</div>
   <div id="accountsList" style="padding:0 20px 10px"></div>
@@ -863,6 +885,34 @@ nameInput.addEventListener('input', () => {
     }
   } catch(e) {}
 });
+
+/* Tier (artist / user) — gates Atelier + record creation */
+(function initTierToggle(){
+  const TIER_KEY = 'livepass_tier';
+  const btns = document.querySelectorAll('.tier-btn');
+  if (!btns.length) return;
+  let current = 'artist';
+  try { current = localStorage.getItem(TIER_KEY) || 'artist'; } catch(e){}
+  function render(t){
+    btns.forEach(b => {
+      const active = b.dataset.tier === t;
+      b.style.background = active ? 'rgba(255,255,255,.06)' : 'rgba(255,255,255,.02)';
+      b.style.borderColor = active ? 'rgba(237,235,230,.5)' : 'rgba(237,235,230,.1)';
+    });
+  }
+  render(current);
+  btns.forEach(b => {
+    b.addEventListener('click', () => {
+      const t = b.dataset.tier;
+      try { localStorage.setItem(TIER_KEY, t); } catch(e){}
+      render(t);
+      if (navigator.vibrate) navigator.vibrate(12);
+      if (window.FB && window.FB.currentUser) {
+        try { window.FB.updateDoc(window.FB.doc(window.FB.db, 'users', window.FB.currentUser.uid), { tier: t }); } catch(e){}
+      }
+    });
+  });
+})();
 
 /* Compose selector bottom sheet */
 (function initComposeSheet(){
