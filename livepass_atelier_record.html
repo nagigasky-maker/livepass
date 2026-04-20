@@ -128,11 +128,14 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   width:min(64vw, 340px);aspect-ratio:1/1;
   transform:translate(-50%,-50%);
 }
-/* Two-layer split: the outer .lb-vinyl-tilt owns the "tilt appearance"
-   (fakes it with scaleY so the spin stays wobble-free), and the inner
-   .lb-vinyl handles pure Z rotation. Real 3D tilt + Z spin would wobble
-   — a faked tilt keeps the look but makes the rotation stable. */
+/* Two-layer split: the outer .lb-vinyl-tilt owns the one-shot Y tilt
+   (animates to -210° so it sits parallel-ish to the jacket's -200°
+   turntable, 10° deeper for visual separation). The inner .lb-vinyl
+   handles the continuous Z spin inside that already-tilted frame, so
+   the visible silhouette (an ellipse) stays static while only the
+   groove/label content revolves — no wobble. */
 .lb-vinyl-tilt{
+  transform-style:preserve-3d;
   z-index:3;
   pointer-events:none;
 }
@@ -532,23 +535,21 @@ function openLightbox(rec){
 
   // Reset: jacket front-facing, vinyl tilt wrapper untilted, vinyl hidden.
   gsap.set(lbJacket, { rotationY:0, rotationX:0, opacity:1 });
-  gsap.set(lbVinylT, { rotationY:0, scaleY:1 });
+  gsap.set(lbVinylT, { rotationY:0 });
   gsap.set(lbVinyl,  { x:0, y:0, scale:0.7, rotation:0, opacity:0 });
   gsap.set(lbLabel,  { x:0, y:0, scale:0.7, rotation:0, opacity:0 });
 
   // Tap = play trigger. Sequence:
   //  1. Vinyl slides out from behind the jacket (to the right, scales up).
-  //  2. Jacket flips 200° left — back face is a turntable.
-  //  3. The disc flips with the same motion (real rotationY from 0 to
-  //     -210°) so you see it physically tilt during the reveal.
-  //  4. At settle, rotationY is swapped for scaleY:0.88 — this preserves
-  //     the "slightly tilted" silhouette but the disc is now flat in 3D,
-  //     so the continuous Z spin reads as a stable circular motion with
-  //     no up-down wobble.
+  //  2. Jacket flips 200° left — back face becomes a turntable.
+  //  3. The .lb-vinyl-tilt wrapper rotates to -210° Y, sitting 10°
+  //     deeper than the turntable so both planes are visibly parallel.
+  //  4. Vinyl returns to center. The continuous Z spin runs inside the
+  //     already-tilted wrapper — the ellipse silhouette stays put while
+  //     the content revolves, so the disc looks stable (no wobble) AND
+  //     parallel to the turntable.
   const tl = gsap.timeline({
     onComplete: () => {
-      // Swap the real 3D tilt for a scale-based fake tilt so Z spin is clean.
-      gsap.set(lbVinylT, { rotationY:0, scaleY:0.88 });
       startSpin();
       setPlaying(true);
     }
