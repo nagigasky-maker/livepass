@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ja" data-lang="jp">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0C0F1A">
+<title>AMD — Event Detail (EP.07) Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --black:#0C0F1A;
+  --white:#EDEBE6;
+  --red:#E8100A;
+  --blue:#1A2E6B;
+}
+html,body{background:var(--black);color:var(--white);font-family:"Noto Sans JP","Montserrat",sans-serif;min-height:100vh;}
+
+/* Mode toggle (JP/EN) */
+.demo-ctrl{position:fixed;top:20px;left:20px;z-index:10001;background:rgba(12,15,26,0.85);backdrop-filter:blur(8px);padding:10px 16px;border:1px solid rgba(237,235,230,0.2);font-size:11px;letter-spacing:0.2em;display:flex;gap:12px;align-items:center;}
+.demo-ctrl button{background:none;border:none;color:rgba(237,235,230,0.4);cursor:pointer;font-size:11px;letter-spacing:0.2em;padding:4px 8px;}
+.demo-ctrl button.on{color:var(--white);font-weight:700;}
+.demo-ctrl label{font-size:10px;letter-spacing:0.28em;color:rgba(237,235,230,0.5);}
+
+/* Lang switcher */
+[data-lang="jp"] .lang-jp-only{display:inline;}
+[data-lang="jp"] .lang-en-only{display:none;}
+[data-lang="en"] .lang-jp-only{display:none;}
+[data-lang="en"] .lang-en-only{display:inline;}
+[data-lang="jp"] .body-txt{display:block;}
+[data-lang="jp"] .body-txt-en{display:none;}
+[data-lang="en"] .body-txt{display:none;}
+[data-lang="en"] .body-txt-en{display:block;margin-top:0;font-style:normal;opacity:0.88;}
+
+/* Structure */
+.amd-ticket-overlay{position:relative;min-height:100vh;background:var(--black);padding-top:max(72px,calc(env(safe-area-inset-top)+60px));overflow-x:hidden;}
+.panel-bg{position:absolute;inset:0;z-index:0;background:var(--black);}
+.vig-heavy{position:absolute;inset:0;z-index:1;pointer-events:none;background:rgba(10,13,22,0.92);}
+.panel-content{position:relative;z-index:2;padding:max(80px,calc(env(safe-area-inset-top)+64px)) 32px 100px;}
+
+/* Close button (decorative in preview) */
+.amd-ticket-close{position:absolute;top:max(32px,calc(env(safe-area-inset-top)+24px));right:28px;z-index:10000;background:rgba(12,15,26,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(237,235,230,0.2);color:rgba(237,235,230,0.6);font-size:18px;line-height:1;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:50%;transition:border-color .2s,color .2s;}
+.amd-ticket-close:hover{border-color:var(--red);color:var(--red);}
+
+/* Layout */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end;}
+@media(max-width:860px){.two-col{grid-template-columns:1fr;gap:32px;}}
+
+/* Typography */
+.eyebrow{font-size:10px;font-weight:500;letter-spacing:0.44em;text-transform:uppercase;color:var(--red);opacity:0.88;margin-bottom:16px;}
+.h-section{font-family:Arial,"Arial Black",sans-serif;font-size:clamp(28px,5.5vw,52px);line-height:0.94;letter-spacing:0.01em;color:var(--white);margin-bottom:20px;font-weight:900;}
+.body-txt{font-size:14px;font-weight:300;line-height:2.0;color:var(--white);opacity:0.88;max-width:380px;letter-spacing:0.04em;}
+.body-txt-en{font-size:13px;font-weight:300;font-style:italic;line-height:1.9;color:var(--white);opacity:0.72;max-width:380px;margin-top:14px;}
+
+/* Info table */
+.info-table{width:100%;}
+.info-row{display:flex;justify-content:space-between;align-items:baseline;padding:16px 0;border-bottom:1px solid rgba(237,235,230,0.14);}
+.info-row:first-child{border-top:1px solid rgba(237,235,230,0.14);}
+.ik{font-size:10px;font-weight:400;letter-spacing:0.38em;text-transform:uppercase;color:var(--white);opacity:0.82;}
+.iv{font-size:13px;font-weight:300;text-align:right;letter-spacing:0.06em;color:var(--white);opacity:0.92;}
+.iv small{display:block;font-size:11px;letter-spacing:0.15em;opacity:0.82;margin-top:2px;}
+
+/* Ticket section */
+.ticket-section{margin-top:26px;}
+.ticket-head{display:flex;justify-content:space-between;align-items:center;padding-bottom:11px;border-bottom:1px solid rgba(237,235,230,0.14);}
+.ticket-head-lbl{font-size:13px;font-weight:500;letter-spacing:0.25em;text-transform:uppercase;color:var(--white);opacity:0.88;}
+.ticket-head-note{font-size:12px;font-weight:500;letter-spacing:0.18em;color:var(--red);opacity:0.92;}
+
+/* Unlock Pass row */
+.unlock-pass-row{cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:20px 0;border-bottom:1px solid rgba(237,235,230,0.14);transition:padding-left 0.2s;}
+.unlock-pass-row:hover{padding-left:8px;}
+.up-label{font-size:8px;font-weight:500;letter-spacing:0.4em;text-transform:uppercase;color:var(--red);}
+.up-price{font-family:Arial,"Arial Black",sans-serif;font-size:20px;font-weight:900;line-height:1;color:var(--white);}
+.up-sub{font-size:10px;font-weight:300;color:rgba(237,235,230,0.55);letter-spacing:0.1em;}
+.up-arr{font-size:18px;color:var(--red);}
+
+/* Door row */
+.trow{display:flex;align-items:center;justify-content:space-between;padding:15px 0;border-bottom:1px solid rgba(237,235,230,0.14);color:var(--white);}
+.trow.disabled{opacity:0.55;pointer-events:none;}
+.trow-left{display:flex;align-items:baseline;gap:18px;}
+.trow-type{font-size:11px;font-weight:400;letter-spacing:0.3em;text-transform:uppercase;color:var(--white);opacity:0.82;min-width:80px;}
+.trow-price{font-family:Arial,"Arial Black",sans-serif;font-size:28px;font-weight:900;line-height:1;letter-spacing:0.03em;color:var(--white);}
+
+/* Unlock overlay preview note */
+.preview-note{position:fixed;bottom:16px;left:16px;right:16px;max-width:540px;background:rgba(232,16,10,0.08);border:1px solid rgba(232,16,10,0.35);padding:12px 16px;font-size:11px;letter-spacing:0.08em;color:rgba(237,235,230,0.8);z-index:10000;}
+.preview-note b{color:var(--red);letter-spacing:0.22em;font-weight:700;}
+</style>
+</head>
+<body>
+
+<div class="demo-ctrl">
+  <label>LANG</label>
+  <button id="btnJP" class="on" onclick="setLang('jp')">JP</button>
+  <span style="color:rgba(237,235,230,0.2);">/</span>
+  <button id="btnEN" onclick="setLang('en')">EN</button>
+</div>
+
+<!-- PARTY TICKET OVERLAY (p0-2) PREVIEW -->
+<div class="amd-ticket-overlay" id="p0-2">
+  <button class="amd-ticket-close" title="閉じる（プレビューでは閉じません）">×</button>
+  <div class="panel-bg"></div>
+  <div class="vig-heavy"></div>
+  <div class="panel-content">
+    <div class="two-col">
+      <div class="rv">
+        <div class="eyebrow">
+          <span class="lang-jp-only">次のイベント — EP.07</span>
+          <span class="lang-en-only">Next Event — EP.07</span>
+        </div>
+        <div class="h-section">
+          <span class="lang-jp-only">ホーム<br>カミング.</span>
+          <span class="lang-en-only">HOME<br>COMING.</span>
+        </div>
+        <p class="body-txt">EP.05でPARCOの屋上へ飛び出し、EP.06でCheekyで実験し——AMD™はclubasia（ホームグラウンド）に戻ってくる。これは帰還であり、次の旅への出発点だ。</p>
+        <p class="body-txt-en">After rooftops and experiments, ALL MUST DANCE™ returns home. This is not a comeback. This is a departure.</p>
+      </div>
+      <div class="rv">
+        <div class="info-table">
+          <div class="info-row">
+            <span class="ik">Date</span>
+            <span class="iv">
+              2026.05.04
+              <small><span class="lang-jp-only">月曜日 · 祝日</span><span class="lang-en-only">Monday · National Holiday</span></small>
+            </span>
+          </div>
+          <div class="info-row">
+            <span class="ik">Time</span>
+            <span class="iv">22:00 — 05:00</span>
+          </div>
+          <div class="info-row">
+            <span class="ik">Venue</span>
+            <span class="iv">
+              clubasia
+              <small><span class="lang-jp-only">円山町, 渋谷</span><span class="lang-en-only">Maruyamacho, Shibuya</span></small>
+            </span>
+          </div>
+        </div>
+        <div class="ticket-section">
+          <div class="ticket-head">
+            <span class="ticket-head-lbl">Tickets</span>
+            <span class="ticket-head-note">
+              <span class="lang-jp-only">Web only · 電子チケット</span>
+              <span class="lang-en-only">Web only · E-ticket</span>
+            </span>
+          </div>
+          <div class="unlock-pass-row" onclick="alert('→ Unlock Pass 購入画面へ（Stripe決済）')">
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <span class="up-label">🎫 Unlock Pass</span>
+              <span class="up-price">¥3,500 — ¥9,999</span>
+              <span class="up-sub">
+                <span class="lang-jp-only">価格はあなたが決める</span>
+                <span class="lang-en-only">You decide the price</span>
+              </span>
+            </div>
+            <span class="up-arr">→</span>
+          </div>
+          <div class="trow disabled">
+            <div class="trow-left">
+              <span class="trow-type">Door</span>
+              <span class="trow-price">¥4,500</span>
+            </div>
+            <div class="trow-right">
+              <span style="font-size:8px;letter-spacing:0.3em;text-transform:uppercase;color:var(--white);">On the Night</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="preview-note">
+  <b>PREVIEW MODE</b> — front-page.php L1108-1141 抜粋 · ACFフィールドはモック値で代替<br>
+  Unlock Pass行クリック → Stripe決済（本番: buy.stripe.com/14AdRb5Bi...）
+</div>
+
+<script>
+function setLang(l){
+  document.documentElement.setAttribute('data-lang',l);
+  document.getElementById('btnJP').classList.toggle('on',l==='jp');
+  document.getElementById('btnEN').classList.toggle('on',l==='en');
+}
+</script>
+</body>
+</html>
