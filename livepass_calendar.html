@@ -821,21 +821,19 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
         <div class="cdrs-field-label">カード所有者名</div>
         <input class="cdrs-input" id="cdrsCardHolder" placeholder="TARO YAMADA" autocomplete="cc-name">
       </div>
-      <!-- Card number / expiry / CVC fields have been removed: collecting
-           raw card data on our own domain puts the app in the highest
-           PCI DSS scope. Wire up Stripe Elements / SetupIntent here
-           before accepting real cards. -->
-      <div class="cdrs-pci-note" style="padding:14px;background:rgba(245,200,66,.08);border:0.5px solid rgba(245,200,66,.28);border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;line-height:1.7;color:#F5C842">
-        ⚠ カード入力は Stripe Elements 対応待ちのため一時停止中です。<br>
-        ローンチ前に Stripe の iframe（PCI DSS SAQ-A）に差し替えます。
+      <div>
+        <div class="cdrs-field-label">カード情報</div>
+        <!-- Stripe Elements mounts a secure iframe here. Card number /
+             expiry / CVC never touch our DOM — Stripe handles PCI. -->
+        <div id="cdrsStripeCard" class="cdrs-input" style="padding:13px 14px"></div>
       </div>
-      <input type="hidden" id="cdrsCardNumber" value="">
-      <input type="hidden" id="cdrsCardExp" value="">
-      <input type="hidden" id="cdrsCardCvc" value="">
+      <div class="cdrs-pci-note" id="cdrsStripeStatus" style="padding:10px 14px;margin-top:6px;background:rgba(61,170,255,.08);border:0.5px solid rgba(61,170,255,.25);border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.08em;line-height:1.6;color:rgba(237,235,230,.7)">
+        🔒 Powered by Stripe — カード情報は暗号化して Stripe に直接送信されます
+      </div>
     </div>
     <button class="cdrs-submit" id="cdrsSubmit" type="button" disabled>カードを登録して予約を確定</button>
     <button class="cdrs-cancel" id="cdrsCancel" type="button">キャンセル</button>
-    <div class="cdrs-note">※ プロトタイプ環境 — 本番決済は Stripe Elements 実装後に有効化されます</div>
+    <div class="cdrs-note">※ プロトタイプ環境 — テストカード 4242 4242 4242 4242 などで動作確認できます</div>
   </div>
 </div>
 
@@ -1543,37 +1541,94 @@ const cdrsEventTitle   = document.getElementById('cdrsEventTitle');
 const cdrsEventMeta    = document.getElementById('cdrsEventMeta');
 const cdrsPolicy       = document.getElementById('cdrsPolicy');
 const cdrsHolder       = document.getElementById('cdrsCardHolder');
-const cdrsNumber       = document.getElementById('cdrsCardNumber');
-const cdrsExp          = document.getElementById('cdrsCardExp');
-const cdrsCvc          = document.getElementById('cdrsCardCvc');
+// Card number / expiry / CVC are now captured inside Stripe Elements.
+// Keep shims so any legacy reference (e.g. in old code paths) resolves.
+const cdrsNumber       = { value: '' };
+const cdrsExp          = { value: '' };
+const cdrsCvc          = { value: '' };
 const cdrsSubmit       = document.getElementById('cdrsSubmit');
 const cdrsCancel       = document.getElementById('cdrsCancel');
 
-cdrsNumber?.addEventListener('input', () => {
-  const raw = cdrsNumber.value.replace(/\s+/g, '').replace(/\D/g, '');
-  const parts = raw.match(/.{1,4}/g) || [];
-  cdrsNumber.value = parts.join(' ');
-  validateCard();
-});
-cdrsExp?.addEventListener('input', () => {
-  let v = cdrsExp.value.replace(/\D/g, '').slice(0, 4);
-  if (v.length >= 3) v = v.slice(0,2) + '/' + v.slice(2);
-  cdrsExp.value = v;
-  validateCard();
-});
-cdrsCvc?.addEventListener('input', () => {
-  cdrsCvc.value = cdrsCvc.value.replace(/\D/g, '').slice(0, 4);
-  validateCard();
-});
+// ─── Stripe Elements boot ──────────────────────────────────
+// Lazy-loads stripe.js (only when the card sheet is first needed),
+// pulls the publishable key from /api/stripe-config, and mounts a
+// secure card iframe into #cdrsStripeCard. Card data never enters
+// our DOM — Stripe returns a PaymentMethod id + last4 on confirm.
+let _stripe = null;
+let _stripeCardEl = null;
+let _stripeCardValid = false;
+const cdrsStripeStatus = document.getElementById('cdrsStripeStatus');
+
+function loadStripeJs(){
+  if (window.Stripe) return Promise.resolve();
+  return new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = 'https://js.stripe.com/v3/';
+    s.onload = () => res();
+    s.onerror = () => rej(new Error('stripe.js load failed'));
+    document.head.appendChild(s);
+  });
+}
+
+async function ensureStripeElements(){
+  if (_stripeCardEl) return _stripeCardEl;
+  try {
+    const res = await fetch('/api/stripe-config');
+    const cfg = await res.json();
+    if (cfg.stub || !cfg.publishableKey) {
+      if (cdrsStripeStatus) {
+        cdrsStripeStatus.textContent = '⚠ STRIPE_PUBLISHABLE_KEY が未設定のため予約機能は仮モードです';
+        cdrsStripeStatus.style.color = '#F5C842';
+        cdrsStripeStatus.style.background = 'rgba(245,200,66,.08)';
+        cdrsStripeStatus.style.borderColor = 'rgba(245,200,66,.28)';
+      }
+      return null;
+    }
+    await loadStripeJs();
+    _stripe = window.Stripe(cfg.publishableKey);
+    const elements = _stripe.elements({ locale: 'ja' });
+    _stripeCardEl = elements.create('card', {
+      style: {
+        base: {
+          color: '#EDEBE6',
+          fontFamily: 'Arial, "Noto Sans JP", sans-serif',
+          fontSize: '14px',
+          '::placeholder': { color: 'rgba(237,235,230,.35)' },
+        },
+        invalid: { color: '#E8100A' },
+      },
+      hidePostalCode: true,
+    });
+    _stripeCardEl.mount('#cdrsStripeCard');
+    _stripeCardEl.on('change', (ev) => {
+      _stripeCardValid = !!(ev.complete && !ev.error);
+      if (ev.error && cdrsStripeStatus) {
+        cdrsStripeStatus.textContent = '⚠ ' + ev.error.message;
+        cdrsStripeStatus.style.color = '#E8100A';
+      } else if (cdrsStripeStatus) {
+        cdrsStripeStatus.textContent = '🔒 Powered by Stripe — カード情報は暗号化して Stripe に直接送信されます';
+        cdrsStripeStatus.style.color = 'rgba(237,235,230,.7)';
+        cdrsStripeStatus.style.background = 'rgba(61,170,255,.08)';
+        cdrsStripeStatus.style.borderColor = 'rgba(61,170,255,.25)';
+      }
+      validateCard();
+    });
+    return _stripeCardEl;
+  } catch(err) {
+    console.warn('Stripe Elements init failed:', err);
+    if (cdrsStripeStatus) {
+      cdrsStripeStatus.textContent = '⚠ Stripe の初期化に失敗しました。ネットワークを確認してください。';
+      cdrsStripeStatus.style.color = '#E8100A';
+    }
+    return null;
+  }
+}
+
 cdrsHolder?.addEventListener('input', validateCard);
 
 function validateCard(){
-  const n = cdrsNumber.value.replace(/\s+/g, '');
-  const holder = cdrsHolder.value.trim();
-  const exp    = cdrsExp.value;
-  const cvc    = cdrsCvc.value;
-  const ok = holder.length >= 2 && n.length >= 13 && /^\d{2}\/\d{2}$/.test(exp) && cvc.length >= 3;
-  cdrsSubmit.disabled = !ok;
+  const holder = (cdrsHolder.value || '').trim();
+  cdrsSubmit.disabled = !(holder.length >= 2 && _stripeCardValid);
 }
 
 function computeCancelDeadline(eventDate, hoursBefore){
@@ -1592,6 +1647,8 @@ function openCardSheet(ctx){
   const { item } = ctx;
   cdrsEventTitle.textContent = item.title || '(no title)';
   cdrsEventMeta.textContent = (item.venue || '') + ' · ' + (item.time || '');
+  // Boot Stripe Elements on first open
+  ensureStripeElements();
 
   const fee = Number(item.cancelFee || 0);
   const hrs = Number(item.cancelDeadlineH || 0);
@@ -1618,17 +1675,53 @@ function closeCardSheet(){
 cardSheetOverlay?.addEventListener('click', (e) => { if (e.target === cardSheetOverlay) closeCardSheet(); });
 cdrsCancel?.addEventListener('click', closeCardSheet);
 
-cdrsSubmit?.addEventListener('click', () => {
+cdrsSubmit?.addEventListener('click', async () => {
   if (!pendingReserveContext) return;
   const { item, type, onConfirmed } = pendingReserveContext;
-  const rawNum = cdrsNumber.value.replace(/\s+/g, '');
-  const last4  = rawNum.slice(-4);
   const me     = localStorage.getItem('livepass_account_name') || 'NOBBY';
   const now    = new Date().toISOString();
 
   // item.date in calendar shape is typically the raw YYYY-MM-DD
   const rawDate = item.date || item.rawDate || (item.time || '').match(/\d{4}-\d{2}-\d{2}/)?.[0] || null;
   const deadlineIso = computeCancelDeadline(rawDate, Number(item.cancelDeadlineH || 0));
+
+  // ── Tokenize the card through Stripe Elements so we never touch the PAN ──
+  cdrsSubmit.disabled = true;
+  const origLabel = cdrsSubmit.textContent;
+  cdrsSubmit.textContent = 'カードを確認中…';
+  let paymentMethodId = null;
+  let last4 = '';
+  try {
+    if (_stripe && _stripeCardEl) {
+      const { paymentMethod, error } = await _stripe.createPaymentMethod({
+        type: 'card',
+        card: _stripeCardEl,
+        billing_details: { name: cdrsHolder.value.trim() },
+      });
+      if (error) {
+        if (cdrsStripeStatus) {
+          cdrsStripeStatus.textContent = '⚠ ' + error.message;
+          cdrsStripeStatus.style.color = '#E8100A';
+        }
+        cdrsSubmit.textContent = origLabel;
+        cdrsSubmit.disabled = false;
+        return;
+      }
+      paymentMethodId = paymentMethod.id;
+      last4 = paymentMethod.card && paymentMethod.card.last4 || '';
+    } else {
+      // Stripe isn't configured — degrade gracefully (prototype mode)
+      console.warn('Stripe not initialised; saving reservation without card token');
+    }
+  } catch(e) {
+    if (cdrsStripeStatus) {
+      cdrsStripeStatus.textContent = '⚠ ' + (e.message || 'カード処理に失敗しました');
+      cdrsStripeStatus.style.color = '#E8100A';
+    }
+    cdrsSubmit.textContent = origLabel;
+    cdrsSubmit.disabled = false;
+    return;
+  }
 
   try {
     const key = 'livepass_reservations';
@@ -1654,17 +1747,22 @@ cdrsSubmit?.addEventListener('click', () => {
       cancelDeadlineH: Number(item.cancelDeadlineH || 0),
       cardLast4:       last4,
       cardHolder:      cdrsHolder.value.trim(),
+      paymentMethodId: paymentMethodId,
       status:          'confirmed',
       chargedAmount:   0,
     });
     localStorage.setItem(key, JSON.stringify(existing));
-    cdrsNumber.value = ''; cdrsCvc.value = '';
+    if (_stripeCardEl) { try { _stripeCardEl.clear(); } catch(_){} }
+    cdrsSubmit.textContent = origLabel;
     closeCardSheet();
     if (navigator.vibrate) navigator.vibrate([12, 30, 12]);
     if (onConfirmed) onConfirmed();
-    const ok = confirm(`予約を受け付けました。\n\n${item.title}\nカード登録: •••• ${last4}\n\n今すぐ予約一覧を確認しますか？`);
+    const summary = last4 ? `\nカード登録: •••• ${last4}` : '';
+    const ok = confirm(`予約を受け付けました。\n\n${item.title}${summary}\n\n今すぐ予約一覧を確認しますか？`);
     if (ok) location.href = '/profile#panel-saved';
   } catch(e) {
+    cdrsSubmit.textContent = origLabel;
+    cdrsSubmit.disabled = false;
     alert('予約に失敗しました: ' + e.message);
   }
 });
