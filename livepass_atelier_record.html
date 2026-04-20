@@ -367,16 +367,22 @@ function openLightbox(rec){
   lb.classList.add('open');
   lb.setAttribute('aria-hidden','false');
 
-  // Reset positions
-  gsap.set(lbJacket, { x:0, y:0, rotation:0, scale:1 });
-  gsap.set(lbVinyl,  { x:0, y:0, scale:0.75, rotation:0 });
-  gsap.set(lbLabel,  { x:0, y:0, scale:0.75, rotation:0 });
+  // Reset positions: vinyl hidden behind the jacket at start.
+  gsap.set(lbJacket, { x:0, y:0, rotation:0, scale:1, opacity:1 });
+  gsap.set(lbVinyl,  { x:0, y:0, scale:0.7,  rotation:0, opacity:0 });
+  gsap.set(lbLabel,  { x:0, y:0, scale:0.7,  rotation:0, opacity:0 });
 
-  // Animate: jacket shifts left/back, vinyl slides out to the right and scales up
-  const tl = gsap.timeline();
-  tl.to(lbJacket, { x:'-22%', rotation:-3, duration:0.85, ease:'power3.out' }, 0)
-    .to(lbVinyl,  { x:'22%', scale:1.0, duration:0.9, ease:'power3.out' }, 0.1)
-    .to(lbLabel,  { x:'22%', scale:1.0, duration:0.9, ease:'power3.out' }, 0.1);
+  // Tap is the play trigger. The vinyl slides out from behind the jacket,
+  // the jacket flies up and fades away, the vinyl centers alone, and
+  // playback starts automatically.
+  const tl = gsap.timeline({
+    onComplete: () => setPlaying(true)
+  });
+  tl.to(lbVinyl, { x:'22%', scale:1.0, opacity:1, duration:0.8, ease:'power3.out' }, 0.05)
+    .to(lbLabel, { x:'22%', scale:1.0, opacity:1, duration:0.8, ease:'power3.out' }, 0.05)
+    .to(lbJacket,{ x:'-40%', y:'-12%', rotation:-8, opacity:0, duration:0.7, ease:'power2.in' }, 0.45)
+    .to(lbVinyl, { x:'0%',  duration:0.7, ease:'power2.inOut' }, 0.85)
+    .to(lbLabel, { x:'0%',  duration:0.7, ease:'power2.inOut' }, 0.85);
 
   if (navigator.vibrate) navigator.vibrate([6, 20, 10]);
 }
