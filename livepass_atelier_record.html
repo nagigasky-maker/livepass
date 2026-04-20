@@ -92,6 +92,40 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   text-transform:uppercase;color:rgba(237,235,230,.35);
 }
 
+/* CREATE card — single row entry point to /compose/record. */
+.create-card{
+  margin:10px 22px 32px;display:flex;align-items:center;gap:14px;
+  padding:18px;border-radius:14px;
+  background:
+    radial-gradient(120% 80% at 0% 0%, rgba(61,170,255,.14), transparent 60%),
+    linear-gradient(160deg,#0c0c14,#050508);
+  border:0.5px solid rgba(61,170,255,.28);
+  text-decoration:none;color:inherit;
+  transition:transform .18s ease, border-color .2s ease;
+}
+.create-card:active{transform:scale(.99);border-color:rgba(61,170,255,.5)}
+.create-card .cc-plus{
+  width:46px;height:46px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(61,170,255,.12);border:1px solid rgba(61,170,255,.3);color:var(--blue);
+}
+.create-card .cc-plus svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2}
+.create-card .cc-text{flex:1;min-width:0}
+.create-card .cc-title{
+  font-family:'Inter',sans-serif;font-weight:700;font-size:15px;letter-spacing:-0.005em;
+  margin-bottom:2px;
+}
+.create-card .cc-sub{
+  font-size:11px;line-height:1.6;color:rgba(237,235,230,.5);
+  overflow:hidden;text-overflow:ellipsis;
+}
+.create-card .cc-chev{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.04);color:rgba(237,235,230,.6);
+}
+.create-card .cc-chev svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2}
+
 /* ═══════════════════════════════════════════════════════
    FULLSCREEN LIGHTBOX PLAYER
    ═══════════════════════════════════════════════════════ */
@@ -258,12 +292,37 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   transform:translate(-50%,-50%);
   background:#000;box-shadow:0 0 0 1px rgba(255,255,255,.25);
 }
+/* Label layout — split into a top stack (title + artist, readable) and
+   a bottom stack (label name). The spindle + centre hole occupy the
+   middle; text avoids that zone so nothing sits on the spinning part. */
 .lb-label-text{
   position:absolute;top:50%;left:50%;
   transform:translate(-50%,-50%);
-  width:38%;height:38%;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  width:44%;height:44%;
+  display:flex;flex-direction:column;align-items:stretch;justify-content:space-between;
   pointer-events:none;z-index:4;text-align:center;
+  padding:6% 4%;
+}
+.lb-label-text .lt-top,
+.lb-label-text .lt-bottom{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  line-height:1;
+}
+.lb-label-text .lt-title{
+  font-family:'Inter',sans-serif;font-weight:800;font-size:11px;letter-spacing:-0.005em;
+  color:rgba(0,0,0,.9);line-height:1.05;
+  max-width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  margin-bottom:3px;
+}
+.lb-label-text .lt-artist{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:600;font-size:9px;
+  color:rgba(0,0,0,.7);letter-spacing:.04em;
+  max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.lb-label-text .lt-labelname{
+  font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:.28em;
+  text-transform:uppercase;color:rgba(0,0,0,.55);
+  max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
 
 /* Light overlay — sits inside .lb-vinyl-tilt so it inherits the disc's
@@ -285,14 +344,6 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   transition:opacity .6s ease;
 }
 .lb-light.on{opacity:1}
-.lb-label-text .lt-artist{
-  font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.22em;
-  color:rgba(0,0,0,.7);text-transform:uppercase;line-height:1;margin-bottom:4px;
-}
-.lb-label-text .lt-title{
-  font-family:'Inter',sans-serif;font-weight:800;font-size:10px;
-  color:rgba(0,0,0,.85);line-height:1.1;padding:0 6%;
-}
 
 /* Vinyl rotation is driven by GSAP (not CSS keyframes) so it composes
    cleanly with the timeline transforms. See spinTween in the script. */
@@ -369,8 +420,15 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   <div class="shelf-label">NEW ARRIVALS</div>
   <div class="shelf" id="shelf"></div>
 
-  <div class="shelf-label">STAFF PICKS</div>
-  <div class="shelf" id="shelfB"></div>
+  <div class="shelf-label">CREATE</div>
+  <a class="create-card" href="/compose/record" aria-label="Create a record">
+    <div class="cc-plus"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round"/></svg></div>
+    <div class="cc-text">
+      <div class="cc-title">新しいレコードを作る</div>
+      <div class="cc-sub">ジャケ・音源・ラベル色・テキスト登録 → SCREENへ</div>
+    </div>
+    <div class="cc-chev"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
 </main>
 
 <!-- ═══ FULLSCREEN LIGHTBOX PLAYER ═══ -->
@@ -396,7 +454,15 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
         <!-- Label lives INSIDE the vinyl now so spin / scale / position
              are inherited automatically — no two separate elements that
              could drift apart in 3D space. -->
-        <div class="lb-label-text" id="lbLabelText"><span class="lt-artist" id="lbLtArtist"></span><span class="lt-title" id="lbLtTitle"></span></div>
+        <div class="lb-label-text" id="lbLabelText">
+          <div class="lt-top">
+            <span class="lt-title" id="lbLtTitle"></span>
+            <span class="lt-artist" id="lbLtArtist"></span>
+          </div>
+          <div class="lt-bottom">
+            <span class="lt-labelname" id="lbLtLabelName"></span>
+          </div>
+        </div>
       </div>
       <div class="lb-light" id="lbLight"></div>
     </div>
@@ -426,31 +492,45 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 // ── Dummy catalog (no real MP3s yet) ───────────────────
 // Each record has a jacket art (CSS gradient), label color, and metadata.
 const RECORDS = [
-  { id:'r1', artist:'NOBBY',        title:'Endless Sonar',   price:'¥2,400',
-    grad:'linear-gradient(135deg,#F5C842 0%,#E8100A 100%)', label:'#0A0A0A', text:'Endless' },
-  { id:'r2', artist:'SPACE COOKING',title:'ALL MUST DANCE',  price:'¥1,800',
-    grad:'linear-gradient(160deg,#00E5A0 0%,#3DAAFF 60%,#0a0a0a 100%)', label:'#FFF3C2', text:'AMD' },
-  { id:'r3', artist:'YABE TADASHI', title:"Jazzin' (final)", price:'¥3,200',
-    grad:'linear-gradient(200deg,#A8E63D 0%,#F5C842 100%)', label:'#181818', text:"Jazz'" },
-  { id:'r4', artist:'MOZYSKYE',     title:'Blue Hour',       price:'¥1,500',
-    grad:'linear-gradient(180deg,#3DAAFF 0%,#1a1030 100%)', label:'#E8100A', text:'Blue' },
-  { id:'r5', artist:'U.F.O.',       title:'Tokyo Echo',      price:'¥2,800',
-    grad:'linear-gradient(150deg,#F4C0D1 0%,#F5C842 50%,#E8100A 100%)', label:'#2a2a2a', text:'Echo' },
+  { id:'r1', artist:'RIO KAGURA',      title:'Midnight Ether',  labelName:'LUMEN RECORDS',    price:'¥2,400',
+    grad:'linear-gradient(135deg,#F5C842 0%,#E8100A 100%)',               label:'#0A0A0A', text:'' },
+  { id:'r2', artist:'KENTA IZUMI',     title:'Boundary',        labelName:'HONOKA WAX',       price:'¥1,800',
+    grad:'linear-gradient(160deg,#00E5A0 0%,#3DAAFF 60%,#0a0a0a 100%)',   label:'#FFF3C2', text:'' },
+  { id:'r3', artist:'AIKO TANAKA',     title:'Autumn Hymn',     labelName:'SHIBUYA TAPES',    price:'¥3,200',
+    grad:'linear-gradient(200deg,#A8E63D 0%,#F5C842 100%)',               label:'#181818', text:'' },
+  { id:'r4', artist:'MOZYSKYE',        title:'Blue Hour',       labelName:'AZURE SOUND',      price:'¥1,500',
+    grad:'linear-gradient(180deg,#3DAAFF 0%,#1a1030 100%)',               label:'#E8100A', text:'' },
+  { id:'r5', artist:'DJ TORI',         title:'Tokyo Echo',      labelName:'NIGHTFLIGHT',      price:'¥2,800',
+    grad:'linear-gradient(150deg,#F4C0D1 0%,#F5C842 50%,#E8100A 100%)',   label:'#2a2a2a', text:'' },
 ];
-const RECORDS_B = [
-  { id:'r6', artist:'KENJI',        title:'Boundary Glide',  price:'¥1,200',
-    grad:'linear-gradient(135deg,#E0E2EA 0%,#8E93A0 50%,#F2F4F8 100%)', label:'#3DAAFF', text:'Glide' },
-  { id:'r7', artist:'SAKURA',       title:'Cipher',          price:'¥2,100',
-    grad:'linear-gradient(200deg,#F4C0D1 0%,#E8100A 100%)', label:'#0A0A0A', text:'Cipher' },
-  { id:'r8', artist:'RYO',          title:'Drift Frequency', price:'¥1,800',
-    grad:'linear-gradient(120deg,#0a0a0a 0%,#3DAAFF 100%)', label:'#F5C842', text:'Drift' },
-];
+// Pull anything the artist has composed via /compose/record. Each saved
+// record has {jacketSrc, title, artist, labelColor} — we adapt it into
+// the same shape as the hardcoded samples so renderShelf + the lightbox
+// can treat both the same way.
+function loadUserRecords(){
+  try {
+    const raw = localStorage.getItem('livepass_records');
+    if (!raw) return [];
+    const list = JSON.parse(raw);
+    return list.map(r => ({
+      id:        r.id,
+      artist:    r.artist || '',
+      title:     r.title  || '',
+      labelName: r.labelName || '',
+      price:     r.price  || '—',
+      // Use the uploaded image as the jacket background (fallback gradient if none).
+      grad:      r.jacketSrc ? `url("${r.jacketSrc}") center/cover, #000` : 'linear-gradient(135deg,#1a1a1a,#050505)',
+      label:     r.labelColor || '#3DAAFF',
+      text:      '', // user images don't need the big placeholder letters
+    }));
+  } catch(e){ return []; }
+}
 
-// ── Render shelves ─────────────────────────────────────
+// ── Render shelf ───────────────────────────────────────
 function renderShelf(el, list){
   el.innerHTML = list.map(r => `
     <div class="rec-card" data-id="${r.id}">
-      <div class="rec-jacket" style="background:${r.grad}"><div class="rj-art">${r.text}</div></div>
+      <div class="rec-jacket" style="background:${r.grad}"><div class="rj-art">${r.text || ''}</div></div>
       <div class="rec-meta">
         <div class="rec-artist">${r.artist}</div>
         <div class="rec-name">${r.title}</div>
@@ -459,11 +539,11 @@ function renderShelf(el, list){
     </div>
   `).join('');
 }
-renderShelf(document.getElementById('shelf'),  RECORDS);
-renderShelf(document.getElementById('shelfB'), RECORDS_B);
+const USER_RECORDS = loadUserRecords();
+renderShelf(document.getElementById('shelf'), [...USER_RECORDS, ...RECORDS]);
 
 // ── Lightbox ───────────────────────────────────────────
-const ALL = [...RECORDS, ...RECORDS_B];
+const ALL = [...USER_RECORDS, ...RECORDS];
 const lb        = document.getElementById('lightbox');
 const lbClose   = document.getElementById('lbClose');
 const lbJacket  = document.getElementById('lbJacket');
@@ -473,6 +553,7 @@ const lbVinylT  = document.getElementById('lbVinylTilt');
 const lbLabel   = document.getElementById('lbLabelText');
 const lbLtA     = document.getElementById('lbLtArtist');
 const lbLtT     = document.getElementById('lbLtTitle');
+const lbLtLN    = document.getElementById('lbLtLabelName');
 const lbArtist  = document.getElementById('lbArtist');
 const lbTitle   = document.getElementById('lbTitle');
 const lbPrice   = document.getElementById('lbPrice');
@@ -498,8 +579,9 @@ function openLightbox(rec){
   lbJacketFront.style.background = rec.grad;
   lbJacketA.textContent = rec.text;
   lbVinyl.style.setProperty('--vinyl-label', rec.label);
-  lbLtA.textContent = rec.artist;
-  lbLtT.textContent = rec.title;
+  lbLtA.textContent  = rec.artist;
+  lbLtT.textContent  = rec.title;
+  lbLtLN.textContent = rec.labelName || '';
   lbArtist.textContent = rec.artist;
   lbTitle.textContent  = rec.title;
   lbPrice.textContent  = rec.price;
