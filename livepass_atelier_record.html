@@ -128,12 +128,10 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   width:min(64vw, 340px);aspect-ratio:1/1;
   transform:translate(-50%,-50%);
 }
-/* Two-layer split: the outer .lb-vinyl-tilt owns the one-shot Y tilt
-   (animates to -210° so it sits parallel-ish to the jacket's -200°
-   turntable, 10° deeper for visual separation). The inner .lb-vinyl
-   handles the continuous Z spin inside that already-tilted frame, so
-   the visible silhouette (an ellipse) stays static while only the
-   groove/label content revolves — no wobble. */
+/* The outer .lb-vinyl-tilt is kept as a structural wrapper for future
+   tilt experiments; right now both jacket and disc stay front-facing
+   (cleanest look, no alignment issues) so the wrapper is just a layer
+   for z-index and grouping. */
 .lb-vinyl-tilt{
   transform-style:preserve-3d;
   z-index:3;
@@ -239,7 +237,11 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   border-radius:50%;
   background:
     radial-gradient(circle, #191919 0%, #0a0a0a 18%, #151515 19%, #0a0a0a 22%, #151515 23%, #0a0a0a 26%, #151515 27%, #0a0a0a 30%, #151515 31%, #0a0a0a 34%, #151515 35%, #0a0a0a 38%, #151515 39%, #0a0a0a 42%, #151515 43%, #0a0a0a 46%, #151515 47%, #0a0a0a 50%, #151515 51%, #0a0a0a 54%, #151515 55%, #0a0a0a 58%, #151515 59%, #0a0a0a 62%, #151515 63%, #0a0a0a 66%, #151515 67%, #0a0a0a 70%, #151515 71%, #0a0a0a 74%, #151515 75%, #0a0a0a 78%, #151515 79%, #0a0a0a 82%, #151515 83%, #0a0a0a 86%, #151515 87%, #0a0a0a 90%, #151515 91%, #0a0a0a 94%, #151515 95%, #0a0a0a 100%);
-  box-shadow:0 30px 50px rgba(0,0,0,.8),inset 0 0 0 1px rgba(255,255,255,.04);
+  /* Keep just the subtle inner ring — the big outer drop-shadow was the
+     "ズレてる" transparent-frame artefact. An offset shadow inside a tilted
+     3D wrapper renders in tilted space, so it drifted away from the disc
+     silhouette. Removing it keeps the vinyl flush with the turntable. */
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);
 }
 .lb-vinyl::before{
   /* label */
@@ -264,26 +266,21 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   pointer-events:none;z-index:4;text-align:center;
 }
 
-/* Light overlays — the vinyl is slightly convex and lacquer-glossy, so the
-   light is composed of a tight specular highlight, a broader ambient sheen,
-   a thin rim light on the far side, and a gentle outer vignette to suggest
-   curvature. None of these rotate with the vinyl; they feel like a real
-   fixed light source catching the spinning surface. */
+/* Light overlay — sits inside .lb-vinyl-tilt so it inherits the disc's
+   tilt. To avoid any perceived misalignment when the wrapper flips,
+   every gradient layer is concentric/symmetric — no directional
+   highlight that would appear shifted after the -210° rotation. */
 .lb-light{
-  position:absolute;top:50%;left:50%;
-  width:min(64vw, 340px);aspect-ratio:1/1;
-  transform:translate(-50%,-50%);
+  position:absolute;inset:0;
   border-radius:50%;
   pointer-events:none;
   z-index:5;
   opacity:0;
   background:
-    /* Broad diffused sheen — cooler, wraps the upper half. */
-    radial-gradient(ellipse 70% 55% at 32% 32%, rgba(210,230,255,.22) 0%, rgba(210,230,255,.08) 40%, transparent 70%),
-    /* Counter rim light — bottom-right edge, very faint cold blue. */
-    radial-gradient(ellipse 55% 45% at 78% 82%, rgba(180,210,255,.12) 0%, transparent 55%),
-    /* Curvature vignette — slight edge darkening so the disc feels convex. */
-    radial-gradient(circle at 50% 50%, transparent 60%, rgba(0,0,0,.3) 95%, rgba(0,0,0,.45) 100%);
+    /* Soft central glow — the vinyl catches ambient light overall. */
+    radial-gradient(circle at 50% 50%, rgba(220,235,255,.14) 0%, rgba(220,235,255,.06) 30%, transparent 60%),
+    /* Curvature vignette — slight edge darkening for convex feel. */
+    radial-gradient(circle at 50% 50%, transparent 62%, rgba(0,0,0,.3) 95%, rgba(0,0,0,.45) 100%);
   mix-blend-mode:screen;
   transition:opacity .6s ease;
 }
@@ -395,10 +392,14 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
       <div class="jk-face jk-front"><div class="rj-art" id="lbJacketArt"></div></div>
     </div>
     <div class="lb-vinyl-tilt" id="lbVinylTilt">
-      <div class="lb-vinyl" id="lbVinyl"></div>
-      <div class="lb-label-text" id="lbLabelText"><span class="lt-artist" id="lbLtArtist"></span><span class="lt-title" id="lbLtTitle"></span></div>
+      <div class="lb-vinyl" id="lbVinyl">
+        <!-- Label lives INSIDE the vinyl now so spin / scale / position
+             are inherited automatically — no two separate elements that
+             could drift apart in 3D space. -->
+        <div class="lb-label-text" id="lbLabelText"><span class="lt-artist" id="lbLtArtist"></span><span class="lt-title" id="lbLtTitle"></span></div>
+      </div>
+      <div class="lb-light" id="lbLight"></div>
     </div>
-    <div class="lb-light" id="lbLight"></div>
   </div>
 
   <div class="lb-info">
@@ -487,7 +488,7 @@ const PLAY_SVG  = '<polygon points="6 4 20 12 6 20 6 4"/>';
 const PAUSE_SVG = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
 
 let playing = false, progress = 0, tickId = null, currentId = null;
-let spinTweenV = null, spinTweenL = null; // continuous-rotation tweens
+let spinTweenV = null; // continuous-rotation tween on the vinyl (label is a child, inherits)
 const DURATION = 30; // 30 seconds preview
 const lbJacketFront = lbJacket.querySelector('.jk-front');
 const lbLight = document.getElementById('lbLight');
@@ -507,11 +508,12 @@ function openLightbox(rec){
   lb.classList.add('open');
   lb.setAttribute('aria-hidden','false');
 
-  // Reset: jacket front-facing, vinyl tilt wrapper untilted, vinyl hidden.
+  // Reset: jacket front-facing, vinyl hidden behind it. Both the jacket
+  // and the disc stay perfectly front-facing (no Y tilt) so the label
+  // can never go mirrored and the light overlay can never look offset.
   gsap.set(lbJacket, { rotationY:0, rotationX:0, opacity:1 });
   gsap.set(lbVinylT, { rotationY:0 });
   gsap.set(lbVinyl,  { x:0, y:0, scale:0.7, rotation:0, opacity:0 });
-  gsap.set(lbLabel,  { x:0, y:0, scale:0.7, rotation:0, opacity:0 });
 
   // Tap = play trigger. Sequence:
   //  1. Vinyl slides out from behind the jacket (to the right, scales up).
@@ -528,27 +530,29 @@ function openLightbox(rec){
       setPlaying(true);
     }
   });
+  // Sequence:
+  //  1. Vinyl slides out from behind the jacket (right, scales up).
+  //  2. Jacket flips a clean 180° so the turntable face is flat-on
+  //     (perfectly parallel to the camera).
+  //  3. Vinyl returns to centre. The disc + label are children of the
+  //     same flat tilt wrapper, so they spin together front-facing —
+  //     no mirror, no offset, no halo.
   tl.to(lbVinyl, { x:'24%', scale:1.0, opacity:1, duration:0.7, ease:'power3.out' }, 0.05)
-    .to(lbLabel, { x:'24%', scale:1.0, opacity:1, duration:0.7, ease:'power3.out' }, 0.05)
-    .to(lbJacket, { rotationY:-200, duration:1.1, ease:'power2.inOut' }, 0.35)
-    .to(lbVinylT, { rotationY:-210, duration:1.1, ease:'power2.inOut' }, 0.45)
-    .to(lbVinyl, { x:'0%', duration:0.8, ease:'power2.inOut' }, 0.95)
-    .to(lbLabel, { x:'0%', duration:0.8, ease:'power2.inOut' }, 0.95);
+    .to(lbJacket, { rotationY:-180, duration:1.1, ease:'power2.inOut' }, 0.35)
+    .to(lbVinyl,  { x:'0%',         duration:0.8, ease:'power2.inOut' }, 0.85);
 
   if (navigator.vibrate) navigator.vibrate([6, 20, 10]);
 }
 
 function startSpin(){
   stopSpin();
-  // 360° continuous rotation — same feel as the cassette reel holes.
+  // Single 360° tween on the vinyl. The label is its child, so it
+  // revolves in perfect sync — no chance of the two drifting apart.
   spinTweenV = gsap.to(lbVinyl, { rotation:'+=360', duration:4.5, ease:'none', repeat:-1 });
-  spinTweenL = gsap.to(lbLabel, { rotation:'+=360', duration:4.5, ease:'none', repeat:-1 });
-  // Steady dimensional highlight on the vinyl (no moving light).
   lbLight.classList.add('on');
 }
 function stopSpin(){
   if (spinTweenV) { spinTweenV.kill(); spinTweenV = null; }
-  if (spinTweenL) { spinTweenL.kill(); spinTweenL = null; }
   lbLight.classList.remove('on');
 }
 
