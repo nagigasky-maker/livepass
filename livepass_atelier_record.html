@@ -120,6 +120,7 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   flex:1;position:relative;
   display:flex;align-items:center;justify-content:center;
   margin:20px 0;
+  perspective:1400px;
 }
 
 .lb-jacket,.lb-vinyl{
@@ -128,17 +129,98 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   transform:translate(-50%,-50%);
 }
 .lb-jacket{
+  z-index:1;
+  transform-style:preserve-3d;
+  transform:translate(-50%,-50%) rotateY(0deg);
+  will-change:transform;
+}
+.jk-face{
+  position:absolute;inset:0;
   border-radius:6px;overflow:hidden;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+}
+.jk-front{
   box-shadow:0 40px 70px rgba(0,0,0,.85),0 15px 30px rgba(0,0,0,.6);
   border:0.5px solid rgba(255,255,255,.1);
+}
+.jk-front .rj-art{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:'Inter',sans-serif;font-weight:900;font-size:48px;letter-spacing:.02em;color:rgba(0,0,0,.28);text-align:center;padding:22px}
+
+/* Turntable — the back face of the jacket.
+   It's a dark plinth with a circular platter, tonearm, and spindle. */
+.jk-back{
+  transform:rotateY(180deg);
+  background:
+    radial-gradient(120% 80% at 20% 10%,rgba(255,255,255,.05),transparent 55%),
+    linear-gradient(160deg,#1a1a1a 0%,#0a0a0a 70%);
+  box-shadow:
+    0 40px 70px rgba(0,0,0,.85),0 15px 30px rgba(0,0,0,.6),
+    inset 0 0 0 1px rgba(255,255,255,.05);
+}
+.jk-back .tt-platter{
+  position:absolute;top:50%;left:50%;
+  width:82%;height:82%;border-radius:50%;
+  transform:translate(-50%,-50%);
+  background:
+    radial-gradient(circle,#0f0f0f 0%,#080808 70%,#141414 100%);
+  box-shadow:
+    inset 0 0 0 3px rgba(0,0,0,.7),
+    inset 0 0 22px rgba(0,0,0,.6),
+    inset 0 0 0 1px rgba(255,255,255,.04);
+}
+.jk-back .tt-mat{
+  position:absolute;top:50%;left:50%;
+  width:74%;height:74%;border-radius:50%;
+  transform:translate(-50%,-50%);
+  background:
+    radial-gradient(circle,#1a1a1a 0%,#101010 100%);
+  box-shadow:inset 0 0 30px rgba(0,0,0,.8);
+}
+.jk-back .tt-spindle{
+  position:absolute;top:50%;left:50%;
+  width:3.2%;height:3.2%;border-radius:50%;
+  transform:translate(-50%,-50%);
+  background:linear-gradient(180deg,#e0e0e0,#888);
+  box-shadow:0 0 0 1px rgba(0,0,0,.4), 0 2px 4px rgba(0,0,0,.5);
   z-index:2;
 }
-.lb-jacket .rj-art{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  font-family:'Inter',sans-serif;font-weight:900;font-size:48px;letter-spacing:.02em;color:rgba(0,0,0,.28);text-align:center;padding:22px}
+.jk-back .tt-arm-base{
+  position:absolute;top:18%;right:8%;
+  width:14%;height:14%;border-radius:50%;
+  background:radial-gradient(circle,#2a2a2a,#0f0f0f);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08), 0 2px 6px rgba(0,0,0,.5);
+}
+.jk-back .tt-arm{
+  position:absolute;top:24%;right:15%;
+  width:42%;height:3px;border-radius:2px;
+  background:linear-gradient(90deg,#2a2a2a,#9a9a9a 20%,#e0e0e0 35%,#9a9a9a 85%,#2a2a2a);
+  transform-origin:right center;
+  transform:rotate(-32deg);
+  box-shadow:0 2px 4px rgba(0,0,0,.5);
+}
+.jk-back .tt-arm::after{
+  /* headshell */
+  content:"";position:absolute;left:-12px;top:-4px;
+  width:20px;height:10px;border-radius:2px;
+  background:linear-gradient(180deg,#3a3a3a,#141414);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);
+}
+.jk-back .tt-led{
+  position:absolute;top:10%;left:10%;
+  width:6px;height:6px;border-radius:50%;
+  background:#F5C842;
+  box-shadow:0 0 8px rgba(245,200,66,.7);
+}
+.jk-back .tt-brand{
+  position:absolute;bottom:9%;left:10%;
+  font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.22em;
+  color:rgba(237,235,230,.35);text-transform:uppercase;
+}
 
 /* Vinyl (a realistic black disc with grooves + colored label) */
 .lb-vinyl{
-  z-index:1;
+  z-index:3;
   border-radius:50%;
   background:
     radial-gradient(circle, #191919 0%, #0a0a0a 18%, #151515 19%, #0a0a0a 22%, #151515 23%, #0a0a0a 26%, #151515 27%, #0a0a0a 30%, #151515 31%, #0a0a0a 34%, #151515 35%, #0a0a0a 38%, #151515 39%, #0a0a0a 42%, #151515 43%, #0a0a0a 46%, #151515 47%, #0a0a0a 50%, #151515 51%, #0a0a0a 54%, #151515 55%, #0a0a0a 58%, #151515 59%, #0a0a0a 62%, #151515 63%, #0a0a0a 66%, #151515 67%, #0a0a0a 70%, #151515 71%, #0a0a0a 74%, #151515 75%, #0a0a0a 78%, #151515 79%, #0a0a0a 82%, #151515 83%, #0a0a0a 86%, #151515 87%, #0a0a0a 90%, #151515 91%, #0a0a0a 94%, #151515 95%, #0a0a0a 100%);
@@ -164,7 +246,7 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   transform:translate(-50%,-50%);
   width:38%;height:38%;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  pointer-events:none;z-index:3;text-align:center;
+  pointer-events:none;z-index:4;text-align:center;
 }
 .lb-label-text .lt-artist{
   font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.22em;
@@ -175,9 +257,8 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   color:rgba(0,0,0,.85);line-height:1.1;padding:0 6%;
 }
 
-@keyframes vinylSpin { to { transform:translate(-50%,-50%) rotate(360deg); } }
-.lb-vinyl.playing{animation:vinylSpin 4s linear infinite}
-.lb-label-text.playing{animation:vinylSpin 4s linear infinite}
+/* Vinyl rotation is driven by GSAP (not CSS keyframes) so it composes
+   cleanly with the timeline transforms. See spinTween in the script. */
 
 /* Controls inside lightbox */
 .lb-info{text-align:center;margin-bottom:8px}
@@ -260,9 +341,21 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   <button class="lb-close" id="lbClose" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg></button>
 
   <div class="lb-stage">
+    <div class="lb-jacket" id="lbJacket">
+      <div class="jk-face jk-back">
+        <div class="tt-led"></div>
+        <div class="tt-platter">
+          <div class="tt-mat"></div>
+        </div>
+        <div class="tt-arm-base"></div>
+        <div class="tt-arm"></div>
+        <div class="tt-spindle"></div>
+        <div class="tt-brand">EXPASS · TT-01</div>
+      </div>
+      <div class="jk-face jk-front"><div class="rj-art" id="lbJacketArt"></div></div>
+    </div>
     <div class="lb-vinyl" id="lbVinyl"></div>
     <div class="lb-label-text" id="lbLabelText"><span class="lt-artist" id="lbLtArtist"></span><span class="lt-title" id="lbLtTitle"></span></div>
-    <div class="lb-jacket" id="lbJacket"><div class="rj-art" id="lbJacketArt"></div></div>
   </div>
 
   <div class="lb-info">
@@ -350,11 +443,13 @@ const PLAY_SVG  = '<polygon points="6 4 20 12 6 20 6 4"/>';
 const PAUSE_SVG = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
 
 let playing = false, progress = 0, tickId = null, currentId = null;
+let spinTweenV = null, spinTweenL = null; // continuous-rotation tweens
 const DURATION = 30; // 30 seconds preview
+const lbJacketFront = lbJacket.querySelector('.jk-front');
 
 function openLightbox(rec){
   currentId = rec.id;
-  lbJacket.style.background = rec.grad;
+  lbJacketFront.style.background = rec.grad;
   lbJacketA.textContent = rec.text;
   lbVinyl.style.setProperty('--vinyl-label', rec.label);
   lbLtA.textContent = rec.artist;
@@ -367,39 +462,55 @@ function openLightbox(rec){
   lb.classList.add('open');
   lb.setAttribute('aria-hidden','false');
 
-  // Reset positions: vinyl hidden behind the jacket at start.
-  gsap.set(lbJacket, { x:0, y:0, rotation:0, scale:1, opacity:1 });
-  gsap.set(lbVinyl,  { x:0, y:0, scale:0.7,  rotation:0, opacity:0 });
-  gsap.set(lbLabel,  { x:0, y:0, scale:0.7,  rotation:0, opacity:0 });
+  // Reset: jacket front-facing, vinyl hidden behind it.
+  gsap.set(lbJacket, { rotationY:0, rotationX:0, opacity:1 });
+  gsap.set(lbVinyl,  { x:0, y:0, scale:0.7, rotation:0, opacity:0 });
+  gsap.set(lbLabel,  { x:0, y:0, scale:0.7, rotation:0, opacity:0 });
 
-  // Tap is the play trigger. The vinyl slides out from behind the jacket,
-  // the jacket flies up and fades away, the vinyl centers alone, and
-  // playback starts automatically.
+  // Tap = play trigger. Sequence:
+  //  1. Vinyl slides out from behind the jacket (to the right, scales up).
+  //  2. Jacket flips 200° to the left — back face is a turntable.
+  //  3. Vinyl returns to center, now sitting on top of the turntable.
+  //  4. Spin tween kicks in (360° continuous, matches the cassette-hole feel).
   const tl = gsap.timeline({
-    onComplete: () => setPlaying(true)
+    onComplete: () => {
+      startSpin();
+      setPlaying(true);
+    }
   });
-  tl.to(lbVinyl, { x:'22%', scale:1.0, opacity:1, duration:0.8, ease:'power3.out' }, 0.05)
-    .to(lbLabel, { x:'22%', scale:1.0, opacity:1, duration:0.8, ease:'power3.out' }, 0.05)
-    .to(lbJacket,{ x:'-40%', y:'-12%', rotation:-8, opacity:0, duration:0.7, ease:'power2.in' }, 0.45)
-    .to(lbVinyl, { x:'0%',  duration:0.7, ease:'power2.inOut' }, 0.85)
-    .to(lbLabel, { x:'0%',  duration:0.7, ease:'power2.inOut' }, 0.85);
+  tl.to(lbVinyl, { x:'24%', scale:1.0, opacity:1, duration:0.7, ease:'power3.out' }, 0.05)
+    .to(lbLabel, { x:'24%', scale:1.0, opacity:1, duration:0.7, ease:'power3.out' }, 0.05)
+    .to(lbJacket,{ rotationY:-200, duration:1.1, ease:'power2.inOut' }, 0.35)
+    .to(lbVinyl, { x:'0%', duration:0.8, ease:'power2.inOut' }, 0.95)
+    .to(lbLabel, { x:'0%', duration:0.8, ease:'power2.inOut' }, 0.95);
 
   if (navigator.vibrate) navigator.vibrate([6, 20, 10]);
+}
+
+function startSpin(){
+  stopSpin();
+  // 360° continuous rotation — same feel as the cassette reel holes.
+  spinTweenV = gsap.to(lbVinyl, { rotation:'+=360', duration:4.5, ease:'none', repeat:-1 });
+  spinTweenL = gsap.to(lbLabel, { rotation:'+=360', duration:4.5, ease:'none', repeat:-1 });
+}
+function stopSpin(){
+  if (spinTweenV) { spinTweenV.kill(); spinTweenV = null; }
+  if (spinTweenL) { spinTweenL.kill(); spinTweenL = null; }
 }
 
 function closeLightbox(){
   lb.classList.remove('open');
   lb.setAttribute('aria-hidden','true');
   setPlaying(false);
+  stopSpin();
   progress = 0; updateScrubber();
 }
 
 function setPlaying(v){
   playing = v;
-  lbVinyl.classList.toggle('playing', v);
-  lbLabel.classList.toggle('playing', v);
   lbPlayIcn.innerHTML = v ? PAUSE_SVG : PLAY_SVG;
-  if (v) startTick(); else stopTick();
+  if (v) { startSpin(); startTick(); }
+  else   { stopSpin();  stopTick();  }
 }
 function startTick(){
   stopTick();
