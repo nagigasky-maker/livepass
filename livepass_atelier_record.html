@@ -128,12 +128,10 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   width:min(64vw, 340px);aspect-ratio:1/1;
   transform:translate(-50%,-50%);
 }
-/* Two-layer split: the outer .lb-vinyl-tilt owns the one-shot Y tilt
-   (animates to -210° so it sits parallel-ish to the jacket's -200°
-   turntable, 10° deeper for visual separation). The inner .lb-vinyl
-   handles the continuous Z spin inside that already-tilted frame, so
-   the visible silhouette (an ellipse) stays static while only the
-   groove/label content revolves — no wobble. */
+/* The outer .lb-vinyl-tilt is kept as a structural wrapper for future
+   tilt experiments; right now both jacket and disc stay front-facing
+   (cleanest look, no alignment issues) so the wrapper is just a layer
+   for z-index and grouping. */
 .lb-vinyl-tilt{
   transform-style:preserve-3d;
   z-index:3;
@@ -394,8 +392,12 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
       <div class="jk-face jk-front"><div class="rj-art" id="lbJacketArt"></div></div>
     </div>
     <div class="lb-vinyl-tilt" id="lbVinylTilt">
-      <div class="lb-vinyl" id="lbVinyl"></div>
-      <div class="lb-label-text" id="lbLabelText"><span class="lt-artist" id="lbLtArtist"></span><span class="lt-title" id="lbLtTitle"></span></div>
+      <div class="lb-vinyl" id="lbVinyl">
+        <!-- Label lives INSIDE the vinyl now so spin / scale / position
+             are inherited automatically — no two separate elements that
+             could drift apart in 3D space. -->
+        <div class="lb-label-text" id="lbLabelText"><span class="lt-artist" id="lbLtArtist"></span><span class="lt-title" id="lbLtTitle"></span></div>
+      </div>
       <div class="lb-light" id="lbLight"></div>
     </div>
   </div>
@@ -486,7 +488,7 @@ const PLAY_SVG  = '<polygon points="6 4 20 12 6 20 6 4"/>';
 const PAUSE_SVG = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
 
 let playing = false, progress = 0, tickId = null, currentId = null;
-let spinTweenV = null, spinTweenL = null; // continuous-rotation tweens
+let spinTweenV = null; // continuous-rotation tween on the vinyl (label is a child, inherits)
 const DURATION = 30; // 30 seconds preview
 const lbJacketFront = lbJacket.querySelector('.jk-front');
 const lbLight = document.getElementById('lbLight');
@@ -506,14 +508,12 @@ function openLightbox(rec){
   lb.classList.add('open');
   lb.setAttribute('aria-hidden','false');
 
-  // Reset: jacket front-facing, vinyl tilt wrapper untilted, vinyl hidden.
-  // The label lives inside the tilt wrapper, so it gets rotationY counter-
-  // animated below to cancel the wrapper's flip and keep the text readable
-  // (net Y rotation of the label stays close to 0 throughout the animation).
+  // Reset: jacket front-facing, vinyl hidden behind it. Both the jacket
+  // and the disc stay perfectly front-facing (no Y tilt) so the label
+  // can never go mirrored and the light overlay can never look offset.
   gsap.set(lbJacket, { rotationY:0, rotationX:0, opacity:1 });
   gsap.set(lbVinylT, { rotationY:0 });
   gsap.set(lbVinyl,  { x:0, y:0, scale:0.7, rotation:0, opacity:0 });
-  gsap.set(lbLabel,  { x:0, y:0, scale:0.7, rotation:0, rotationY:0, opacity:0 });
 
   // Tap = play trigger. Sequence:
   //  1. Vinyl slides out from behind the jacket (to the right, scales up).
@@ -530,30 +530,29 @@ function openLightbox(rec){
       setPlaying(true);
     }
   });
+  // Sequence:
+  //  1. Vinyl slides out from behind the jacket (right, scales up).
+  //  2. Jacket flips a clean 180° so the turntable face is flat-on
+  //     (perfectly parallel to the camera).
+  //  3. Vinyl returns to centre. The disc + label are children of the
+  //     same flat tilt wrapper, so they spin together front-facing —
+  //     no mirror, no offset, no halo.
   tl.to(lbVinyl, { x:'24%', scale:1.0, opacity:1, duration:0.7, ease:'power3.out' }, 0.05)
-    .to(lbLabel, { x:'24%', scale:1.0, opacity:1, duration:0.7, ease:'power3.out' }, 0.05)
-    .to(lbJacket, { rotationY:-200, duration:1.1, ease:'power2.inOut' }, 0.35)
-    .to(lbVinylT, { rotationY:-210, duration:1.1, ease:'power2.inOut' }, 0.45)
-    // Counter-rotate the label in lockstep with the wrapper so the text
-    // stays readable (net Y rotation ≈ -30° = slight tilt, never mirrored).
-    .to(lbLabel, { rotationY:180, duration:1.1, ease:'power2.inOut' }, 0.45)
-    .to(lbVinyl, { x:'0%', duration:0.8, ease:'power2.inOut' }, 0.95)
-    .to(lbLabel, { x:'0%', duration:0.8, ease:'power2.inOut' }, 0.95);
+    .to(lbJacket, { rotationY:-180, duration:1.1, ease:'power2.inOut' }, 0.35)
+    .to(lbVinyl,  { x:'0%',         duration:0.8, ease:'power2.inOut' }, 0.85);
 
   if (navigator.vibrate) navigator.vibrate([6, 20, 10]);
 }
 
 function startSpin(){
   stopSpin();
-  // 360° continuous rotation — same feel as the cassette reel holes.
+  // Single 360° tween on the vinyl. The label is its child, so it
+  // revolves in perfect sync — no chance of the two drifting apart.
   spinTweenV = gsap.to(lbVinyl, { rotation:'+=360', duration:4.5, ease:'none', repeat:-1 });
-  spinTweenL = gsap.to(lbLabel, { rotation:'+=360', duration:4.5, ease:'none', repeat:-1 });
-  // Steady dimensional highlight on the vinyl (no moving light).
   lbLight.classList.add('on');
 }
 function stopSpin(){
   if (spinTweenV) { spinTweenV.kill(); spinTweenV = null; }
-  if (spinTweenL) { spinTweenL.kill(); spinTweenL = null; }
   lbLight.classList.remove('on');
 }
 
