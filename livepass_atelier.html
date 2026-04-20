@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/livepass-icon-180.png">
+<title>EXPASS — Atelier / 拡張機能ラボ</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#000;--bg:#080808;--white:#EDEBE6;
+  --red:#E8100A;--blue:#3DAAFF;--green:#A8E63D;
+  --gold:#F5C842;--mint:#00E5A0;--pink:#F4C0D1;
+  --muted:rgba(237,235,230,.3);--muted2:rgba(237,235,230,.14);
+  --border:rgba(255,255,255,.07);
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+  --nav-h:62px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;max-width:100vw;height:100%;height:100dvh;
+  background:var(--black);color:var(--white);
+  font-family:'Noto Sans JP','Inter',sans-serif;-webkit-font-smoothing:antialiased;
+  user-select:none;-webkit-user-select:none;overflow:hidden;
+  position:fixed;overscroll-behavior-x:none;touch-action:pan-y;}
+a{color:inherit;text-decoration:none}
+button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
+
+/* Lab-ish backdrop: a dark base, a faint blueprint grid, a scattering of
+   schematic marks (rings, crosshairs, dashes), and a pair of slow-drifting
+   "fume" glows. All pure CSS + one tiny inline SVG layer. */
+body::before, body::after, .lab-fume{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;}
+body::before{
+  /* Blueprint grid: a small 24px grid overlayed on a 120px major grid. */
+  background-image:
+    linear-gradient(rgba(0,229,160,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,160,.035) 1px, transparent 1px),
+    linear-gradient(rgba(0,229,160,.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,160,.055) 1px, transparent 1px);
+  background-size: 24px 24px, 24px 24px, 120px 120px, 120px 120px;
+  background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
+  mask-image: radial-gradient(ellipse 90% 75% at 50% 45%, #000 50%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 75% at 50% 45%, #000 50%, transparent 100%);
+  opacity:.75;
+}
+body::after{
+  /* Schematic marks: faint rings, crosshairs, dashes — drawn as an inline SVG
+     tile. Low-opacity cyan so it sits back behind the cards. */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='480' height='480' viewBox='0 0 480 480'><g fill='none' stroke='%2300E5A0' stroke-width='1' opacity='0.28'><circle cx='60' cy='80' r='14'/><circle cx='60' cy='80' r='22' stroke-dasharray='2 3'/><line x1='52' y1='80' x2='68' y2='80'/><line x1='60' y1='72' x2='60' y2='88'/><circle cx='390' cy='70' r='8'/><circle cx='390' cy='70' r='16' stroke-dasharray='1 3'/><line x1='150' y1='180' x2='190' y2='180' stroke-dasharray='4 4'/><line x1='170' y1='160' x2='170' y2='200'/><circle cx='170' cy='180' r='3' fill='%2300E5A0'/><circle cx='320' cy='260' r='26' stroke-dasharray='3 5'/><circle cx='320' cy='260' r='4' fill='%2300E5A0'/><line x1='320' y1='230' x2='320' y2='220'/><line x1='320' y1='300' x2='320' y2='290'/><line x1='80' y1='330' x2='120' y2='330' stroke-dasharray='2 4'/><circle cx='100' cy='330' r='6'/><circle cx='420' cy='400' r='12'/><circle cx='420' cy='400' r='20' stroke-dasharray='2 4'/><text x='30' y='50' fill='%2300E5A0' font-family='monospace' font-size='8' opacity='0.9'>A-01</text><text x='360' y='140' fill='%23F5C842' font-family='monospace' font-size='8' opacity='0.9'>REV 02</text><text x='210' y='420' fill='%2300E5A0' font-family='monospace' font-size='8' opacity='0.9'>LAB.00</text></g></svg>");
+  background-size: 480px 480px;
+  opacity:.5;
+  mask-image: radial-gradient(ellipse 100% 85% at 50% 50%, #000 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 100% 85% at 50% 50%, #000 40%, transparent 100%);
+}
+.lab-fume{
+  /* Two slow-drifting color glows so the room feels "alive". */
+  background:
+    radial-gradient(ellipse 55% 40% at 18% 30%, rgba(0,229,160,.13), transparent 60%),
+    radial-gradient(ellipse 50% 35% at 82% 75%, rgba(245,200,66,.10), transparent 60%);
+  filter:blur(8px);
+  animation: labFume 22s ease-in-out infinite alternate;
+}
+@keyframes labFume {
+  0%   { transform: translate3d(0,0,0) scale(1); }
+  50%  { transform: translate3d(-2%,1%,0) scale(1.06); }
+  100% { transform: translate3d(1%,-2%,0) scale(1.02); }
+}
+/* Corner vignette, gently darker edges to frame the content. */
+.lab-vignette{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 120% 90% at 50% 50%, transparent 55%, rgba(0,0,0,.55) 100%);
+}
+
+/* Lift content above the backdrop layers. */
+.topbar, .content, .bottomnav { position:fixed; z-index:100; }
+.content{ z-index:1 !important; }
+.topbar, .bottomnav { z-index:100 !important; }
+
+.topbar{position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:calc(var(--safe-top) + 4px) 18px 8px;
+  display:flex;align-items:center;gap:14px;
+  background:linear-gradient(to bottom,rgba(0,0,0,.95) 70%,transparent);}
+.tb-brand{display:flex;align-items:center;margin:0 auto;height:22px;flex-shrink:0}
+.tb-brand img{height:100%;width:auto;display:block}
+.tb-spacer{width:26px;height:26px;flex-shrink:0}
+
+.content{position:fixed;top:0;left:0;right:0;bottom:calc(var(--nav-h) + var(--safe-bot));
+  padding-top:calc(var(--safe-top) + 42px);
+  overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+  touch-action:pan-y;}
+.content::-webkit-scrollbar{display:none}
+
+.lab-header{padding:20px 22px 10px}
+.lab-eyebrow{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.32em;
+  text-transform:uppercase;color:var(--mint);margin-bottom:8px;
+}
+.lab-title{
+  font-family:'Inter',sans-serif;font-weight:800;
+  font-size:clamp(32px,7.5vw,44px);letter-spacing:-0.02em;line-height:.96;
+}
+.lab-sub{
+  margin-top:14px;font-size:13px;line-height:1.7;color:rgba(237,235,230,.55);
+  max-width:520px;letter-spacing:.01em;
+}
+
+/* Tool grid */
+.tool-grid{
+  padding:20px 18px 40px;
+  display:grid;grid-template-columns:1fr;gap:16px;
+}
+@media (min-width:600px){.tool-grid{grid-template-columns:1fr 1fr}}
+
+.tool-card{
+  position:relative;display:block;
+  border-radius:18px;overflow:hidden;
+  background:#0a0a0a;
+  border:0.5px solid rgba(255,255,255,.1);
+  padding:24px 22px 20px;min-height:200px;
+  transition:transform .24s ease, border-color .2s ease;
+}
+.tool-card:active{transform:scale(.985)}
+.tool-card.frame{
+  background:
+    radial-gradient(120% 80% at 100% 0%,rgba(245,200,66,.16),transparent 60%),
+    linear-gradient(160deg,#1a1a1a,#050505);
+  border-color:rgba(245,200,66,.25);
+}
+.tool-card.record{
+  background:
+    radial-gradient(110% 80% at 0% 100%,rgba(61,170,255,.14),transparent 55%),
+    linear-gradient(200deg,#0a0a14,#020206);
+  border-color:rgba(61,170,255,.22);
+}
+.tool-card.future{
+  background:linear-gradient(160deg,#0a0a0a,#040404);
+  border-style:dashed;
+  border-color:rgba(237,235,230,.12);
+  opacity:.55;
+}
+
+.tc-cat{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.28em;
+  text-transform:uppercase;color:rgba(237,235,230,.45);margin-bottom:10px;
+}
+.tool-card.frame .tc-cat{color:var(--gold)}
+.tool-card.record .tc-cat{color:var(--blue)}
+.tc-title{
+  font-family:'Inter',sans-serif;font-weight:700;
+  font-size:22px;letter-spacing:-0.01em;margin-bottom:6px;
+}
+.tc-desc{
+  font-size:12px;line-height:1.7;color:rgba(237,235,230,.5);margin-bottom:20px;
+}
+.tc-tags{display:flex;flex-wrap:wrap;gap:6px}
+.tc-tag{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;
+  color:rgba(237,235,230,.6);
+  padding:4px 8px;border-radius:99px;
+  background:rgba(255,255,255,.06);border:0.5px solid rgba(255,255,255,.08);
+}
+.tc-arrow{
+  position:absolute;right:16px;bottom:14px;
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.04);border:0.5px solid rgba(255,255,255,.1);
+}
+.tc-arrow svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+
+.lab-note{
+  padding:0 22px 24px;color:rgba(237,235,230,.3);font-size:11px;line-height:1.8;
+  letter-spacing:.04em;
+}
+
+.bottomnav{position:fixed;bottom:0;left:0;right:0;z-index:100;
+  height:calc(var(--nav-h) + var(--safe-bot));padding:0 0 calc(var(--safe-bot) * .4);
+  display:flex;align-items:center;justify-content:space-around;
+  background:rgba(0,0,0,.96);border-top:0.5px solid var(--border);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);}
+.bn-btn{flex:1;height:100%;display:flex;align-items:center;justify-content:center;
+  color:rgba(237,235,230,.35);text-decoration:none;position:relative;}
+.bn-btn svg{width:30px;height:30px;stroke:currentColor;fill:none;stroke-width:1.8}
+.bn-btn.active{color:var(--mint)}
+</style>
+</head>
+<body>
+
+<div class="lab-fume" aria-hidden="true"></div>
+<div class="lab-vignette" aria-hidden="true"></div>
+
+<div class="topbar">
+  <span class="tb-spacer"></span>
+  <a class="tb-brand" href="/screen" aria-label="EXPASS"><img src="/expass_icon.png" alt="EXPASS"></a>
+  <span class="tb-spacer"></span>
+</div>
+
+<main class="content">
+  <header class="lab-header">
+    <div class="lab-eyebrow">EXPASS · ATELIER</div>
+    <h1 class="lab-title">拡張機能<br>開発ラボ</h1>
+    <p class="lab-sub">職人が欲しかったシンプルなソフトウェア。ブラウザだけで動く、EXPASS の創作ツール群。</p>
+  </header>
+
+  <div class="tool-grid">
+    <a class="tool-card frame" href="/atelier/frame">
+      <div class="tc-cat">Frame Studio</div>
+      <div class="tc-title">額装</div>
+      <div class="tc-desc">写真や作品に額縁をつける。ゴールド・シルバー・カスタム・アクリル圧着の4タイプ。完成したら SCREEN に投稿。</div>
+      <div class="tc-tags">
+        <span class="tc-tag">PHOTOGRAPHER</span>
+        <span class="tc-tag">ARTIST</span>
+      </div>
+      <span class="tc-arrow"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    </a>
+
+    <a class="tool-card record" href="/atelier/record">
+      <div class="tc-cat">Record Booth</div>
+      <div class="tc-title">レコードブース</div>
+      <div class="tc-desc">ジャケットからレコードが出てきて回転、試聴から購入へ。SCREEN にも投稿できる音源付き作品。</div>
+      <div class="tc-tags">
+        <span class="tc-tag">DJ</span>
+        <span class="tc-tag">MUSICIAN</span>
+      </div>
+      <span class="tc-arrow"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    </a>
+
+    <div class="tool-card future">
+      <div class="tc-cat">Coming Soon</div>
+      <div class="tc-title">近日公開</div>
+      <div class="tc-desc">DJ 録音 / BPM検出 / 自動MIX / 映像コントロール・・・職人が欲しいものを、順次実装中。</div>
+      <div class="tc-tags">
+        <span class="tc-tag">LAB</span>
+      </div>
+    </div>
+  </div>
+
+  <p class="lab-note">EXPASS ATELIER は、ブラウザだけで動くクリエイター向けのミニツール集です。サーバーコストをかけず、誰でも使えて、作ったものはそのまま EXPASS で販売・公開できます。</p>
+</main>
+
+<nav class="bottomnav">
+  <a href="/screen" class="bn-btn" aria-label="Screen"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21" stroke-linecap="round"/><line x1="12" y1="18" x2="12" y2="21"/></svg></a>
+  <a href="/calendar" class="bn-btn" aria-label="Calendar"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7" stroke-linecap="round"/><line x1="16" y1="3" x2="16" y2="7" stroke-linecap="round"/></svg></a>
+  <a href="/collection" class="bn-btn" aria-label="Collection"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="14" height="14" rx="2"/><rect x="7" y="9" width="14" height="14" rx="2" fill="currentColor" fill-opacity="0.18"/></svg></a>
+  <a href="/atelier" class="bn-btn active" aria-label="Lab"><svg viewBox="0 0 24 24"><path d="M9 3v5.5L4.5 16.7A2.5 2.5 0 0 0 6.7 20.5h10.6a2.5 2.5 0 0 0 2.2-3.8L15 8.5V3" stroke-linejoin="round"/><line x1="9" y1="3" x2="15" y2="3" stroke-linecap="round"/><line x1="8.5" y1="14" x2="15.5" y2="14"/></svg></a>
+  <a href="/discovery" class="bn-btn" aria-label="Discovery"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/></svg></a>
+</nav>
+
+</body>
+</html>
