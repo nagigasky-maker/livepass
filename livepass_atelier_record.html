@@ -249,9 +249,11 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   pointer-events:none;z-index:4;text-align:center;
 }
 
-/* Light sheen overlay — sits above the vinyl but does NOT rotate with it.
-   The vinyl spins underneath so the grooves catch the fixed highlight,
-   as if a spotlight were shining from the upper-left. */
+/* Light overlays — the vinyl is slightly convex and lacquer-glossy, so the
+   light is composed of a tight specular highlight, a broader ambient sheen,
+   a thin rim light on the far side, and a gentle outer vignette to suggest
+   curvature. None of these rotate with the vinyl; they feel like a real
+   fixed light source catching the spinning surface. */
 .lb-light{
   position:absolute;top:50%;left:50%;
   width:min(64vw, 340px);aspect-ratio:1/1;
@@ -261,11 +263,16 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   z-index:5;
   opacity:0;
   background:
-    radial-gradient(ellipse 52% 40% at 28% 26%, rgba(255,255,255,.45) 0%, rgba(255,255,255,.18) 30%, transparent 60%),
-    linear-gradient(135deg, rgba(255,255,255,.14) 0%, transparent 35%, transparent 65%, rgba(255,255,255,.06) 100%);
+    /* 1. Specular hotspot — small, bright, slightly warm. */
+    radial-gradient(ellipse 22% 16% at 30% 24%, rgba(255,246,220,.65) 0%, rgba(255,240,210,.22) 35%, transparent 65%),
+    /* 2. Broader diffused sheen — cooler, wraps the upper half. */
+    radial-gradient(ellipse 70% 55% at 32% 32%, rgba(210,230,255,.22) 0%, rgba(210,230,255,.08) 40%, transparent 70%),
+    /* 3. Counter rim light — bottom-right edge, very faint cold blue. */
+    radial-gradient(ellipse 55% 45% at 78% 82%, rgba(180,210,255,.12) 0%, transparent 55%),
+    /* 4. Curvature vignette — slight edge darkening so the disc feels convex. */
+    radial-gradient(circle at 50% 50%, transparent 60%, rgba(0,0,0,.3) 95%, rgba(0,0,0,.45) 100%);
   mix-blend-mode:screen;
-  filter:blur(1px);
-  transition:opacity .5s ease;
+  transition:opacity .6s ease;
 }
 .lb-light.on{opacity:1}
 /* A slow-moving shine streak adds life to the highlight — the streak
@@ -281,17 +288,17 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   background:
     conic-gradient(from 200deg,
       transparent 0deg,
-      transparent 20deg,
-      rgba(255,255,255,.14) 35deg,
-      rgba(255,255,255,.32) 42deg,
-      rgba(255,255,255,.14) 50deg,
-      transparent 65deg,
+      transparent 28deg,
+      rgba(255,250,235,.06) 40deg,
+      rgba(255,250,235,.18) 48deg,
+      rgba(255,250,235,.06) 56deg,
+      transparent 70deg,
       transparent 360deg);
   mix-blend-mode:screen;
-  filter:blur(6px);
-  transition:opacity .5s ease;
+  filter:blur(10px);
+  transition:opacity .6s ease;
 }
-.lb-shine.on{opacity:.9}
+.lb-shine.on{opacity:.85}
 .lb-label-text .lt-artist{
   font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.22em;
   color:rgba(0,0,0,.7);text-transform:uppercase;line-height:1;margin-bottom:4px;
