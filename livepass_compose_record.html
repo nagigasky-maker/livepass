@@ -75,21 +75,30 @@ input,textarea{color:inherit;font:inherit}
 }
 .preview-label{
   position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:38%;aspect-ratio:1/1;border-radius:50%;
+  width:44%;aspect-ratio:1/1;border-radius:50%;
   background:var(--label-color,#3DAAFF);
   box-shadow:0 6px 14px rgba(0,0,0,.5), inset 0 0 0 1px rgba(0,0,0,.15);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:6px;text-align:center;
+  display:flex;flex-direction:column;align-items:stretch;justify-content:space-between;
+  padding:12% 6% 12%;text-align:center;
 }
-.preview-label .pl-artist{
-  font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.22em;
-  color:rgba(0,0,0,.75);text-transform:uppercase;line-height:1;margin-bottom:4px;
-  max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+.preview-label .pl-top,
+.preview-label .pl-bottom{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;
 }
 .preview-label .pl-title{
-  font-family:'Inter',sans-serif;font-weight:800;font-size:10px;
-  color:rgba(0,0,0,.9);line-height:1.15;
+  font-family:'Inter',sans-serif;font-weight:800;font-size:11px;letter-spacing:-0.005em;
+  color:rgba(0,0,0,.9);line-height:1.05;margin-bottom:3px;
   max-width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+}
+.preview-label .pl-artist{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:600;font-size:9px;
+  color:rgba(0,0,0,.7);letter-spacing:.04em;
+  max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.preview-label .pl-labelname{
+  font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:.28em;
+  text-transform:uppercase;color:rgba(0,0,0,.55);
+  max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
 
 /* Jacket upload — drop zone doubles as the add-image button; after upload
@@ -184,8 +193,13 @@ input,textarea{color:inherit;font:inherit}
       <div class="preview-placeholder" id="previewPlaceholder">Upload jacket</div>
       <img id="previewImg" alt="" style="display:none">
       <div class="preview-label" id="previewLabel" style="--label-color:#3DAAFF">
-        <span class="pl-artist" id="plArtist">Artist</span>
-        <span class="pl-title" id="plTitle">Title</span>
+        <div class="pl-top">
+          <span class="pl-title" id="plTitle">Title</span>
+          <span class="pl-artist" id="plArtist">Artist</span>
+        </div>
+        <div class="pl-bottom">
+          <span class="pl-labelname" id="plLabelName">Label</span>
+        </div>
       </div>
     </div>
   </div>
@@ -203,13 +217,19 @@ input,textarea{color:inherit;font:inherit}
   <!-- Title -->
   <section class="form-section">
     <div class="form-label">Title</div>
-    <input class="input-box" id="titleInput" type="text" placeholder="Endless Sonar" maxlength="60" autocomplete="off">
+    <input class="input-box" id="titleInput" type="text" placeholder="Midnight Ether" maxlength="60" autocomplete="off">
   </section>
 
   <!-- Artist -->
   <section class="form-section">
     <div class="form-label">Artist</div>
-    <input class="input-box" id="artistInput" type="text" placeholder="NOBBY" maxlength="40" autocomplete="off">
+    <input class="input-box" id="artistInput" type="text" placeholder="RIO KAGURA" maxlength="40" autocomplete="off">
+  </section>
+
+  <!-- Label name -->
+  <section class="form-section">
+    <div class="form-label">Label Name</div>
+    <input class="input-box" id="labelNameInput" type="text" placeholder="LUMEN RECORDS" maxlength="32" autocomplete="off">
   </section>
 
   <!-- Label color -->
@@ -245,6 +265,7 @@ const state = {
   jacketSrc:   null,
   title:       '',
   artist:      '',
+  labelName:   '',
   labelColor:  '#3DAAFF',
   createdAt:   Date.now(),
 };
@@ -266,6 +287,8 @@ const jacketDrop       = document.getElementById('jacketDrop');
 const jacketInput      = document.getElementById('jacketInput');
 const titleInput       = document.getElementById('titleInput');
 const artistInput      = document.getElementById('artistInput');
+const labelNameInput   = document.getElementById('labelNameInput');
+const plLabelName      = document.getElementById('plLabelName');
 const swatchRow        = document.getElementById('swatchRow');
 const customColor      = document.getElementById('customColor');
 const draftBtn         = document.getElementById('draftBtn');
@@ -283,13 +306,15 @@ function renderPreview(){
     previewImg.style.display = 'none';
     previewPh.style.display = 'flex';
   }
-  plArtist.textContent = state.artist || 'Artist';
-  plTitle.textContent  = state.title  || 'Title';
+  plArtist.textContent    = state.artist    || 'Artist';
+  plTitle.textContent     = state.title     || 'Title';
+  plLabelName.textContent = state.labelName || 'Label';
   previewLabel.style.setProperty('--label-color', state.labelColor);
 }
 function renderInputs(){
-  titleInput.value  = state.title;
-  artistInput.value = state.artist;
+  titleInput.value     = state.title;
+  artistInput.value    = state.artist;
+  labelNameInput.value = state.labelName;
   document.querySelectorAll('.swatch[data-color]').forEach(s => {
     s.classList.toggle('active', s.dataset.color.toLowerCase() === state.labelColor.toLowerCase());
   });
@@ -327,8 +352,9 @@ jacketInput.addEventListener('change', e => {
 });
 
 // ── Text inputs ────────────────────────────────────────
-titleInput.addEventListener('input', () => { state.title = titleInput.value.trim(); renderPreview(); saveDraft(); });
-artistInput.addEventListener('input', () => { state.artist = artistInput.value.trim(); renderPreview(); saveDraft(); });
+titleInput.addEventListener('input',     () => { state.title     = titleInput.value.trim();     renderPreview(); saveDraft(); });
+artistInput.addEventListener('input',    () => { state.artist    = artistInput.value.trim();    renderPreview(); saveDraft(); });
+labelNameInput.addEventListener('input', () => { state.labelName = labelNameInput.value.trim(); renderPreview(); saveDraft(); });
 
 // ── Label color ────────────────────────────────────────
 swatchRow.addEventListener('click', e => {
@@ -364,6 +390,7 @@ submitBtn.addEventListener('click', () => {
     jacketSrc: state.jacketSrc,
     title: state.title,
     artist: state.artist,
+    labelName: state.labelName,
     labelColor: state.labelColor,
     createdAt: Date.now(),
   };
