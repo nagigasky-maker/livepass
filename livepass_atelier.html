@@ -91,6 +91,7 @@ body::before{
 .tool-card.frame{border-left:3px solid var(--gold)}
 .tool-card.record{border-left:3px solid var(--blue)}
 .tool-card.future{opacity:.45;border-style:dashed}
+.tool-card.locked{opacity:.55;pointer-events:none;border-style:dashed}
 
 .tc-cat{
   font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.28em;
@@ -178,17 +179,6 @@ body::before{
   </header>
 
   <div class="tool-grid">
-    <a class="tool-card frame" href="/atelier/frame">
-      <div class="tc-cat">Frame Studio</div>
-      <div class="tc-title">額装</div>
-      <div class="tc-desc">写真や作品に額縁をつける。ゴールド・シルバー・アクリルの3タイプ。</div>
-      <div class="tc-tags">
-        <span class="tc-tag">PHOTO</span>
-        <span class="tc-tag">ART</span>
-      </div>
-      <span class="tc-arrow"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-    </a>
-
     <a class="tool-card record" href="/atelier/record">
       <div class="tc-cat">Record Booth</div>
       <div class="tc-title">レコード</div>
@@ -199,6 +189,17 @@ body::before{
       </div>
       <span class="tc-arrow"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
     </a>
+
+    <div class="tool-card frame locked" aria-disabled="true">
+      <div class="tc-cat">Frame Studio · SOON</div>
+      <div class="tc-title">額装</div>
+      <div class="tc-desc">写真や作品に額縁をつける。ゴールド・シルバー・アクリルの3タイプ。</div>
+      <div class="tc-tags">
+        <span class="tc-tag">PHOTO</span>
+        <span class="tc-tag">ART</span>
+      </div>
+      <span class="tc-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+    </div>
 
     <div class="tool-card future">
       <div class="tc-cat">Coming Soon</div>
