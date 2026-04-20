@@ -263,13 +263,11 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   z-index:5;
   opacity:0;
   background:
-    /* 1. Specular hotspot — small, bright, slightly warm. */
-    radial-gradient(ellipse 22% 16% at 30% 24%, rgba(255,246,220,.65) 0%, rgba(255,240,210,.22) 35%, transparent 65%),
-    /* 2. Broader diffused sheen — cooler, wraps the upper half. */
+    /* Broad diffused sheen — cooler, wraps the upper half. */
     radial-gradient(ellipse 70% 55% at 32% 32%, rgba(210,230,255,.22) 0%, rgba(210,230,255,.08) 40%, transparent 70%),
-    /* 3. Counter rim light — bottom-right edge, very faint cold blue. */
+    /* Counter rim light — bottom-right edge, very faint cold blue. */
     radial-gradient(ellipse 55% 45% at 78% 82%, rgba(180,210,255,.12) 0%, transparent 55%),
-    /* 4. Curvature vignette — slight edge darkening so the disc feels convex. */
+    /* Curvature vignette — slight edge darkening so the disc feels convex. */
     radial-gradient(circle at 50% 50%, transparent 60%, rgba(0,0,0,.3) 95%, rgba(0,0,0,.45) 100%);
   mix-blend-mode:screen;
   transition:opacity .6s ease;
@@ -519,13 +517,15 @@ function openLightbox(rec){
 
   // Reset: jacket front-facing, vinyl hidden behind it.
   gsap.set(lbJacket, { rotationY:0, rotationX:0, opacity:1 });
-  gsap.set(lbVinyl,  { x:0, y:0, scale:0.7, rotation:0, opacity:0 });
-  gsap.set(lbLabel,  { x:0, y:0, scale:0.7, rotation:0, opacity:0 });
+  gsap.set(lbVinyl,  { x:0, y:0, scale:0.7, rotation:0, rotationY:0, opacity:0 });
+  gsap.set(lbLabel,  { x:0, y:0, scale:0.7, rotation:0, rotationY:0, opacity:0 });
 
   // Tap = play trigger. Sequence:
   //  1. Vinyl slides out from behind the jacket (to the right, scales up).
-  //  2. Jacket flips 200° to the left — back face is a turntable.
-  //  3. Vinyl returns to center, now sitting on top of the turntable.
+  //  2. Jacket flips 200° left — back face is a turntable.
+  //  3. Vinyl returns to center and tilts 210° (10° past the jacket) so
+  //     the disc sits at a slightly different angle than the turntable,
+  //     reinforcing depth.
   //  4. Spin tween kicks in (360° continuous, matches the cassette-hole feel).
   const tl = gsap.timeline({
     onComplete: () => {
@@ -536,6 +536,8 @@ function openLightbox(rec){
   tl.to(lbVinyl, { x:'24%', scale:1.0, opacity:1, duration:0.7, ease:'power3.out' }, 0.05)
     .to(lbLabel, { x:'24%', scale:1.0, opacity:1, duration:0.7, ease:'power3.out' }, 0.05)
     .to(lbJacket,{ rotationY:-200, duration:1.1, ease:'power2.inOut' }, 0.35)
+    .to(lbVinyl, { rotationY:-210, duration:1.1, ease:'power2.inOut' }, 0.45)
+    .to(lbLabel, { rotationY:-210, duration:1.1, ease:'power2.inOut' }, 0.45)
     .to(lbVinyl, { x:'0%', duration:0.8, ease:'power2.inOut' }, 0.95)
     .to(lbLabel, { x:'0%', duration:0.8, ease:'power2.inOut' }, 0.95);
 
