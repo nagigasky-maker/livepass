@@ -1,0 +1,75 @@
+// ─────────────────────────────────────────────
+// EXPASS — Firestore Security Rules
+//
+// Deploy with:  firebase deploy --only firestore:rules
+//
+// Design notes:
+// - Users can only read/write their own `users/{uid}` document.
+// - Posts (articles / events / workshops / exhibitions) are publicly
+//   readable (so followers can see them) but writeable only by the
+//   account that created them (matched by `authorUid`).
+// - Reservations are private to the user who made them.
+// - Everything else is denied by default.
+// ─────────────────────────────────────────────
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Reusable helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+    function ownsResource() {
+      return isSignedIn() && resource.data.authorUid == request.auth.uid;
+    }
+    function writingAsSelf() {
+      return isSignedIn() && request.resource.data.authorUid == request.auth.uid;
+    }
+
+    // ── Users: each user owns their own profile ──
+    match /users/{uid} {
+      allow read: if isSignedIn();                 // signed-in users can look up profiles
+      allow create, update: if isOwner(uid)
+                            && request.resource.data.keys().hasOnly([
+                                 'name','email','plan','avatar','role','bio',
+                                 'agreedTermsAt','createdAt','updatedAt'
+                               ]);
+      allow delete: if isOwner(uid);
+    }
+
+    // ── Posts (articles / events / workshops / exhibitions) ──
+    // Stored flat under /posts/{id} with a `type` field.
+    match /posts/{postId} {
+      allow read: if true;                                            // public feed
+      allow create: if writingAsSelf()
+                    && request.resource.data.type in
+                       ['article','event','workshop','exhibition'];
+      allow update: if ownsResource() && writingAsSelf();
+      allow delete: if ownsResource();
+    }
+
+    // ── Private reservations: only visible to the reserver ──
+    match /reservations/{resId} {
+      allow read, update, delete: if isSignedIn()
+                                  && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn()
+                    && request.resource.data.userId == request.auth.uid;
+    }
+
+    // ── Private subscriptions / payments log ──
+    // Only backend writes (via Stripe webhook). Clients may read their own.
+    match /subscriptions/{subId} {
+      allow read: if isSignedIn()
+                  && resource.data.userId == request.auth.uid;
+      allow write: if false;                                          // server-only
+    }
+
+    // Deny anything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
