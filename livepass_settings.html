@@ -895,20 +895,16 @@ document.getElementById('signOutBtn')?.addEventListener('click', async () => {
     }
   } catch(e) { console.warn('FB signOut error:', e); }
   try {
-    // Identity-only keys are cleared; content keys (articles/events/saves/
-    // likes/reservations/...) stay so the browser remembers everything
-    // when a new or returning account signs in.
-    localStorage.removeItem('livepass_account_name');
-    localStorage.removeItem('livepass_account_name_ja');
-    localStorage.removeItem('livepass_account_name_en');
-    localStorage.removeItem('livepass_role');
-    localStorage.removeItem('livepass_kind');
-    localStorage.removeItem('livepass_style');
-    localStorage.removeItem('livepass_goals');
-    localStorage.removeItem('livepass_avatar');
-    localStorage.removeItem('livepass_signed_in');
-    localStorage.removeItem('livepass_uid');
-    localStorage.removeItem('livepass_plan');
+    // Clear every identity / PII key this device accumulated. Content keys
+    // (articles/events/saves/likes/reservations/top cover...) are kept so
+    // the browser remembers media for a returning account.
+    const pii = [
+      'livepass_account_name','livepass_account_name_ja','livepass_account_name_en',
+      'livepass_role','livepass_kind','livepass_style','livepass_goals',
+      'livepass_avatar','livepass_signed_in','livepass_uid','livepass_plan',
+      'livepass_email','livepass_temp_email','livepass_last_email',
+    ];
+    pii.forEach(k => { try { localStorage.removeItem(k); } catch(_){} });
   } catch(e) {}
   if (navigator.vibrate) navigator.vibrate([18, 40, 18]);
   location.replace('/login');

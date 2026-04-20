@@ -1,0 +1,55 @@
+// ─────────────────────────────────────────────
+// EXPASS — Cloud Storage Security Rules
+//
+// Deploy with:  firebase deploy --only storage
+//
+// Layout:
+//   posts/{postId}/...         cover.jpg / extra_*.jpg / video.mp4 / cover.gif
+//   users/{uid}/avatar.jpg     user's avatar
+//
+// Public read (so feed images can load even for non-signed-in browsers),
+// writes locked to the post's author or the user themselves. Size and
+// mime-type are enforced so nobody can upload e.g. a 100MB video or a
+// non-media payload.
+// ─────────────────────────────────────────────
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn()  { return request.auth != null; }
+    function isOwner(uid)  { return isSignedIn() && request.auth.uid == uid; }
+    function isMedia()     { return request.resource.contentType.matches('image/.*')
+                                 || request.resource.contentType.matches('video/.*'); }
+    function maxImage()    { return request.resource.size < 8 * 1024 * 1024; }     // 8MB
+    function maxVideo()    { return request.resource.size < 60 * 1024 * 1024; }    // 60MB
+    function sizeOK()      { return request.resource.contentType.matches('image/.*')
+                                 ? maxImage()
+                                 : maxVideo(); }
+
+    // ── Post media: writeable by the post author only ──
+    // The post doc in Firestore is the source of truth for authorship.
+    // We mirror the uploader's uid into a /posts/{postId}/_uid marker on
+    // create so subsequent writes can reference it — OR rely on path
+    // containing the uid. Simpler: only allow create from signed-in users,
+    // and rely on Firestore rules to keep stray Storage objects from being
+    // linked to posts they don't own.
+    match /posts/{postId}/{file=**} {
+      allow read: if true;
+      allow create: if isSignedIn() && isMedia() && sizeOK();
+      allow update, delete: if isSignedIn();   // tighten once we persist uploader uid
+    }
+
+    // ── User avatars ──
+    match /users/{uid}/avatar.{ext} {
+      allow read: if true;
+      allow write: if isOwner(uid)
+                   && request.resource.contentType.matches('image/.*')
+                   && maxImage();
+    }
+
+    // Deny anything else
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

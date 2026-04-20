@@ -821,24 +821,21 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
         <div class="cdrs-field-label">カード所有者名</div>
         <input class="cdrs-input" id="cdrsCardHolder" placeholder="TARO YAMADA" autocomplete="cc-name">
       </div>
-      <div>
-        <div class="cdrs-field-label">カード番号</div>
-        <input class="cdrs-input" id="cdrsCardNumber" placeholder="4242 4242 4242 4242" inputmode="numeric" maxlength="19" autocomplete="cc-number">
+      <!-- Card number / expiry / CVC fields have been removed: collecting
+           raw card data on our own domain puts the app in the highest
+           PCI DSS scope. Wire up Stripe Elements / SetupIntent here
+           before accepting real cards. -->
+      <div class="cdrs-pci-note" style="padding:14px;background:rgba(245,200,66,.08);border:0.5px solid rgba(245,200,66,.28);border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;line-height:1.7;color:#F5C842">
+        ⚠ カード入力は Stripe Elements 対応待ちのため一時停止中です。<br>
+        ローンチ前に Stripe の iframe（PCI DSS SAQ-A）に差し替えます。
       </div>
-      <div class="cdrs-row">
-        <div>
-          <div class="cdrs-field-label">有効期限 (MM/YY)</div>
-          <input class="cdrs-input" id="cdrsCardExp" placeholder="12/28" inputmode="numeric" maxlength="5" autocomplete="cc-exp">
-        </div>
-        <div>
-          <div class="cdrs-field-label">CVC</div>
-          <input class="cdrs-input" id="cdrsCardCvc" placeholder="123" inputmode="numeric" maxlength="4" autocomplete="cc-csc">
-        </div>
-      </div>
+      <input type="hidden" id="cdrsCardNumber" value="">
+      <input type="hidden" id="cdrsCardExp" value="">
+      <input type="hidden" id="cdrsCardCvc" value="">
     </div>
     <button class="cdrs-submit" id="cdrsSubmit" type="button" disabled>カードを登録して予約を確定</button>
     <button class="cdrs-cancel" id="cdrsCancel" type="button">キャンセル</button>
-    <div class="cdrs-note">※ プロトタイプ環境 — カード情報は本番決済されません<br>※ Stripe SetupIntent 相当の処理をシミュレートしています</div>
+    <div class="cdrs-note">※ プロトタイプ環境 — 本番決済は Stripe Elements 実装後に有効化されます</div>
   </div>
 </div>
 
