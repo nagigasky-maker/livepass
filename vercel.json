@@ -30,6 +30,10 @@
     { "source": "/checkout/cancel",    "destination": "/livepass_checkout_cancel.html" },
     { "source": "/messages",           "destination": "/livepass_messages.html" },
     { "source": "/followers",          "destination": "/livepass_followers.html" },
+    { "source": "/atelier",            "destination": "/livepass_atelier.html" },
+    { "source": "/atelier/frame",      "destination": "/livepass_atelier_frame.html" },
+    { "source": "/atelier/record",     "destination": "/livepass_atelier_record.html" },
+    { "source": "/lab",                "destination": "/livepass_atelier.html" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "headers": [
@@ -57,7 +61,7 @@
       ]
     },
     {
-      "source": "/(home|screen|search|discovery|calendar|profile|collection|saved|subscription|settings|messages|followers|onboarding|signup|login|terms|privacy|start|app|feed|me|test66|compose/article|compose/event|compose/workshop|compose/exhibition|checkout/success|checkout/cancel|p/amd)",
+      "source": "/(home|screen|search|discovery|calendar|profile|collection|saved|subscription|settings|messages|followers|onboarding|signup|login|terms|privacy|start|app|feed|me|test66|compose/article|compose/event|compose/workshop|compose/exhibition|checkout/success|checkout/cancel|p/amd|atelier|atelier/frame|atelier/record|lab)",
       "headers": [
         { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" },
         { "key": "Pragma", "value": "no-cache" },

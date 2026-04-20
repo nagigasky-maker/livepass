@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/livepass-icon-180.png">
+<title>EXPASS — Frame Studio / 額装</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{
+  --black:#000;--bg:#080808;--white:#EDEBE6;
+  --red:#E8100A;--blue:#3DAAFF;--green:#A8E63D;
+  --gold:#F5C842;--silver:#C9CBD2;--mint:#00E5A0;
+  --muted:rgba(237,235,230,.3);--border:rgba(255,255,255,.07);
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+  --nav-h:62px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;max-width:100vw;height:100%;height:100dvh;
+  background:#0a0a0a;color:var(--white);
+  font-family:'Noto Sans JP','Inter',sans-serif;-webkit-font-smoothing:antialiased;
+  user-select:none;-webkit-user-select:none;overflow:hidden;
+  position:fixed;overscroll-behavior-x:none;touch-action:pan-y;}
+a{color:inherit;text-decoration:none}
+button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
+input[type="color"]{border:none;background:transparent;cursor:pointer;padding:0}
+input[type="range"]{appearance:none;-webkit-appearance:none;background:transparent}
+
+/* Topbar */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:calc(var(--safe-top) + 6px) 14px 8px;
+  display:flex;align-items:center;gap:10px;
+  background:linear-gradient(to bottom,rgba(0,0,0,.9) 70%,transparent);}
+.tb-back{width:34px;height:34px;display:flex;align-items:center;justify-content:center;
+  border-radius:50%;background:rgba(255,255,255,.06);}
+.tb-back svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tb-title{flex:1;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:10px;
+  letter-spacing:.28em;text-transform:uppercase;color:var(--gold);}
+.tb-spacer{width:34px;height:34px}
+
+.content{position:fixed;top:0;left:0;right:0;bottom:0;
+  padding-top:calc(var(--safe-top) + 46px);
+  padding-bottom:calc(var(--safe-bot) + 220px);
+  overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+  touch-action:pan-y;}
+.content::-webkit-scrollbar{display:none}
+
+/* Gallery wall — preview area */
+.wall{
+  position:relative;
+  background:
+    radial-gradient(120% 80% at 50% 20%,rgba(255,255,255,.06),transparent 60%),
+    linear-gradient(180deg,#181818 0%,#0a0a0a 100%);
+  padding:60px 30px 50px;
+  min-height:360px;
+  display:flex;align-items:center;justify-content:center;
+  border-bottom:0.5px solid var(--border);
+}
+.wall::before{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:44%;
+  background:linear-gradient(180deg,transparent,rgba(0,0,0,.6));
+  pointer-events:none;
+}
+.wall::after{
+  content:"";position:absolute;left:50%;bottom:0;width:2px;height:40%;
+  background:linear-gradient(180deg,rgba(255,255,255,.08),transparent);
+  pointer-events:none;
+}
+
+.frame-stage{
+  position:relative;
+  max-width:320px;width:100%;
+}
+.frame-shadow{
+  position:absolute;inset:0;
+  box-shadow:0 40px 60px rgba(0,0,0,.7),0 15px 30px rgba(0,0,0,.5);
+  border-radius:2px;pointer-events:none;
+}
+
+/* The frame itself — everything is re-styled per selected type via JS */
+.frame{
+  position:relative;
+  border-style:solid;
+  transition:border-width .3s ease, border-color .3s ease, padding .3s ease, background .3s ease, box-shadow .3s ease;
+}
+.frame-inner{
+  position:relative;width:100%;aspect-ratio:4/5;overflow:hidden;background:#222;
+}
+.frame-inner img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.frame-inner .placeholder{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  color:rgba(237,235,230,.35);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+}
+.frame-inner .placeholder svg{width:40px;height:40px;stroke:currentColor;fill:none;stroke-width:1.4}
+
+/* Frame types */
+.frame.gold{border-color:#C89E3B;border-width:14px;padding:0;
+  background:linear-gradient(135deg,#E8C869 0%,#B07B2F 50%,#F0D684 100%);
+  box-shadow:inset 0 0 0 2px rgba(0,0,0,.2), inset 0 0 0 4px rgba(255,255,255,.2);}
+.frame.silver{border-color:#9FA4B0;border-width:12px;padding:0;
+  background:linear-gradient(135deg,#E0E2EA 0%,#8E93A0 50%,#F2F4F8 100%);
+  box-shadow:inset 0 0 0 2px rgba(0,0,0,.15), inset 0 0 0 4px rgba(255,255,255,.25);}
+.frame.custom{border-width:var(--c-w,8px);border-color:var(--c-c,#111);padding:var(--c-p,0);
+  background:var(--c-c,#111);}
+.frame.acrylic{
+  border-width:0;padding:0;background:transparent;
+  box-shadow:
+    0 60px 40px -20px rgba(0,0,0,.85),
+    0 25px 20px -10px rgba(0,0,0,.6),
+    inset 0 0 0 1px rgba(255,255,255,.08);
+}
+.frame.acrylic .frame-inner{
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);
+  outline:1px solid rgba(255,255,255,.06);
+}
+.frame.acrylic::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(125deg,rgba(255,255,255,.08) 0%,transparent 30%,transparent 75%,rgba(255,255,255,.03) 100%);
+}
+
+/* Controls panel */
+.controls{
+  position:fixed;left:0;right:0;bottom:0;
+  padding:18px 20px calc(var(--safe-bot) + 16px);
+  background:rgba(10,10,10,.96);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-top:0.5px solid var(--border);
+  z-index:60;
+}
+
+/* Frame carousel */
+.carousel-wrap{
+  perspective:900px;
+  height:96px;margin:0 -20px 14px;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.carousel{
+  position:relative;width:100%;height:100%;
+  transform-style:preserve-3d;
+  display:flex;align-items:center;justify-content:center;
+}
+.carousel-item{
+  position:absolute;left:50%;top:50%;
+  width:78px;height:78px;margin:-39px 0 0 -39px;
+  border-radius:6px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:box-shadow .3s ease;
+  backface-visibility:hidden;
+}
+.carousel-item .ci-chip{
+  width:46px;height:46px;border-radius:4px;display:block;margin-bottom:6px;
+  transition:transform .3s ease;
+}
+.carousel-item[data-frame="gold"] .ci-chip{background:linear-gradient(135deg,#E8C869,#B07B2F,#F0D684)}
+.carousel-item[data-frame="silver"] .ci-chip{background:linear-gradient(135deg,#E0E2EA,#8E93A0,#F2F4F8)}
+.carousel-item[data-frame="custom"] .ci-chip{background:repeating-linear-gradient(45deg,#111,#111 4px,#2a2a2a 4px,#2a2a2a 8px)}
+.carousel-item[data-frame="acrylic"] .ci-chip{
+  background:linear-gradient(135deg,rgba(255,255,255,.15),rgba(255,255,255,.02));
+  border:1px solid rgba(255,255,255,.2);
+}
+.carousel-item .ci-label{
+  font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.16em;
+  color:rgba(237,235,230,.5);text-transform:uppercase;
+}
+.carousel-item.active .ci-label{color:var(--gold)}
+.carousel-item.active .ci-chip{box-shadow:0 0 0 2px var(--gold), 0 8px 16px rgba(245,200,66,.25)}
+
+/* Fader / color — shown only when custom selected */
+.custom-panel{
+  display:none;
+  padding-top:2px;padding-bottom:10px;
+  gap:14px;align-items:center;
+}
+.custom-panel.active{display:flex}
+.cp-label{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.22em;
+  color:rgba(237,235,230,.5);text-transform:uppercase;flex-shrink:0;}
+.color-row{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.swatch{
+  width:22px;height:22px;border-radius:50%;cursor:pointer;
+  border:1.5px solid rgba(255,255,255,.15);
+}
+.swatch.active{box-shadow:0 0 0 2px var(--gold)}
+.swatch[data-color="#111"]{background:#111}
+.swatch[data-color="#FFFFFF"]{background:#FFFFFF}
+.swatch.custom{background:conic-gradient(from 0deg,red,yellow,lime,cyan,blue,magenta,red)}
+.swatch.custom input{
+  opacity:0;width:100%;height:100%;display:block;cursor:pointer;
+}
+
+.fader-row{flex:1;display:flex;align-items:center;gap:10px;min-width:0}
+.fader{
+  flex:1;height:3px;background:rgba(255,255,255,.12);border-radius:2px;
+  -webkit-appearance:none;appearance:none;outline:none;
+}
+.fader::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;
+  background:var(--gold);border:2px solid #000;cursor:pointer;
+  box-shadow:0 2px 8px rgba(0,0,0,.4);
+}
+.fader::-moz-range-thumb{
+  width:18px;height:18px;border-radius:50%;background:var(--gold);border:2px solid #000;cursor:pointer;
+}
+
+/* Actions */
+.actions{display:flex;gap:10px;padding-top:6px}
+.act-btn{
+  flex:1;padding:14px 12px;border-radius:14px;
+  font-family:'Inter',sans-serif;font-weight:700;font-size:13px;letter-spacing:.08em;
+  text-align:center;
+}
+.act-upload{background:rgba(255,255,255,.06);color:var(--white);border:0.5px solid rgba(255,255,255,.1);}
+.act-post{
+  background:linear-gradient(120deg,var(--gold) 0%,#E8A42D 100%);color:#000;
+  box-shadow:0 8px 24px rgba(245,200,66,.2);
+}
+.act-post:active{transform:scale(.98)}
+.act-upload:active{background:rgba(255,255,255,.1)}
+.act-dl{
+  flex:0 0 auto;width:48px;background:rgba(255,255,255,.05);border:0.5px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;justify-content:center;
+}
+.act-dl svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* Toast */
+#toast{
+  position:fixed;left:50%;bottom:calc(var(--safe-bot) + 240px);
+  transform:translate(-50%,20px);
+  padding:12px 20px;border-radius:99px;
+  background:rgba(245,200,66,.96);color:#000;
+  font-size:12px;font-weight:700;letter-spacing:.06em;
+  opacity:0;pointer-events:none;transition:opacity .25s ease, transform .25s ease;
+  z-index:200;
+}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+#fileInput{display:none}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="tb-back" href="/atelier" aria-label="Back"><svg viewBox="0 0 24 24"><polyline points="15 6 9 12 15 18"/></svg></a>
+  <div class="tb-title">Frame Studio</div>
+  <span class="tb-spacer"></span>
+</div>
+
+<main class="content">
+  <section class="wall">
+    <div class="frame-stage">
+      <div class="frame gold" id="frame">
+        <div class="frame-inner" id="frameInner">
+          <div class="placeholder" id="placeholder">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>
+            <span>Tap UPLOAD to add</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<section class="controls">
+  <div class="carousel-wrap">
+    <div class="carousel" id="carousel">
+      <div class="carousel-item active" data-frame="gold"><span class="ci-chip"></span><span class="ci-label">Gold</span></div>
+      <div class="carousel-item" data-frame="silver"><span class="ci-chip"></span><span class="ci-label">Silver</span></div>
+      <div class="carousel-item" data-frame="custom"><span class="ci-chip"></span><span class="ci-label">Custom</span></div>
+      <div class="carousel-item" data-frame="acrylic"><span class="ci-chip"></span><span class="ci-label">Acrylic</span></div>
+    </div>
+  </div>
+
+  <div class="custom-panel" id="customPanel">
+    <span class="cp-label">COLOR</span>
+    <div class="color-row">
+      <span class="swatch active" data-color="#111111"></span>
+      <span class="swatch" data-color="#FFFFFF"></span>
+      <label class="swatch custom"><input type="color" id="customColor" value="#3DAAFF"></label>
+    </div>
+    <div class="fader-row">
+      <span class="cp-label">WIDTH</span>
+      <input class="fader" id="widthFader" type="range" min="4" max="28" value="10" step="1">
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="act-btn act-upload" id="uploadBtn">UPLOAD</button>
+    <button class="act-btn act-dl" id="dlBtn" aria-label="Download"><svg viewBox="0 0 24 24"><path d="M12 3v14"/><polyline points="6 11 12 17 18 11"/><line x1="4" y1="21" x2="20" y2="21"/></svg></button>
+    <button class="act-btn act-post" id="postBtn">POST TO SCREEN</button>
+  </div>
+</section>
+
+<input type="file" id="fileInput" accept="image/*">
+<div id="toast">保存しました</div>
+
+<script>
+// ── State ──────────────────────────────────────────────
+const state = {
+  frame: 'gold',
+  customColor: '#111111',
+  customWidth: 10,
+  imgSrc: null,
+};
+
+// ── Load saved state ───────────────────────────────────
+try {
+  const saved = JSON.parse(localStorage.getItem('livepass_frame_last') || 'null');
+  if (saved) Object.assign(state, saved);
+} catch(e){}
+
+// ── DOM refs ───────────────────────────────────────────
+const frame         = document.getElementById('frame');
+const frameInner    = document.getElementById('frameInner');
+const placeholder   = document.getElementById('placeholder');
+const carousel      = document.getElementById('carousel');
+const customPanel   = document.getElementById('customPanel');
+const widthFader    = document.getElementById('widthFader');
+const customColor   = document.getElementById('customColor');
+const fileInput     = document.getElementById('fileInput');
+const toast         = document.getElementById('toast');
+let currentImgEl    = null;
+
+// ── Carousel (GSAP 3D) ─────────────────────────────────
+const items = Array.from(carousel.querySelectorAll('.carousel-item'));
+let activeIdx = items.findIndex(i => i.dataset.frame === state.frame);
+if (activeIdx < 0) activeIdx = 0;
+
+function layoutCarousel(){
+  const n = items.length;
+  const radius = 140;
+  items.forEach((el, i) => {
+    const rel = i - activeIdx;
+    // circular wrap (-2..+2)
+    let angle = (rel * 70);
+    const isActive = i === activeIdx;
+    const dx = Math.sin(angle * Math.PI / 180) * radius;
+    const dz = Math.cos(angle * Math.PI / 180) * radius - radius;
+    const scale = isActive ? 1.15 : 0.82;
+    const opacity = Math.abs(rel) <= 2 ? (isActive ? 1 : 0.55) : 0;
+    gsap.to(el, {
+      x: dx, z: dz, rotationY: -angle * 0.6,
+      scale, opacity,
+      duration: 0.55, ease: 'power2.out',
+    });
+    el.classList.toggle('active', isActive);
+  });
+}
+
+items.forEach((el, i) => {
+  el.addEventListener('click', () => {
+    activeIdx = i;
+    state.frame = el.dataset.frame;
+    layoutCarousel();
+    applyFrame();
+    if (navigator.vibrate) navigator.vibrate(8);
+    save();
+  });
+});
+
+// Swipe on the carousel area
+let dragStartX = 0, dragging = false;
+const cWrap = document.querySelector('.carousel-wrap');
+cWrap.addEventListener('touchstart', e => { dragging = true; dragStartX = e.touches[0].clientX; }, { passive: true });
+cWrap.addEventListener('touchend',   e => {
+  if (!dragging) return;
+  dragging = false;
+  const dx = (e.changedTouches[0].clientX - dragStartX);
+  if (dx < -30 && activeIdx < items.length - 1) { activeIdx++; state.frame = items[activeIdx].dataset.frame; layoutCarousel(); applyFrame(); save(); }
+  else if (dx > 30 && activeIdx > 0) { activeIdx--; state.frame = items[activeIdx].dataset.frame; layoutCarousel(); applyFrame(); save(); }
+});
+
+// ── Apply frame style ──────────────────────────────────
+function applyFrame(){
+  frame.className = 'frame ' + state.frame;
+  customPanel.classList.toggle('active', state.frame === 'custom');
+  if (state.frame === 'custom') {
+    frame.style.setProperty('--c-c', state.customColor);
+    frame.style.setProperty('--c-w', state.customWidth + 'px');
+  }
+}
+
+// ── Custom controls ────────────────────────────────────
+document.querySelectorAll('.swatch[data-color]').forEach(s => {
+  s.addEventListener('click', () => {
+    state.customColor = s.dataset.color;
+    document.querySelectorAll('.swatch').forEach(x => x.classList.remove('active'));
+    s.classList.add('active');
+    applyFrame(); save();
+  });
+});
+customColor.addEventListener('input', () => {
+  state.customColor = customColor.value;
+  document.querySelectorAll('.swatch').forEach(x => x.classList.remove('active'));
+  customColor.parentElement.classList.add('active');
+  applyFrame(); save();
+});
+widthFader.addEventListener('input', () => {
+  state.customWidth = +widthFader.value;
+  applyFrame(); save();
+});
+widthFader.value = state.customWidth;
+
+// ── Image upload ───────────────────────────────────────
+document.getElementById('uploadBtn').addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', e => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => { state.imgSrc = ev.target.result; renderImage(); save(); };
+  reader.readAsDataURL(file);
+});
+
+function renderImage(){
+  if (!state.imgSrc) {
+    if (currentImgEl) { currentImgEl.remove(); currentImgEl = null; }
+    placeholder.style.display = 'flex';
+    return;
+  }
+  placeholder.style.display = 'none';
+  if (!currentImgEl) {
+    currentImgEl = document.createElement('img');
+    frameInner.appendChild(currentImgEl);
+  }
+  currentImgEl.src = state.imgSrc;
+}
+
+// ── Save / Post / Download ─────────────────────────────
+function save(){
+  try { localStorage.setItem('livepass_frame_last', JSON.stringify(state)); } catch(e){}
+}
+function showToast(msg){
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 1800);
+}
+document.getElementById('postBtn').addEventListener('click', () => {
+  if (!state.imgSrc) { showToast('画像をアップしてください'); return; }
+  // Stubbed for now — the SCREEN integration happens in a follow-up PR.
+  const list = JSON.parse(localStorage.getItem('livepass_framed_works') || '[]');
+  list.unshift({
+    id: 'frame_' + Date.now(),
+    frame: state.frame,
+    customColor: state.customColor,
+    customWidth: state.customWidth,
+    imgSrc: state.imgSrc,
+    createdAt: Date.now(),
+  });
+  try { localStorage.setItem('livepass_framed_works', JSON.stringify(list.slice(0, 40))); } catch(e){}
+  if (navigator.vibrate) navigator.vibrate([8, 40, 12]);
+  showToast('SCREEN に投稿しました（モック）');
+});
+document.getElementById('dlBtn').addEventListener('click', async () => {
+  if (!state.imgSrc) { showToast('画像をアップしてください'); return; }
+  // Export a composite via canvas at current on-screen size
+  const rect = frame.getBoundingClientRect();
+  const scale = 2;
+  const cv = document.createElement('canvas');
+  cv.width  = Math.round(rect.width  * scale);
+  cv.height = Math.round(rect.height * scale);
+  const ctx = cv.getContext('2d');
+  ctx.scale(scale, scale);
+  // Simplified export: render the inner image with a colored border rect.
+  const bw = parseFloat(getComputedStyle(frame).borderTopWidth) || 0;
+  ctx.fillStyle = getComputedStyle(frame).borderTopColor || '#000';
+  if (state.frame === 'gold' || state.frame === 'silver') {
+    const g = ctx.createLinearGradient(0, 0, rect.width, rect.height);
+    if (state.frame === 'gold') { g.addColorStop(0,'#E8C869'); g.addColorStop(.5,'#B07B2F'); g.addColorStop(1,'#F0D684'); }
+    else                        { g.addColorStop(0,'#E0E2EA'); g.addColorStop(.5,'#8E93A0'); g.addColorStop(1,'#F2F4F8'); }
+    ctx.fillStyle = g;
+  }
+  ctx.fillRect(0, 0, rect.width, rect.height);
+  const img = new Image();
+  img.onload = () => {
+    ctx.drawImage(img, bw, bw, rect.width - bw*2, rect.height - bw*2);
+    cv.toBlob(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'framed_' + Date.now() + '.png';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+      showToast('ダウンロードしました');
+    }, 'image/png');
+  };
+  img.src = state.imgSrc;
+});
+
+// ── Init ───────────────────────────────────────────────
+renderImage();
+applyFrame();
+// Put swatches active state in sync
+document.querySelectorAll('.swatch[data-color]').forEach(s => {
+  s.classList.toggle('active', s.dataset.color.toLowerCase() === (state.customColor||'').toLowerCase());
+});
+// Let carousel settle in place before the first "from" → "to" so it doesn't snap
+gsap.set(items, { opacity: 0 });
+requestAnimationFrame(() => requestAnimationFrame(layoutCarousel));
+</script>
+
+</body>
+</html>
