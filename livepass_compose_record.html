@@ -398,12 +398,42 @@ submitBtn.addEventListener('click', () => {
   const i = list.findIndex(r => r.id === record.id);
   if (i >= 0) list[i] = record; else list.unshift(record);
   try { localStorage.setItem('livepass_records', JSON.stringify(list.slice(0, 40))); } catch(e){}
+
+  // ── Also push to livepass_articles so SCREEN renders it alongside other
+  //    user posts. The shape mirrors compose_article.html so the existing
+  //    SCREEN feed card + detail modal pick it up without extra wiring.
+  try {
+    const me  = localStorage.getItem('livepass_account_name') || '';
+    const uid = localStorage.getItem('livepass_uid') || null;
+    const art = {
+      id:         state.id,
+      type:       'record',
+      layout:     'square',
+      category:   state.labelName ? state.labelName : 'Record',
+      cover:      state.jacketSrc,
+      mediaType:  'image',
+      title:      state.title,
+      body:       '',
+      tags:       state.labelName ? [state.labelName] : [],
+      author:     state.artist || me || '',
+      authorUid:  uid,
+      bgColor:    state.labelColor || null,
+      createdAt:  new Date().toISOString(),
+      recordArtist:    state.artist,
+      recordLabelName: state.labelName,
+      recordLabelColor:state.labelColor,
+    };
+    const arts = JSON.parse(localStorage.getItem('livepass_articles') || '[]');
+    const j = arts.findIndex(a => a.id === art.id);
+    if (j >= 0) arts[j] = art; else arts.unshift(art);
+    localStorage.setItem('livepass_articles', JSON.stringify(arts));
+  } catch(e) { console.warn('SCREEN push failed:', e); }
+
   // Clear the draft so reopening the page starts fresh.
   try { localStorage.removeItem('livepass_record_draft'); } catch(e){}
-  // SCREEN posting flow lands in a follow-up PR; for now confirm + bounce.
-  showToast('SCREEN に転送しました（モック）');
+  showToast('SCREEN に投稿しました');
   if (navigator.vibrate) navigator.vibrate([8, 40, 12]);
-  setTimeout(() => { location.href = '/atelier/record'; }, 900);
+  setTimeout(() => { location.href = '/screen'; }, 900);
 });
 
 // ── Init ───────────────────────────────────────────────
