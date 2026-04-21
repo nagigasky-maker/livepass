@@ -4253,9 +4253,34 @@ if (!isOtherUser) {
 (function loadProfileData(){
   try {
     const dataUrl = localStorage.getItem('livepass_avatar');
-    if (dataUrl) {
-      const inner = document.querySelector('#phAvatar .ph-avatar-inner');
-      if (inner) inner.innerHTML = `<img src="${dataUrl}" alt="avatar">`;
+    const avType  = localStorage.getItem('livepass_avatar_type') || 'image';
+    const inner   = document.querySelector('#phAvatar .ph-avatar-inner');
+    if (inner && dataUrl) {
+      // Default: still image (fast path).
+      inner.innerHTML = `<img src="${dataUrl}" alt="avatar">`;
+      // If the user saved a looping video avatar in Settings, pull the
+      // Blob out of IndexedDB (livepass_avatars / avatar_blob) and swap
+      // the <img> for an autoplaying muted loop. The image stays
+      // rendered first as a fallback, so slow devices don't see a blank.
+      if (avType === 'video') {
+        (function swapVideoAvatar(){
+          try {
+            const req = indexedDB.open('livepass_avatars', 1);
+            req.onupgradeneeded = () => req.result.createObjectStore('blobs');
+            req.onsuccess = () => {
+              const db = req.result;
+              const tx = db.transaction('blobs', 'readonly');
+              const g = tx.objectStore('blobs').get('avatar_blob');
+              g.onsuccess = () => {
+                const blob = g.result;
+                if (!blob) return;
+                const url = URL.createObjectURL(blob);
+                inner.innerHTML = `<video src="${url}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block"></video>`;
+              };
+            };
+          } catch(_){}
+        })();
+      }
     }
     const role = localStorage.getItem('livepass_role') || localStorage.getItem('livepass_style') || '';
     if (role) {
