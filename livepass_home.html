@@ -1420,13 +1420,35 @@ function renderMagazine(posts) {
           MediaDB.get('media_' + a.id).then(blob => {
             if (!blob) return;
             const vid = document.createElement('video');
-            vid.src = URL.createObjectURL(blob);
-            vid.autoplay=true;vid.muted=true;vid.playsInline=true;
-            vid.loop = a.videoLoop !== false; // default to loop for back-compat; creator opt-out via post form
+            // iOS is finicky: muted / playsinline must be set as both
+            // attributes AND properties BEFORE src, otherwise the
+            // autoplay policy kicks in and the video flashes once then
+            // pauses. Creator picks the loop at post time; legacy posts
+            // without videoLoop keep their old looping behaviour.
+            vid.muted = true;
+            vid.defaultMuted = true;
+            vid.playsInline = true;
+            vid.autoplay = true;
+            vid.loop = a.videoLoop !== false;
+            vid.setAttribute('muted','');
+            vid.setAttribute('playsinline','');
+            vid.setAttribute('webkit-playsinline','');
+            vid.setAttribute('autoplay','');
+            if (vid.loop) vid.setAttribute('loop','');
+            vid.preload = 'auto';
             vid.style.cssText='width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0';
+            vid.src = URL.createObjectURL(blob);
             posterEl.parentNode.replaceChild(vid, posterEl);
             const pi2 = card.querySelector('.fc-play-icon');
             if(pi2) pi2.remove();
+            // Kick-start playback. iOS sometimes refuses autoplay for
+            // dynamically inserted elements until play() is called
+            // explicitly on the next microtask.
+            const kick = () => {
+              const p = vid.play();
+              if (p && p.catch) p.catch(()=>{});
+            };
+            requestAnimationFrame(kick);
           }).catch(()=>{});
         }
       }
@@ -1485,6 +1507,10 @@ let _videoPauseObserver = null;
 function rebindVideoPauseObserver(){
   if (!('IntersectionObserver' in window)) return;
   if (_videoPauseObserver) { try { _videoPauseObserver.disconnect(); } catch(_){} }
+  // threshold 0 — pause only when the card is completely off-screen.
+  // With a higher threshold, short cinema-ratio cards at the top of the
+  // feed oscillated between play/pause on small scrolls, making the
+  // video flash and freeze.
   _videoPauseObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       const vids = entry.target.querySelectorAll('video');
@@ -1498,7 +1524,7 @@ function rebindVideoPauseObserver(){
         }
       });
     });
-  }, { threshold: 0.25 });
+  }, { threshold: 0, rootMargin: '0px 0px 200px 0px' });
   document.querySelectorAll('.feed-card').forEach(c => _videoPauseObserver.observe(c));
 }
 
