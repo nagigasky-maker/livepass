@@ -569,7 +569,7 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
     <div class="pr-av" id="photoPreview"></div>
     <div class="pr-label">プロフィール写真</div>
     <label class="upload" for="avatarUpload">変更</label>
-    <input id="avatarUpload" type="file" accept="image/*">
+    <input id="avatarUpload" type="file" accept="image/*,video/mp4,video/webm">
   </div>
 
   <div class="field-row">
@@ -724,42 +724,180 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 
 <script>
 /* ─────────────────────────────────────────────
-   AVATAR UPLOAD → localStorage
-   All pages read livepass_avatar on load and
-   show the latest stored photo in their avatar slots.
+   AVATAR UPLOAD
+   ─────────────────────────────────────────────
+   Two kinds of avatars:
+     · image → data URL in localStorage.livepass_avatar
+     · video → a small <=4s MP4/WebM stashed as a Blob in IndexedDB
+               (livepass_avatars / avatar_blob). A JPEG poster frame is
+               still written to localStorage so non-video-aware avatar
+               slots (nav bar, comment bylines, …) keep working.
+   livepass_avatar_type differentiates the two. The profile page reads
+   this and swaps in a <video autoplay muted loop playsinline> when
+   the type is "video".
    ───────────────────────────────────────────── */
-const AVATAR_KEY = 'livepass_avatar';
+const AVATAR_KEY      = 'livepass_avatar';
+const AVATAR_TYPE_KEY = 'livepass_avatar_type';
 
-function renderAvatar(dataUrl){
+// Tiny IndexedDB helper scoped to avatar blobs.
+const AvatarDB = {
+  _db: null,
+  open(){
+    if (this._db) return Promise.resolve();
+    return new Promise((res, rej) => {
+      const req = indexedDB.open('livepass_avatars', 1);
+      req.onupgradeneeded = () => req.result.createObjectStore('blobs');
+      req.onsuccess = () => { this._db = req.result; res(); };
+      req.onerror = () => rej(req.error);
+    });
+  },
+  async put(key, blob){
+    await this.open();
+    return new Promise((res, rej) => {
+      const tx = this._db.transaction('blobs', 'readwrite');
+      tx.objectStore('blobs').put(blob, key);
+      tx.oncomplete = () => res();
+      tx.onerror = () => rej(tx.error);
+    });
+  },
+  async get(key){
+    await this.open();
+    return new Promise((res, rej) => {
+      const tx = this._db.transaction('blobs', 'readonly');
+      const r = tx.objectStore('blobs').get(key);
+      r.onsuccess = () => res(r.result || null);
+      r.onerror = () => rej(r.error);
+    });
+  },
+  async delete(key){
+    await this.open();
+    return new Promise((res, rej) => {
+      const tx = this._db.transaction('blobs', 'readwrite');
+      tx.objectStore('blobs').delete(key);
+      tx.oncomplete = () => res();
+      tx.onerror = () => rej(tx.error);
+    });
+  },
+};
+
+async function renderAvatar(dataUrl, type){
   const preview = document.getElementById('photoPreview');
-  const srAv = document.getElementById('srAvatar');
-  if (dataUrl) {
-    preview.innerHTML = `<img src="${dataUrl}" alt="avatar">`;
-    srAv.innerHTML = `<img src="${dataUrl}" alt="avatar">`;
-  } else {
-    preview.innerHTML = `<svg viewBox="0 0 44 44" style="width:100%;height:100%;opacity:.3"><circle cx="22" cy="17" r="8" fill="#3DAAFF"/><path d="M6 38c0-8 7-14 16-14s16 6 16 14" fill="#3DAAFF"/></svg>`;
-    srAv.innerHTML = preview.innerHTML;
+  const srAv    = document.getElementById('srAvatar');
+  function fallback(el){
+    el.innerHTML = `<svg viewBox="0 0 44 44" style="width:100%;height:100%;opacity:.3"><circle cx="22" cy="17" r="8" fill="#3DAAFF"/><path d="M6 38c0-8 7-14 16-14s16 6 16 14" fill="#3DAAFF"/></svg>`;
   }
+  if (!dataUrl) { fallback(preview); fallback(srAv); return; }
+  if (type === 'video') {
+    // Hydrate from IndexedDB so both slots play the same loop.
+    let blob = null;
+    try { blob = await AvatarDB.get('avatar_blob'); } catch(_){}
+    if (blob) {
+      const url = URL.createObjectURL(blob);
+      const html = `<video src="${url}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block"></video>`;
+      preview.innerHTML = html;
+      srAv.innerHTML    = html;
+      return;
+    }
+    // Blob missing — fall back to the poster image.
+  }
+  preview.innerHTML = `<img src="${dataUrl}" alt="avatar">`;
+  srAv.innerHTML    = preview.innerHTML;
+}
+
+// Extract the first frame of a video as a downscaled JPEG data URL.
+function extractPosterFromVideo(file){
+  return new Promise((res, rej) => {
+    const v = document.createElement('video');
+    v.preload = 'auto'; v.muted = true; v.playsInline = true;
+    v.src = URL.createObjectURL(file);
+    v.onloadeddata = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        const size = 256; // tiny — only used as fallback
+        canvas.width = size; canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        // object-fit:cover equivalent
+        const s = Math.min(v.videoWidth, v.videoHeight);
+        const sx = (v.videoWidth  - s) / 2;
+        const sy = (v.videoHeight - s) / 2;
+        ctx.drawImage(v, sx, sy, s, s, 0, 0, size, size);
+        res(canvas.toDataURL('image/jpeg', 0.8));
+      } catch(e) { rej(e); }
+    };
+    v.onerror = () => rej(new Error('video decode failed'));
+  });
+}
+
+function getVideoDuration(file){
+  return new Promise((res, rej) => {
+    const v = document.createElement('video');
+    v.preload = 'metadata';
+    v.src = URL.createObjectURL(file);
+    v.onloadedmetadata = () => res(v.duration);
+    v.onerror = () => rej(new Error('metadata load failed'));
+  });
 }
 
 // Load existing avatar on page load
 try {
   const stored = localStorage.getItem(AVATAR_KEY);
-  renderAvatar(stored);
+  const type   = localStorage.getItem(AVATAR_TYPE_KEY) || 'image';
+  renderAvatar(stored, type);
 } catch(e) { renderAvatar(null); }
 
 // Handle file upload
-document.getElementById('avatarUpload').addEventListener('change', (e) => {
+document.getElementById('avatarUpload').addEventListener('change', async (e) => {
   const file = e.target.files && e.target.files[0];
   if (!file) return;
+  const isVideo = file.type.startsWith('video/');
+
+  if (isVideo) {
+    // Constraints for looping avatars — keep them tiny.
+    const MAX_DUR  = 4;                // seconds
+    const MAX_SIZE = 4 * 1024 * 1024;  // 4MB
+    if (file.size > MAX_SIZE) {
+      alert('動画アバターは 4MB 以下にしてください（現在: '
+            + (file.size / 1024 / 1024).toFixed(1) + 'MB）');
+      return;
+    }
+    let dur = 0;
+    try { dur = await getVideoDuration(file); } catch(_){}
+    if (dur && dur > MAX_DUR) {
+      alert('動画アバターは ' + MAX_DUR + ' 秒以内にしてください（現在: '
+            + dur.toFixed(1) + '秒）');
+      return;
+    }
+    let poster = null;
+    try { poster = await extractPosterFromVideo(file); } catch(_){}
+    try {
+      await AvatarDB.put('avatar_blob', file);
+    } catch(err) {
+      alert('動画の保存に失敗しました: ' + err.message);
+      return;
+    }
+    try {
+      if (poster) localStorage.setItem(AVATAR_KEY, poster);
+      localStorage.setItem(AVATAR_TYPE_KEY, 'video');
+    } catch(_){}
+    renderAvatar(poster, 'video');
+    if (navigator.vibrate) navigator.vibrate([8, 30, 12]);
+    return;
+  }
+
+  // Image path (unchanged)
   const reader = new FileReader();
-  reader.onload = (ev) => {
+  reader.onload = async (ev) => {
     const dataUrl = ev.target.result;
-    try { localStorage.setItem(AVATAR_KEY, dataUrl); } catch(err) {
+    try { localStorage.setItem(AVATAR_KEY, dataUrl); }
+    catch(err) {
       alert('画像が大きすぎます。2MB以下にしてください。');
       return;
     }
-    renderAvatar(dataUrl);
+    localStorage.setItem(AVATAR_TYPE_KEY, 'image');
+    // Drop any stale looping-avatar blob so the profile renders the
+    // new still image instead of the previous video.
+    try { await AvatarDB.delete('avatar_blob'); } catch(_){}
+    renderAvatar(dataUrl, 'image');
     if (navigator.vibrate) navigator.vibrate(12);
   };
   reader.readAsDataURL(file);
@@ -979,10 +1117,13 @@ document.getElementById('signOutBtn')?.addEventListener('click', async () => {
     const pii = [
       'livepass_account_name','livepass_account_name_ja','livepass_account_name_en',
       'livepass_role','livepass_kind','livepass_style','livepass_goals',
-      'livepass_avatar','livepass_signed_in','livepass_uid','livepass_plan',
+      'livepass_avatar','livepass_avatar_type',
+      'livepass_signed_in','livepass_uid','livepass_plan','livepass_plan_expires','livepass_plan_source',
       'livepass_email','livepass_temp_email','livepass_last_email',
     ];
     pii.forEach(k => { try { localStorage.removeItem(k); } catch(_){} });
+    // Video avatar Blob lives outside localStorage — purge it too.
+    try { await AvatarDB.delete('avatar_blob'); } catch(_){}
   } catch(e) {}
   if (navigator.vibrate) navigator.vibrate([18, 40, 18]);
   location.replace('/login');
