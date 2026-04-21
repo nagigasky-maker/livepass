@@ -633,9 +633,13 @@ body{color:#0A0A0A !important}
 
 /* ── Force entire page white (no black bands) ── */
 *:not(.pal-dot):not(.color-swatch):not(.title-preview):not([class*="preview"]):not([class*="color-preview"]){background-color:transparent}
-html,body,.form,.content,.main,main,section,div,footer{background-color:#FFF !important}
+html,body,.form,.content,.main,main,section,div:not(.color-swatch),footer{background-color:#FFF !important}
 .cover-upload{background:rgba(10,10,10,.03) !important}
 .title-preview,[class*="preview"]{background:inherit !important}
+/* Keep the color-picker swatches showing their actual bg — the div
+   rule above would otherwise paint them white and the user sees no
+   palette. */
+.color-swatch{background-color:revert !important}
 #toast{background:#0A0A0A !important}
 
 
@@ -1750,7 +1754,13 @@ submitBtn.addEventListener('click', async () => {
     }
   }
 
-  if ((state.mediaType === 'video' || state.mediaType === 'gif') && state.mediaBlob && !firebaseSaved) {
+  // Keep a local copy of the full media blob in IndexedDB.
+  // GIFs aren't uploaded to Firebase Storage (only their JPEG thumbnail
+  // rides along as the cover), so without this step the SCREEN feed has
+  // nothing to swap in and the cassette never animates. For videos we
+  // also cache locally — even when the MP4 made it to Firebase, a local
+  // blob lets playback start without a round-trip.
+  if ((state.mediaType === 'video' || state.mediaType === 'gif') && state.mediaBlob) {
     MediaDB.put('media_' + article.id, state.mediaBlob).catch(() => {});
   }
 
