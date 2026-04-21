@@ -1747,6 +1747,16 @@ submitBtn.addEventListener('click', async () => {
   } catch(e) {
     console.warn('localStorage save failed:', e);
     if (e && /quota|QUOTA/i.test(e.name + ' ' + e.message)) {
+      // localStorage is full. Stash the cover data URL as a blob in
+      // IndexedDB so the feed can still find an image — otherwise the
+      // post would silently render as a coloured placeholder. Home.html
+      // falls back to MediaDB.get('cover_' + id) when a.cover is missing.
+      try {
+        if (state.coverDataUrl && /^data:image\//.test(state.coverDataUrl)) {
+          const coverBlob = dataUrlToBlob(state.coverDataUrl);
+          MediaDB.put('cover_' + article.id, coverBlob).catch(()=>{});
+        }
+      } catch(_){}
       try { pushLocal(false); }
       catch(e2) { console.warn('localStorage save (no cover) also failed:', e2); }
     } else {
