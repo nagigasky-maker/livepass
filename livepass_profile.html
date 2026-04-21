@@ -149,8 +149,9 @@ body.other-user #panel-pass{display:none !important}
 body.other-user #panel-screen{display:block !important}
 body.other-user #panel-sub,
 body.other-user #panel-saved{display:none !important}
-/* In other-user mode we hide the SUB toggle in the topbar and settings gear */
-body.other-user #phHeartBtn,
+/* In other-user mode we hide only the SETTINGS gear (settings is
+   owner-only). The SUB (heart) button stays visible so fans can
+   see the artist-subscription entry point. */
 body.other-user .topbar a[href="/settings"]{display:none !important}
 
 /* Override the own-profile centered-avatar layout for other-user:
