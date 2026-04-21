@@ -118,6 +118,58 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 /* ─────────────────────────────────────────────
    PROFILE PAGE — specific
    ───────────────────────────────────────────── */
+/* Cover banner — shown only when viewing another user's profile */
+.ph-cover{
+  display:none;
+  position:relative;
+  width:100%;height:140px;
+  background:
+    linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.55) 100%),
+    linear-gradient(135deg,hsla(var(--cover-hue,200),60%,28%,1),hsla(var(--cover-hue,200),40%,8%,1));
+  background-size:cover;background-position:center;
+  overflow:hidden;
+}
+.ph-cover.has-img{background-image:
+  linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.55) 100%),
+  var(--cover-img);
+  background-size:cover;background-position:center;
+}
+body.other-user .ph-cover{display:block}
+body.other-user .profile-hero{margin-top:-28px;position:relative;z-index:1}
+
+/* Subtab visibility for other-user mode */
+.st-btn[data-sub="calendar"]{display:none}
+body.other-user .subtabs{display:flex !important;padding:14px 32px 14px !important}
+body.other-user .st-btn[data-sub="pass"],
+body.other-user .st-btn[data-sub="sub"],
+body.other-user .st-btn[data-sub="saved"]{display:none !important}
+body.other-user .st-btn[data-sub="calendar"]{display:flex !important}
+body.other-user #panel-pass{display:none !important}
+body.other-user #panel-screen{display:block !important}
+body.other-user #panel-sub,
+body.other-user #panel-saved{display:none !important}
+/* In other-user mode we hide the SUB toggle in the topbar and settings gear */
+body.other-user #phHeartBtn,
+body.other-user .topbar a[href="/settings"]{display:none !important}
+
+/* Override the own-profile centered-avatar layout for other-user:
+   go back to avatar-left / name+role-center / actions-right row. */
+body.other-user .profile-hero{
+  flex-direction:row !important;
+  gap:12px !important;
+  padding:14px 18px 12px !important;
+  align-items:center !important;
+  text-align:left !important;
+}
+body.other-user .ph-avatar{width:64px !important;height:64px !important}
+body.other-user .ph-name-block{
+  flex:1 1 0 !important;gap:4px !important;
+  align-items:flex-start !important;text-align:left !important;
+}
+body.other-user .ph-name{font-size:17px !important;letter-spacing:0 !important;font-weight:900 !important}
+body.other-user .ph-role{font-size:10px !important;letter-spacing:.2em !important}
+body.other-user .ph-actions{display:flex !important;gap:8px !important;align-items:center !important;flex-shrink:0 !important}
+
 .profile-hero{padding:22px 18px 6px;display:flex;align-items:center;gap:10px}
 .ph-avatar{
   width:72px;height:72px;border-radius:50%;
@@ -1814,6 +1866,9 @@ body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;c
 <!-- ═══ CONTENT ═══ -->
 <main class="content">
 
+  <!-- Cover (other-user only — gradient fallback or cover image) -->
+  <div class="ph-cover" id="phCover"></div>
+
   <!-- Hero: centered avatar + name (own profile) -->
   <div class="profile-hero">
     <div class="ph-avatar" id="phAvatar">
@@ -1833,13 +1888,17 @@ body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;c
     </div>
   </div>
 
-  <!-- 4 sub-tab icons: PASS COLLECTION / SCREEN / SUBSCRIPTION / SAVED -->
+  <!-- 4 sub-tab icons: PASS COLLECTION / SCREEN / SUBSCRIPTION / SAVED
+       (other-user view swaps PASS/SUB/SAVED out for CALENDAR) -->
   <nav class="subtabs" id="subtabs">
     <button class="st-btn active" data-sub="pass" aria-label="Pass Collection">
       <svg viewBox="0 0 24 24"><rect x="3" y="5" width="14" height="14" rx="2"/><rect x="7" y="9" width="14" height="14" rx="2" fill="currentColor" fill-opacity="0.3"/></svg>
     </button>
     <button class="st-btn" data-sub="screen" aria-label="Screen">
       <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><polygon points="10,9 10,14 15,11.5" fill="currentColor"/><line x1="9" y1="20" x2="15" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <button class="st-btn" data-sub="calendar" aria-label="Calendar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7" stroke-linecap="round"/><line x1="16" y1="3" x2="16" y2="7" stroke-linecap="round"/></svg>
     </button>
     <button class="st-btn" data-sub="sub" aria-label="Subscription">
       <img src="/sub.png" alt="Subscription" style="width:28px;height:28px;object-fit:contain;display:block">
@@ -2107,10 +2166,11 @@ body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;c
    SUB-TAB SWAP (PASS / SCREEN / SUB / SAVED)
    ───────────────────────────────────────────── */
 const SUB_PANEL = {
-  pass:   'panel-pass',
-  screen: 'panel-screen',
-  sub:    'panel-sub',
-  saved:  'panel-saved',
+  pass:     'panel-pass',
+  screen:   'panel-screen',
+  calendar: 'panel-screen', // calendar reuses screen panel with event sub-sub-tab pre-selected
+  sub:      'panel-sub',
+  saved:    'panel-saved',
 };
 document.querySelectorAll('.st-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -2121,6 +2181,15 @@ document.querySelectorAll('.st-btn').forEach(btn => {
     const target = document.getElementById(SUB_PANEL[sub]);
     if (target) target.classList.add('active');
     if (sub === 'saved') renderSavedGrid();
+    // Calendar tab: within the shared screen panel, auto-activate the EVENT filter
+    if (sub === 'calendar') {
+      const eventTab = document.querySelector('.sst-btn[data-tab="event"]');
+      if (eventTab && !eventTab.classList.contains('active')) eventTab.click();
+    }
+    if (sub === 'screen') {
+      const articleTab = document.querySelector('.sst-btn[data-tab="article"]');
+      if (articleTab && !articleTab.classList.contains('active')) articleTab.click();
+    }
   });
 });
 
@@ -4050,6 +4119,25 @@ const isOtherUser = viewingUser && viewingUser !== (localStorage.getItem('livepa
 if (isOtherUser) {
   const mock = MOCK_USERS[viewingUser] || { role:'Artist', badge:'FREE', bgHue:'200,60,25' };
 
+  // Flip the page into other-user mode (enables .ph-cover, swaps subtabs, etc.)
+  document.body.classList.add('other-user');
+
+  // Cover — gradient tint from mock.bgHue (hue only); cover image comes later
+  // when we have a real users/{uid}.coverUrl field.
+  const cover = document.getElementById('phCover');
+  if (cover) {
+    const hue = (mock.bgHue || '200,60,25').split(',')[0];
+    cover.style.setProperty('--cover-hue', hue);
+  }
+
+  // Start on SCREEN tab (PASS is owner-only)
+  document.querySelectorAll('.st-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.sub-panel').forEach(p => p.classList.remove('active'));
+  const scrBtn = document.querySelector('.st-btn[data-sub="screen"]');
+  if (scrBtn) scrBtn.classList.add('active');
+  const scrPanel = document.getElementById('panel-screen');
+  if (scrPanel) scrPanel.classList.add('active');
+
   // Name + role
   document.querySelector('.ph-name').textContent = viewingUser;
   document.querySelector('.ph-role').textContent = mock.role;
@@ -4068,6 +4156,8 @@ if (isOtherUser) {
   }
 
   // Show follow + DM buttons (hidden for own profile)
+  const actions = document.getElementById('phActions');
+  if (actions) actions.style.display = 'flex';
   const followBtn = document.getElementById('phFollowBtn');
   if (followBtn) {
     followBtn.style.display = '';
