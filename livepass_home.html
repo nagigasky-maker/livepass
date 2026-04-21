@@ -1439,6 +1439,21 @@ function renderMagazine(posts) {
           }).catch(()=>{});
         }
       }
+      // Cover fallback: when compose_article hit a localStorage quota
+      // and saved the article with cover:null, the cover blob was
+      // stashed separately in IndexedDB (cover_<id>). Re-inject it here
+      // so the feed doesn't fall back to the coloured placeholder.
+      if (!a.cover && a.userPost) {
+        MediaDB.get('cover_' + a.id).then(blob => {
+          if (!blob) return;
+          const url = URL.createObjectURL(blob);
+          const fcImg = card.querySelector('.fc-img');
+          if (fcImg && !fcImg.querySelector('img') && !fcImg.querySelector('video')) {
+            fcImg.innerHTML = `<img src="${url}" alt="">`;
+          }
+          card.style.background = ''; // drop the orange/blue/yellow fill
+        }).catch(()=>{});
+      }
     }
     grid.appendChild(rowDiv);
   }
