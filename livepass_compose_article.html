@@ -798,6 +798,21 @@ html,body,.form,.content,.main,main,section,div:not(.color-swatch),footer{backgr
       </div>
     </div>
     <input type="file" id="coverInput" accept="image/*,video/mp4,video/webm,video/quicktime,image/gif">
+
+    <!-- Video-only: ループ再生 toggle. Hidden until the user picks a video. -->
+    <div id="videoLoopBox" style="display:none;margin-top:12px;padding:12px 14px;border-radius:10px;background:rgba(0,229,160,.04);border:0.5px solid rgba(0,229,160,.18)">
+      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer">
+        <input type="checkbox" id="videoLoopToggle"
+          style="width:18px;height:18px;margin-top:2px;accent-color:#00E5A0;flex-shrink:0">
+        <span style="flex:1;font-family:Arial,'Noto Sans JP',sans-serif;font-size:12px;color:var(--white);line-height:1.6">
+          <span style="font-weight:700">ループ再生</span>
+          <span style="display:block;font-size:10px;color:rgba(237,235,230,.55);margin-top:2px;letter-spacing:.02em">
+            SCREEN で GIF のように繰り返し再生します。短いカットやモーションに最適。
+          </span>
+        </span>
+      </label>
+    </div>
+
     <!-- PRO multi-image: additional images for slideshow -->
     <div id="multiImageSection" style="display:none;margin-top:10px">
       <div class="form-label" style="margin-bottom:6px">追加画像（最大9枚・スライドショー） <span style="color:var(--accent-orange);font-size:7px">PRO</span></div>
@@ -921,6 +936,50 @@ html,body,.form,.content,.main,main,section,div:not(.color-swatch),footer{backgr
 
 <div id="toast">✓ 投稿しました</div>
 
+<!-- ═══ GIF-blocked guidance modal ═══ -->
+<div id="gifBlockOverlay" aria-hidden="true"
+  style="position:fixed;inset:0;z-index:10500;background:rgba(0,0,0,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:none;align-items:flex-end;justify-content:center;padding:0 0 env(safe-area-inset-bottom,0);font-family:Arial,'Noto Sans JP',sans-serif">
+  <div style="width:100%;max-width:520px;background:#0a0a0a;color:#EDEBE6;border-top-left-radius:20px;border-top-right-radius:20px;border:0.5px solid rgba(255,255,255,.08);padding:22px 22px calc(22px + env(safe-area-inset-bottom,0))">
+    <div style="width:44px;height:4px;border-radius:99px;background:rgba(237,235,230,.25);margin:0 auto 16px"></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+      <div style="width:36px;height:36px;border-radius:50%;background:rgba(245,200,66,.14);display:flex;align-items:center;justify-content:center;color:#F5C842;flex-shrink:0">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.26em;text-transform:uppercase;color:#F5C842;margin-bottom:2px">GIF is not supported</div>
+        <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:16px;color:#EDEBE6;line-height:1.2">GIF は直接アップできません</div>
+      </div>
+    </div>
+    <p style="font-size:12px;line-height:1.8;color:rgba(237,235,230,.72);margin:12px 0 4px">
+      GIF はファイルサイズが大きく、ループ再生に向いていません。
+      <b style="color:#EDEBE6">MP4 に変換</b> すると画質はそのまま、サイズが <b style="color:#EDEBE6">約 20 分の 1</b> になります。
+      <br><br>
+      ローンチ後に Atelier に <b style="color:#00E5A0">GIF → MP4 変換ツール</b> を公開予定です。それまでは MP4 化したものをアップロードしてください。
+    </p>
+    <button id="gifBlockClose" type="button"
+      style="display:block;width:100%;margin-top:20px;padding:14px;border-radius:99px;background:#00E5A0;color:#000;font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:12px;letter-spacing:.14em;text-transform:uppercase;border:none;cursor:pointer">
+      わかりました
+    </button>
+  </div>
+</div>
+
+<script>
+(function initGifBlock(){
+  const ov = document.getElementById('gifBlockOverlay');
+  const close = document.getElementById('gifBlockClose');
+  if (!ov || !close) return;
+  window.openGifBlockModal = () => {
+    ov.style.display = 'flex';
+    ov.setAttribute('aria-hidden','false');
+    if (navigator.vibrate) navigator.vibrate([6, 20, 6]);
+  };
+  const hide = () => { ov.style.display = 'none'; ov.setAttribute('aria-hidden','true'); };
+  close.addEventListener('click', hide);
+  ov.addEventListener('click', e => { if (e.target === ov) hide(); });
+  window.addEventListener('keydown', e => { if (ov.style.display !== 'none' && e.key === 'Escape') hide(); });
+})();
+</script>
+
 <!-- ═══ PRO UPGRADE SHEET (shown when FREE user taps a PRO format) ═══ -->
 <div id="proModalOverlay" aria-hidden="true">
   <div id="proModalSheet" role="dialog" aria-label="PROプラン">
@@ -972,6 +1031,7 @@ const state = {
   mediaBlob: null,      // original video File for IndexedDB
   extraImages: [],      // PRO slideshow: array of data URLs (max 9 total)
   collaborators: [],    // [{ name, share }]
+  videoLoop: false,     // user-picked at post time; default one-shot playback
 };
 
 // ─── Account directory (mirrors compose_event) ───
@@ -1034,6 +1094,12 @@ function refreshProLockState() {
   });
 }
 refreshProLockState();
+
+/* Video loop toggle — user decides whether the MP4 should repeat like
+   a GIF on SCREEN, or play once with controls. */
+document.getElementById('videoLoopToggle')?.addEventListener('change', (e) => {
+  state.videoLoop = !!e.target.checked;
+});
 
 /* Layout picker — PRO gate is disabled during prototype so cinema etc.
    can be selected without opening the upgrade modal. */
@@ -1277,21 +1343,18 @@ coverInput.addEventListener('change', async (e) => {
       coverUpload.classList.add('has-image');
       coverUpload.innerHTML = `<video src="${URL.createObjectURL(file)}" style="width:100%;height:100%;object-fit:cover;display:block" autoplay muted loop playsinline></video>`;
       document.getElementById('multiImageSection').style.display = 'none';
+      // Reveal the "ループ再生" toggle so the creator can decide whether
+      // the post plays once or keeps repeating like a GIF.
+      const loopBox = document.getElementById('videoLoopBox');
+      if (loopBox) loopBox.style.display = 'block';
     } else if (isGif) {
-      // Keep a small JPEG of the first frame as the cover thumbnail so the
-      // article record fits in localStorage. The full animated GIF goes
-      // into IndexedDB (state.mediaBlob) and SCREEN swaps it in at render.
-      const previewUrl = await readFileAsDataUrl(file);
-      let thumbUrl;
-      try { thumbUrl = await downscaleImageFile(file); }
-      catch(e){ thumbUrl = previewUrl; }
-      state.coverDataUrl = thumbUrl;
-      state.mediaType = 'gif';
-      state.mediaBlob = file;
-      state.extraImages = [];
-      coverUpload.classList.add('has-image');
-      coverUpload.innerHTML = `<img class="cover-preview-img" src="${previewUrl}" alt="">`;
-      document.getElementById('multiImageSection').style.display = 'none';
+      // GIF upload is blocked at launch — the file sizes are huge and they
+      // don't compress well. We point the user at the (future) Atelier
+      // GIF→MP4 converter tool instead. When the tool ships, the returned
+      // MP4 goes through the video branch above.
+      e.target.value = '';   // clear the picker so the same file can be retried
+      openGifBlockModal();
+      return;
     } else {
       const dataUrl = await downscaleImageFile(file);
       state.coverDataUrl = dataUrl;
@@ -1663,6 +1726,7 @@ submitBtn.addEventListener('click', async () => {
     access:   state.access,
     cover:    null,
     mediaType: state.mediaType || 'image',
+    videoLoop: state.mediaType === 'video' ? !!state.videoLoop : undefined,
     bgColor: state.bgColor || '#0E0E0E',
     extraImages: undefined,
     title:    titleInput.value.trim(),
@@ -1726,43 +1790,77 @@ submitBtn.addEventListener('click', async () => {
     }
   }
 
-  // ─── localStorage fallback (also keeps local cache) ───
+  // ─── localStorage persistence ───
+  //
+  // New policy: localStorage only holds *metadata + URLs*. We do NOT
+  // write data URLs here anymore — that was the root cause of the
+  // quota overflow that made covers disappear on subsequent posts.
+  //
+  // Cover resolution priority:
+  //   1) Firebase Storage download URL (article.cover set by upload)
+  //   2) IndexedDB (cover_<id>) — used for GIF/animated content and as
+  //      the offline fallback when Firebase upload fails
+  //   3) null — the feed will ask the user to retry the post
   const localArticle = { ...article };
-  if (!firebaseSaved && state.coverDataUrl) localArticle.cover = state.coverDataUrl;
-  if (!firebaseSaved && state.extraImages.length > 0) localArticle.extraImages = state.extraImages.slice();
-  function pushLocal(withCover) {
+
+  // If Firebase didn't succeed, stash the cover + extras as blobs in
+  // IndexedDB so the feed can still render them offline. Keep localStorage
+  // carrying only tiny references. We purposely set localArticle.cover
+  // to null in that case so home.html's MediaDB fallback kicks in.
+  if (!firebaseSaved) {
+    if (state.coverDataUrl && /^data:image\//.test(state.coverDataUrl)) {
+      try {
+        const coverBlob = dataUrlToBlob(state.coverDataUrl);
+        MediaDB.put('cover_' + article.id, coverBlob).catch(()=>{});
+      } catch(_){}
+    }
+    localArticle.cover = null;
+    // extraImages: store each as a blob too. localArticle.extraImages
+    // becomes an array of "idb:" markers that home.html recognises.
+    if (state.extraImages && state.extraImages.length > 0) {
+      const markers = [];
+      for (let i = 0; i < state.extraImages.length; i++) {
+        const src = state.extraImages[i];
+        if (/^data:image\//.test(src)) {
+          try {
+            const b = dataUrlToBlob(src);
+            MediaDB.put('extra_' + article.id + '_' + i, b).catch(()=>{});
+            markers.push('idb:extra_' + article.id + '_' + i);
+          } catch(_) { markers.push(null); }
+        } else {
+          markers.push(src);
+        }
+      }
+      localArticle.extraImages = markers;
+    }
+  }
+
+  function pushLocal() {
     const raw = localStorage.getItem('livepass_articles');
     const list = raw ? JSON.parse(raw) : [];
-    const payload = withCover ? localArticle : { ...localArticle, cover: null };
     if (editingArticle) {
       const idx = list.findIndex(x => x.id === editingArticle.id);
-      if (idx >= 0) list[idx] = payload; else list.unshift(payload);
+      if (idx >= 0) list[idx] = localArticle; else list.unshift(localArticle);
     } else {
-      list.unshift(payload);
+      list.unshift(localArticle);
     }
     localStorage.setItem('livepass_articles', JSON.stringify(list));
   }
-  try {
-    pushLocal(true);
-  } catch(e) {
-    console.warn('localStorage save failed:', e);
-    if (e && /quota|QUOTA/i.test(e.name + ' ' + e.message)) {
-      // localStorage is full. Stash the cover data URL as a blob in
-      // IndexedDB so the feed can still find an image — otherwise the
-      // post would silently render as a coloured placeholder. Home.html
-      // falls back to MediaDB.get('cover_' + id) when a.cover is missing.
-      try {
-        if (state.coverDataUrl && /^data:image\//.test(state.coverDataUrl)) {
-          const coverBlob = dataUrlToBlob(state.coverDataUrl);
-          MediaDB.put('cover_' + article.id, coverBlob).catch(()=>{});
-        }
-      } catch(_){}
-      try { pushLocal(false); }
-      catch(e2) { console.warn('localStorage save (no cover) also failed:', e2); }
-    } else {
-      try { pushLocal(false); }
-      catch(e2) { console.warn('localStorage save (no cover fallback) failed:', e2); }
-    }
+  try { pushLocal(); }
+  catch(e) {
+    console.warn('localStorage save failed even after offloading media:', e);
+    // Last resort: trim the oldest entries until it fits.
+    try {
+      const raw = localStorage.getItem('livepass_articles');
+      const list = raw ? JSON.parse(raw) : [];
+      while (list.length > 0) {
+        list.pop();
+        try {
+          localStorage.setItem('livepass_articles', JSON.stringify([localArticle, ...list]));
+          break;
+        } catch(_) { continue; }
+      }
+    } catch(_){}
   }
 
   // Keep a local copy of the full media blob in IndexedDB.
