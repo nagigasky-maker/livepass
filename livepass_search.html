@@ -120,6 +120,59 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   color:rgba(237,235,230,.3);padding:18px 20px 10px;
 }
 
+/* FOLLOWING / DISCOVERY tabs */
+.disc-tabs{
+  display:flex;gap:24px;padding:2px 20px 0;
+  border-bottom:0.5px solid var(--border);
+  position:sticky;top:0;z-index:5;
+  background:rgba(0,0,0,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+}
+.dt-btn{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
+  font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(237,235,230,.35);padding:12px 0;position:relative;
+}
+.dt-btn.active{color:var(--white)}
+.dt-btn.active::after{
+  content:"";position:absolute;left:0;right:0;bottom:-0.5px;height:2px;background:var(--mint);
+}
+/* Panels */
+.disc-following{display:none;padding:14px 0 0}
+body.disc-following .disc-following{display:block}
+body.disc-following .search-bar,
+body.disc-following #accountResults,
+body.disc-following .account-add-wrap,
+body.disc-following .tag-row,
+body.disc-following .ai-badge,
+body.disc-following .sec-label,
+body.disc-following .scroll-row,
+body.disc-following .sug-grid{display:none !important}
+
+.disc-list{display:flex;flex-direction:column}
+.disc-empty{padding:60px 28px;text-align:center}
+.de-title{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;font-size:13px;color:var(--white);margin-bottom:8px}
+.de-sub{font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;color:rgba(237,235,230,.4);line-height:1.6}
+.disc-row{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 20px;border-bottom:0.5px solid var(--border);
+  cursor:pointer;transition:background .18s;
+}
+.disc-row:active{background:rgba(255,255,255,.03)}
+.disc-row .ar-av{
+  width:44px;height:44px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,#1a2030,#0a1020);
+  border:1.5px solid rgba(237,235,230,.12);
+}
+.disc-row .ar-meta{flex:1;min-width:0}
+.disc-row .ar-name{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:14px;color:var(--white);line-height:1.1}
+.disc-row .ar-role{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(237,235,230,.45);margin-top:3px}
+.disc-row .ar-unfollow{
+  padding:7px 14px;border-radius:99px;
+  background:rgba(61,170,255,.2);border:1px solid var(--blue);color:var(--blue);
+  font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;font-weight:500;letter-spacing:.02em;
+  flex-shrink:0;
+}
+
 /* Suggestion cards */
 .sug-grid{padding:0 14px 10px;display:flex;flex-wrap:wrap;gap:8px}
 .sug-card{
@@ -498,6 +551,21 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
     <div class="sh-title">SEARCH</div>
   </header>
 
+  <!-- FOLLOWING / DISCOVERY tabs -->
+  <nav class="disc-tabs" id="discTabs">
+    <button class="dt-btn" data-disc="following">FOLLOWING</button>
+    <button class="dt-btn active" data-disc="discovery">DISCOVERY</button>
+  </nav>
+
+  <!-- FOLLOWING panel — shown when body has .disc-following -->
+  <section class="disc-following" id="discFollowing">
+    <div class="disc-empty" id="discEmpty" style="display:none">
+      <div class="de-title">まだフォローしているアカウントがありません</div>
+      <div class="de-sub">DISCOVERY からアーティストを探してフォローしましょう。</div>
+    </div>
+    <div class="disc-list" id="discFollowList"></div>
+  </section>
+
   <div class="search-bar">
     <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     <input type="text" id="accountSearchInput" placeholder="アカウント名で検索してつながる…" autocomplete="off">
@@ -704,6 +772,79 @@ document.querySelectorAll('.tag-pill').forEach(p => {
     p.classList.add('active');
   });
 });
+
+/* FOLLOWING / DISCOVERY tab switcher */
+(function initDiscTabs(){
+  const btns = document.querySelectorAll('.dt-btn');
+  const followList = document.getElementById('discFollowList');
+  const emptyEl = document.getElementById('discEmpty');
+
+  function renderFollowing(){
+    if (!followList) return;
+    let list = [];
+    try { list = JSON.parse(localStorage.getItem('livepass_following') || '[]'); } catch(e){}
+    // Normalize — older entries are plain strings, newer are {name, role, avatar}
+    list = list.map(x => typeof x === 'string' ? { name:x, role:'', avatar:'' } : x)
+               .filter(x => x && x.name);
+    if (!list.length) {
+      if (emptyEl) emptyEl.style.display = 'block';
+      followList.innerHTML = '';
+      return;
+    }
+    if (emptyEl) emptyEl.style.display = 'none';
+    followList.innerHTML = list.map(u => {
+      const name = u.name;
+      const role = u.role || '';
+      const av = u.avatar
+        ? `<img src="${u.avatar}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
+        : '';
+      return `
+        <a class="disc-row" href="/profile?user=${encodeURIComponent(name)}">
+          <div class="ar-av">${av}</div>
+          <div class="ar-meta">
+            <div class="ar-name">${name}</div>
+            <div class="ar-role">${role}</div>
+          </div>
+          <button class="ar-unfollow" data-name="${encodeURIComponent(name)}" type="button">フォロー中</button>
+        </a>
+      `;
+    }).join('');
+
+    // Unfollow handler — stops propagation so the row link doesn't fire
+    followList.querySelectorAll('.ar-unfollow').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault(); e.stopPropagation();
+        const name = decodeURIComponent(btn.dataset.name || '');
+        if (!name) return;
+        let cur = [];
+        try { cur = JSON.parse(localStorage.getItem('livepass_following') || '[]'); } catch(_){}
+        cur = cur.filter(x => (typeof x === 'string' ? x : x && x.name) !== name);
+        localStorage.setItem('livepass_following', JSON.stringify(cur));
+        if (navigator.vibrate) navigator.vibrate(8);
+        renderFollowing();
+      });
+    });
+  }
+
+  btns.forEach(b => {
+    b.addEventListener('click', () => {
+      btns.forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      const mode = b.dataset.disc;
+      document.body.classList.toggle('disc-following', mode === 'following');
+      if (mode === 'following') renderFollowing();
+    });
+  });
+
+  // If URL has ?tab=following, start on Following
+  try {
+    const qs = new URLSearchParams(location.search);
+    if (qs.get('tab') === 'following') {
+      const followBtn = document.querySelector('.dt-btn[data-disc="following"]');
+      if (followBtn) followBtn.click();
+    }
+  } catch(e){}
+})();
 
 /* Top bar counters + unread badge */
 (function syncCounters(){
