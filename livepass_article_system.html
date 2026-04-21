@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LIVE PASS — Article System + Feed Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:     #0A0A0A;
+  --bg2:    #111;
+  --bg3:    #1A1A1A;
+  --white:  #F2F0EB;
+  --muted:  #666;
+  --border: rgba(242,240,235,0.08);
+  --orange: #FF4D00;
+  --blue:   #0038FF;
+  --yellow: #FFD000;
+  --green:  #00C853;
+  --pink:   #FF2D6B;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--white); font-family: 'DM Sans', sans-serif; font-weight: 300; }
+
+/* ── layout ── */
+.wrap { max-width: 960px; margin: 0 auto; padding: 40px 24px; }
+h2 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 28px; letter-spacing: -0.02em; margin-bottom: 6px; }
+.label { font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); margin-bottom: 20px; }
+p.desc { font-size: 14px; color: var(--muted); line-height: 1.7; max-width: 600px; margin-bottom: 36px; }
+
+.section { margin-bottom: 72px; }
+hr { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+
+/* ── format grid ── */
+.format-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 48px; }
+.fmt { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 20px; }
+.fmt.pro { border-color: rgba(255,77,0,0.3); }
+.fmt-preview { margin-bottom: 16px; }
+.fmt-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+.fmt-spec { font-size: 11px; color: var(--muted); margin-bottom: 8px; font-family: monospace; }
+.fmt-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+.pro-tag { display: inline-block; font-size: 9px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; background: rgba(255,77,0,0.15); color: var(--orange); padding: 2px 7px; border-radius: 3px; margin-bottom: 8px; }
+.free-tag { display: inline-block; font-size: 9px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; background: rgba(242,240,235,0.06); color: var(--muted); padding: 2px 7px; border-radius: 3px; margin-bottom: 8px; }
+
+/* format preview shapes */
+.prev-portrait { width: 40px; height: 72px; background: var(--bg3); border: 1px solid var(--border); border-radius: 3px; }
+.prev-square   { width: 60px; height: 60px; background: var(--bg3); border: 1px solid var(--border); border-radius: 3px; }
+.prev-landscape { width: 90px; height: 50px; background: var(--bg3); border: 1px solid var(--border); border-radius: 3px; }
+.prev-916 { display: flex; gap: 4px; }
+.prev-916 .col { width: 24px; height: 60px; background: rgba(255,77,0,0.2); border: 1px solid rgba(255,77,0,0.3); border-radius: 2px; }
+.prev-cine { width: 100px; height: 44px; background: rgba(255,77,0,0.1); border: 1px solid rgba(255,77,0,0.3); border-radius: 3px; }
+.prev-fullscreen { width: 80px; height: 60px; background: rgba(255,77,0,0.1); border: 1px solid rgba(255,77,0,0.3); border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--orange); font-family: monospace; }
+
+/* ── layout patterns ── */
+.patterns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 48px; }
+.pat { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px; }
+.pat-name { font-size: 11px; font-weight: 500; color: var(--muted); margin-bottom: 10px; letter-spacing: 0.06em; }
+.pat-grid { display: grid; gap: 3px; }
+
+/* pattern A: 縦+縦+横 */
+.pat-a { grid-template-columns: 1fr 1fr; grid-template-rows: 60px 40px; }
+.pat-a .c1 { grid-row: span 2; }
+
+/* pattern B: 横+2sq */
+.pat-b { grid-template-columns: 1fr 1fr; grid-template-rows: 40px 44px; }
+.pat-b .c1 { grid-column: span 2; }
+
+/* pattern C: 3×9:16 */
+.pat-c { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 70px; }
+
+/* pattern D: sq+sq+縦 */
+.pat-d { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 44px 44px; }
+.pat-d .c1 { grid-row: span 2; }
+
+.pc { border-radius: 2px; background: var(--bg3); }
+.pc.portrait-c  { background: rgba(242,240,235,0.07); }
+.pc.square-c    { background: rgba(242,240,235,0.05); }
+.pc.landscape-c { background: rgba(242,240,235,0.05); }
+.pc.pro-c       { background: rgba(255,77,0,0.12); border: 1px solid rgba(255,77,0,0.2); }
+
+/* ── feed demo ── */
+.feed-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.feed-controls { display: flex; gap: 8px; }
+.btn { font-size: 11px; font-weight: 500; letter-spacing: 0.06em; padding: 7px 14px; border-radius: 3px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all 0.15s; font-family: 'DM Sans', sans-serif; }
+.btn:hover, .btn.active { border-color: var(--white); color: var(--white); }
+.btn.primary { background: var(--white); color: var(--bg); border-color: var(--white); }
+
+#feed { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
+.feed-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  min-height: 120px;
+}
+.feed-card:hover { border-color: rgba(242,240,235,0.2); }
+
+/* span classes */
+.span-portrait   { grid-row: span 2; }
+.span-landscape  { grid-column: span 2; }
+.span-916        { grid-column: span 1; grid-row: span 3; }
+.span-cinematic  { grid-column: span 3; grid-row: span 1; }
+
+.card-inner { padding: 14px; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; min-height: inherit; }
+.card-type { font-size: 9px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.card-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; line-height: 1.2; }
+.card-title.sm { font-size: 11px; }
+.card-handle { font-size: 10px; color: var(--muted); margin-top: 4px; }
+.card-dot { position: absolute; top: 12px; right: 12px; width: 6px; height: 6px; border-radius: 50%; }
+
+/* color accents */
+.acc-orange { background: rgba(255,77,0,0.08); }
+.acc-blue   { background: rgba(0,56,255,0.1); }
+.acc-yellow { background: rgba(255,208,0,0.08); }
+.acc-green  { background: rgba(0,200,83,0.08); }
+.acc-pink   { background: rgba(255,45,107,0.08); }
+
+/* algo info */
+.algo-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 32px; }
+.algo-table th { background: var(--bg2); color: var(--muted); font-weight: 500; font-size: 11px; padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+.algo-table td { padding: 10px 12px; border-bottom: 1px solid rgba(242,240,235,0.04); color: #ccc; vertical-align: top; line-height: 1.5; }
+.algo-table tr:last-child td { border-bottom: none; }
+.pill { display: inline-block; font-size: 10px; padding: 1px 7px; border-radius: 10px; margin-right: 4px; }
+.p-or { background: rgba(255,77,0,0.15); color: #FF7A45; }
+.p-bl { background: rgba(0,56,255,0.15); color: #6690FF; }
+.p-gr { background: rgba(0,200,83,0.15); color: #00C853; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="label">Article System + Feed Engine</div>
+  <h2>画角 × レイアウト 仕様</h2>
+  <p class="desc">FREEとPROの画角定義、HOMEフィードの自動レイアウトアルゴリズム、実装ルールをまとめた設計書。</p>
+
+  <hr>
+
+  <!-- FORMAT SYSTEM -->
+  <div class="section">
+    <div class="label">Format System</div>
+    <h2 style="font-size:20px;margin-bottom:24px;">画角定義 — FREE 3種 / PRO +3種</h2>
+
+    <div class="format-grid">
+      <!-- FREE -->
+      <div class="fmt">
+        <div class="free-tag">FREE</div>
+        <div class="fmt-preview"><div class="prev-portrait"></div></div>
+        <div class="fmt-name">Portrait</div>
+        <div class="fmt-spec">4:5 / 1カラム占有</div>
+        <div class="fmt-desc">縦長。写真・ダンス動画に最適。1カラム幅で縦に伸びる。Instagramと同じ比率で使いやすい。</div>
+      </div>
+      <div class="fmt">
+        <div class="free-tag">FREE</div>
+        <div class="fmt-preview"><div class="prev-square"></div></div>
+        <div class="fmt-name">Square</div>
+        <div class="fmt-spec">1:1 / 2カラム占有</div>
+        <div class="fmt-desc">スクエア。テキスト・アートワーク・フライヤーに向く。2カラム幅で存在感を出す。</div>
+      </div>
+      <div class="fmt">
+        <div class="free-tag">FREE</div>
+        <div class="fmt-preview"><div class="prev-landscape"></div></div>
+        <div class="fmt-name">Landscape</div>
+        <div class="fmt-spec">16:9 / 2カラム占有</div>
+        <div class="fmt-desc">横長。イベント写真・会場の雰囲気・ライブショットに最適。2カラム分の横幅。</div>
+      </div>
+
+      <!-- PRO -->
+      <div class="fmt pro">
+        <div class="pro-tag">PRO</div>
+        <div class="fmt-preview">
+          <div class="prev-916">
+            <div class="col"></div><div class="col"></div><div class="col"></div>
+          </div>
+        </div>
+        <div class="fmt-name">Vertical 9:16</div>
+        <div class="fmt-spec">9:16 / 1カラム × 3列並列</div>
+        <div class="fmt-desc">縦型ショート動画比率。3枚横並びで映像家・DJ・ダンサーのリール感覚で並べられる。TikTok世代に刺さる。</div>
+      </div>
+      <div class="fmt pro">
+        <div class="pro-tag">PRO</div>
+        <div class="fmt-preview"><div class="prev-cine"></div></div>
+        <div class="fmt-name">Cinematic</div>
+        <div class="fmt-spec">21:9 / 3カラム全幅</div>
+        <div class="fmt-desc">シネマティック横長。3カラム全幅を使う映画的フォーマット。イベントの余韻・レコーディングシーンに。</div>
+      </div>
+      <div class="fmt pro">
+        <div class="pro-tag">PRO</div>
+        <div class="fmt-preview"><div class="prev-fullscreen">∞</div></div>
+        <div class="fmt-name">Fullscreen</div>
+        <div class="fmt-spec">自由比率 / 3カラム全幅 × 高さ自由</div>
+        <div class="fmt-desc">高さも自由に設定できる完全カスタム。雑誌の見開きのように使える。アパレルや写真集的なブランディングに。</div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- LAYOUT PATTERNS -->
+  <div class="section">
+    <div class="label">Auto Layout</div>
+    <h2 style="font-size:20px;margin-bottom:8px;">HOMEフィード レイアウトパターン</h2>
+    <p class="desc" style="margin-bottom:24px;">フォロー中アカウントの投稿画角を読み取り、4つのパターンからアルゴリズムが自動選択。同じパターンが3回連続しないよう制御する。</p>
+
+    <div class="patterns">
+      <div class="pat">
+        <div class="pat-name">Pattern A — Hero + Side</div>
+        <div class="pat-grid pat-a">
+          <div class="pc portrait-c c1"></div>
+          <div class="pc landscape-c"></div>
+          <div class="pc square-c"></div>
+        </div>
+      </div>
+      <div class="pat">
+        <div class="pat-name">Pattern B — Banner + Grid</div>
+        <div class="pat-grid pat-b">
+          <div class="pc landscape-c c1"></div>
+          <div class="pc square-c"></div>
+          <div class="pc square-c"></div>
+        </div>
+      </div>
+      <div class="pat">
+        <div class="pat-name">Pattern C — 9:16 Trio (PRO)</div>
+        <div class="pat-grid pat-c">
+          <div class="pc pro-c"></div>
+          <div class="pc pro-c"></div>
+          <div class="pc pro-c"></div>
+        </div>
+      </div>
+      <div class="pat">
+        <div class="pat-name">Pattern D — Mixed Masonry</div>
+        <div class="pat-grid pat-d">
+          <div class="pc portrait-c c1"></div>
+          <div class="pc square-c"></div>
+          <div class="pc square-c"></div>
+          <div class="pc landscape-c" style="grid-column:span 2;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- algo table -->
+    <table class="algo-table">
+      <thead>
+        <tr><th>ルール</th><th>内容</th><th>優先度</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>画角バランス</td>
+          <td>縦長・横長・スクエアが均等に混ざるよう重み付け。同じ画角が3連続したら強制的に別画角を挿入。</td>
+          <td><span class="pill p-or">高</span></td>
+        </tr>
+        <tr>
+          <td>投稿者バランス</td>
+          <td>同一アカウントの投稿が連続しないよう分散。最大2連続まで許容。</td>
+          <td><span class="pill p-or">高</span></td>
+        </tr>
+        <tr>
+          <td>パターン連続防止</td>
+          <td>同じレイアウトパターン（A/B/C/D）が3回連続したら次のパターンへ。</td>
+          <td><span class="pill p-bl">中</span></td>
+        </tr>
+        <tr>
+          <td>9:16コンテンツ検出</td>
+          <td>フォロー中にPROユーザーがいてVertical投稿があればPattern Cを優先挿入。3枚揃わない場合はPattern Aへフォールバック。</td>
+          <td><span class="pill p-bl">中</span></td>
+        </tr>
+        <tr>
+          <td>Cinematic / Fullscreen</td>
+          <td>3カラム全幅コンテンツは10投稿に1回まで。連続禁止。</td>
+          <td><span class="pill p-gr">低</span></td>
+        </tr>
+        <tr>
+          <td>新鮮さスコア</td>
+          <td>投稿時刻 × エンゲージメント（いいね+再生）の加重平均でスコアを算出。スコア上位をパターンの「主役セル」（大きいセル）に配置。</td>
+          <td><span class="pill p-or">高</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr>
+
+  <!-- LIVE DEMO -->
+  <div class="section">
+    <div class="label">Interactive Demo</div>
+    <h2 style="font-size:20px;margin-bottom:8px;">HOMEフィード — レイアウト自動生成</h2>
+    <p class="desc" style="margin-bottom:0;">「Shuffle」でアルゴリズムが別パターンを選択。FREEとPROで使える画角の違いも確認できる。</p>
+
+    <div class="feed-header" style="margin-top:24px;">
+      <div class="feed-controls">
+        <button class="btn active" onclick="setMode('free')">FREE</button>
+        <button class="btn" onclick="setMode('pro')">PRO</button>
+      </div>
+      <button class="btn primary" onclick="shuffle()">Shuffle ↻</button>
+    </div>
+
+    <div id="feed"></div>
+  </div>
+
+</div>
+
+<script>
+const POSTS_FREE = [
+  { type:'portrait',  title:'Movement Study #4',        handle:'@kenji_mv',   color:'acc-orange' },
+  { type:'square',    title:'VOID Flyer — Apr 18',       handle:'@void_tokyo', color:'acc-blue'   },
+  { type:'landscape', title:'Groove Theory Workshop',    handle:'@dj_sora',    color:'acc-green'  },
+  { type:'portrait',  title:'Breaking Session Shibuya',  handle:'@bboy_taka',  color:''           },
+  { type:'square',    title:'Late Night Set Recording',  handle:'@dj_sora',    color:'acc-pink'   },
+  { type:'landscape', title:'Contact Tokyo Recap',       handle:'@organiser_y',color:'acc-yellow' },
+  { type:'portrait',  title:'Footwork Practice Diary',   handle:'@dancer_emi', color:''           },
+  { type:'square',    title:'New Apparel Drop VOID×LP',  handle:'@void_tokyo', color:'acc-orange' },
+  { type:'landscape', title:'Why Tokyo is Going Global', handle:'@organiser_y',color:''           },
+];
+
+const POSTS_PRO = [
+  ...POSTS_FREE,
+  { type:'vertical',   title:'Reel — Amsterdam Set',    handle:'@dj_sora',    color:'acc-blue'   },
+  { type:'vertical',   title:'Choreography Cut',        handle:'@dancer_emi', color:'acc-pink'   },
+  { type:'vertical',   title:'NFC Tap Moment',          handle:'@kenji_mv',   color:'acc-orange' },
+  { type:'cinematic',  title:'MARROW — 600 People, One Room, No Phones', handle:'@organiser_y', color:'' },
+];
+
+const PATTERNS = [
+  { name:'A', slots:['portrait','landscape','square'] },
+  { name:'B', slots:['landscape','square','square'] },
+  { name:'C', slots:['vertical','vertical','vertical'] }, // PRO only
+  { name:'D', slots:['portrait','square','square','landscape'] },
+];
+
+let mode = 'free';
+let lastPattern = '';
+let lastLastPattern = '';
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.btn').forEach(b => {
+    if ((b.textContent === 'FREE' && m === 'free') || (b.textContent === 'PRO' && m === 'pro')) {
+      b.classList.add('active');
+    } else if (b.textContent === 'FREE' || b.textContent === 'PRO') {
+      b.classList.remove('active');
+    }
+  });
+  shuffle();
+}
+
+function pickPattern(posts) {
+  const hasVertical = posts.some(p => p.type === 'vertical');
+  let available = PATTERNS.filter(p => {
+    if (p.name === 'C' && (mode === 'free' || !hasVertical)) return false;
+    if (p.name === lastPattern && p.name === lastLastPattern) return false;
+    return true;
+  });
+  if (!available.length) available = PATTERNS.filter(p => p.name !== 'C' || (mode === 'pro' && hasVertical));
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+function getPostByType(posts, type, used) {
+  const candidates = posts.filter((p,i) => p.type === type && !used.has(i));
+  if (!candidates.length) {
+    const fallback = posts.filter((p,i) => !used.has(i));
+    return fallback.length ? fallback[Math.floor(Math.random() * fallback.length)] : null;
+  }
+  return candidates[Math.floor(Math.random() * candidates.length)];
+}
+
+function colorDot(color) {
+  const map = { 'acc-orange':'#FF4D00','acc-blue':'#0038FF','acc-yellow':'#FFD000','acc-green':'#00C853','acc-pink':'#FF2D6B' };
+  return map[color] || '#333';
+}
+
+function shuffle() {
+  const posts = mode === 'pro' ? POSTS_PRO : POSTS_FREE;
+  const feed = document.getElementById('feed');
+  feed.innerHTML = '';
+
+  // render 2 pattern blocks
+  for (let block = 0; block < 2; block++) {
+    const pattern = pickPattern(posts);
+    lastLastPattern = lastPattern;
+    lastPattern = pattern.name;
+
+    const used = new Set();
+    const cells = [];
+
+    pattern.slots.forEach(slotType => {
+      // find post index
+      const candidates = posts.map((p,i)=>({p,i})).filter(({p,i}) => p.type === slotType && !used.has(i));
+      let chosen;
+      if (candidates.length) {
+        chosen = candidates[Math.floor(Math.random() * candidates.length)];
+      } else {
+        const fallback = posts.map((p,i)=>({p,i})).filter(({p,i}) => !used.has(i));
+        if (!fallback.length) return;
+        chosen = fallback[Math.floor(Math.random() * fallback.length)];
+      }
+      used.add(chosen.i);
+      cells.push({ post: chosen.p, slot: slotType });
+    });
+
+    cells.forEach(({ post, slot }) => {
+      const card = document.createElement('div');
+      card.className = `feed-card ${post.color || ''}`;
+
+      // grid span
+      if (slot === 'portrait')   card.classList.add('span-portrait');
+      if (slot === 'landscape')  card.classList.add('span-landscape');
+      if (slot === 'vertical')   card.classList.add('span-916');
+      if (slot === 'cinematic')  card.classList.add('span-cinematic');
+
+      const titleSize = (slot === 'landscape' || slot === 'cinematic') ? '' : 'sm';
+      card.innerHTML = `
+        <div class="card-inner">
+          <div class="card-type">${slot.toUpperCase()} · ${block === 0 ? 'Pattern ' + pattern.name : ''}</div>
+          <div class="card-title ${titleSize}">${post.title}</div>
+          <div class="card-handle">${post.handle}</div>
+        </div>
+        <div class="card-dot" style="background:${colorDot(post.color)}"></div>
+      `;
+      feed.appendChild(card);
+    });
+  }
+}
+
+// init
+shuffle();
+</script>
+</body>
+</html>
