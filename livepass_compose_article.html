@@ -892,19 +892,33 @@ html,body,.form,.content,.main,main,section,div:not(.color-swatch),footer{backgr
 
   <!-- Ticket / Pass / Reserve buttons (optional) -->
   <div class="form-section" id="sec-tickets">
-    <div class="sec-title" style="font-weight:700;font-size:14px;margin-bottom:4px">チケット・購入ボタン (任意)</div>
-    <div class="sec-sub" style="font-size:11px;color:rgba(10,10,10,.5);margin-bottom:16px">読者が購入できるボタンを投稿に表示（選択したものだけ表示）</div>
+    <div class="sec-title" style="font-weight:700;font-size:14px;margin-bottom:4px">販売・サブスクボタン (任意)</div>
+    <div class="sec-sub" style="font-size:11px;color:rgba(10,10,10,.5);margin-bottom:16px">
+      SCREEN 向けの販売オプション。チケット・予約は CALENDAR の投稿から設定してください。
+    </div>
 
     <div style="display:flex;flex-direction:column;gap:12px">
+      <!-- 物販 (goods sale) -->
       <label class="ticket-opt" style="display:flex;align-items:center;gap:12px;padding:14px;border:1px solid rgba(10,10,10,.12);border-radius:10px;cursor:pointer">
-        <input type="checkbox" id="ticketEnable" style="width:18px;height:18px;accent-color:#0A0A0A">
+        <input type="checkbox" id="goodsEnable" style="width:18px;height:18px;accent-color:#0A0A0A">
         <div style="flex:1">
-          <div style="font-weight:600;font-size:13px">TICKET を購入</div>
-          <div style="font-size:10px;color:rgba(10,10,10,.5)">単発チケット販売</div>
+          <div style="font-weight:600;font-size:13px">物販</div>
+          <div style="font-size:10px;color:rgba(10,10,10,.5)">アパレル・雑貨などの購入ボタン</div>
         </div>
-        <input type="number" id="ticketPrice" placeholder="¥0" min="0" style="width:100px;padding:8px;border:1px solid rgba(10,10,10,.15);border-radius:6px;font-size:13px;text-align:right">
+        <input type="number" id="goodsPrice" placeholder="¥0" min="0" style="width:100px;padding:8px;border:1px solid rgba(10,10,10,.15);border-radius:6px;font-size:13px;text-align:right">
       </label>
 
+      <!-- 音源販売 (audio sale) -->
+      <label class="ticket-opt" style="display:flex;align-items:center;gap:12px;padding:14px;border:1px solid rgba(10,10,10,.12);border-radius:10px;cursor:pointer">
+        <input type="checkbox" id="audioEnable" style="width:18px;height:18px;accent-color:#0A0A0A">
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:13px">音源販売</div>
+          <div style="font-size:10px;color:rgba(10,10,10,.5)">MIX・楽曲ダウンロード販売</div>
+        </div>
+        <input type="number" id="audioPrice" placeholder="¥0" min="0" style="width:100px;padding:8px;border:1px solid rgba(10,10,10,.15);border-radius:6px;font-size:13px;text-align:right">
+      </label>
+
+      <!-- EXPASS PASS (NFC/QR) -->
       <label class="ticket-opt" style="display:flex;align-items:center;gap:12px;padding:14px;border:1.5px solid rgba(0,229,160,.45);background:rgba(0,229,160,.04);border-radius:10px;cursor:pointer">
         <input type="checkbox" id="expassEnable" style="width:18px;height:18px;accent-color:#00E5A0">
         <div style="flex:1">
@@ -923,7 +937,7 @@ html,body,.form,.content,.main,main,section,div:not(.color-swatch),footer{backgr
         <input type="checkbox" id="supporterEnable" style="width:18px;height:18px;accent-color:#0A0A0A">
         <div style="flex:1">
           <div style="font-weight:600;font-size:13px">SUPPORTER PASS</div>
-          <div style="font-size:10px;color:rgba(10,10,10,.5)">月額サポーター</div>
+          <div style="font-size:10px;color:rgba(10,10,10,.5)">月額サポーター (STANDARD プラン以上)</div>
         </div>
         <input type="number" id="supporterPrice" placeholder="¥0" min="0" style="width:100px;padding:8px;border:1px solid rgba(10,10,10,.15);border-radius:6px;font-size:13px;text-align:right">
       </label>
@@ -932,17 +946,9 @@ html,body,.form,.content,.main,main,section,div:not(.color-swatch),footer{backgr
         <input type="checkbox" id="vipEnable" style="width:18px;height:18px;accent-color:#0A0A0A">
         <div style="flex:1">
           <div style="font-weight:600;font-size:13px">VIP PASS</div>
-          <div style="font-size:10px;color:rgba(10,10,10,.5)">高額サポーター</div>
+          <div style="font-size:10px;color:rgba(10,10,10,.5)">高額サポーター (PRO プラン推奨)</div>
         </div>
         <input type="number" id="vipPrice" placeholder="¥0" min="0" style="width:100px;padding:8px;border:1px solid rgba(10,10,10,.15);border-radius:6px;font-size:13px;text-align:right">
-      </label>
-
-      <label class="ticket-opt" style="display:flex;align-items:center;gap:12px;padding:14px;border:1px solid rgba(10,10,10,.12);border-radius:10px;cursor:pointer">
-        <input type="checkbox" id="reserveEnable" style="width:18px;height:18px;accent-color:#0A0A0A">
-        <div style="flex:1">
-          <div style="font-weight:600;font-size:13px">予約する</div>
-          <div style="font-size:10px;color:rgba(10,10,10,.5)">事前予約受付</div>
-        </div>
       </label>
 
       <!-- Launch notice — at launch only 予約 + tips/subs are active.
@@ -955,8 +961,8 @@ html,body,.form,.content,.main,main,section,div:not(.color-swatch),footer{backgr
         style="display:none;padding:12px 14px;margin-top:4px;border-radius:10px;background:rgba(0,229,160,.06);border:0.5px solid rgba(0,229,160,.28);font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;color:rgba(10,10,10,.72);line-height:1.7">
         <div style="font-weight:800;font-size:12px;color:#0a5a43;margin-bottom:4px">EXPASS が販売を代行します</div>
         決済は EXPASS 名義で Stripe を通じて受け取り、手数料を引いて投稿者へ自動送金します (個人情報の公開は不要)。
-        ローンチ時点では<b>予約受付・投げ銭・サブスク</b>が稼働。<br>
-        チケット / EXPASS PASS / 物販は <b>近日公開</b> — ボタン自体は投稿に残りますが、タップ時に案内モーダルを表示します。
+        ローンチ時点では<b>投げ銭・サブスク</b>と CALENDAR の<b>予約受付</b>のみ稼働。<br>
+        物販・音源販売・EXPASS PASS は <b>近日公開</b> — ボタン自体は投稿に残り、タップ時に案内モーダルを表示します。
         <a href="/terms/tokushou" style="display:inline-block;margin-top:4px;color:#0a5a43;text-decoration:underline">特定商取引法に基づく表記 →</a>
       </div>
     </div>
@@ -1191,7 +1197,7 @@ document.getElementById('videoLoopToggle')?.addEventListener('change', (e) => {
      the creator knows the EXPASS-merchant model applies. */
 (function initTicketGates(){
   const banner = document.getElementById('legalNotice');
-  const priced = ['ticketEnable','expassEnable','supporterEnable','vipEnable'];
+  const priced = ['goodsEnable','audioEnable','expassEnable','supporterEnable','vipEnable'];
 
   function showBannerIfAnyChecked(){
     if (!banner) return;
@@ -1215,9 +1221,9 @@ document.getElementById('videoLoopToggle')?.addEventListener('change', (e) => {
     });
   });
 
-  // TICKET / EXPASS: allow toggle; the real-time gate lives on the
-  // detail page (tap → "近日公開" modal). Just toggle the banner.
-  ['ticketEnable','expassEnable'].forEach(id => {
+  // 物販 / 音源販売 / EXPASS: toggle freely; the real-time gate lives on
+  // the detail page (tap → "近日公開" modal). Just flip the banner.
+  ['goodsEnable','audioEnable','expassEnable'].forEach(id => {
     document.getElementById(id)?.addEventListener('change', showBannerIfAnyChecked);
   });
 
@@ -1764,23 +1770,65 @@ function prefillEditForm() {
   document.querySelectorAll('.access-btn').forEach(b => b.classList.toggle('active', b.dataset.access === state.access));
   titleInput.value = editingArticle.title || '';
   bodyInput.value  = editingArticle.body  || '';
-  if (editingArticle.cover) {
-    state.coverDataUrl = editingArticle.cover;
+  if (editingArticle.cover || editingArticle.videoUrl) {
+    state.coverDataUrl = editingArticle.cover || null;
     state.mediaType = editingArticle.mediaType || 'image';
+    state.videoLoop = !!editingArticle.videoLoop;
     coverUpload.classList.add('has-image');
-    coverUpload.innerHTML = `<img class="cover-preview-img" src="${editingArticle.cover}" alt="">`;
+
+    // Video posts: render a <video> preview (with the Firebase URL if
+    // available, or the IndexedDB blob) so the creator can confirm the
+    // clip is still attached. Falls back to the JPEG poster only when
+    // neither source is reachable.
+    if (state.mediaType === 'video') {
+      const src = editingArticle.videoUrl || '';
+      if (src) {
+        coverUpload.innerHTML = `<video src="${src}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block"></video>`;
+      } else {
+        coverUpload.innerHTML = editingArticle.cover
+          ? `<img class="cover-preview-img" src="${editingArticle.cover}" alt="">`
+          : '';
+        // Try to hydrate from IndexedDB.
+        MediaDB.get('media_' + editingArticle.id).then(blob => {
+          if (!blob) return;
+          state.mediaBlob = blob;  // so re-save keeps the blob
+          const url = URL.createObjectURL(blob);
+          coverUpload.innerHTML = `<video src="${url}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block"></video>`;
+        }).catch(()=>{});
+      }
+      // Reveal + sync the loop toggle
+      const loopBox = document.getElementById('videoLoopBox');
+      const loopToggle = document.getElementById('videoLoopToggle');
+      if (loopBox) loopBox.style.display = 'block';
+      if (loopToggle) loopToggle.checked = !!state.videoLoop;
+    } else {
+      coverUpload.innerHTML = `<img class="cover-preview-img" src="${editingArticle.cover}" alt="">`;
+    }
   }
   if (Array.isArray(editingArticle.collaborators)) {
     state.collaborators = editingArticle.collaborators.map(c => ({ name: c.name || c, share: Number(c.share) || 0 }));
     renderCollabList();
   }
-  // Prefill ticket checkboxes
+  // Prefill ticket checkboxes — guarded with ?. because the SCREEN form
+  // no longer has TICKET / 予約 buttons (those moved to CALENDAR). Any
+  // legacy tickets of those types stored on older posts are preserved
+  // in the article.tickets array but simply won't show a checkbox here.
   if (Array.isArray(editingArticle.tickets)) {
     editingArticle.tickets.forEach(t => {
-      if (t.type === 'ticket') { document.getElementById('ticketEnable').checked = true; document.getElementById('ticketPrice').value = t.price || ''; }
-      if (t.type === 'supporter') { document.getElementById('supporterEnable').checked = true; document.getElementById('supporterPrice').value = t.price || ''; }
-      if (t.type === 'vip') { document.getElementById('vipEnable').checked = true; document.getElementById('vipPrice').value = t.price || ''; }
-      if (t.type === 'reserve') { document.getElementById('reserveEnable').checked = true; }
+      const map = {
+        goods:'goodsEnable', audio:'audioEnable',
+        expass:'expassEnable', supporter:'supporterEnable', vip:'vipEnable',
+        ticket:'ticketEnable', reserve:'reserveEnable',
+      };
+      const priceMap = {
+        goods:'goodsPrice', audio:'audioPrice',
+        expass:'expassPrice', supporter:'supporterPrice', vip:'vipPrice',
+        ticket:'ticketPrice',
+      };
+      const cb = document.getElementById(map[t.type]);
+      if (cb) cb.checked = true;
+      const pi = document.getElementById(priceMap[t.type]);
+      if (pi && t.price) pi.value = t.price;
     });
   }
   document.getElementById('submitBtn').textContent = '変更を保存 →';
@@ -1850,6 +1898,10 @@ submitBtn.addEventListener('click', async () => {
     cover:    null,
     mediaType: state.mediaType || 'image',
     videoLoop: state.mediaType === 'video' ? !!state.videoLoop : undefined,
+    // Preserve the already-uploaded Firebase video URL when editing without
+    // re-attaching the file. The upload block below will override this if
+    // state.mediaBlob is set.
+    videoUrl: (editingArticle && editingArticle.videoUrl) || undefined,
     bgColor: state.bgColor || '#0E0E0E',
     extraImages: undefined,
     title:    titleInput.value.trim(),
@@ -1857,10 +1909,11 @@ submitBtn.addEventListener('click', async () => {
     tickets: (function(){
       const t = [];
       const $ = id => document.getElementById(id);
-      if ($('ticketEnable')?.checked) t.push({type:'ticket',label:'TICKET を購入',price:Number($('ticketPrice').value)||0});
-      if ($('supporterEnable')?.checked) t.push({type:'supporter',label:'SUPPORTER PASS',price:Number($('supporterPrice').value)||0});
-      if ($('vipEnable')?.checked) t.push({type:'vip',label:'VIP PASS',price:Number($('vipPrice').value)||0});
-      if ($('reserveEnable')?.checked) t.push({type:'reserve',label:'予約する',price:0});
+      if ($('goodsEnable')?.checked)     t.push({type:'goods',    label:'物販',           price:Number($('goodsPrice').value)||0});
+      if ($('audioEnable')?.checked)     t.push({type:'audio',    label:'音源販売',       price:Number($('audioPrice').value)||0});
+      if ($('expassEnable')?.checked)    t.push({type:'expass',   label:'EXPASS を購入',   price:Number($('expassPrice').value)||0});
+      if ($('supporterEnable')?.checked) t.push({type:'supporter',label:'SUPPORTER PASS', price:Number($('supporterPrice').value)||0});
+      if ($('vipEnable')?.checked)       t.push({type:'vip',      label:'VIP PASS',       price:Number($('vipPrice').value)||0});
       return t;
     })(),
     collaborators: state.collaborators.slice(),
