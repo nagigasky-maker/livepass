@@ -172,6 +172,16 @@ body.other-user .ph-name{font-size:17px !important;letter-spacing:0 !important;f
 body.other-user .ph-role{font-size:10px !important;letter-spacing:.2em !important}
 body.other-user .ph-actions{display:flex !important;gap:8px !important;align-items:center !important;flex-shrink:0 !important}
 
+/* Other-user: split SCREEN vs CALENDAR within the shared #panel-screen.
+   SCREEN  = only ARTICLE (articles / posts)
+   CALENDAR = only EVENT / WORKSHOP / EXHIBITION
+   The sub-sub-tab row (ARTICLE / EVENT / WORKSHOP / EXHIBITION) shows
+   only the subset that matches the top subtab. */
+body.other-user.prof-view-screen .sst-btn[data-tab="event"],
+body.other-user.prof-view-screen .sst-btn[data-tab="workshop"],
+body.other-user.prof-view-screen .sst-btn[data-tab="exhibition"]{display:none !important}
+body.other-user.prof-view-calendar .sst-btn[data-tab="article"]{display:none !important}
+
 .profile-hero{padding:22px 18px 6px;display:flex;align-items:center;gap:10px}
 .ph-avatar{
   width:72px;height:72px;border-radius:50%;
@@ -2478,12 +2488,17 @@ document.querySelectorAll('.st-btn').forEach(btn => {
     const target = document.getElementById(SUB_PANEL[sub]);
     if (target) target.classList.add('active');
     if (sub === 'saved') renderSavedGrid();
-    // Calendar tab: within the shared screen panel, auto-activate the EVENT filter
+    // Calendar tab: within the shared screen panel, auto-activate the EVENT
+    // filter AND flip body class so the sub-sub-tab row hides ARTICLE.
     if (sub === 'calendar') {
+      document.body.classList.add('prof-view-calendar');
+      document.body.classList.remove('prof-view-screen');
       const eventTab = document.querySelector('.sst-btn[data-tab="event"]');
       if (eventTab && !eventTab.classList.contains('active')) eventTab.click();
     }
     if (sub === 'screen') {
+      document.body.classList.add('prof-view-screen');
+      document.body.classList.remove('prof-view-calendar');
       const articleTab = document.querySelector('.sst-btn[data-tab="article"]');
       if (articleTab && !articleTab.classList.contains('active')) articleTab.click();
     }
@@ -4433,13 +4448,16 @@ if (isOtherUser) {
     cover.style.setProperty('--cover-hue', hue);
   }
 
-  // Start on SCREEN tab (PASS is owner-only)
+  // Start on SCREEN tab (PASS is owner-only). Also set prof-view-screen so
+  // the sub-sub-tab row hides EVENT / WORKSHOP / EXHIBITION by default;
+  // only the CALENDAR top-subtab reveals those.
   document.querySelectorAll('.st-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.sub-panel').forEach(p => p.classList.remove('active'));
   const scrBtn = document.querySelector('.st-btn[data-sub="screen"]');
   if (scrBtn) scrBtn.classList.add('active');
   const scrPanel = document.getElementById('panel-screen');
   if (scrPanel) scrPanel.classList.add('active');
+  document.body.classList.add('prof-view-screen');
 
   // Name + role
   document.querySelector('.ph-name').textContent = viewingUser;
