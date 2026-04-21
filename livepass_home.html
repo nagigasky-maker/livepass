@@ -1421,7 +1421,8 @@ function renderMagazine(posts) {
             if (!blob) return;
             const vid = document.createElement('video');
             vid.src = URL.createObjectURL(blob);
-            vid.autoplay=true;vid.muted=true;vid.loop=true;vid.playsInline=true;
+            vid.autoplay=true;vid.muted=true;vid.playsInline=true;
+            vid.loop = a.videoLoop !== false; // default to loop for back-compat; creator opt-out via post form
             vid.style.cssText='width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0';
             posterEl.parentNode.replaceChild(vid, posterEl);
             const pi2 = card.querySelector('.fc-play-icon');
@@ -1439,10 +1440,10 @@ function renderMagazine(posts) {
           }).catch(()=>{});
         }
       }
-      // Cover fallback: when compose_article hit a localStorage quota
-      // and saved the article with cover:null, the cover blob was
-      // stashed separately in IndexedDB (cover_<id>). Re-inject it here
-      // so the feed doesn't fall back to the coloured placeholder.
+      // Cover fallback: when Firebase upload fails, compose_* stashes
+      // the cover as a blob in IndexedDB (cover_<id>) and writes
+      // cover:null to localStorage. Re-inject it here so the feed
+      // doesn't fall back to the coloured placeholder.
       if (!a.cover && a.userPost) {
         MediaDB.get('cover_' + a.id).then(blob => {
           if (!blob) return;
@@ -1454,9 +1455,51 @@ function renderMagazine(posts) {
           card.style.background = ''; // drop the orange/blue/yellow fill
         }).catch(()=>{});
       }
+
+      // Slideshow idb: markers — each <img src="idb:extra_<id>_<i>">
+      // gets its blob swapped in from IndexedDB (set by compose when
+      // Firebase uploads failed and we fell back to local-only media).
+      if (a.mediaType === 'slideshow') {
+        card.querySelectorAll('img[src^="idb:"]').forEach(img => {
+          const key = img.getAttribute('src').slice(4);
+          MediaDB.get(key).then(blob => {
+            if (blob) img.src = URL.createObjectURL(blob);
+          }).catch(()=>{});
+        });
+      }
     }
     grid.appendChild(rowDiv);
   }
+  // Re-bind the off-screen pause observer to the freshly-rendered cards.
+  rebindVideoPauseObserver();
+}
+
+/* ─────────────────────────────────────────────
+   Pause videos that are off-screen. Without this every autoplaying
+   <video> keeps decoding in the background, wrecking battery and
+   data usage, especially on iOS. We observe the card (not the video
+   directly) so the logic still fires even when the blob swap is
+   still pending. Re-observed on every feed re-render.
+   ───────────────────────────────────────────── */
+let _videoPauseObserver = null;
+function rebindVideoPauseObserver(){
+  if (!('IntersectionObserver' in window)) return;
+  if (_videoPauseObserver) { try { _videoPauseObserver.disconnect(); } catch(_){} }
+  _videoPauseObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const vids = entry.target.querySelectorAll('video');
+      vids.forEach(v => {
+        if (entry.isIntersecting) {
+          // Best-effort resume — muted+playsinline keeps iOS happy.
+          const p = v.play();
+          if (p && p.catch) p.catch(()=>{});
+        } else {
+          try { v.pause(); } catch(_){}
+        }
+      });
+    });
+  }, { threshold: 0.25 });
+  document.querySelectorAll('.feed-card').forEach(c => _videoPauseObserver.observe(c));
 }
 
 renderMagazine(FEED);
