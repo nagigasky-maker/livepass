@@ -631,15 +631,16 @@ body{color:#0A0A0A !important}
 .hdr-back{border-color:rgba(10,10,10,.18) !important;background:rgba(10,10,10,.04) !important}
 
 
-/* ── Force entire page white (no black bands) ── */
+/* ── Force entire page white (no black bands) ──
+   The div selector must exclude .color-swatch so the palette's
+   inline backgrounds survive. Do NOT add a defensive rule for
+   .color-swatch here — `revert` would wipe the inline color, and
+   any !important rule needs a concrete value which defeats the
+   per-swatch styling. The :not() exclusion is enough. */
 *:not(.pal-dot):not(.color-swatch):not(.title-preview):not([class*="preview"]):not([class*="color-preview"]){background-color:transparent}
 html,body,.form,.content,.main,main,section,div:not(.color-swatch),footer{background-color:#FFF !important}
 .cover-upload{background:rgba(10,10,10,.03) !important}
 .title-preview,[class*="preview"]{background:inherit !important}
-/* Keep the color-picker swatches showing their actual bg — the div
-   rule above would otherwise paint them white and the user sees no
-   palette. */
-.color-swatch{background-color:revert !important}
 #toast{background:#0A0A0A !important}
 
 
