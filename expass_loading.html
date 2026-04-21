@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#04122a">
+<title>EXPASS — Loading</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{
+  width:100%;height:100%;height:100dvh;background:#000;color:#BDEBFF;overflow:hidden;
+  font-family:'IBM Plex Mono',ui-monospace,monospace;-webkit-font-smoothing:antialiased;
+  user-select:none;-webkit-user-select:none;
+}
+
+/* CRT phosphor body */
+.crt{
+  position:fixed;inset:0;
+  padding:clamp(12vh,16vh,18vh) clamp(18px,7vw,48px);
+  display:flex;flex-direction:column;gap:10px;
+  background:radial-gradient(ellipse at 50% 50%,#0a2a55 0%,#04122a 60%,#000 100%);
+  overflow:hidden;
+}
+/* scanlines overlay */
+.crt::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(to bottom,rgba(255,255,255,.05) 0 1px,transparent 1px 3px);
+  mix-blend-mode:overlay;
+}
+/* vignette */
+.crt::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  box-shadow:inset 0 0 140px rgba(0,0,0,.85);
+}
+
+.crt-head{
+  font-size:10px;letter-spacing:.24em;text-transform:uppercase;
+  color:#6AC8FF;opacity:.85;
+  border-bottom:1px solid rgba(106,200,255,.25);padding-bottom:10px;
+  margin-bottom:6px;
+}
+
+/* Typed text */
+.crt-txt{
+  font-size:clamp(11px,3.6vw,16px);line-height:1.65;
+  color:#BDEBFF;white-space:pre-wrap;word-break:break-word;
+  text-shadow:0 0 6px rgba(61,170,255,.45);
+  flex:1;
+}
+.crt-cursor{
+  display:inline-block;width:.55em;height:1em;vertical-align:text-bottom;
+  background:#BDEBFF;box-shadow:0 0 6px rgba(61,170,255,.6);
+  animation:blink 1s steps(2) infinite;
+  margin-left:1px;
+}
+@keyframes blink{50%{opacity:0}}
+
+/* Skip pill */
+.skip{
+  position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:14px;
+  padding:6px 12px;border-radius:99px;
+  background:rgba(189,235,255,.08);color:rgba(189,235,255,.8);
+  font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.22em;
+  border:0.5px solid rgba(189,235,255,.18);z-index:10;
+  text-transform:uppercase;
+}
+
+/* Brand footer */
+.crt-brand{
+  position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);
+  text-align:center;
+  font-size:9px;letter-spacing:.32em;text-transform:uppercase;
+  color:rgba(189,235,255,.45);
+}
+</style>
+</head>
+<body>
+
+<main class="crt" id="crt">
+  <div class="crt-head">EXPASS™ · BOOT OK</div>
+  <div class="crt-txt" id="txt"></div>
+</main>
+
+<button class="skip" id="skip" type="button" aria-label="Skip">SKIP</button>
+<div class="crt-brand">© EXPASS · YOU WERE THERE</div>
+
+<script>
+/* ─────────────────────────────────────────────
+   /loading
+   ─────────────────────────────────────────────
+   A retro-CRT typewriter boot sequence. Types out the script
+   character-by-character with light jitter, then redirects to
+   ?dest= (defaults to /screen). Skippable via the SKIP button or
+   by tapping anywhere else.
+
+   ?preview=1 loops forever — designer review mode, never advances.
+   ───────────────────────────────────────────── */
+(function(){
+  const qs      = new URLSearchParams(location.search);
+  const preview = qs.get('preview') === '1';
+  const dest    = qs.get('dest') || '/screen';
+  const txtEl   = document.getElementById('txt');
+  const skipBtn = document.getElementById('skip');
+
+  const SCRIPT = [
+    '> EXPASS™ · Experience Pass',
+    '> boot sequence ........ OK',
+    '> authenticating ....... OK',
+    '> loading culture ...... OK',
+    '',
+    '> YOU. WERE. THERE.',
+  ];
+
+  let timers = [];
+  let active = true;
+  const cursor = '<span class="crt-cursor"></span>';
+
+  function render(str){ txtEl.innerHTML = str + cursor; }
+  function clearAll(){ timers.forEach(clearTimeout); timers = []; }
+
+  function advance(){
+    if (!active) return;
+    let buf = '', lineIdx = 0, charIdx = 0;
+    function step(){
+      if (!active) return;
+      if (lineIdx >= SCRIPT.length){
+        if (preview){
+          // Loop — wipe and restart after a pause.
+          timers.push(setTimeout(() => { buf=''; lineIdx=0; charIdx=0; render(buf); step(); }, 1200));
+          return;
+        }
+        // Done — let the cursor blink for a moment then redirect.
+        timers.push(setTimeout(() => {
+          if (!active) return;
+          try { sessionStorage.setItem('livepass_splash_shown', '1'); } catch(_){}
+          location.replace(dest);
+        }, 700));
+        return;
+      }
+      const line = SCRIPT[lineIdx];
+      if (charIdx < line.length){
+        buf += line[charIdx]; charIdx++;
+        render(buf);
+        timers.push(setTimeout(step, 16 + Math.random() * 28));
+      } else {
+        buf += '\n'; lineIdx++; charIdx = 0;
+        render(buf);
+        timers.push(setTimeout(step, line === '' ? 90 : 180));
+      }
+    }
+    step();
+  }
+
+  function skip(){
+    if (preview) return;
+    active = false;
+    clearAll();
+    try { sessionStorage.setItem('livepass_splash_shown', '1'); } catch(_){}
+    location.replace(dest);
+  }
+
+  skipBtn.addEventListener('click', skip);
+  // Tap anywhere to skip too.
+  document.addEventListener('click', (e) => {
+    if (e.target === skipBtn) return; // already handled
+    skip();
+  });
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' || e.key === ' ' || e.key === 'Enter') skip();
+  });
+
+  render(''); // show cursor before typing starts
+  setTimeout(advance, 240);
+})();
+</script>
+
+</body>
+</html>
