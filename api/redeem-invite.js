@@ -6,12 +6,18 @@
  * mirror to Firestore users/{uid}.plan.
  *
  * Env vars (comma-separated codes, trimmed + upper-cased):
- *   INVITE_CODES_ARTIST   — grants plan="artist"   for 365 days
+ *   INVITE_CODES_SEED     — grants plan="pro" for 365 days
+ *                           Use this for the 30–50 founding-artist
+ *                           seeds (e.g. EXPASS-SEED-A1B2C3).
+ *                           PRO waives ¥2,480/mo × 12 = ¥29,760/artist.
+ *   INVITE_CODES_STANDARD — grants plan="standard" for 365 days
  *   INVITE_CODES_PRO      — grants plan="pro"      for 365 days
  *   INVITE_CODES_BUSINESS — grants plan="business" for 365 days
+ *   INVITE_CODES_ARTIST   — legacy alias for STANDARD (keeps old
+ *                           pre-Phase-1 codes valid).
  *
  * Expected request:
- *   POST { code: "ARTIST30-ABCD", uid?: "firebase-uid" }
+ *   POST { code: "EXPASS-SEED-A1B2C3", uid?: "firebase-uid" }
  *
  * Response:
  *   200 { ok:true, plan:"artist", planExpiresAt: 172345...}
@@ -48,9 +54,13 @@ module.exports = async function handler(req, res) {
   }
 
   const tiers = [
-    { plan:'artist',   env:'INVITE_CODES_ARTIST'   },
+    // SEED grants PRO — use this bucket for the 30–50 founding artists.
+    { plan:'pro',      env:'INVITE_CODES_SEED'     },
+    { plan:'standard', env:'INVITE_CODES_STANDARD' },
     { plan:'pro',      env:'INVITE_CODES_PRO'      },
     { plan:'business', env:'INVITE_CODES_BUSINESS' },
+    // Legacy alias — older ARTIST codes now map to STANDARD.
+    { plan:'standard', env:'INVITE_CODES_ARTIST'   },
   ];
 
   for (const t of tiers) {

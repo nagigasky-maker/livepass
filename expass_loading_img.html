@@ -246,6 +246,24 @@ function replayAll() {
   );
   els.forEach(el => { el.style.animation='none'; el.offsetHeight; el.style.animation=''; });
 }
+
+/* ─────────────────────────────────────────────
+   Auto-advance: the progress bar fills over ~5s
+   (0.6s delay + 4.5s ease). Once it finishes we
+   mark the session as warmed and continue to the
+   destination. ?dest= overrides the default.
+   Skip entirely if ?preview=1 (design review mode).
+   ───────────────────────────────────────────── */
+(function autoAdvance(){
+  const qs = new URLSearchParams(location.search);
+  if (qs.get('preview') === '1') return;       // designer preview, loop forever
+  const dest = qs.get('dest') || '/screen';
+  const delay = 5200;                           // slightly past the progress fill
+  setTimeout(() => {
+    try { sessionStorage.setItem('livepass_splash_shown', '1'); } catch(_){}
+    location.replace(dest);
+  }, delay);
+})();
 </script>
 </body>
 </html>
