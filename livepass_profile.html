@@ -11,6 +11,7 @@
 <title>EXPASS — Profile</title>
 <script>try{if(localStorage.getItem('livepass_tier')==='user')document.documentElement.classList.add('tier-user')}catch(e){}</script>
 <style>html.tier-user .bn-btn[aria-label="Lab"],html.tier-user .bn-btn[aria-label="Atelier"]{display:none!important}</style>
+<script src="/livepass_paywall.js" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
 /* ─────────────────────────────────────────────
@@ -118,6 +119,58 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 /* ─────────────────────────────────────────────
    PROFILE PAGE — specific
    ───────────────────────────────────────────── */
+/* Cover banner — shown only when viewing another user's profile */
+.ph-cover{
+  display:none;
+  position:relative;
+  width:100%;height:140px;
+  background:
+    linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.55) 100%),
+    linear-gradient(135deg,hsla(var(--cover-hue,200),60%,28%,1),hsla(var(--cover-hue,200),40%,8%,1));
+  background-size:cover;background-position:center;
+  overflow:hidden;
+}
+.ph-cover.has-img{background-image:
+  linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.55) 100%),
+  var(--cover-img);
+  background-size:cover;background-position:center;
+}
+body.other-user .ph-cover{display:block}
+body.other-user .profile-hero{margin-top:-28px;position:relative;z-index:1}
+
+/* Subtab visibility for other-user mode */
+.st-btn[data-sub="calendar"]{display:none}
+body.other-user .subtabs{display:flex !important;padding:14px 32px 14px !important}
+body.other-user .st-btn[data-sub="pass"],
+body.other-user .st-btn[data-sub="sub"],
+body.other-user .st-btn[data-sub="saved"]{display:none !important}
+body.other-user .st-btn[data-sub="calendar"]{display:flex !important}
+body.other-user #panel-pass{display:none !important}
+body.other-user #panel-screen{display:block !important}
+body.other-user #panel-sub,
+body.other-user #panel-saved{display:none !important}
+/* In other-user mode we hide the SUB toggle in the topbar and settings gear */
+body.other-user #phHeartBtn,
+body.other-user .topbar a[href="/settings"]{display:none !important}
+
+/* Override the own-profile centered-avatar layout for other-user:
+   go back to avatar-left / name+role-center / actions-right row. */
+body.other-user .profile-hero{
+  flex-direction:row !important;
+  gap:12px !important;
+  padding:14px 18px 12px !important;
+  align-items:center !important;
+  text-align:left !important;
+}
+body.other-user .ph-avatar{width:64px !important;height:64px !important}
+body.other-user .ph-name-block{
+  flex:1 1 0 !important;gap:4px !important;
+  align-items:flex-start !important;text-align:left !important;
+}
+body.other-user .ph-name{font-size:17px !important;letter-spacing:0 !important;font-weight:900 !important}
+body.other-user .ph-role{font-size:10px !important;letter-spacing:.2em !important}
+body.other-user .ph-actions{display:flex !important;gap:8px !important;align-items:center !important;flex-shrink:0 !important}
+
 .profile-hero{padding:22px 18px 6px;display:flex;align-items:center;gap:10px}
 .ph-avatar{
   width:72px;height:72px;border-radius:50%;
@@ -1781,6 +1834,141 @@ body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;c
 .topbar #tbCreate{position:absolute !important;right:18px !important;top:calc(var(--safe-top,0px) + 10px) !important;color:var(--white) !important}
 .topbar .tb-brand{position:relative !important;left:auto !important;top:auto !important;transform:none !important;margin:0 auto !important;height:32px !important}
 
+/* ─────────────────────────────────────────────
+   YOU WERE THERE · INTRO CM
+   Shown fullscreen when welcome card is tapped.
+   ───────────────────────────────────────────── */
+#cmOverlay{
+  position:fixed;inset:0;z-index:9999;
+  background:#000;color:#EDEBE6;
+  display:none;overflow:hidden;
+  font-family:'IBM Plex Mono',ui-monospace,monospace;
+}
+#cmOverlay.open{display:block}
+.cm-stage{position:absolute;inset:0}
+.cm-phase{position:absolute;inset:0;opacity:0;pointer-events:none}
+.cm-phase.on{opacity:1}
+
+/* Phase 1 — cinema */
+.cm-cine{background:radial-gradient(ellipse at 50% 55%,#141414 0%,#000 70%)}
+.cm-lights{position:absolute;inset:0;filter:blur(30px);pointer-events:none}
+.cm-spot{
+  position:absolute;width:40vw;height:40vw;border-radius:50%;
+  mix-blend-mode:screen;opacity:.45;
+  animation:cmSpot 4s ease-in-out infinite alternate;
+}
+.cm-spot.s1{background:#E8100A;top:-10%;left:10%}
+.cm-spot.s2{background:#3DAAFF;top:20%;right:-10%;animation-delay:.6s}
+.cm-spot.s3{background:#A8E63D;bottom:-10%;left:25%;animation-delay:1.2s}
+.cm-spot.s4{background:#F5C842;bottom:10%;right:20%;animation-delay:1.8s}
+@keyframes cmSpot{
+  from{transform:translate(-10%,-5%) scale(1)}
+  to{transform:translate(8%,6%) scale(1.15)}
+}
+.cm-wave{
+  position:absolute;left:0;right:0;bottom:14%;height:60px;
+  display:flex;align-items:flex-end;justify-content:center;gap:6px;padding:0 10%;
+}
+.cm-wave span{
+  width:6px;height:10%;background:rgba(237,235,230,.85);border-radius:3px;
+  animation:cmWave .9s ease-in-out infinite alternate;
+}
+.cm-wave span:nth-child(2){animation-delay:.05s}
+.cm-wave span:nth-child(3){animation-delay:.10s}
+.cm-wave span:nth-child(4){animation-delay:.15s}
+.cm-wave span:nth-child(5){animation-delay:.20s}
+.cm-wave span:nth-child(6){animation-delay:.25s}
+.cm-wave span:nth-child(7){animation-delay:.30s}
+.cm-wave span:nth-child(8){animation-delay:.35s}
+.cm-wave span:nth-child(9){animation-delay:.40s}
+.cm-wave span:nth-child(10){animation-delay:.45s}
+.cm-wave span:nth-child(11){animation-delay:.50s}
+.cm-wave span:nth-child(12){animation-delay:.55s}
+.cm-wave span:nth-child(13){animation-delay:.60s}
+.cm-wave span:nth-child(14){animation-delay:.65s}
+.cm-wave span:nth-child(15){animation-delay:.70s}
+@keyframes cmWave{ from{height:10%} to{height:90%} }
+.cm-cine-caption{
+  position:absolute;left:0;right:0;top:28%;text-align:center;
+  font-family:'Bebas Neue','IBM Plex Mono',monospace;
+  font-size:clamp(28px,9vw,64px);letter-spacing:.22em;color:#EDEBE6;
+  text-shadow:0 0 28px rgba(255,255,255,.35);
+  animation:cmCap .9s ease-out both;
+}
+@keyframes cmCap{
+  from{opacity:0;letter-spacing:.5em;transform:translateY(-10px)}
+  to{opacity:1;letter-spacing:.22em;transform:translateY(0)}
+}
+
+/* Phase 2 — retro CRT */
+.cm-crt{
+  background:
+    radial-gradient(ellipse at 50% 50%,#0a2a55 0%,#04122a 60%,#000 100%);
+  color:#BDEBFF;
+  padding:12vh 7vw;
+  display:flex;flex-direction:column;gap:12px;
+}
+.cm-crt::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,.04) 0 1px,
+      transparent 1px 3px
+    );
+  mix-blend-mode:overlay;
+}
+.cm-crt::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  box-shadow:inset 0 0 140px rgba(0,0,0,.85);
+}
+.cm-crt-head{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.22em;
+  color:#6AC8FF;opacity:.85;text-transform:uppercase;
+  border-bottom:1px solid rgba(106,200,255,.25);padding-bottom:10px;
+}
+.cm-crt-txt{
+  font-family:'IBM Plex Mono',ui-monospace,monospace;
+  font-size:clamp(11px,3.4vw,16px);line-height:1.55;
+  color:#BDEBFF;white-space:pre-wrap;word-break:break-word;
+  text-shadow:0 0 6px rgba(61,170,255,.45);
+  margin-top:8px;
+}
+.cm-crt-txt::after{
+  content:"▊";color:#BDEBFF;animation:cmBlink 1s steps(2) infinite;
+}
+@keyframes cmBlink{50%{opacity:0}}
+
+/* Phase 3 — YOU WERE THERE end */
+.cm-end{
+  background:#000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:18px;
+}
+.cm-end-big{
+  font-family:'Bebas Neue','IBM Plex Mono',monospace;
+  font-size:clamp(30px,10vw,64px);letter-spacing:.18em;color:#EDEBE6;
+  animation:cmEndIn 1s ease-out both;
+  text-align:center;
+}
+.cm-end-c{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.32em;
+  color:rgba(237,235,230,.45);
+  animation:cmEndIn 1s ease-out .2s both;
+}
+@keyframes cmEndIn{
+  from{opacity:0;filter:blur(8px);letter-spacing:.5em}
+  to{opacity:1;filter:blur(0);letter-spacing:.18em}
+}
+
+.cm-skip{
+  position:absolute;top:calc(var(--safe-top,0px) + 14px);right:14px;
+  padding:6px 12px;border-radius:99px;background:rgba(255,255,255,.08);
+  color:rgba(237,235,230,.8);
+  font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.22em;
+  border:0.5px solid rgba(255,255,255,.18);z-index:10;
+}
+
 </style>
 
 
@@ -1814,6 +2002,9 @@ body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;c
 <!-- ═══ CONTENT ═══ -->
 <main class="content">
 
+  <!-- Cover (other-user only — gradient fallback or cover image) -->
+  <div class="ph-cover" id="phCover"></div>
+
   <!-- Hero: centered avatar + name (own profile) -->
   <div class="profile-hero">
     <div class="ph-avatar" id="phAvatar">
@@ -1833,13 +2024,17 @@ body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;c
     </div>
   </div>
 
-  <!-- 4 sub-tab icons: PASS COLLECTION / SCREEN / SUBSCRIPTION / SAVED -->
+  <!-- 4 sub-tab icons: PASS COLLECTION / SCREEN / SUBSCRIPTION / SAVED
+       (other-user view swaps PASS/SUB/SAVED out for CALENDAR) -->
   <nav class="subtabs" id="subtabs">
     <button class="st-btn active" data-sub="pass" aria-label="Pass Collection">
       <svg viewBox="0 0 24 24"><rect x="3" y="5" width="14" height="14" rx="2"/><rect x="7" y="9" width="14" height="14" rx="2" fill="currentColor" fill-opacity="0.3"/></svg>
     </button>
     <button class="st-btn" data-sub="screen" aria-label="Screen">
       <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><polygon points="10,9 10,14 15,11.5" fill="currentColor"/><line x1="9" y1="20" x2="15" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <button class="st-btn" data-sub="calendar" aria-label="Calendar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7" stroke-linecap="round"/><line x1="16" y1="3" x2="16" y2="7" stroke-linecap="round"/></svg>
     </button>
     <button class="st-btn" data-sub="sub" aria-label="Subscription">
       <img src="/sub.png" alt="Subscription" style="width:28px;height:28px;object-fit:contain;display:block">
@@ -2094,24 +2289,184 @@ body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;c
   </button>
 </div>
 
+<!-- ═══ YOU WERE THERE · INTRO CM ═══
+     Played when the welcome card (card01) is tapped. Three phases:
+     1) Cinema scene — abstract concert lights + wave bars
+     2) Retro blue CRT boot screen with typed text
+     3) "YOU WERE THERE / ©EXPASS" fade, then closes.
+     Skippable by tapping or pressing Escape. -->
+<div id="cmOverlay" aria-hidden="true">
+  <div class="cm-stage" id="cmStage">
+    <!-- Phase 1: cinema -->
+    <div class="cm-phase cm-cine" id="cmCine">
+      <div class="cm-lights">
+        <span class="cm-spot s1"></span><span class="cm-spot s2"></span>
+        <span class="cm-spot s3"></span><span class="cm-spot s4"></span>
+      </div>
+      <div class="cm-wave">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <div class="cm-cine-caption">THAT ONE NIGHT</div>
+    </div>
+    <!-- Phase 2: retro blue terminal -->
+    <div class="cm-phase cm-crt" id="cmCrt">
+      <div class="cm-crt-head">EXPASS™ · BOOT OK</div>
+      <pre class="cm-crt-txt" id="cmCrtTxt"></pre>
+    </div>
+    <!-- Phase 3: end card -->
+    <div class="cm-phase cm-end" id="cmEnd">
+      <div class="cm-end-big">YOU WERE THERE</div>
+      <div class="cm-end-c">© EXPASS</div>
+    </div>
+    <button class="cm-skip" id="cmSkip" aria-label="Skip">SKIP</button>
+  </div>
+</div>
+
 <!-- ═══ BOTTOM NAV ═══ -->
 <nav class="bottomnav">
   <a href="/screen" class="bn-btn" aria-label="Screen"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21" stroke-linecap="round"/><line x1="12" y1="18" x2="12" y2="21"/></svg></a>
-  <a href="/calendar" class="bn-btn" aria-label="Calendar"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7" stroke-linecap="round"/><line x1="16" y1="3" x2="16" y2="7" stroke-linecap="round"/></svg></a>
   <a href="/collection" class="bn-btn active" aria-label="Collection"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="14" height="14" rx="2"/><rect x="7" y="9" width="14" height="14" rx="2" fill="currentColor" fill-opacity="0.18"/></svg></a>
-  <a href="/atelier" class="bn-btn" aria-label="Lab"><svg viewBox="0 0 24 24"><path d="M9 3v5.5L4.5 16.7A2.5 2.5 0 0 0 6.7 20.5h10.6a2.5 2.5 0 0 0 2.2-3.8L15 8.5V3" stroke-linejoin="round"/><line x1="9" y1="3" x2="15" y2="3" stroke-linecap="round"/><line x1="8.5" y1="14" x2="15.5" y2="14"/></svg></a>
+  <a href="/calendar" class="bn-btn" aria-label="Calendar"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7" stroke-linecap="round"/><line x1="16" y1="3" x2="16" y2="7" stroke-linecap="round"/></svg></a>
   <a href="/discovery" class="bn-btn" aria-label="Discovery"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/></svg></a>
 </nav>
 
 <script>
 /* ─────────────────────────────────────────────
+   YOU WERE THERE · INTRO CM
+   A tiny, skippable "film" that plays the first time the welcome card
+   is tapped (and can be replayed on every tap). Three stages:
+     1) Cinema — concert lights + sound wave bars (1.6s)
+     2) Retro blue CRT with typed explanation (~6s)
+     3) "YOU WERE THERE / ©EXPASS" freeze frame (1.6s)
+   ───────────────────────────────────────────── */
+(function initWelcomeCM(){
+  const overlay = document.getElementById('cmOverlay');
+  const cine    = document.getElementById('cmCine');
+  const crt     = document.getElementById('cmCrt');
+  const end     = document.getElementById('cmEnd');
+  const txtEl   = document.getElementById('cmCrtTxt');
+  const skipBtn = document.getElementById('cmSkip');
+  if (!overlay || !cine || !crt || !end || !txtEl) return;
+
+  const SCRIPT = [
+    '> EXPASS™ · Experience Pass',
+    '> boot sequence ........ OK',
+    '',
+    '> This card holds a single night.',
+    '> Only here you will find:',
+    '    · playlists pressed just for this room',
+    '    · LIVE footage filed under one evening',
+    '    · audio cuts made for one card, once',
+    '    · memories, written by those who were there',
+    '',
+    '> Culture breathes because someone was there.',
+    '> That someone was you.',
+    '',
+    '> YOU. WERE. THERE.',
+  ];
+
+  let timers = [];
+  let active = false;
+
+  function clearTimers(){ timers.forEach(clearTimeout); timers = []; }
+
+  function setPhase(which){
+    [cine, crt, end].forEach(p => p.classList.remove('on'));
+    if (which) which.classList.add('on');
+  }
+
+  function typeLines(){
+    txtEl.textContent = '';
+    let lineIdx = 0, charIdx = 0;
+    const advance = () => {
+      if (!active) return;
+      if (lineIdx >= SCRIPT.length) return; // done
+      const line = SCRIPT[lineIdx];
+      if (charIdx < line.length){
+        txtEl.textContent += line[charIdx];
+        charIdx++;
+        timers.push(setTimeout(advance, 18 + Math.random()*28));
+      } else {
+        txtEl.textContent += '\n';
+        lineIdx++; charIdx = 0;
+        timers.push(setTimeout(advance, line === '' ? 80 : 200));
+      }
+    };
+    advance();
+  }
+
+  function close(){
+    active = false;
+    clearTimers();
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden','true');
+    setPhase(null);
+    txtEl.textContent = '';
+  }
+
+  function play(){
+    if (active) return;
+    active = true;
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden','false');
+    if (navigator.vibrate) navigator.vibrate(12);
+
+    // Phase 1 — cinema (1.6s)
+    setPhase(cine);
+
+    // Phase 2 — CRT (after 1.6s, duration ~6s)
+    timers.push(setTimeout(() => {
+      if (!active) return;
+      setPhase(crt);
+      typeLines();
+    }, 1600));
+
+    // Phase 3 — end card (after 7.6s, duration 2s)
+    timers.push(setTimeout(() => {
+      if (!active) return;
+      setPhase(end);
+    }, 7600));
+
+    // Auto-close (after 9.6s)
+    timers.push(setTimeout(() => {
+      if (!active) return;
+      close();
+    }, 9600));
+  }
+
+  skipBtn.addEventListener('click', close);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) close();
+  });
+  window.addEventListener('keydown', (e) => {
+    if (overlay.classList.contains('open') && (e.key === 'Escape' || e.key === ' ')) close();
+  });
+
+  // Expose to the pf-card click handler below
+  window.playWelcomeCM = play;
+
+  // Auto-play on first ever visit to /collection (own profile only).
+  // Suppressed when viewing another user's profile (?user=…).
+  try {
+    const viewingOther = !!new URLSearchParams(location.search).get('user');
+    if (!viewingOther && !localStorage.getItem('livepass_welcome_cm_seen')) {
+      localStorage.setItem('livepass_welcome_cm_seen', '1');
+      setTimeout(play, 600);
+    }
+  } catch(e){}
+})();
+
+/* ─────────────────────────────────────────────
    SUB-TAB SWAP (PASS / SCREEN / SUB / SAVED)
    ───────────────────────────────────────────── */
 const SUB_PANEL = {
-  pass:   'panel-pass',
-  screen: 'panel-screen',
-  sub:    'panel-sub',
-  saved:  'panel-saved',
+  pass:     'panel-pass',
+  screen:   'panel-screen',
+  calendar: 'panel-screen', // calendar reuses screen panel with event sub-sub-tab pre-selected
+  sub:      'panel-sub',
+  saved:    'panel-saved',
 };
 document.querySelectorAll('.st-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -2122,6 +2477,15 @@ document.querySelectorAll('.st-btn').forEach(btn => {
     const target = document.getElementById(SUB_PANEL[sub]);
     if (target) target.classList.add('active');
     if (sub === 'saved') renderSavedGrid();
+    // Calendar tab: within the shared screen panel, auto-activate the EVENT filter
+    if (sub === 'calendar') {
+      const eventTab = document.querySelector('.sst-btn[data-tab="event"]');
+      if (eventTab && !eventTab.classList.contains('active')) eventTab.click();
+    }
+    if (sub === 'screen') {
+      const articleTab = document.querySelector('.sst-btn[data-tab="article"]');
+      if (articleTab && !articleTab.classList.contains('active')) articleTab.click();
+    }
   });
 });
 
@@ -2836,9 +3200,15 @@ let nftDragged = false;
 
 // Card taps open the zoom (step 1) — but only if not coming out of a drag.
 // Skip .next-live because it's an <a href="/calendar"> — browser nav handles it.
+// The welcome card (card01) plays the YOU WERE THERE intro CM the first few
+// taps; subsequent taps fall through to the normal zoom.
 document.querySelectorAll('.pf-card:not(.next-live)').forEach(card => {
   card.addEventListener('click', () => {
     if (nftDragged) return;
+    if (card.dataset.card === 'card01' && typeof playWelcomeCM === 'function') {
+      playWelcomeCM();
+      return;
+    }
     openCardZoom(card);
   });
 });
@@ -4051,6 +4421,25 @@ const isOtherUser = viewingUser && viewingUser !== (localStorage.getItem('livepa
 if (isOtherUser) {
   const mock = MOCK_USERS[viewingUser] || { role:'Artist', badge:'FREE', bgHue:'200,60,25' };
 
+  // Flip the page into other-user mode (enables .ph-cover, swaps subtabs, etc.)
+  document.body.classList.add('other-user');
+
+  // Cover — gradient tint from mock.bgHue (hue only); cover image comes later
+  // when we have a real users/{uid}.coverUrl field.
+  const cover = document.getElementById('phCover');
+  if (cover) {
+    const hue = (mock.bgHue || '200,60,25').split(',')[0];
+    cover.style.setProperty('--cover-hue', hue);
+  }
+
+  // Start on SCREEN tab (PASS is owner-only)
+  document.querySelectorAll('.st-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.sub-panel').forEach(p => p.classList.remove('active'));
+  const scrBtn = document.querySelector('.st-btn[data-sub="screen"]');
+  if (scrBtn) scrBtn.classList.add('active');
+  const scrPanel = document.getElementById('panel-screen');
+  if (scrPanel) scrPanel.classList.add('active');
+
   // Name + role
   document.querySelector('.ph-name').textContent = viewingUser;
   document.querySelector('.ph-role').textContent = mock.role;
@@ -4069,6 +4458,8 @@ if (isOtherUser) {
   }
 
   // Show follow + DM buttons (hidden for own profile)
+  const actions = document.getElementById('phActions');
+  if (actions) actions.style.display = 'flex';
   const followBtn = document.getElementById('phFollowBtn');
   if (followBtn) {
     followBtn.style.display = '';
@@ -4094,11 +4485,13 @@ if (isOtherUser) {
   const memBtn = document.getElementById('memoryOpenBtn');
   if (memBtn) memBtn.style.display = 'none';
 
-  // SCREEN: show empty-state message instead of own posts
+  // SCREEN: show empty-state message instead of own posts.
+  // viewingUser comes from URLSearchParams, so escape before embedding.
+  const safeName = String(viewingUser).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   ['screen-article-list','screen-event-list','screen-workshop-list','screen-exhibition-list'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = `<div class="sub-placeholder">
-      <span class="big">${viewingUser}</span>
+      <span class="big">${safeName}</span>
       このユーザーの投稿を表示しています（サンプル）
     </div>`;
   });

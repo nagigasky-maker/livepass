@@ -11,6 +11,7 @@
 <title>EXPASS — Settings / 管理画面</title>
 <script>try{if(localStorage.getItem('livepass_tier')==='user')document.documentElement.classList.add('tier-user')}catch(e){}</script>
 <style>html.tier-user .bn-btn[aria-label="Lab"],html.tier-user .bn-btn[aria-label="Atelier"]{display:none!important}</style>
+<script src="/livepass_paywall.js" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -689,9 +690,21 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 
   <!-- ═══ SUBSCRIPTION ═══ -->
   <div class="sec-label">SUBSCRIPTION</div>
-  <div style="padding:20px 20px 20px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;color:rgba(237,235,230,.35);letter-spacing:.02em;line-height:1.8">
-    現在のプラン：<strong style="color:rgba(237,235,230,.7)">FREE</strong><br>
-    アップグレード / 決済方法 / 解約 → 5/4後アップデート予定
+  <div style="padding:14px 20px 8px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;color:rgba(237,235,230,.45);letter-spacing:.02em;line-height:1.8">
+    現在のプラン：<strong id="srCurrentPlan" style="color:rgba(237,235,230,.85);letter-spacing:.1em">FREE</strong>
+  </div>
+  <div style="padding:4px 20px 26px">
+    <button id="srUpgradeBtn" type="button"
+      style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-radius:12px;background:linear-gradient(135deg,rgba(245,200,66,.14),rgba(245,200,66,.04));border:0.5px solid rgba(245,200,66,.35);color:#F5C842;font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:12px;letter-spacing:.08em;text-align:left">
+      <span style="display:flex;align-items:center;gap:10px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        <span>アップグレード・招待コード</span>
+      </span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.22em;opacity:.7">OPEN →</span>
+    </button>
+    <div style="margin-top:8px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:9px;letter-spacing:.04em;color:rgba(237,235,230,.35);line-height:1.7">
+      サブスク決済はイベント当日に起動。先行アーティストの招待コードはここで適用できます。
+    </div>
   </div>
 
   <!-- ═══ SIGN OUT ═══ -->
@@ -886,6 +899,21 @@ nameInput.addEventListener('input', () => {
   } catch(e) {}
 });
 
+/* Plan display + upgrade button — opens the shared paywall */
+(function initPlanRow(){
+  const planEl   = document.getElementById('srCurrentPlan');
+  const upBtn    = document.getElementById('srUpgradeBtn');
+  const plan     = (localStorage.getItem('livepass_plan') || 'free').toLowerCase();
+  const label = ({ free:'FREE', artist:'ARTIST', pro:'PRO', business:'BUSINESS' })[plan] || 'FREE';
+  if (planEl) planEl.textContent = label;
+  if (upBtn) {
+    upBtn.addEventListener('click', () => {
+      if (typeof window.openPaywall === 'function') window.openPaywall('default');
+      else alert('サブスクライセンスはイベント当日に起動します。');
+    });
+  }
+})();
+
 /* Tier (artist / user) — gates Atelier + record creation */
 (function initTierToggle(){
   const TIER_KEY = 'livepass_tier';
@@ -990,9 +1018,8 @@ document.getElementById('signOutBtn')?.addEventListener('click', async () => {
 
 <nav class="bottomnav">
   <a href="/screen" class="bn-btn" aria-label="Screen"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21" stroke-linecap="round"/><line x1="12" y1="18" x2="12" y2="21"/></svg></a>
-  <a href="/calendar" class="bn-btn" aria-label="Calendar"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7" stroke-linecap="round"/><line x1="16" y1="3" x2="16" y2="7" stroke-linecap="round"/></svg></a>
   <a href="/collection" class="bn-btn" aria-label="Collection"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="14" height="14" rx="2"/><rect x="7" y="9" width="14" height="14" rx="2" fill="currentColor" fill-opacity="0.18"/></svg></a>
-  <a href="/atelier" class="bn-btn" aria-label="Lab"><svg viewBox="0 0 24 24"><path d="M9 3v5.5L4.5 16.7A2.5 2.5 0 0 0 6.7 20.5h10.6a2.5 2.5 0 0 0 2.2-3.8L15 8.5V3" stroke-linejoin="round"/><line x1="9" y1="3" x2="15" y2="3" stroke-linecap="round"/><line x1="8.5" y1="14" x2="15.5" y2="14"/></svg></a>
+  <a href="/calendar" class="bn-btn" aria-label="Calendar"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7" stroke-linecap="round"/><line x1="16" y1="3" x2="16" y2="7" stroke-linecap="round"/></svg></a>
   <a href="/discovery" class="bn-btn" aria-label="Discovery"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/></svg></a>
 </nav>
 
