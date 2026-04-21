@@ -1842,35 +1842,64 @@ function openDetail(a) {
   // ── Hero media hydration ──
   // For video posts with a missing / delayed Firebase URL, pull the
   // blob out of IndexedDB. For cover-less image posts, check cover_<id>.
-  // Runs after the modal is shown so the UI never waits on IDB.
+  // For GIF posts, swap the JPEG poster for the animated GIF blob so
+  // the detail view matches the feed's animation. Runs after the modal
+  // is shown so the UI never waits on IDB.
+  //
+  // When any hydration succeeds for an article that was first rendered
+  // in "no-cover" mode, we also clear the coloured placeholder that was
+  // painted across every section (content / actions / comments / modal).
+  function clearPlaceholderSurfaces(){
+    const hero    = dmBody.querySelector('.dm-hero');
+    const content = dmBody.querySelector('.dm-content');
+    const tickets = dmBody.querySelector('.dm-tickets');
+    const actions = dmBody.querySelector('.dm-actions');
+    const comments= dmBody.querySelector('.dm-comments');
+    [hero, content, tickets, actions, comments].forEach(el => {
+      if (!el) return;
+      el.style.background = el === hero ? '' : '#FFF';
+      // Re-blacken text that was inverted for the coloured placeholder.
+      el.style.color = '#0A0A0A';
+    });
+    const title = dmBody.querySelector('.dm-title');
+    const by    = dmBody.querySelector('.dm-by');
+    if (title) title.style.color = '#FFFFFF';  // still over the cover
+    if (by)    by.style.color    = '#FFFFFF';
+    modal.style.background = '';
+  }
+
   (function hydrateHero(){
     const heroEl = dmBody.querySelector('.dm-hero-media');
     if (!heroEl) return;
     if (isVideoPost && heroEl.tagName === 'VIDEO') {
-      // Ensure attributes survive iOS autoplay policy.
       heroEl.muted = true; heroEl.defaultMuted = true;
       heroEl.playsInline = true;
+      const startPlay = () => {
+        const p = heroEl.play(); if (p && p.catch) p.catch(()=>{});
+      };
       if (!heroEl.getAttribute('src') || heroEl.getAttribute('src') === '') {
-        // No direct URL — swap from Blob.
         MediaDB.get('media_' + a.id).then(blob => {
           if (!blob) return;
           heroEl.src = URL.createObjectURL(blob);
-          const p = heroEl.play(); if (p && p.catch) p.catch(()=>{});
+          clearPlaceholderSurfaces();
+          startPlay();
         }).catch(()=>{});
       } else {
-        const p = heroEl.play(); if (p && p.catch) p.catch(()=>{});
+        startPlay();
       }
     } else if (heroEl.dataset.pendingCover === '1') {
-      // Try the Blob-cover fallback, just like the feed card does.
       MediaDB.get('cover_' + a.id).then(blob => {
         if (!blob) return;
         heroEl.src = URL.createObjectURL(blob);
         heroEl.style.display = '';
-        // Also drop the solid-colour hero background once the image is in.
-        const hero = heroEl.closest('.dm-hero');
-        if (hero) hero.style.background = '';
-        const content = dmBody.querySelector('.dm-content');
-        if (content) content.style.background = '#FFF';
+        clearPlaceholderSurfaces();
+      }).catch(()=>{});
+    } else if (a.mediaType === 'gif' && heroEl.tagName === 'IMG') {
+      // Swap the JPEG poster for the real animated GIF so the detail
+      // view matches the feed card's motion.
+      MediaDB.get('media_' + a.id).then(blob => {
+        if (!blob) return;
+        heroEl.src = URL.createObjectURL(blob);
       }).catch(()=>{});
     }
   })();
@@ -1938,6 +1967,67 @@ function openDetail(a) {
   }
 
   // Wire up act buttons with localStorage persistence
+  // Launch-mode "coming soon" modal — reused for TICKET / EXPASS taps.
+  // The real Stripe Checkout goes live on event day.
+  if (!window.showComingSoon) {
+    window.showComingSoon = function(type){
+      const ov = document.createElement('div');
+      ov.style.cssText = 'position:fixed;inset:0;z-index:10900;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:flex-end;justify-content:center;padding:0 0 env(safe-area-inset-bottom,0);font-family:Arial,\'Noto Sans JP\',sans-serif';
+      const label = type === 'expass'
+        ? 'EXPASS PASS (NFC / QR) の販売'
+        : type === 'ticket' ? 'チケット販売' : 'この機能';
+      ov.innerHTML = `
+        <div style="width:100%;max-width:520px;background:#0a0a0a;color:#EDEBE6;border-top-left-radius:20px;border-top-right-radius:20px;border:0.5px solid rgba(255,255,255,.08);padding:22px 22px calc(22px + env(safe-area-inset-bottom,0))">
+          <div style="width:44px;height:4px;border-radius:99px;background:rgba(237,235,230,.25);margin:0 auto 16px"></div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            <div style="width:36px;height:36px;border-radius:50%;background:rgba(0,229,160,.14);display:flex;align-items:center;justify-content:center;color:#00E5A0;flex-shrink:0">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.26em;text-transform:uppercase;color:#00E5A0;margin-bottom:2px">Coming soon</div>
+              <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:16px;color:#EDEBE6;line-height:1.2">${label} は近日公開</div>
+            </div>
+          </div>
+          <p style="font-size:12px;line-height:1.8;color:rgba(237,235,230,.72);margin:12px 0 0">
+            ローンチ時点では <b style="color:#EDEBE6">予約受付 / 投げ銭 / サブスク</b> のみ稼働しています。
+            決済は EXPASS が代行 (Stripe) — 本機能はイベント当日にオンになります。
+          </p>
+          <button type="button" id="cmsClose"
+            style="display:block;width:100%;margin-top:20px;padding:14px;border-radius:99px;background:#00E5A0;color:#000;font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:12px;letter-spacing:.14em;text-transform:uppercase;border:none;cursor:pointer">
+            閉じる
+          </button>
+        </div>`;
+      document.body.appendChild(ov);
+      const hide = () => { try { ov.remove(); } catch(_){} };
+      ov.addEventListener('click', (e) => { if (e.target === ov) hide(); });
+      ov.querySelector('#cmsClose').addEventListener('click', hide);
+      if (navigator.vibrate) navigator.vibrate([6, 20, 6]);
+    };
+  }
+
+  // Ticket / purchase buttons — at launch only 予約 is a live flow.
+  // TICKET / EXPASS tap → "近日公開" modal.
+  // SUPPORTER / VIP tap → artist subscription panel (existing).
+  dmBody.querySelectorAll('.dm-ticket-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const type = btn.dataset.ticketType;
+      if (type === 'ticket' || type === 'expass') {
+        showComingSoon(type);
+        return;
+      }
+      if (type === 'supporter' || type === 'vip') {
+        // Route to the artist's profile SUB panel.
+        location.href = '/profile?user=' + encodeURIComponent(a.author || '') + '#panel-sub';
+        return;
+      }
+      if (type === 'reserve') {
+        // Existing reservation flow (if any). Otherwise alert for now.
+        alert('予約機能は各イベントページから受け付けています。');
+      }
+    });
+  });
+
   dmBody.querySelectorAll('.dm-act').forEach(btn => {
     btn.addEventListener('click', () => {
       const act = btn.dataset.act;

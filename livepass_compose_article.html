@@ -945,11 +945,19 @@ html,body,.form,.content,.main,main,section,div:not(.color-swatch),footer{backgr
         </div>
       </label>
 
-      <!-- Legal disclosure gate — any priced item needs 特定商取引法に基づく表記 -->
+      <!-- Launch notice — at launch only 予約 + tips/subs are active.
+           Paid items (TICKET / EXPASS / SUPPORTER / VIP) are staged but
+           will show the "近日公開" modal when the reader taps them.
+           Legal model: EXPASS is the merchant of record, so each
+           creator does NOT need to publish their own 特定商取引法
+           disclosure — the single /terms/tokushou page covers it. -->
       <div id="legalNotice"
-        style="display:none;padding:12px 14px;margin-top:4px;border-radius:10px;background:rgba(245,200,66,.08);border:0.5px solid rgba(245,200,66,.32);font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;color:rgba(10,10,10,.72);line-height:1.7">
-        <div style="font-weight:800;font-size:12px;color:#8b6200;margin-bottom:4px">販売には事業者情報の登録が必要です</div>
-        販売ボタンを表示する前に、<b>設定 → 販売者登録</b>で氏名 / 住所 / 連絡先 / 返金ポリシーなどを登録してください (特定商取引法)。未登録のまま投稿した場合、ボタンは購入不可の状態で表示されます。
+        style="display:none;padding:12px 14px;margin-top:4px;border-radius:10px;background:rgba(0,229,160,.06);border:0.5px solid rgba(0,229,160,.28);font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;color:rgba(10,10,10,.72);line-height:1.7">
+        <div style="font-weight:800;font-size:12px;color:#0a5a43;margin-bottom:4px">EXPASS が販売を代行します</div>
+        決済は EXPASS 名義で Stripe を通じて受け取り、手数料を引いて投稿者へ自動送金します (個人情報の公開は不要)。
+        ローンチ時点では<b>予約受付・投げ銭・サブスク</b>が稼働。<br>
+        チケット / EXPASS PASS / 物販は <b>近日公開</b> — ボタン自体は投稿に残りますが、タップ時に案内モーダルを表示します。
+        <a href="/terms/tokushou" style="display:inline-block;margin-top:4px;color:#0a5a43;text-decoration:underline">特定商取引法に基づく表記 →</a>
       </div>
     </div>
   </div>
@@ -1173,21 +1181,47 @@ document.getElementById('videoLoopToggle')?.addEventListener('change', (e) => {
   }
 })();
 
-/* Legal compliance banner — 特定商取引法 requires that any priced sale
-   exposes the seller's legal identity, refund policy, etc. Show the
-   amber notice whenever any priced ticket option is checked so the
-   creator is reminded to register their seller profile in Settings
-   (which we'll build out once the first real sale is imminent). */
-(function initLegalNotice(){
+/* Launch-mode gates on the ticket section.
+   - SUPPORTER / VIP require a paid plan (STANDARD / PRO / BUSINESS).
+     A FREE creator who tries to toggle them is sent to the paywall.
+   - TICKET / EXPASS can be configured now; readers will see a
+     "近日公開" modal when they tap the button on the live post.
+   - 予約 is always free.
+   - The green banner appears whenever ANY priced item is checked so
+     the creator knows the EXPASS-merchant model applies. */
+(function initTicketGates(){
   const banner = document.getElementById('legalNotice');
-  if (!banner) return;
   const priced = ['ticketEnable','expassEnable','supporterEnable','vipEnable'];
-  const update = () => {
+
+  function showBannerIfAnyChecked(){
+    if (!banner) return;
     const any = priced.some(id => document.getElementById(id)?.checked);
     banner.style.display = any ? 'block' : 'none';
-  };
-  priced.forEach(id => document.getElementById(id)?.addEventListener('change', update));
-  update();
+  }
+
+  // SUPPORTER + VIP: paid-plan only. FREE creators get the paywall.
+  ['supporterEnable','vipEnable'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('change', () => {
+      if (!el.checked) { showBannerIfAnyChecked(); return; }
+      const plan = (localStorage.getItem('livepass_plan') || 'free').toLowerCase();
+      if (plan === 'free') {
+        el.checked = false;  // revert the toggle
+        if (typeof window.openPaywall === 'function') window.openPaywall('sell');
+        else alert('サブスクボタンは STANDARD / PRO プランから使用できます。');
+      }
+      showBannerIfAnyChecked();
+    });
+  });
+
+  // TICKET / EXPASS: allow toggle; the real-time gate lives on the
+  // detail page (tap → "近日公開" modal). Just toggle the banner.
+  ['ticketEnable','expassEnable'].forEach(id => {
+    document.getElementById(id)?.addEventListener('change', showBannerIfAnyChecked);
+  });
+
+  showBannerIfAnyChecked();
 })();
 
 /* Layout picker — PRO gate is disabled during prototype so cinema etc.
