@@ -244,21 +244,16 @@
         return;
       }
 
-      // Success — persist plan locally + mirror to Firestore if we can
+      // Success — cache plan locally. We deliberately do NOT mirror to
+      // Firestore from the client: the users/{uid}.plan field is
+      // server-controlled (Stripe webhook / admin invite endpoint)
+      // per the Rules whitelist. Local cache is sufficient for UI gates;
+      // authoritative plan state lives on the server.
       try { localStorage.setItem('livepass_plan', data.plan || 'artist'); } catch(_){}
       if (data.planExpiresAt) {
         try { localStorage.setItem('livepass_plan_expires', String(data.planExpiresAt)); } catch(_){}
       }
-      try {
-        if (window.FB && window.FB.currentUser) {
-          const ref = window.FB.doc(window.FB.db, 'users', window.FB.currentUser.uid);
-          window.FB.updateDoc(ref, {
-            plan: data.plan || 'artist',
-            planExpiresAt: data.planExpiresAt || null,
-            planSource: 'invite',
-          }).catch(()=>{});
-        }
-      } catch(_){}
+      try { localStorage.setItem('livepass_plan_source', 'invite'); } catch(_){}
 
       msgEl.textContent = `${(data.plan || 'ARTIST').toUpperCase()} プランを適用しました。`;
       msgEl.classList.remove('err'); msgEl.classList.add('ok');

@@ -4485,11 +4485,13 @@ if (isOtherUser) {
   const memBtn = document.getElementById('memoryOpenBtn');
   if (memBtn) memBtn.style.display = 'none';
 
-  // SCREEN: show empty-state message instead of own posts
+  // SCREEN: show empty-state message instead of own posts.
+  // viewingUser comes from URLSearchParams, so escape before embedding.
+  const safeName = String(viewingUser).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   ['screen-article-list','screen-event-list','screen-workshop-list','screen-exhibition-list'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = `<div class="sub-placeholder">
-      <span class="big">${viewingUser}</span>
+      <span class="big">${safeName}</span>
       このユーザーの投稿を表示しています（サンプル）
     </div>`;
   });

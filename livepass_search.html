@@ -780,6 +780,22 @@ document.querySelectorAll('.tag-pill').forEach(p => {
   const followList = document.getElementById('discFollowList');
   const emptyEl = document.getElementById('discEmpty');
 
+  // Escape user-controlled strings before embedding them in innerHTML to
+  // keep a malicious localStorage.livepass_following entry from running
+  // arbitrary scripts.
+  function esc(s){
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+  // Avatar images are only allowed if they're data: URLs we wrote ourselves
+  // or plain https: URLs. Any javascript: / vbscript: is rejected.
+  function safeAvatar(src){
+    const s = String(src || '');
+    if (/^data:image\//.test(s) || /^https:\/\//.test(s)) return s;
+    return '';
+  }
+
   function renderFollowing(){
     if (!followList) return;
     let list = [];
@@ -794,19 +810,20 @@ document.querySelectorAll('.tag-pill').forEach(p => {
     }
     if (emptyEl) emptyEl.style.display = 'none';
     followList.innerHTML = list.map(u => {
-      const name = u.name;
-      const role = u.role || '';
-      const av = u.avatar
-        ? `<img src="${u.avatar}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
+      const name = esc(u.name);
+      const role = esc(u.role || '');
+      const avSrc = safeAvatar(u.avatar);
+      const av = avSrc
+        ? `<img src="${esc(avSrc)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
         : '';
       return `
-        <a class="disc-row" href="/profile?user=${encodeURIComponent(name)}">
+        <a class="disc-row" href="/profile?user=${encodeURIComponent(u.name)}">
           <div class="ar-av">${av}</div>
           <div class="ar-meta">
             <div class="ar-name">${name}</div>
             <div class="ar-role">${role}</div>
           </div>
-          <button class="ar-unfollow" data-name="${encodeURIComponent(name)}" type="button">フォロー中</button>
+          <button class="ar-unfollow" data-name="${encodeURIComponent(u.name)}" type="button">フォロー中</button>
         </a>
       `;
     }).join('');

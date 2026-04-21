@@ -30,14 +30,41 @@ service cloud.firestore {
     }
 
     // ── Users: each user owns their own profile ──
+    //
+    // CREATE: a new account may only be written with plan == 'free'.
+    // UPDATE: the plan / planExpiresAt / planSource fields are read-only
+    //         from the client — they can only be changed server-side
+    //         (Stripe webhook or invite-redeem admin endpoint). Clients
+    //         cache plan locally from the invite response; UI gates are
+    //         cosmetic until real server writes land.
     match /users/{uid} {
       allow read: if isSignedIn();                 // signed-in users can look up profiles
-      allow create, update: if isOwner(uid)
-                            && request.resource.data.keys().hasOnly([
-                                 'name','email','plan','avatar','role','bio',
-                                 'agreedTermsAt','createdAt','updatedAt'
-                               ]);
+      allow create: if isOwner(uid)
+                    && request.resource.data.keys().hasOnly([
+                         'name','email','plan','avatar','role','bio',
+                         'coverUrl','profession','tier',
+                         'agreedTermsAt','createdAt','updatedAt'
+                       ])
+                    && (!('plan' in request.resource.data) || request.resource.data.plan == 'free');
+      allow update: if isOwner(uid)
+                    && request.resource.data.keys().hasOnly([
+                         'name','email','plan','avatar','role','bio',
+                         'coverUrl','profession','tier',
+                         'planExpiresAt','planSource',
+                         'agreedTermsAt','createdAt','updatedAt'
+                       ])
+                    && request.resource.data.get('plan', 'free') == resource.data.get('plan', 'free')
+                    && request.resource.data.get('planExpiresAt', null) == resource.data.get('planExpiresAt', null)
+                    && request.resource.data.get('planSource', null) == resource.data.get('planSource', null);
       allow delete: if isOwner(uid);
+    }
+
+    // ── Invite codes (admin-managed) ──
+    // Clients never read or write these directly — the /api/redeem-invite
+    // server endpoint validates codes and issues the plan. Public reads
+    // would leak the 30 seed codes.
+    match /invites/{code} {
+      allow read, write: if false;
     }
 
     // ── Posts (articles / events / workshops / exhibitions) ──
