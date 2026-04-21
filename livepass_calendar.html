@@ -1459,6 +1459,16 @@ function openEventDetail(e) {
           alert('既に予約済みです。\n\n/profile → SAVED → 予約 タブから確認・取り消しができます。');
           return;
         }
+        // Plan gate — FREE can reserve at most 2 events. Paid plans unlimited.
+        const plan = (localStorage.getItem('livepass_plan') || 'free').toLowerCase();
+        if (plan === 'free') {
+          const myConfirmed = existing.filter(r => r.status === 'confirmed' && (r.userId === me || !r.userId)).length;
+          if (myConfirmed >= 2) {
+            if (typeof window.openPaywall === 'function') window.openPaywall('reserve');
+            else alert('FREE プランは予約2件までです。プランをアップグレードしてください。');
+            return;
+          }
+        }
       } catch(err) {}
       // Build the item shape expected by openCardSheet
       openCardSheet({
