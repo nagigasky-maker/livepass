@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/livepass-icon-180.png">
+<title>EXPASS — 招待コード</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+<!-- Firebase SDK (same as the rest of the app) -->
+<script type="module" src="/firebase-init.js"></script>
+
+<style>
+:root{
+  --black:#000;--bg:#080808;--white:#EDEBE6;
+  --red:#E8100A;--blue:#3DAAFF;--green:#A8E63D;
+  --gold:#F5C842;--mint:#00E5A0;--pink:#F4C0D1;
+  --muted:rgba(237,235,230,.3);
+  --border:rgba(255,255,255,.08);
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{
+  width:100%;min-height:100%;min-height:100dvh;
+  background:var(--black);color:var(--white);
+  font-family:Arial,'Noto Sans JP',sans-serif;-webkit-font-smoothing:antialiased;
+  overscroll-behavior-y:contain;
+}
+a{color:inherit;text-decoration:none}
+button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
+
+.wrap{
+  min-height:100dvh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:calc(var(--safe-top) + 40px) 24px calc(var(--safe-bot) + 40px);
+  max-width:560px;margin:0 auto;
+}
+
+.eyebrow{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.34em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:14px;
+}
+.title{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:clamp(26px,7vw,36px);letter-spacing:-0.01em;line-height:1.05;
+  text-align:center;margin-bottom:10px;
+}
+.sub{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
+  font-size:12px;letter-spacing:.02em;color:rgba(237,235,230,.6);
+  text-align:center;line-height:1.7;max-width:420px;margin-bottom:28px;
+}
+
+.code-card{
+  width:100%;
+  background:linear-gradient(135deg,rgba(245,200,66,.09),rgba(0,229,160,.05));
+  border:0.5px solid rgba(245,200,66,.32);
+  border-radius:14px;padding:22px 20px;margin-bottom:20px;
+  position:relative;overflow:hidden;
+}
+.code-card::before{
+  content:"";position:absolute;top:-40px;right:-40px;
+  width:140px;height:140px;border-radius:50%;
+  background:radial-gradient(circle,rgba(245,200,66,.12) 0%,transparent 70%);
+  pointer-events:none;
+}
+.code-label{
+  font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:8px;
+}
+.code-value{
+  font-family:'IBM Plex Mono',monospace;font-size:clamp(15px,5vw,20px);
+  letter-spacing:.12em;color:var(--white);font-weight:500;
+  word-break:break-all;
+}
+
+.perk-list{
+  width:100%;background:rgba(255,255,255,.02);border:0.5px solid rgba(255,255,255,.06);
+  border-radius:12px;padding:16px 18px;margin-bottom:28px;
+}
+.perk-head{
+  font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.28em;
+  text-transform:uppercase;color:rgba(237,235,230,.4);margin-bottom:8px;
+}
+.perk-list ul{list-style:none;padding:0;margin:0}
+.perk-list li{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;line-height:1.9;
+  padding-left:14px;position:relative;color:rgba(237,235,230,.78);
+}
+.perk-list li::before{content:"·";position:absolute;left:2px;top:0;color:var(--mint);font-weight:900}
+
+.cta{
+  width:100%;padding:16px;border-radius:99px;
+  background:var(--mint);color:#000;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:13px;letter-spacing:.14em;text-transform:uppercase;
+  box-shadow:0 8px 28px rgba(0,229,160,.2);
+  margin-bottom:12px;
+}
+.cta:disabled{background:rgba(255,255,255,.08);color:rgba(237,235,230,.35);box-shadow:none}
+.cta.secondary{
+  background:transparent;color:rgba(237,235,230,.7);
+  border:0.5px solid rgba(237,235,230,.18);box-shadow:none;
+}
+
+.msg{
+  margin-top:12px;font-size:11px;line-height:1.7;min-height:16px;text-align:center;
+  font-family:Arial,'Noto Sans JP',sans-serif;letter-spacing:.02em;
+}
+.msg.err{color:#FF7A7A}
+.msg.ok{color:var(--mint)}
+.msg.info{color:rgba(237,235,230,.55)}
+
+.spinner{
+  display:inline-block;width:14px;height:14px;vertical-align:middle;
+  border:2px solid rgba(237,235,230,.2);border-top-color:#000;border-radius:50%;
+  animation:spin .8s linear infinite;margin-right:8px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.footer-note{
+  margin-top:24px;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.22em;
+  text-transform:uppercase;color:rgba(237,235,230,.28);text-align:center;line-height:1.8;
+}
+</style>
+</head>
+<body>
+
+<main class="wrap">
+  <div class="eyebrow" id="eyebrow">EXPASS · Invitation</div>
+  <h1 class="title" id="title">招待コードで参加</h1>
+  <p class="sub" id="subtitle">このリンクを受け取ったあなたは、<br>EXPASS の主要アーティスト枠に招待されています。</p>
+
+  <div class="code-card">
+    <div class="code-label">Your Invite Code</div>
+    <div class="code-value" id="codeValue">—</div>
+  </div>
+
+  <div class="perk-list" id="perkList" style="display:none">
+    <div class="perk-head">特典内容</div>
+    <ul id="perkItems"></ul>
+  </div>
+
+  <button class="cta" id="ctaBtn" type="button">
+    <span id="ctaLabel">参加する</span>
+  </button>
+  <button class="cta secondary" id="skipBtn" type="button" style="display:none">
+    あとで · SCREEN へ進む
+  </button>
+
+  <div class="msg" id="msg"></div>
+
+  <div class="footer-note">© EXPASS · INVITATION PROGRAM</div>
+</main>
+
+<script>
+/* ─────────────────────────────────────────────
+   /invite/<CODE>
+   ─────────────────────────────────────────────
+   Parses the invite code from either the URL path (via the
+   Vercel rewrite) or the ?code= query parameter. Shows the
+   perks of the granted plan and a big CTA that calls
+   /api/redeem-invite.
+
+   Flow:
+     1) Page loads → code extracted → displayed
+     2) Sign-in state:
+        · Signed in         → CTA says "参加する", redeems immediately
+        · Not signed in     → CTA says "サインアップして適用", stores
+                              the code in localStorage.livepass_pending_invite
+                              and redirects to /onboarding (or /login)
+     3) After onboarding, the app checks the pending invite and
+        auto-redeems on next /screen boot.
+
+   We deliberately do NOT expose the seed-code list in the client
+   bundle; redemption always goes through /api/redeem-invite which
+   validates against server-side env vars.
+   ───────────────────────────────────────────── */
+
+(function(){
+  // Read the code from the path (/invite/XYZ) or the query (?code=XYZ).
+  const pathCode = (location.pathname.match(/^\/invite\/([^/?#]+)/) || [])[1] || '';
+  const qs = new URLSearchParams(location.search);
+  const queryCode = qs.get('code') || '';
+  const rawCode = decodeURIComponent(pathCode || queryCode || '').trim();
+  const code = rawCode.toUpperCase();
+
+  const codeEl  = document.getElementById('codeValue');
+  const titleEl = document.getElementById('title');
+  const subEl   = document.getElementById('subtitle');
+  const ctaBtn  = document.getElementById('ctaBtn');
+  const ctaLbl  = document.getElementById('ctaLabel');
+  const skipBtn = document.getElementById('skipBtn');
+  const msgEl   = document.getElementById('msg');
+  const perkWrap  = document.getElementById('perkList');
+  const perkItems = document.getElementById('perkItems');
+
+  if (!code) {
+    codeEl.textContent = 'CODE NOT FOUND';
+    ctaBtn.disabled = true;
+    msgEl.textContent = '招待コードが URL に含まれていません。';
+    msgEl.classList.add('err');
+    return;
+  }
+  codeEl.textContent = code;
+
+  // Infer the plan from the code prefix for a nicer preview. The real
+  // plan is assigned by the server — we only guess the perk list here.
+  function guessPlan(c){
+    if (/^EXPASS-?PRO-/i.test(c))      return 'pro';
+    if (/^EXPASS-?STD-/i.test(c))      return 'standard';
+    if (/^EXPASS-?STANDARD-/i.test(c)) return 'standard';
+    if (/^EXPASS-?SEED-/i.test(c))     return 'pro';        // legacy
+    if (/^EXPASS-?BIZ-/i.test(c))      return 'business';
+    if (/^EXPASS-?BUSINESS-/i.test(c)) return 'business';
+    return 'pro'; // default hint
+  }
+  const PERKS = {
+    pro: [
+      'PRO プラン 1年無償 (通常 ¥2,480/月)',
+      '4K動画アップロード・無制限ストレージ',
+      'AI機能フル・詳細アナリティクス',
+      'PASSカード販売・収益管理フル',
+      'SCREEN 最優先掲載',
+    ],
+    standard: [
+      'STANDARD プラン 1年無償 (通常 ¥980/月)',
+      '音源アップロード無制限・動画HD',
+      'SCREEN 掲載・分析データ基本版',
+      'PASSカード販売・収益管理フル',
+    ],
+    business: [
+      'BUSINESS プラン 1年無償',
+      'EC出店・商品登録無制限',
+      'PASSカード連動・イベント協賛枠',
+    ],
+  };
+  const guessedPlan = guessPlan(code);
+  perkWrap.style.display = 'block';
+  perkItems.innerHTML = (PERKS[guessedPlan] || PERKS.pro).map(t => `<li>${t}</li>`).join('');
+
+  function setMsg(text, tone){
+    msgEl.textContent = text || '';
+    msgEl.classList.remove('err','ok','info');
+    if (tone) msgEl.classList.add(tone);
+  }
+
+  async function redeem(){
+    ctaBtn.disabled = true;
+    ctaLbl.innerHTML = '<span class="spinner"></span>確認中…';
+    const uid = (window.FB && window.FB.currentUser && window.FB.currentUser.uid) ||
+                localStorage.getItem('livepass_uid') || null;
+    try {
+      const resp = await fetch('/api/redeem-invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, uid }),
+      });
+      const data = await resp.json().catch(()=>({}));
+      if (!resp.ok || !data.ok) {
+        ctaBtn.disabled = false;
+        ctaLbl.textContent = 'もう一度試す';
+        setMsg(data.reason || 'コードが無効か、すでに使用済みです。', 'err');
+        skipBtn.style.display = 'block';
+        return;
+      }
+      try { localStorage.setItem('livepass_plan', data.plan || 'pro'); } catch(_){}
+      if (data.planExpiresAt) {
+        try { localStorage.setItem('livepass_plan_expires', String(data.planExpiresAt)); } catch(_){}
+      }
+      try { localStorage.setItem('livepass_plan_source', 'invite'); } catch(_){}
+      try { localStorage.removeItem('livepass_pending_invite'); } catch(_){}
+
+      ctaLbl.textContent = '✓ 適用完了';
+      setMsg(`${String(data.plan || 'PRO').toUpperCase()} プランを適用しました。まもなく SCREEN に移動します。`, 'ok');
+      if (navigator.vibrate) navigator.vibrate([10, 40, 14]);
+      setTimeout(() => { location.replace('/screen?noSplash=1'); }, 1400);
+    } catch(err) {
+      ctaBtn.disabled = false;
+      ctaLbl.textContent = 'もう一度試す';
+      setMsg('通信に失敗しました。電波を確認してもう一度お試しください。', 'err');
+    }
+  }
+
+  function requireSignIn(){
+    // Save the code so /onboarding (and future /screen boot) can finish the
+    // redeem right after sign-up / sign-in.
+    try { localStorage.setItem('livepass_pending_invite', code); } catch(_){}
+    setMsg('先にサインアップしてから、このコードが自動適用されます。', 'info');
+    location.href = '/onboarding?invite=' + encodeURIComponent(code);
+  }
+
+  // Wait for Firebase auth to settle, then decide the CTA behaviour.
+  let decided = false;
+  function decide(){
+    if (decided) return;
+    decided = true;
+    const signedIn = !!(window.FB && window.FB.currentUser);
+    if (signedIn) {
+      ctaLbl.textContent = '参加する';
+      ctaBtn.addEventListener('click', redeem);
+    } else {
+      ctaLbl.textContent = 'サインアップして適用';
+      ctaBtn.addEventListener('click', requireSignIn);
+      skipBtn.style.display = 'block';
+    }
+  }
+  window.addEventListener('fb-auth-ready', decide);
+  // Fallback: if Firebase never loads (e.g. offline), decide as signed-out after 2s.
+  setTimeout(() => { if (!decided) decide(); }, 2000);
+
+  skipBtn.addEventListener('click', () => {
+    try { localStorage.setItem('livepass_pending_invite', code); } catch(_){}
+    location.replace('/screen?noSplash=1');
+  });
+})();
+</script>
+
+</body>
+</html>

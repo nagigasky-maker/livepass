@@ -564,6 +564,32 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
     location.replace('/login');
   }, {once:true});
 })();
+
+/* PENDING INVITE — after sign-up or sign-in, auto-redeem any code that
+   was stashed by /invite/<CODE> before the user was authenticated. */
+(function(){
+  window.addEventListener('fb-auth-ready', async function(e){
+    try {
+      const pending = localStorage.getItem('livepass_pending_invite');
+      if (!pending) return;
+      const user = e && e.detail && e.detail.user;
+      if (!user) return;
+      const resp = await fetch('/api/redeem-invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: pending, uid: user.uid }),
+      });
+      const data = await resp.json().catch(()=>({}));
+      if (resp.ok && data.ok) {
+        localStorage.setItem('livepass_plan', data.plan || 'pro');
+        if (data.planExpiresAt) localStorage.setItem('livepass_plan_expires', String(data.planExpiresAt));
+        localStorage.setItem('livepass_plan_source', 'invite');
+      }
+      // Whether success or failure, drop the pending code so we don't loop.
+      localStorage.removeItem('livepass_pending_invite');
+    } catch(_){}
+  }, {once:true});
+})();
 </script>
 <script>
 /* PWA NAV FIX v66 — form-submission technique for iOS PWA standalone.

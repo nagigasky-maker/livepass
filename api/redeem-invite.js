@@ -6,18 +6,30 @@
  * mirror to Firestore users/{uid}.plan.
  *
  * Env vars (comma-separated codes, trimmed + upper-cased):
- *   INVITE_CODES_SEED     — grants plan="pro" for 365 days
- *                           Use this for the 30–50 founding-artist
- *                           seeds (e.g. EXPASS-SEED-A1B2C3).
- *                           PRO waives ¥2,480/mo × 12 = ¥29,760/artist.
+ *   INVITE_CODES_PRO      — grants plan="pro" for 365 days
+ *                           Founding-artist seed bucket — plan for
+ *                           20 key artists. Convention: EXPASS-PRO-XXXX.
+ *                           Waives ¥2,480/mo × 12 = ¥29,760 per artist.
  *   INVITE_CODES_STANDARD — grants plan="standard" for 365 days
- *   INVITE_CODES_PRO      — grants plan="pro"      for 365 days
+ *                           30 seats for next-tier artists.
+ *                           Convention: EXPASS-STD-XXXX.
+ *                           Waives ¥980/mo × 12 = ¥11,760 per artist.
  *   INVITE_CODES_BUSINESS — grants plan="business" for 365 days
- *   INVITE_CODES_ARTIST   — legacy alias for STANDARD (keeps old
- *                           pre-Phase-1 codes valid).
+ *                           (Phase 2 — not used at launch).
+ *   INVITE_CODES_SEED     — legacy alias for PRO (earlier naming).
+ *   INVITE_CODES_ARTIST   — legacy alias for STANDARD.
+ *
+ * Delivery channels (both supported end-to-end):
+ *   1) Code entry via Settings → Upgrade → paywall invite field.
+ *   2) Link: https://expass.app/invite/<CODE>
+ *        - /invite/ landing page auto-redeems when the recipient is
+ *          already signed in, or stashes the code in
+ *          localStorage.livepass_pending_invite and routes to
+ *          /onboarding. On the next /screen boot the pending code
+ *          is consumed automatically.
  *
  * Expected request:
- *   POST { code: "EXPASS-SEED-A1B2C3", uid?: "firebase-uid" }
+ *   POST { code: "EXPASS-PRO-A1B2C3", uid?: "firebase-uid" }
  *
  * Response:
  *   200 { ok:true, plan:"artist", planExpiresAt: 172345...}
