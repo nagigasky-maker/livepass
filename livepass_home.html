@@ -1973,9 +1973,15 @@ function openDetail(a) {
     window.showComingSoon = function(type){
       const ov = document.createElement('div');
       ov.style.cssText = 'position:fixed;inset:0;z-index:10900;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:flex-end;justify-content:center;padding:0 0 env(safe-area-inset-bottom,0);font-family:Arial,\'Noto Sans JP\',sans-serif';
-      const label = type === 'expass'
-        ? 'EXPASS PASS (NFC / QR) の販売'
-        : type === 'ticket' ? 'チケット販売' : 'この機能';
+      const LABEL = {
+        expass:    'EXPASS PASS (NFC / QR) の販売',
+        ticket:    'チケット販売',
+        goods:     '物販',
+        audio:     '音源販売',
+        supporter: 'SUPPORTER PASS',
+        vip:       'VIP PASS',
+      };
+      const label = LABEL[type] || 'この機能';
       ov.innerHTML = `
         <div style="width:100%;max-width:520px;background:#0a0a0a;color:#EDEBE6;border-top-left-radius:20px;border-top-right-radius:20px;border:0.5px solid rgba(255,255,255,.08);padding:22px 22px calc(22px + env(safe-area-inset-bottom,0))">
           <div style="width:44px;height:4px;border-radius:99px;background:rgba(237,235,230,.25);margin:0 auto 16px"></div>
@@ -2012,7 +2018,9 @@ function openDetail(a) {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const type = btn.dataset.ticketType;
-      if (type === 'ticket' || type === 'expass') {
+      // Launch scope: 予約 only on CALENDAR / tips + subs via profile.
+      // Everything else is still "近日公開".
+      if (['goods','audio','ticket','expass'].includes(type)) {
         showComingSoon(type);
         return;
       }
@@ -2022,8 +2030,7 @@ function openDetail(a) {
         return;
       }
       if (type === 'reserve') {
-        // Existing reservation flow (if any). Otherwise alert for now.
-        alert('予約機能は各イベントページから受け付けています。');
+        alert('予約は CALENDAR のイベントページから受け付けています。');
       }
     });
   });
