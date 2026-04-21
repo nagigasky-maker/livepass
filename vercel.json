@@ -36,6 +36,8 @@
     { "source": "/atelier/record",     "destination": "/livepass_atelier_record.html" },
     { "source": "/lab",                "destination": "/livepass_atelier.html" },
     { "source": "/loading",            "destination": "/expass_loading_img.html" },
+    { "source": "/invite/:code",       "destination": "/livepass_invite.html" },
+    { "source": "/invite",             "destination": "/livepass_invite.html" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "headers": [
