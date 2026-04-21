@@ -1762,11 +1762,14 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 .pm-hero:not(.over-cover):not(.with-cover){animation:heroSlideUp .4s ease-out !important}
 
 
-/* ── Collection: centered avatar/name (smaller) + heart btn on right ── */
-.profile-hero{flex-direction:column !important;gap:10px !important;padding:24px 20px 14px !important;align-items:center !important;text-align:center !important;position:relative !important}
-.ph-avatar{width:120px !important;height:120px !important}
-.ph-name-block{flex:none !important;gap:2px !important;align-items:center !important;text-align:center !important}
-.ph-name{font-size:13px !important;letter-spacing:.12em !important;font-weight:500 !important}
+/* ── Collection: centered avatar/name + heart btn on right ──
+   Own profile shows a large looping/still avatar in the middle of
+   the hero. Larger than the earlier 120px so the video loop has
+   room to read. */
+.profile-hero{flex-direction:column !important;gap:14px !important;padding:28px 20px 16px !important;align-items:center !important;text-align:center !important;position:relative !important}
+.ph-avatar{width:168px !important;height:168px !important}
+.ph-name-block{flex:none !important;gap:4px !important;align-items:center !important;text-align:center !important}
+.ph-name{font-size:15px !important;letter-spacing:.12em !important;font-weight:500 !important}
 .ph-role{font-size:10px !important;letter-spacing:.18em !important;color:rgba(10,10,10,.45) !important}
 .ph-heart-btn{
   position:absolute !important;right:20px !important;top:50% !important;transform:translateY(-50%) !important;
