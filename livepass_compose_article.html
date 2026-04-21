@@ -94,8 +94,8 @@ input,textarea{color:inherit;font:inherit}
 .form-section{padding:18px 20px 4px;max-width:100%;min-width:0}
 .form-label{
   font-family:'IBM Plex Mono',monospace;
-  font-size:8px;letter-spacing:.34em;text-transform:uppercase;
-  color:rgba(237,235,230,.3);margin-bottom:10px;
+  font-size:10px;letter-spacing:.3em;text-transform:uppercase;
+  color:rgba(237,235,230,.45);margin-bottom:10px;
 }
 
 /* Layout picker ─────────────────────── */
@@ -429,7 +429,7 @@ textarea.input-box{resize:vertical;min-height:160px;line-height:1.8;font-size:13
 .collab-row-share input{
   background:none;border:none;outline:none;
   font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
-  font-size:13px;color:var(--white);width:34px;text-align:right;
+  font-size:13px;color:var(--white);width:60px;text-align:right;
   -moz-appearance:textfield;
 }
 .collab-row-share input::-webkit-outer-spin-button,
@@ -769,27 +769,8 @@ html,body,.form,.content,.main,main,section,div:not(.color-swatch),footer{backgr
     </div>
   </div>
 
-  <!-- Title ─────────────────────── -->
-  <div class="form-section">
-    <div class="form-label">タイトル</div>
-    <input class="input-box" id="titleInput" placeholder="記事タイトル" maxlength="80">
-  </div>
-
-  <!-- Category ─────────────────────── -->
-  <div class="form-section">
-    <div class="form-label">カテゴリ</div>
-    <div class="pill-row" id="catRow">
-      <button class="pill active" data-cat="Culture">Culture</button>
-      <button class="pill" data-cat="Interview">Interview</button>
-      <button class="pill" data-cat="Fashion">Fashion</button>
-      <button class="pill" data-cat="Dance">Dance</button>
-      <button class="pill" data-cat="Report">Report</button>
-      <button class="pill" data-cat="Photography">Photography</button>
-    </div>
-  </div>
-
   <!-- Cover image ─────────────────────── -->
-  <div class="form-section">
+  <div class="form-section" id="sec-cover">
     <div class="form-label">カバーメディア</div>
     <div class="cover-upload" id="coverUpload" data-layout="poster">
       <div class="cover-placeholder" id="coverPh">
@@ -822,19 +803,43 @@ html,body,.form,.content,.main,main,section,div:not(.color-swatch),footer{backgr
     </div>
   </div>
 
-  <!-- Color picker (when no cover image) ─────────────────────── -->
-  <div style="border-top:0.5px solid var(--border);margin:12px 20px 0"></div>
-  <div class="sec-head"><div><div class="sec-ja">背景色を選択</div><div class="sec-en">Color</div></div></div>
-  <div class="form-section" style="padding-top:0">
-    <div class="color-row" id="colorRow"></div>
-    <div class="color-preview" id="colorPreview" style="background:#FF4500;color:#0A0A0A">
-      <div class="color-preview-title" id="cpTitle">記事タイトルがここに入ります</div>
-      <div class="color-preview-meta" id="cpMeta">@handle · Culture</div>
+  <!-- Title ─────────────────────── -->
+  <div class="form-section" id="sec-title">
+    <div class="form-label">タイトル</div>
+    <input class="input-box" id="titleInput" placeholder="記事タイトル" maxlength="80">
+  </div>
+
+  <!-- Category ─────────────────────── -->
+  <div class="form-section" id="sec-category">
+    <div class="form-label">カテゴリ</div>
+    <div class="pill-row" id="catRow">
+      <button class="pill active" data-cat="Culture">Culture</button>
+      <button class="pill" data-cat="Interview">Interview</button>
+      <button class="pill" data-cat="Fashion">Fashion</button>
+      <button class="pill" data-cat="Dance">Dance</button>
+      <button class="pill" data-cat="Report">Report</button>
+      <button class="pill" data-cat="Photography">Photography</button>
+    </div>
+  </div>
+
+  <!-- Author (read-only; sourced from Settings / Firebase) ─────────────────────── -->
+  <div class="form-section" id="sec-author">
+    <div class="form-label">投稿者</div>
+    <div id="authorDisplay"
+      style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;background:rgba(255,255,255,.03);border:0.5px solid rgba(237,235,230,.08)">
+      <div id="authorAvatar"
+        style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#1a2030,#0a1020);flex-shrink:0;overflow:hidden"></div>
+      <div style="flex:1;min-width:0">
+        <div id="authorName"
+          style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;font-size:13px;color:var(--white);letter-spacing:.02em"></div>
+        <div id="authorRole"
+          style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(237,235,230,.45);margin-top:2px"></div>
+      </div>
     </div>
   </div>
 
   <!-- Body ─────────────────────── -->
-  <div class="form-section">
+  <div class="form-section" id="sec-body">
     <div class="form-label" style="display:flex;align-items:center;gap:8px">
       <span>本文</span>
       <div style="flex:1"></div>
@@ -852,7 +857,7 @@ html,body,.form,.content,.main,main,section,div:not(.color-swatch),footer{backgr
   </div>
 
   <!-- Access ─────────────────────── -->
-  <div class="form-section">
+  <div class="form-section" id="sec-access">
     <div class="form-label">公開範囲</div>
     <div class="access-row" id="accessRow">
       <button class="access-btn active" data-access="free" type="button">
@@ -869,7 +874,7 @@ html,body,.form,.content,.main,main,section,div:not(.color-swatch),footer{backgr
   </div>
 
   <!-- Collaboration ─────────────────────── -->
-  <div class="form-section">
+  <div class="form-section" id="sec-collab">
     <div class="form-label">COLLABORATION / 収益分配</div>
     <div class="collab-list" id="collabList"></div>
     <div class="collab-search-wrap">
@@ -886,7 +891,7 @@ html,body,.form,.content,.main,main,section,div:not(.color-swatch),footer{backgr
   </div>
 
   <!-- Ticket / Pass / Reserve buttons (optional) -->
-  <div class="form-section">
+  <div class="form-section" id="sec-tickets">
     <div class="sec-title" style="font-weight:700;font-size:14px;margin-bottom:4px">チケット・購入ボタン (任意)</div>
     <div class="sec-sub" style="font-size:11px;color:rgba(10,10,10,.5);margin-bottom:16px">読者が購入できるボタンを投稿に表示（選択したものだけ表示）</div>
 
@@ -898,6 +903,20 @@ html,body,.form,.content,.main,main,section,div:not(.color-swatch),footer{backgr
           <div style="font-size:10px;color:rgba(10,10,10,.5)">単発チケット販売</div>
         </div>
         <input type="number" id="ticketPrice" placeholder="¥0" min="0" style="width:100px;padding:8px;border:1px solid rgba(10,10,10,.15);border-radius:6px;font-size:13px;text-align:right">
+      </label>
+
+      <label class="ticket-opt" style="display:flex;align-items:center;gap:12px;padding:14px;border:1.5px solid rgba(0,229,160,.45);background:rgba(0,229,160,.04);border-radius:10px;cursor:pointer">
+        <input type="checkbox" id="expassEnable" style="width:18px;height:18px;accent-color:#00E5A0">
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:13px;display:flex;align-items:center;gap:6px">
+            EXPASS を購入
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:.2em;padding:2px 6px;border-radius:99px;background:rgba(0,229,160,.18);color:#00C27B">NFC / QR</span>
+          </div>
+          <div style="font-size:10px;color:rgba(10,10,10,.55);line-height:1.5;margin-top:2px">
+            会場入口で受け取れる実物 PASS カード (NFC / QR) 付き
+          </div>
+        </div>
+        <input type="number" id="expassPrice" placeholder="¥0" min="0" style="width:100px;padding:8px;border:1px solid rgba(10,10,10,.15);border-radius:6px;font-size:13px;text-align:right">
       </label>
 
       <label class="ticket-opt" style="display:flex;align-items:center;gap:12px;padding:14px;border:1px solid rgba(10,10,10,.12);border-radius:10px;cursor:pointer">
@@ -925,6 +944,24 @@ html,body,.form,.content,.main,main,section,div:not(.color-swatch),footer{backgr
           <div style="font-size:10px;color:rgba(10,10,10,.5)">事前予約受付</div>
         </div>
       </label>
+
+      <!-- Legal disclosure gate — any priced item needs 特定商取引法に基づく表記 -->
+      <div id="legalNotice"
+        style="display:none;padding:12px 14px;margin-top:4px;border-radius:10px;background:rgba(245,200,66,.08);border:0.5px solid rgba(245,200,66,.32);font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;color:rgba(10,10,10,.72);line-height:1.7">
+        <div style="font-weight:800;font-size:12px;color:#8b6200;margin-bottom:4px">販売には事業者情報の登録が必要です</div>
+        販売ボタンを表示する前に、<b>設定 → 販売者登録</b>で氏名 / 住所 / 連絡先 / 返金ポリシーなどを登録してください (特定商取引法)。未登録のまま投稿した場合、ボタンは購入不可の状態で表示されます。
+      </div>
+    </div>
+  </div>
+
+  <!-- Color picker (when no cover image) ─────────────────────── -->
+  <div style="border-top:0.5px solid var(--border);margin:12px 20px 0"></div>
+  <div class="sec-head"><div><div class="sec-ja">背景色を選択</div><div class="sec-en">Color</div></div></div>
+  <div class="form-section" style="padding-top:0" id="sec-bgcolor">
+    <div class="color-row" id="colorRow"></div>
+    <div class="color-preview" id="colorPreview" style="background:#FF4500;color:#0A0A0A">
+      <div class="color-preview-title" id="cpTitle">記事タイトルがここに入ります</div>
+      <div class="color-preview-meta" id="cpMeta">@handle · Culture</div>
     </div>
   </div>
 
@@ -1100,6 +1137,58 @@ refreshProLockState();
 document.getElementById('videoLoopToggle')?.addEventListener('change', (e) => {
   state.videoLoop = !!e.target.checked;
 });
+
+/* Author card — reads the current account identity out of localStorage
+   (populated by settings.html / firebase-init) and displays it so the
+   creator can see who they're posting as. Read-only for now. */
+(function initAuthorDisplay(){
+  const name  = localStorage.getItem('livepass_account_name') || '';
+  const role  = localStorage.getItem('livepass_role') || localStorage.getItem('livepass_style') || '';
+  const av    = localStorage.getItem('livepass_avatar');
+  const type  = localStorage.getItem('livepass_avatar_type') || 'image';
+  const nEl = document.getElementById('authorName');
+  const rEl = document.getElementById('authorRole');
+  const aEl = document.getElementById('authorAvatar');
+  if (nEl) nEl.textContent = name || '(アカウント名未設定)';
+  if (rEl) rEl.textContent = role || '';
+  if (aEl && av) {
+    aEl.innerHTML = `<img src="${av}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">`;
+    if (type === 'video') {
+      try {
+        const req = indexedDB.open('livepass_avatars', 1);
+        req.onupgradeneeded = () => req.result.createObjectStore('blobs');
+        req.onsuccess = () => {
+          const db = req.result;
+          const tx = db.transaction('blobs', 'readonly');
+          const g = tx.objectStore('blobs').get('avatar_blob');
+          g.onsuccess = () => {
+            const blob = g.result;
+            if (!blob) return;
+            const url = URL.createObjectURL(blob);
+            aEl.innerHTML = `<video src="${url}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block"></video>`;
+          };
+        };
+      } catch(_){}
+    }
+  }
+})();
+
+/* Legal compliance banner — 特定商取引法 requires that any priced sale
+   exposes the seller's legal identity, refund policy, etc. Show the
+   amber notice whenever any priced ticket option is checked so the
+   creator is reminded to register their seller profile in Settings
+   (which we'll build out once the first real sale is imminent). */
+(function initLegalNotice(){
+  const banner = document.getElementById('legalNotice');
+  if (!banner) return;
+  const priced = ['ticketEnable','expassEnable','supporterEnable','vipEnable'];
+  const update = () => {
+    const any = priced.some(id => document.getElementById(id)?.checked);
+    banner.style.display = any ? 'block' : 'none';
+  };
+  priced.forEach(id => document.getElementById(id)?.addEventListener('change', update));
+  update();
+})();
 
 /* Layout picker — PRO gate is disabled during prototype so cinema etc.
    can be selected without opening the upgrade modal. */

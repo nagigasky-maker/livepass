@@ -1256,10 +1256,11 @@ const MediaDB = {
 function buildMediaHtml(a) {
   const mt = a.mediaType || 'image';
 
-  // No cover image → colored bg card, no media element needed
-  if (!a.cover) return '';
-
-  const imgSrc = a.cover;
+  // Video & GIF posts always render a poster <img> (even without a
+  // cover URL) so the later blob-swap can find an element to replace.
+  // A 1×1 transparent SVG keeps the browser from showing a broken icon.
+  const TRANSPARENT_1x1 = "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201%201%22%2F%3E";
+  const imgSrc = a.cover || TRANSPARENT_1x1;
   if (mt === 'video') {
     return `<img src="${imgSrc}" alt="" class="fc-poster" data-video-id="${a.id}">
             <div class="fc-play-icon"><svg viewBox="0 0 24 24" fill="var(--white)" stroke="none"><polygon points="6,3 20,12 6,21"/></svg></div>`;
@@ -1267,6 +1268,10 @@ function buildMediaHtml(a) {
   if (mt === 'gif') {
     return `<img src="${imgSrc}" alt="">`;
   }
+
+  // Static image → skip the element entirely when the cover is missing;
+  // the coloured card fallback + cover_<id> IndexedDB swap takes over.
+  if (!a.cover) return '';
   if (mt === 'slideshow' && Array.isArray(a.extraImages) && a.extraImages.length > 0) {
     const allImgs = [imgSrc, ...a.extraImages];
     return allImgs.map((src, i) =>
@@ -1417,8 +1422,7 @@ function renderMagazine(posts) {
       if (a.mediaType === 'video') {
         const posterEl = card.querySelector('.fc-poster');
         if (posterEl) {
-          MediaDB.get('media_' + a.id).then(blob => {
-            if (!blob) return;
+          const swap = (src) => {
             const vid = document.createElement('video');
             // iOS is finicky: muted / playsinline must be set as both
             // attributes AND properties BEFORE src, otherwise the
@@ -1437,19 +1441,23 @@ function renderMagazine(posts) {
             if (vid.loop) vid.setAttribute('loop','');
             vid.preload = 'auto';
             vid.style.cssText='width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0';
-            vid.src = URL.createObjectURL(blob);
+            vid.src = src;
             posterEl.parentNode.replaceChild(vid, posterEl);
             const pi2 = card.querySelector('.fc-play-icon');
             if(pi2) pi2.remove();
-            // Kick-start playback. iOS sometimes refuses autoplay for
-            // dynamically inserted elements until play() is called
-            // explicitly on the next microtask.
-            const kick = () => {
+            requestAnimationFrame(() => {
               const p = vid.play();
               if (p && p.catch) p.catch(()=>{});
-            };
-            requestAnimationFrame(kick);
-          }).catch(()=>{});
+            });
+          };
+          // Prefer the IndexedDB blob (fast, offline); fall back to
+          // the Firebase Storage URL when it's missing.
+          MediaDB.get('media_' + a.id).then(blob => {
+            if (blob) swap(URL.createObjectURL(blob));
+            else if (a.videoUrl) swap(a.videoUrl);
+          }).catch(() => {
+            if (a.videoUrl) swap(a.videoUrl);
+          });
         }
       }
       // GIF: cover is a JPEG thumbnail stored inline; the animated GIF lives
@@ -1739,9 +1747,30 @@ function openDetail(a) {
   const heroStyle = detailBg
     ? `background:${detailBg};aspect-ratio:auto;min-height:280px`
     : '';
-  const heroImg = hasCover
-    ? `<img src="${a.cover}" alt="">`
-    : '';
+  // Pick the hero media element. For video posts we drop a <video> with
+  // autoplay/muted/loop attributes directly — iOS treats these correctly
+  // when the attributes are on the element at parse time. For everything
+  // else we use the JPEG/PNG cover. A post-render swap below hydrates
+  // the blob sources from IndexedDB / Firebase when they exist.
+  const isVideoPost = a.mediaType === 'video';
+  let heroImg;
+  if (isVideoPost) {
+    const src = a.videoUrl || a.cover || '';
+    const loop = a.videoLoop !== false;
+    heroImg = `<video class="dm-hero-media" data-post-id="${a.id}"
+      src="${src}"
+      autoplay muted playsinline
+      ${loop ? 'loop' : ''}
+      style="width:100%;height:auto;object-fit:contain;display:block"></video>`;
+  } else if (hasCover) {
+    heroImg = `<img class="dm-hero-media" data-post-id="${a.id}" src="${a.cover}" alt="">`;
+  } else {
+    // No cover yet — inject a placeholder <img> so the post-render swap
+    // can still replace it with a cover_<id> Blob if we have one cached.
+    heroImg = a.userPost
+      ? `<img class="dm-hero-media" data-post-id="${a.id}" data-pending-cover="1" alt="" style="display:none">`
+      : '';
+  }
   const heroGradient = hasCover
     ? ''
     : `style="background:none"`;
@@ -1809,6 +1838,42 @@ function openDetail(a) {
   modal.style.background = detailBg || '';
   modal.classList.add('active');
   modal.setAttribute('aria-hidden','false');
+
+  // ── Hero media hydration ──
+  // For video posts with a missing / delayed Firebase URL, pull the
+  // blob out of IndexedDB. For cover-less image posts, check cover_<id>.
+  // Runs after the modal is shown so the UI never waits on IDB.
+  (function hydrateHero(){
+    const heroEl = dmBody.querySelector('.dm-hero-media');
+    if (!heroEl) return;
+    if (isVideoPost && heroEl.tagName === 'VIDEO') {
+      // Ensure attributes survive iOS autoplay policy.
+      heroEl.muted = true; heroEl.defaultMuted = true;
+      heroEl.playsInline = true;
+      if (!heroEl.getAttribute('src') || heroEl.getAttribute('src') === '') {
+        // No direct URL — swap from Blob.
+        MediaDB.get('media_' + a.id).then(blob => {
+          if (!blob) return;
+          heroEl.src = URL.createObjectURL(blob);
+          const p = heroEl.play(); if (p && p.catch) p.catch(()=>{});
+        }).catch(()=>{});
+      } else {
+        const p = heroEl.play(); if (p && p.catch) p.catch(()=>{});
+      }
+    } else if (heroEl.dataset.pendingCover === '1') {
+      // Try the Blob-cover fallback, just like the feed card does.
+      MediaDB.get('cover_' + a.id).then(blob => {
+        if (!blob) return;
+        heroEl.src = URL.createObjectURL(blob);
+        heroEl.style.display = '';
+        // Also drop the solid-colour hero background once the image is in.
+        const hero = heroEl.closest('.dm-hero');
+        if (hero) hero.style.background = '';
+        const content = dmBody.querySelector('.dm-content');
+        if (content) content.style.background = '#FFF';
+      }).catch(()=>{});
+    }
+  })();
 
   // Set like count from likes list
   const likeCountEl = dmBody.querySelector('.dm-like-count');
