@@ -2049,13 +2049,17 @@ submitBtn.addEventListener('click', async () => {
   // carrying only tiny references. We purposely set localArticle.cover
   // to null in that case so home.html's MediaDB fallback kicks in.
   if (!firebaseSaved) {
-    if (state.coverDataUrl && /^data:image\//.test(state.coverDataUrl)) {
+    // Stash the cover Blob in IndexedDB so the feed can still render
+    // offline. We do NOT null-out localArticle.cover here — if an
+    // earlier Firebase step succeeded (e.g. cover uploaded before
+    // videoUrl failed), `article.cover` already holds the Firebase
+    // URL and we want to keep it.
+    if (state.coverDataUrl && /^data:image\//.test(state.coverDataUrl) && !localArticle.cover) {
       try {
         const coverBlob = dataUrlToBlob(state.coverDataUrl);
-        MediaDB.put('cover_' + article.id, coverBlob).catch(()=>{});
+        await MediaDB.put('cover_' + article.id, coverBlob);
       } catch(_){}
     }
-    localArticle.cover = null;
     // extraImages: store each as a blob too. localArticle.extraImages
     // becomes an array of "idb:" markers that home.html recognises.
     if (state.extraImages && state.extraImages.length > 0) {
@@ -2065,7 +2069,7 @@ submitBtn.addEventListener('click', async () => {
         if (/^data:image\//.test(src)) {
           try {
             const b = dataUrlToBlob(src);
-            MediaDB.put('extra_' + article.id + '_' + i, b).catch(()=>{});
+            await MediaDB.put('extra_' + article.id + '_' + i, b);
             markers.push('idb:extra_' + article.id + '_' + i);
           } catch(_) { markers.push(null); }
         } else {
@@ -2110,8 +2114,22 @@ submitBtn.addEventListener('click', async () => {
   // nothing to swap in and the cassette never animates. For videos we
   // also cache locally — even when the MP4 made it to Firebase, a local
   // blob lets playback start without a round-trip.
+  //
+  // CRITICAL: await this put. If we navigate before the transaction
+  // commits, Safari aborts the write and the SCREEN feed has no blob
+  // to hydrate from → video flashes the poster frame and stops.
   if ((state.mediaType === 'video' || state.mediaType === 'gif') && state.mediaBlob) {
-    MediaDB.put('media_' + article.id, state.mediaBlob).catch(() => {});
+    try {
+      // Convert File → Blob explicitly; some WebKit builds mis-handle
+      // File descendants inside IndexedDB transactions.
+      const buf = await state.mediaBlob.arrayBuffer();
+      const mime = state.mediaBlob.type ||
+        (state.mediaType === 'gif' ? 'image/gif' : 'video/mp4');
+      const safeBlob = new Blob([buf], { type: mime });
+      await MediaDB.put('media_' + article.id, safeBlob);
+    } catch (e) {
+      console.warn('MediaDB.put failed:', e);
+    }
   }
 
   if (navigator.vibrate) navigator.vibrate([18, 40, 18]);
