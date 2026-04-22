@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/livepass-icon-180.png">
+<title>EXPASS — カードを受け取る</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+<!-- Firebase (shared helper) -->
+<script type="module" src="/firebase-init.js"></script>
+
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{
+  width:100%;min-height:100dvh;background:#000;color:#EDEBE6;overflow:hidden;
+  font-family:Arial,'Noto Sans JP',sans-serif;-webkit-font-smoothing:antialiased;
+  user-select:none;-webkit-user-select:none;
+}
+.wrap{
+  min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+  padding:calc(env(safe-area-inset-top,0px) + 32px) 22px calc(env(safe-area-inset-bottom,0px) + 40px);
+  max-width:520px;margin:0 auto;
+}
+
+/* Top eyebrow */
+.head{text-align:center;opacity:0;animation:headIn .6s ease-out .2s forwards}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.34em;
+  text-transform:uppercase;color:#00E5A0;margin-bottom:10px}
+.title{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:22px;letter-spacing:-0.01em}
+
+/* Card stage — the real EXPASS card image floats in with a subtle
+   3D tilt. Once it lands the outer ring pulses quietly. */
+.stage{
+  position:relative;width:min(78vw,320px);aspect-ratio:2/3;
+  margin:28px auto 0;perspective:1000px;
+}
+.card{
+  position:absolute;inset:0;border-radius:18px;overflow:hidden;
+  box-shadow:0 40px 80px rgba(0,0,0,.55), 0 12px 24px rgba(0,0,0,.35);
+  transform:translateY(20vh) rotateY(-40deg) rotateX(10deg);
+  opacity:0;animation:cardDrop 1.4s cubic-bezier(.2,.8,.2,1) .4s forwards;
+  background:#111;
+}
+.card img{width:100%;height:100%;object-fit:cover;display:block}
+.card-fallback{
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,#0a0a0a 0%,#1a1a1a 50%,#0a0a0a 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;gap:18px;padding:22px;
+}
+.card-fallback .big{font-size:clamp(24px,7vw,36px);font-weight:800;letter-spacing:.14em;color:#EDEBE6}
+.card-fallback .sub{font-size:10px;letter-spacing:.28em;color:rgba(237,235,230,.45)}
+.ring{
+  position:absolute;inset:-10px;border-radius:24px;
+  border:1px solid rgba(0,229,160,.4);opacity:0;
+  animation:ringPulse 2s ease-out 1.8s infinite;
+}
+@keyframes cardDrop{
+  to { transform:translateY(0) rotateY(0) rotateX(0); opacity:1; }
+}
+@keyframes ringPulse{
+  0%   { transform:scale(.9); opacity:.7; }
+  70%  { transform:scale(1.08); opacity:0; }
+  100% { transform:scale(1.08); opacity:0; }
+}
+@keyframes headIn{ to { opacity:1; } }
+
+.meta{
+  text-align:center;opacity:0;animation:headIn .6s ease-out 2s forwards;
+}
+.meta-id{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.22em;
+  color:rgba(237,235,230,.45);margin-bottom:6px;text-transform:uppercase}
+.meta-name{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:800;font-size:15px;color:#EDEBE6}
+
+.cta-wrap{width:100%;opacity:0;animation:headIn .6s ease-out 2.4s forwards}
+.cta{
+  width:100%;padding:16px;border-radius:99px;
+  background:#00E5A0;color:#000;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:13px;letter-spacing:.14em;text-transform:uppercase;
+  box-shadow:0 8px 28px rgba(0,229,160,.25);border:none;
+}
+.cta:disabled{background:rgba(255,255,255,.08);color:rgba(237,235,230,.35);box-shadow:none}
+.cta.secondary{background:transparent;color:rgba(237,235,230,.7);
+  border:0.5px solid rgba(237,235,230,.18);box-shadow:none;margin-top:10px}
+.msg{margin-top:12px;font-size:11px;line-height:1.7;min-height:16px;text-align:center;letter-spacing:.02em}
+.msg.err{color:#FF7A7A}.msg.ok{color:#00E5A0}.msg.info{color:rgba(237,235,230,.55)}
+.spinner{display:inline-block;width:14px;height:14px;vertical-align:middle;
+  border:2px solid rgba(0,0,0,.2);border-top-color:#000;border-radius:50%;
+  animation:spin .8s linear infinite;margin-right:8px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.footer{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.22em;
+  text-transform:uppercase;color:rgba(237,235,230,.28);text-align:center;line-height:1.8}
+</style>
+</head>
+<body>
+
+<main class="wrap">
+  <div class="head">
+    <div class="eyebrow">EXPASS · Card</div>
+    <div class="title">カードを受け取りました</div>
+  </div>
+
+  <div class="stage">
+    <div class="ring"></div>
+    <div class="card">
+      <!-- The artist-card artwork. Falls back to a styled placeholder
+           if the image hasn't been uploaded yet. -->
+      <img src="/expass4artist.png" alt="EXPASS Card" onerror="this.remove()">
+      <div class="card-fallback">
+        <div class="sub">EXPASS · FOR ARTIST</div>
+        <div class="big" id="fallbackBig">EXPASS</div>
+        <div class="sub">© EXPASS</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="meta">
+    <div class="meta-id" id="cardIdEl"></div>
+    <div class="meta-name">このカードをアカウントに登録しますか？</div>
+  </div>
+
+  <div class="cta-wrap">
+    <button id="ctaBtn" class="cta" type="button">
+      <span id="ctaLabel">アカウントに追加</span>
+    </button>
+    <button id="skipBtn" class="cta secondary" type="button">あとで · SCREEN へ</button>
+    <div id="msg" class="msg"></div>
+  </div>
+
+  <div class="footer">© EXPASS · EXPERIENCE PASS</div>
+</main>
+
+<script>
+/* ─────────────────────────────────────────────
+   /card/<CARD_ID>
+   ─────────────────────────────────────────────
+   When an artist taps their physical EXPASS card (NFC / QR), the
+   scanner resolves to this URL. We:
+     1) Parse <CARD_ID> from the path (or ?c= param).
+     2) Play the landing animation (card drops into frame + pulse).
+     3) If the visitor is signed in: tap CTA → POST /api/claim-card.
+        Server writes users/{uid}.cards += [cardId], returns ok.
+     4) If not signed in: stash the card id and send them to
+        /onboarding?card=<id>. After sign-up, home.html picks up the
+        pending card id and claims it automatically on fb-auth-ready.
+   ───────────────────────────────────────────── */
+(function(){
+  const pathCode = (location.pathname.match(/^\/card\/([^/?#]+)/) || [])[1] || '';
+  const qs  = new URLSearchParams(location.search);
+  const rawId = decodeURIComponent(pathCode || qs.get('c') || '').trim();
+  const cardId = rawId.toUpperCase();
+
+  const idEl   = document.getElementById('cardIdEl');
+  const ctaBtn = document.getElementById('ctaBtn');
+  const ctaLbl = document.getElementById('ctaLabel');
+  const skipBtn = document.getElementById('skipBtn');
+  const msgEl  = document.getElementById('msg');
+  const fbBig  = document.getElementById('fallbackBig');
+
+  if (cardId) {
+    idEl.textContent = cardId;
+    fbBig.textContent = cardId.split('-').slice(-1)[0] || 'EXPASS';
+  } else {
+    idEl.textContent = 'CARD ID UNKNOWN';
+    ctaBtn.disabled = true;
+    msgEl.textContent = 'カード ID が URL に含まれていません。';
+    msgEl.classList.add('err');
+    return;
+  }
+
+  function setMsg(text, tone){
+    msgEl.textContent = text || '';
+    msgEl.classList.remove('err','ok','info');
+    if (tone) msgEl.classList.add(tone);
+  }
+
+  async function claim(){
+    const uid = (window.FB && window.FB.currentUser && window.FB.currentUser.uid)
+             || localStorage.getItem('livepass_uid') || null;
+    if (!uid) {
+      try { localStorage.setItem('livepass_pending_card', cardId); } catch(_){}
+      location.href = '/onboarding?card=' + encodeURIComponent(cardId);
+      return;
+    }
+    ctaBtn.disabled = true;
+    ctaLbl.innerHTML = '<span class="spinner"></span>登録中…';
+    try {
+      // The server endpoint doesn't exist yet — until /api/claim-card
+      // lands we write the card directly to users/{uid}.cards via
+      // updateDoc. Launch-ready behaviour is to move this to a
+      // server call so the card registry can be validated.
+      const { updateDoc, doc, db } = window.FB;
+      const ref = doc(db, 'users', uid);
+      // Append to an array field atomically.
+      const { arrayUnion } = await import('https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js');
+      await updateDoc(ref, { cards: arrayUnion(cardId) });
+      // Mirror locally so Collection can light up without a reload round-trip.
+      try {
+        const list = JSON.parse(localStorage.getItem('livepass_cards') || '[]');
+        if (!list.includes(cardId)) list.push(cardId);
+        localStorage.setItem('livepass_cards', JSON.stringify(list));
+        localStorage.removeItem('livepass_pending_card');
+      } catch(_){}
+      ctaLbl.textContent = '✓ 登録完了';
+      setMsg('カードをアカウントに追加しました。まもなく COLLECTION に移動します。', 'ok');
+      if (navigator.vibrate) navigator.vibrate([10, 40, 14]);
+      setTimeout(() => location.replace('/collection?noSplash=1'), 1400);
+    } catch(err) {
+      console.warn(err);
+      ctaBtn.disabled = false;
+      ctaLbl.textContent = 'もう一度試す';
+      setMsg('登録に失敗しました。通信状況を確認してやり直してください。', 'err');
+    }
+  }
+
+  skipBtn.addEventListener('click', () => {
+    try { localStorage.setItem('livepass_pending_card', cardId); } catch(_){}
+    location.replace('/screen?noSplash=1');
+  });
+
+  window.addEventListener('fb-auth-ready', () => {
+    ctaBtn.addEventListener('click', claim);
+  }, { once: true });
+  // Fallback: Firebase script never resolved — still let the user tap.
+  setTimeout(() => {
+    if (!ctaBtn._wired) ctaBtn.addEventListener('click', claim);
+    ctaBtn._wired = true;
+  }, 2000);
+})();
+</script>
+
+</body>
+</html>

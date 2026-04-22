@@ -40,6 +40,8 @@
     { "source": "/loading",            "destination": "/expass_loading.html" },
     { "source": "/invite/:code",       "destination": "/livepass_invite.html" },
     { "source": "/invite",             "destination": "/livepass_invite.html" },
+    { "source": "/card/:id",           "destination": "/livepass_card_claim.html" },
+    { "source": "/card",               "destination": "/livepass_card_claim.html" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "headers": [

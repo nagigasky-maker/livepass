@@ -1,300 +1,231 @@
-# EXPASS — Session Handoff Document
+# EXPASS — Session Handoff
 
-Last updated: 2026-04-20 (end of this session)
+Last updated: 2026-04-22
 
-Repository: `nagigasky-maker/livepass` · Production domain: `https://expass.app`  
-Active feature branch: `claude/fix-image-api-error-8MzaF` (merged into `main` on every completed task)
+Repository: `nagigasky-maker/livepass` · Production: `https://expass.app`
+Active branch: `claude/create-handoff-docs-MMJtF` · merged to `main` at every stop.
 
 ---
 
 ## 1. How to resume
 
-**Anything useful has been committed + pushed.** The chat can die — the
-repository is the source of truth. To resume in a fresh session:
+1. Open this file first.
+2. `git log --oneline -40` on `main` to see recent work.
+3. `git status` must be clean.
+4. Continue from **§5 Next session** at the bottom.
 
-1. Open this file (`HANDOFF.md`) first.
-2. Check `git log --oneline -40` on `main` to see recent work.
-3. Verify `git status` is clean; the hooks refuse to stop with dirty trees.
-4. Continue with the "Open requests" section at the bottom.
-
-Both `main` and `claude/fix-image-api-error-8MzaF` are kept in sync. Merges
-are fast-forward merges with `--no-ff` so history is traceable.
+All work lives on `main`; the feature branch is a lightweight staging area
+that gets `--no-ff` merged in. No hidden state.
 
 ---
 
-## 2. What's in the repo (architectural overview)
+## 2. Stack summary
 
-- **Pure static HTML + vanilla JS PWA.** No build step. Vercel rewrites
-  pretty URLs to `livepass_*.html`. See `vercel.json`.
-- **Auth**: Firebase Auth (email/password) — `firebase-init.js` boots the
-  SDK and exposes it on `window.FB`. `onAuthStateChanged` syncs the user
-  profile into localStorage (only when the fields are empty — Settings
-  edits win).
+- **Pure static HTML/JS PWA**, Vercel hosts. No build step.
+- **Auth**: Firebase email/password (`firebase-init.js` → `window.FB`).
 - **Data**: Firestore (`posts/{id}`, `users/{uid}`, `reservations/{id}`,
-  `subscriptions/{id}`). localStorage is a fast cache for the feed.
-  Per-user filters now apply on SCREEN so multi-account device doesn't
-  leak NOBBY's posts to a new signup.
-- **Storage**: Firebase Storage for post covers/avatars. Top cover images
-  and GIFs live in IndexedDB (`livepass_covers`, `livepass_media`) so the
-  ~5MB localStorage quota doesn't drop them.
-- **Payments**: Stripe in test mode. `api/checkout.js` creates Checkout
-  Sessions, `api/webhook.js` verifies signatures, `api/stripe-config.js`
-  exposes the publishable key to the client, and the reservation card
-  form on `livepass_calendar.html` uses Stripe Elements (PCI SAQ-A).
-- **AI**: `api/ai-write.js` proxies Anthropic Messages API (for article
-  body generation and event-supplement markdown).
+  `subscriptions/{id}`, `usernames/{nameLower}`). Rules file is
+  `firestore.rules` (deployed by operator).
+- **Storage**: Firebase Storage for post covers / videos, rules file
+  `storage.rules`. Browser IndexedDB (`livepass_media`, `livepass_covers`,
+  `livepass_avatars`) carries large blobs so localStorage's ~5 MB quota
+  never fills up.
+- **Payments**: Stripe test mode, `api/checkout.js` + `api/webhook.js`.
+  EXPASS is the merchant of record (model A); each creator does not
+  need their own 特商法 page. Single disclosure lives at
+  `/terms/tokushou` (`livepass_terms_tokushou.html`).
+- **AI**: `api/ai-write.js` → Anthropic Messages for body / event copy.
+- **Invite codes**: `/api/redeem-invite` validates against three env-var
+  buckets and hands out a plan for 365 days.
 
-Pages of note:
+---
 
-| Route | File | Status |
+## 3. Pages (routes → files)
+
+| Route | File | Notes |
 |---|---|---|
-| `/screen` (= /) | `livepass_home.html` | User-article feed, TOP cover upload, + button |
-| `/calendar` | `livepass_calendar.html` | Event list, TOP cover upload, + button, Stripe Elements |
-| `/profile` / `/collection` | `livepass_profile.html` | Profile, SUB button in topbar, subtabs swapped for heart toggle |
-| `/saved` | `livepass_profile.html` | Same file, `body.on-saved-route` flips PASS→SAVED panel |
-| `/search` / `/discovery` | `livepass_search.html` | Account search, manual add form, follow |
-| `/settings` | `livepass_settings.html` | Account info, multi-account switcher, signout |
-| `/compose/{article,event,workshop,exhibition,record}` | `livepass_compose_*.html` | Post creation forms |
-| `/atelier` | `livepass_atelier.html` | Tool grid. Frame locked (row 2). Record Booth live |
-| `/atelier/record` | `livepass_atelier_record.html` | Record display + `+ create` entry to compose_record |
-| `/atelier/frame` | `livepass_atelier_frame.html` | Frame studio (currently gated/locked on Atelier) |
-| `/login` | `livepass_login.html` | `expass.GIF` full-bleed background, white-tinted wxpasslogo01 |
-| `/onboarding` | `livepass_onboarding.html` | First-time signup flow |
+| `/` `/screen` `/home` | `livepass_home.html` | Feed, 4-btn bottomnav, first-visit splash |
+| `/collection` `/profile` | `livepass_profile.html` | 168px avatar (video avatar supported), other-user layout with `?user=` |
+| `/calendar` | `livepass_calendar.html` | Reservations (launch-live) |
+| `/discovery` `/search` | `livepass_search.html` | FOLLOWING / DISCOVERY sub-tabs |
+| `/compose/article` | `livepass_compose_article.html` | Cover → Title → Category → Author → Body → Access → Collab → (hidden sale section) → Color preview |
+| `/compose/event` `/workshop` `/exhibition` `/record` | `livepass_compose_*.html` | |
+| `/settings` | `livepass_settings.html` | VERIFICATION / ACCOUNTS / SUBSCRIPTION / ACCOUNT |
+| `/onboarding` | `livepass_onboarding.html` | Auto-sends email verification + claims username |
+| `/login` | `livepass_login.html` | `expass.GIF` hero |
+| `/loading` | `expass_loading.html` | CRT typewriter splash (4-5s) |
+| `/invite/:code` | `livepass_invite.html` | Artist invite landing |
+| `/card/:id`  (**NEW**) | `livepass_card_claim.html` | Artist card QR / NFC scan landing |
+| `/terms/tokushou` | `livepass_terms_tokushou.html` | Single 特商法 page |
+| `/atelier` `/atelier/record` `/atelier/frame` | hidden from nav, reachable by URL | Future UPDATE |
 
 ---
 
-## 3. Security posture (as of this hand-off)
+## 4. Where we stand right now
 
-### ✅ Shipped in this session
+### Identity / verification
+- Email verification: `sendEmailVerification` fires on signup,
+  flag mirrored to `localStorage.livepass_email_verified`.
+- Settings → VERIFICATION row shows status + resend button.
+- Calendar reserve **blocked until verified**. Settings upgrade /
+  invite redeem also blocked.
+- **Username uniqueness**: `usernames/{nameLower}` doc collection,
+  claimed in a probe-then-setDoc pair on signup. Rolls back the
+  auth account if the write loses a race.
+- **Invite codes**: 50 codes generated — 20 PRO + 30 STANDARD.
+  Operator stores them in Vercel env vars `INVITE_CODES_PRO` /
+  `INVITE_CODES_STANDARD`, hands codes to seed artists manually.
 
-- **Security headers** in `vercel.json`: CSP, HSTS (2 years +preload),
-  Referrer-Policy, Permissions-Policy, X-Frame-Options, X-Content-Type-Options.
-  CSP whitelists only Firebase, Stripe, Anthropic, Google Fonts.
-- **Firestore rules** committed as `firestore.rules`:
-  - `users/{uid}` owner-only writes
-  - `posts/{id}` public read, authorUid-only writes
-  - `reservations/{id}` owner-only
-  - `subscriptions/{id}` server-only writes
-  - Default deny everywhere else
-- **Storage rules** committed as `storage.rules`: size + mime enforced,
-  public read, authed writes, default deny.
-- **Stripe Elements** on the reservation card form. Card number / expiry
-  / CVC never touch our DOM. We store only `last4` + `paymentMethod.id`.
-  PCI scope dropped from SAQ-D to SAQ-A.
-- **Stripe webhook signature verification** works (`constructEvent` with
-  raw body buffer, `bodyParser:false`).
-- **Sign-out PII cleanup**: loops through every identity key
-  (`livepass_account_name/_ja/_en`, role/kind/style/goals, avatar,
-  signed_in, uid, plan, email/temp_email/last_email).
-- **SCREEN per-user filter** — new signups don't inherit NOBBY's posts.
-- **Account-scoped filter in home.html fb-auth-ready** — local articles
-  are kept as source of truth; Firestore results only layered on top
-  when author matches.
-- **Deleted-posts blacklist** (`livepass_deleted_ids`) — Firestore resync
-  can no longer resurrect locally-deleted events/articles.
+### Posting + media
+- localStorage only carries metadata + URL strings. Covers that fail
+  to upload to Firebase are stashed as blobs in IndexedDB
+  (`cover_<id>`, `extra_<id>_<i>`, `media_<id>`). Feed hydrates via
+  `MediaDB.get` / `CoverDB.get` on render.
+- Video: creator-picked loop flag (`videoLoop`), honoured on SCREEN +
+  edit preview. iOS autoplay policy hardened (attrs before src + RAF
+  kick + IntersectionObserver only pauses when fully off-screen).
+- GIF upload is refused at the cover picker, with a "使いたい場合は
+  MP4 に変換してください" modal. Atelier GIF→MP4 tool is a future UPDATE.
+- Detail view reserves aspect-ratio per layout so body text doesn't
+  jump when the cover finishes decoding.
 
-### ⏳ Still on the user's side (ops-level)
+### Avatar
+- Still image or ≤4 s MP4. Video blob lives in IndexedDB
+  (`livepass_avatars` / `avatar_blob`); JPEG poster in
+  `localStorage.livepass_avatar` powers non-video-aware slots.
+  Profile page + Settings ACCOUNTS list swap `<img>` for
+  `<video autoplay muted loop playsinline>` on the active account.
 
-1. **Vercel env vars**: confirmed that `STRIPE_SECRET_KEY`,
-   `STRIPE_WEBHOOK_SECRET`, `STRIPE_PUBLISHABLE_KEY` are set on Vercel
-   (verified live in session — Stripe Elements renders in production).
-   `ANTHROPIC_API_KEY` likely set too (AI features work).
-2. **Firebase rules deployment**: the `firestore.rules` / `storage.rules`
-   files are in the repo but NOT auto-deployed by Vercel. Deploy with
-   `firebase deploy --only firestore:rules,storage` from a local clone
-   (needs `firebase-tools` and login). OR paste them into the Firebase
-   Console → Rules tab. **Do this before launch.**
-3. **Stripe webhook endpoint** created in Stripe Dashboard pointing to
-   `https://expass.app/api/webhook` — confirmed in session. Signing
-   secret copied into Vercel. ✅
-4. **AppCheck** not enabled yet. Optional hardening — stops random
-   browsers from calling Firestore/Storage directly without going
-   through the app.
+### Launch scope / paywall
+- SCREEN sale section (物販 / 音源 / EXPASS / SUPPORTER / VIP) is
+  `display:none` — return after Stripe Checkout is live.
+- CALENDAR reservations are live (same-day payment; cancellation
+  fee charges the stored card via Stripe).
+- Tip + artist subscription panel (per-artist Patreon-style) is
+  live; paid-plan gating for SUPPORTER / VIP on compose.
+- TICKET / EXPASS / goods tap on the detail page opens a
+  "近日公開" modal (`showComingSoon`).
 
-### 🟡 Known trade-offs
-
-- `firebase-init.js` still exposes the Firebase API key. This is by
-  design (browser key is public; access control lives in the Rules).
-- `'unsafe-inline'` + `'unsafe-eval'` in CSP's script-src are needed
-  because most pages have inline `<script>` blocks. Long-term: extract
-  to external files and move to nonces.
-- `livepass_articles` + post covers live in localStorage — when the
-  quota (~5MB) fills up with large GIFs/photos, saves silently fail.
-  Top covers and GIFs already migrated to IndexedDB; the remaining
-  article covers still hit localStorage. Migrating them is the next
-  big structural improvement (see Pending §5).
+### Artist card landing (**this session**)
+- `/card/<CARD_ID>` plays a drop-in card animation, optional pulse,
+  then CTA "アカウントに追加" that writes
+  `users/{uid}.cards = arrayUnion(cardId)`. Unsigned visitors are
+  sent to `/onboarding?card=<id>` with the card id stashed in
+  `localStorage.livepass_pending_card` so home.html can claim on
+  `fb-auth-ready`.
+- Card artwork: `/expass4artist.png` (already in repo).
+- `firestore.rules` updated: `cards` added to the users whitelist.
 
 ---
 
-## 4. Feature state
+## 5. Next session — priority list
 
-### Pages that match the unified design (floating + button, flat black
-cards, Arial/Noto-Sans-JP, mint accents):
-`SCREEN`, `CALENDAR`, `PROFILE`, `SEARCH`, `SETTINGS`, `ATELIER`,
-`COMPOSE/*`.
+### A. 🚀 Launch-critical (must ship before event day)
 
-### Compose pages
-- **article** — cinema/PRO layouts unlocked for prototype. GIFs store
-  JPEG first-frame poster in localStorage + full animated GIF in
-  IndexedDB; SCREEN swaps the animated version in after render.
-- **event/workshop/exhibition** — Stripe-elements-backed reservation
-  form. Level selector (ALL LEVELS/BEGINNER/INTERMEDIATE/ADVANCED)
-  added to workshop. Custom category field (free text) added to workshop.
-- **record** — `livepass_compose_record.html`. Submit saves to
-  `livepass_records` AND `livepass_articles` (type=`record`, layout=
-  `square`). Redirects to `/screen` after post.
+| # | Item | Est. | Notes |
+|---|---|---|---|
+| A1 | **Upload `livepass_pending_card` auto-claim in home.html** | 30 m | Add fb-auth-ready handler like the pending-invite path. Currently the stash exists but no consumer. |
+| A2 | **`/api/claim-card` server endpoint** | 45 m | Right now the client writes `users/{uid}.cards` directly. Move to a server endpoint (like `/api/redeem-invite`) so we can validate card ids against an env allowlist and stop forged ids. |
+| A3 | **Firestore / Storage rules deploy** | 15 m | Files are in the repo (`firestore.rules`, `storage.rules`). Must be deployed from a local clone or pasted into Firebase Console before launch. Critical for both the `usernames/`, `cards[]`, Storage image-upload paths. |
+| A4 | **Stripe Connect (Model A) setup** | 2-3 h | Destination Charge or Separate Charge + Transfer. EXPASS is the merchant of record, artists receive payouts. Needs Stripe Dashboard Connect platform onboarding + env vars + a simple `/api/checkout.js` extension. |
+| A5 | **Vercel env vars loaded** | 15 m | `INVITE_CODES_PRO`, `INVITE_CODES_STANDARD`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `ANTHROPIC_API_KEY`, `FIREBASE_SERVICE_ACCOUNT` (when we move claim-card server-side). Confirm each one. |
 
-### Atelier (`/atelier`)
-- Row 1: Record Booth (active)
-- Row 2: 額装 (LOCKED — `pointer-events:none`, dashed, padlock icon,
-  `SOON` label). Unlock by removing `locked` class + `aria-disabled`
-  + restoring `<a href>`.
-- Row 3: Coming Soon (always locked)
+### B. Identity hardening (staged)
 
-### Login page
-- Full-bleed `/expass.GIF` background + dark scrim
-- `/wxpasslogo01.png` at 120px / 42% max, `filter:brightness(0) invert(1)`
-  for white
-- Hero copy: `YOU WERE THERE` / `Sign in`
-- Corner mark removed
+| # | Item | Est. |
+|---|---|---|
+| B1 | **Stripe Identity** for paid sellers — `/api/identity-session` creates a Stripe Identity session, Stripe hosted page does the capture, webhook writes `users/{uid}.identityVerified`. Required before a creator can receive payouts. | 3-4 h |
+| B2 | **Firebase Phone Auth** — reCAPTCHA v3 + SMS code flow, `users/{uid}.phoneVerified`. Optional second factor; surface in Settings VERIFICATION row. | 2-3 h |
 
-### Multi-account on this device
-- Settings has an ACCOUNTS section: create extra accounts, switch with
-  a tap, delete entries. Storage: `livepass_accounts_list`
-- NOTE: the content data (articles/events/saves) is still **global** —
-  switching accounts does NOT switch posts. Per-uid namespacing is
-  pending (§5).
+### C. Media / perf polish (pre-launch if time allows)
+
+| # | Item | Est. |
+|---|---|---|
+| C1 | **Video transcode on client** — `MediaRecorder` + canvas re-encode >20MB uploads to 720p ~2 Mbps. | 3 h |
+| C2 | **GIF → MP4 converter in Atelier** — ffmpeg.wasm, tile under `/atelier/convert`. | 2 h |
+| C3 | **Fade-in cover on SCREEN** so the bgColor placeholder doesn't flash during cover load. | 30 m |
+| C4 | **Profile video-avatar everywhere** — nav bar `bn-avatar`, comment bylines, article author byline all still show the JPEG poster. | 1 h |
+
+### D. Follow-up improvements
+
+| # | Item | Est. |
+|---|---|---|
+| D1 | **Settings name-change claim** — currently the `livepass_account_name` field is free-form. Add `usernames/` claim dance on rename. | 30 m |
+| D2 | **Invite redeem server-side** — move `users/{uid}.plan` writes to a firebase-admin endpoint, strip the plan whitelist further. | 2 h |
+| D3 | **Cancel-fee Stripe Connect Transfer** — confirmed-no-show on Calendar reservations → `transfer.create` to the event author. | 1 h |
+| D4 | **2nd COLLECTION card** — "2枚目" content (AMD referenced). User to supply copy. | — |
 
 ---
 
-## 5. Pending (open requests from the user)
+## 6. Environment variables checklist
 
-These came up toward the end of the session and are **not yet
-implemented** — just scoped:
+On Vercel → Project Settings → Environment Variables:
 
-### A. Two account tiers (artist vs. regular user)
-**Requested layout:**
-- **Artist** — invite-only, full current experience
-- **Regular** — SCREEN + CALENDAR (own + followed) + COLLECTION, no
-  Atelier entry, Discovery with Following/Discover subtabs
-- **Other-user profile** — cover image + avatar-left / name+style+DM+
-  Follow-right layout + SCREEN/CALENDAR subtabs
-
-**Recommended phased approach (captured in chat):**
-
-1. Settings toggle for `livepass_role: 'artist'|'user'` + gate Atelier
-   + `+` record option on `role==='artist'` (15-20 min, **most impact
-   for least effort**)
-2. Follow-merged feed on SCREEN / Calendar (30-45 min)
-3. Discovery subtabs (45 min)
-4. Other-user profile layout (1 hr)
-5. Real invite system with Firestore `invites/{code}` (deferred)
-
-### B. Music compose form
-- Agreed to defer ("あとででOK").
-- Recommended path: extend Record Booth with `<input type="file"
-  accept="audio/*">` and a small waveform / play control, rather than
-  a separate `/compose/music`. Jackets already exist; we'd add audio
-  blob (IndexedDB via `MediaDB.put('audio_' + id, blob)`) + player in
-  the lightbox.
-
-### C. Record edit layout tweaks
-Still outstanding from the earlier "レコードの編集画面" ask:
-- Title as heading (large)
-- Artist name (medium) — above center
-- Label name (small) — below center
-- Text color picker
-  
-These apply to **`livepass_compose_record.html`** (compose) and should
-likely also propagate to the preview + published record card. Partial
-scaffolding is already there (preview has pl-title / pl-artist /
-pl-labelname). Pending: make vertical positions match the spec, add
-the text-color picker.
-
-### D. Dark/Light theme toggle
-Deferred — it would be a sizable refactor (every page uses
-`!important` light-mode overrides on top of a dark base). Proper fix:
-CSS custom properties + `html[data-theme]` attribute + nonce-based
-stylesheet swap.
-
-### E. uid-prefixed localStorage keys
-Multi-account pollution root cause. Required before we ship
-per-account content separation cleanly. Est: 1 hour.
-
----
-
-## 6. Recent commits (last ~40) on `main`
-
-Most recent first:
 ```
-a5e557b Merge: record submit → SCREEN (resolve conflict)
-c5c375d Merge: lock 額装 on row 2
-e7f41fa Merge: Atelier redesign + keep main's record editor entry
-47dac6c Merge: Record Booth editor MVP + CREATE entry (parallel session)
-d5126d5 Record label layout + remove personal sample data (parallel session)
-8b98485 Merge: remove NOBBY/AMD samples
-82c98ef Record Booth editor MVP + booth integration (parallel session)
-749099a Atelier: trim copy + register /compose/record route (parallel session)
-... (see `git log --oneline -40`)
+STRIPE_SECRET_KEY           sk_test_... (test) / sk_live_... (prod)
+STRIPE_WEBHOOK_SECRET       whsec_...
+STRIPE_PUBLISHABLE_KEY      pk_test_... / pk_live_...
+ANTHROPIC_API_KEY           sk-ant-...
+INVITE_CODES_PRO            EXPASS-PRO-XXXXXX,…   (20 codes)
+INVITE_CODES_STANDARD       EXPASS-STD-XXXXXX,…   (30 codes)
+# Future:
+FIREBASE_SERVICE_ACCOUNT    {"type":"service_account",…}  (for admin writes)
+STRIPE_IDENTITY_SECRET      (optional, separate key)
 ```
 
-Several of the record-booth commits came from a parallel claude session
-(branch `claude/compose-record-editor`). They've been merged cleanly.
+Seed codes for this launch window:
 
----
+```
+# PRO (20) — major-artist seats
+EXPASS-PRO-7ZH006, EXPASS-PRO-XKYO1F, EXPASS-PRO-RAQ19H,
+EXPASS-PRO-7K5W1D, EXPASS-PRO-YT48IJ, EXPASS-PRO-UHX20M,
+EXPASS-PRO-6KDNE0, EXPASS-PRO-XEKK4Q, EXPASS-PRO-WL60DZ,
+EXPASS-PRO-ODIAD7, EXPASS-PRO-XE202L, EXPASS-PRO-EKPWWG,
+EXPASS-PRO-OHMJYL, EXPASS-PRO-351HGX, EXPASS-PRO-FQWM92,
+EXPASS-PRO-TT25VG, EXPASS-PRO-9GRJ3P, EXPASS-PRO-LD6JMC,
+EXPASS-PRO-E3I7BW, EXPASS-PRO-NDPVY8
 
-## 7. How to test locally (paranoid dev loop)
-
-```bash
-# Preview branch (safe)
-git checkout claude/fix-image-api-error-8MzaF
-
-# Try changes
-# ... edit files ...
-git add -A && git commit -m "..."
-git push origin claude/fix-image-api-error-8MzaF
-
-# Merge to production
-git checkout main
-git pull --rebase origin main
-git merge claude/fix-image-api-error-8MzaF --no-ff -m "Merge: ..."
-git push origin main
-
-# Vercel auto-deploys from main in ~1 min
-# Production URL: https://expass.app
+# STANDARD (30)
+EXPASS-STD-C6GMCM, EXPASS-STD-ENDJYW, EXPASS-STD-B1GZ9A,
+EXPASS-STD-HT889W, EXPASS-STD-GHSCPR, EXPASS-STD-4JOIA9,
+EXPASS-STD-DSKME4, EXPASS-STD-C5Y9RC, EXPASS-STD-IK8BYU,
+EXPASS-STD-T9Q95O, EXPASS-STD-VB6QIM, EXPASS-STD-XHB5IX,
+EXPASS-STD-ZL222F, EXPASS-STD-8DYUGT, EXPASS-STD-R3CIK4,
+EXPASS-STD-RIHGE5, EXPASS-STD-K0VXU1, EXPASS-STD-GLXK3W,
+EXPASS-STD-8COEQY, EXPASS-STD-OX52ZS, EXPASS-STD-A4J6L9,
+EXPASS-STD-JTL7CM, EXPASS-STD-4H8IUS, EXPASS-STD-N5RM1F,
+EXPASS-STD-4KDYJE, EXPASS-STD-QXBGIX, EXPASS-STD-YQQ9E8,
+EXPASS-STD-B4LGXL, EXPASS-STD-IKMGAD, EXPASS-STD-HQJ88W
 ```
 
-On iPhone PWA, there's no DevTools. Use the in-app diagnostic panel
-that appears on empty SCREEN (prints account_name / FB uid /
-localStorage counts). Remove it before launch (inline script at the
-bottom of `livepass_home.html` under `initDiagPanel`).
+Redemption URL: `https://expass.app/invite/<CODE>`
 
 ---
 
-## 8. Files that really matter (if debugging)
+## 7. Files worth knowing
 
 | Concern | File |
 |---|---|
-| Auth identity | `firebase-init.js` |
-| Feed filter | `livepass_home.html` → `getUserArticles`, `fb-auth-ready` handler |
-| Calendar ownership | `livepass_calendar.html` → `getUserSchedule`, `isMine` |
-| Stripe payment | `api/stripe-config.js` + `livepass_calendar.html` card sheet |
-| Webhook | `api/webhook.js` |
-| Multi-account switcher | `livepass_settings.html` (near bottom) |
-| Top cover IDB | `CoverDB` in `livepass_home.html` / `CalCoverDB` in `livepass_calendar.html` |
-| Post deletion blacklist | `livepass_deleted_ids` key, used in home.html's fb-auth-ready |
+| Firebase bootstrap / auth exports | `firebase-init.js` |
+| Feed render, video swap, observer | `livepass_home.html` |
+| Detail modal (`openDetail`) | `livepass_home.html` |
+| Compose entry | `livepass_compose_article.html` |
+| Invite landing | `livepass_invite.html` |
+| Card landing (**new**) | `livepass_card_claim.html` |
+| Paywall modal | `livepass_paywall.js` |
+| Splash | `expass_loading.html` |
+| Rules | `firestore.rules`, `storage.rules` |
+| Legal | `livepass_terms_tokushou.html` |
 
 ---
 
-## 9. If something is broken on production right now
+## 8. Break-glass
 
-1. Check Vercel Deployments tab — is the latest main deployment Ready?
-2. Check Stripe Dashboard → Webhooks → recent deliveries → any 4xx/5xx?
-3. Check browser Safari Developer Console (or the in-app diag panel
-   if you can't connect a Mac) for the actual JS error.
-4. Revert to a known-good commit with
-   `git revert <bad-sha>` then push main.
+If production is broken:
 
----
-
-End of handoff. Next session: pick up from §5 "Open requests".
+1. Check Vercel Deployments — is the latest `main` green?
+2. Firebase Console → Authentication → confirm `expass.app` is in the
+   authorized domains list.
+3. Stripe Dashboard → Webhooks → any 4xx/5xx deliveries?
+4. If all else fails, revert with `git revert <bad-sha> && git push`.
+   The last known-good tag (if tagged) lives at the top of main.
