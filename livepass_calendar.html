@@ -1450,6 +1450,13 @@ function openEventDetail(e) {
   if (reserveBtn) {
     reserveBtn.addEventListener('click', () => {
       if (navigator.vibrate) navigator.vibrate(10);
+      // Verification gate — unverified accounts can't make reservations.
+      // Impersonation / anonymous-account abuse prevention.
+      const verified = (localStorage.getItem('livepass_email_verified') === '1');
+      if (!verified) {
+        alert('予約はメール認証済みアカウントのみご利用いただけます。\n\n設定 → VERIFICATION から認証メールを送信し、受信後のリンクをタップしてください。');
+        return;
+      }
       // Check for existing reservation by the current user
       try {
         const me = localStorage.getItem('livepass_account_name') || 'NOBBY';

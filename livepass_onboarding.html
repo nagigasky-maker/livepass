@@ -302,7 +302,7 @@ async function submitSignup() {
 
   try {
     if (!window.FB) await new Promise(r => window.addEventListener('fb-auth-ready', r, { once:true }));
-    const { auth, db, createUserWithEmailAndPassword, doc, setDoc, serverTimestamp } = window.FB;
+    const { auth, db, createUserWithEmailAndPassword, doc, setDoc, serverTimestamp, sendEmailVerification } = window.FB;
 
     const cred = await createUserWithEmailAndPassword(auth, email, pass);
     const uid = cred.user.uid;
@@ -322,6 +322,15 @@ async function submitSignup() {
     localStorage.setItem('livepass_plan', 'free');
     localStorage.setItem('livepass_signed_in', '1');
     localStorage.setItem('livepass_onboarded_at', new Date().toISOString());
+    localStorage.setItem('livepass_email_verified', '0');
+
+    // Fire a confirmation email so the account can graduate from
+    // "未認証" to "本人確認済み" and unlock reservations / paid flows.
+    // Silent best-effort — Firebase sometimes rate-limits the send,
+    // and the user can always re-issue from Settings.
+    try {
+      if (sendEmailVerification) await sendEmailVerification(cred.user);
+    } catch(err) { console.warn('sendEmailVerification failed:', err); }
   } catch (e) {
     console.error('signup error:', e);
     showError(friendlyError(e.code));
