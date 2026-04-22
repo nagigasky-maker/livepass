@@ -311,6 +311,21 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 }
 .dm-body::-webkit-scrollbar{display:none}
 .dm-hero{position:relative;width:100%;background:#f5f3ee;overflow:hidden}
+/* Reserve hero height based on the post layout so text below doesn't
+   jump when the image/video arrives. object-fit:cover fills the
+   reserved slot. */
+.dm-hero[data-hero-layout="poster"]  {aspect-ratio:3/5}
+.dm-hero[data-hero-layout="square"]  {aspect-ratio:1/1}
+.dm-hero[data-hero-layout="wide"]    {aspect-ratio:16/9}
+.dm-hero[data-hero-layout="9:16"]    {aspect-ratio:9/16}
+.dm-hero[data-hero-layout="sq-large"]{aspect-ratio:1/1}
+.dm-hero[data-hero-layout="cinema"]  {aspect-ratio:21/9}
+.dm-hero[data-hero-layout] svg,
+.dm-hero[data-hero-layout] img,
+.dm-hero[data-hero-layout] video{
+  position:absolute !important;inset:0 !important;
+  width:100% !important;height:100% !important;object-fit:cover !important;
+}
 .dm-hero svg,.dm-hero img{position:relative;width:100%;height:auto;object-fit:contain;display:block}
 .dm-hero::after{
   content:'';position:absolute;inset:0;
@@ -1805,7 +1820,7 @@ function openDetail(a) {
   }
 
   dmBody.innerHTML = `
-    <div class="dm-hero" style="${heroStyle}">
+    <div class="dm-hero" data-hero-layout="${a.layout || ''}" style="${heroStyle}">
       ${heroImg}
       <div class="dm-hero-text" ${heroGradient}>
         <div class="dm-cat" style="color:${detailBg ? detailTxt : (a.catColor || '#F4C0D1')};opacity:.7">${a.cat}</div>
