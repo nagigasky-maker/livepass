@@ -49,7 +49,7 @@ service cloud.firestore {
       allow update: if isOwner(uid)
                     && request.resource.data.keys().hasOnly([
                          'name','email','plan','avatar','role','bio',
-                         'coverUrl','profession','tier',
+                         'coverUrl','profession','tier','cards',
                          'planExpiresAt','planSource',
                          'agreedTermsAt','createdAt','updatedAt'
                        ])
