@@ -1049,6 +1049,18 @@ function getUserArticles(){
       bgHue:    '140,60,20',
       createdAt:u.createdAt,
       userPost: true,
+      // Forward media + commerce metadata so the feed can render
+      // videos, GIFs, slideshows, and ticket buttons. Without these
+      // fields the mapping would downgrade every user post to a
+      // plain static <img> card.
+      mediaType:   u.mediaType   || 'image',
+      videoUrl:    u.videoUrl    || undefined,
+      videoLoop:   u.videoLoop,
+      extraImages: u.extraImages || undefined,
+      tickets:     u.tickets     || undefined,
+      access:      u.access,
+      authorUid:   u.authorUid   || null,
+      type:        u.type        || 'article',
     }));
   } catch(e) { return []; }
 }

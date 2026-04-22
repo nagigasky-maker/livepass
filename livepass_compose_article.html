@@ -1203,6 +1203,21 @@ document.getElementById('videoLoopToggle')?.addEventListener('change', (e) => {
   }
 });
 
+/* When the preview video ends (non-loop mode), let a tap ON the video
+   replay it instead of re-opening the file picker. The picker still
+   opens when the user taps the surrounding drop zone. */
+document.addEventListener('click', (e) => {
+  const v = e.target.closest('#coverUpload video');
+  if (!v) return;
+  e.stopPropagation();
+  try {
+    if (v.ended || v.paused) {
+      v.currentTime = 0;
+      v.play().catch(()=>{});
+    }
+  } catch(_){}
+}, true);
+
 /* Author card — reads the current account identity out of localStorage
    (populated by settings.html / firebase-init) and displays it so the
    creator can see who they're posting as. Read-only for now. */
@@ -2136,7 +2151,9 @@ submitBtn.addEventListener('click', async () => {
   const toast = document.getElementById('toast');
   toast.classList.add('show');
   setTimeout(() => {
-    location.href = editingArticle ? '/profile' : '/home';
+    // Always land on SCREEN after posting / editing — creators want to
+    // see the result in the feed, not drop straight back to Collection.
+    location.href = '/screen';
   }, 900);
 });
 </script>
