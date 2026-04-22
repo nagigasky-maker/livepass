@@ -778,23 +778,31 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
   </div>
 
   <nav class="cal-tabs">
-    <button class="ctb active" data-tab="following">EVENT</button>
-    <button class="ctb" data-tab="ai">AI SEARCH</button>
+    <button class="ctb active" data-tab="events">EVENT</button>
+    <button class="ctb" data-tab="following">FOLLOWING</button>
+    <button class="ctb" data-tab="discovery">DISCOVERY</button>
   </nav>
 
-  <!-- FOLLOWING tab -->
-  <div class="cal-panel active" id="cal-following">
+  <!-- EVENT — my own events + sample fixtures -->
+  <div class="cal-panel active" id="cal-events">
     <div class="ev-list" id="followingList"></div>
   </div>
 
-  <!-- AI SEARCH tab -->
-  <div class="cal-panel" id="cal-ai">
-    <div class="ai-search-bar">
-      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" placeholder="今夜池袋でハウスのイベントある?" id="aiInput">
+  <!-- FOLLOWING — events posted by accounts I follow, by date -->
+  <div class="cal-panel" id="cal-following">
+    <div class="ev-list" id="follFeedList"></div>
+    <div id="follEmpty" style="display:none;padding:60px 28px;text-align:center;font-family:Arial,'Noto Sans JP',sans-serif;color:rgba(237,235,230,.45);font-size:12px;line-height:1.8">
+      フォロー中のアカウントがまだいません。<br>
+      SCREEN や プロフィールで気になる人をフォローしましょう。
     </div>
-    <div class="ai-hint">AI が自然言語でスケジュールを検索します</div>
-    <div class="ev-list" id="aiList"></div>
+  </div>
+
+  <!-- DISCOVERY — followed users' SCREEN posts, shuffled -->
+  <div class="cal-panel" id="cal-discovery">
+    <div id="discGrid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;padding:12px"></div>
+    <div id="discEmpty" style="display:none;padding:60px 28px;text-align:center;font-family:Arial,'Noto Sans JP',sans-serif;color:rgba(237,235,230,.45);font-size:12px;line-height:1.8">
+      フォロー中のアカウントの SCREEN 投稿がまだありません。
+    </div>
   </div>
 </main>
 
@@ -1027,20 +1035,155 @@ const MERGED = [...getUserSchedule(), ...SCHEDULE];
 const followingList = document.getElementById('followingList');
 MERGED.forEach(e => followingList.appendChild(renderEvent(e)));
 
-/* AI list — starts empty, fills on input */
-const aiList = document.getElementById('aiList');
-const aiInput = document.getElementById('aiInput');
-function aiSearch(q) {
-  aiList.innerHTML = '';
-  const matches = q
-    ? MERGED.filter(e =>
-        (e.title + ' ' + e.venue + ' ' + e.meta + ' ' + e.tags.join(' '))
-          .toLowerCase().includes(q.toLowerCase()))
-    : MERGED.slice(0,3);
-  matches.forEach(e => aiList.appendChild(renderEvent(e)));
-}
-aiSearch('');
-aiInput.addEventListener('input', (e) => aiSearch(e.target.value));
+/* ─────────────────────────────────────────────
+   FOLLOWING tab — events posted by accounts I follow, by date.
+   Pulls `livepass_events` / `livepass_workshops` / `livepass_exhibitions`
+   from localStorage, keeps only records where the author is in
+   `livepass_following`, and sorts by event date (fallback createdAt).
+   ───────────────────────────────────────────── */
+(function initFollowingFeed(){
+  const listEl  = document.getElementById('follFeedList');
+  const emptyEl = document.getElementById('follEmpty');
+  if (!listEl) return;
+
+  function getFollowing(){
+    try {
+      const raw = JSON.parse(localStorage.getItem('livepass_following') || '[]');
+      return new Set(raw.map(x => (typeof x === 'string' ? x : (x && x.name) || '')).filter(Boolean).map(s => s.toUpperCase()));
+    } catch(e){ return new Set(); }
+  }
+  function mineFrom(key, type){
+    try {
+      return (JSON.parse(localStorage.getItem(key) || '[]') || []).map(r => Object.assign({ _type: type }, r));
+    } catch(e){ return []; }
+  }
+
+  function render(){
+    const following = getFollowing();
+    if (!following.size) {
+      emptyEl.style.display = 'block';
+      listEl.innerHTML = '';
+      return;
+    }
+    const all = [
+      ...mineFrom('livepass_events',      'event'),
+      ...mineFrom('livepass_workshops',   'workshop'),
+      ...mineFrom('livepass_exhibitions', 'exhibition'),
+    ];
+    const mineOnly = all.filter(r => {
+      const author = ((r.author || r.by || '') + '').toUpperCase();
+      return author && following.has(author);
+    });
+    // Sort: upcoming events first by date ascending, undated last.
+    mineOnly.sort((a, b) => {
+      const ta = new Date(a.date || a.time || a.createdAt || 0).getTime() || Infinity;
+      const tb = new Date(b.date || b.time || b.createdAt || 0).getTime() || Infinity;
+      return ta - tb;
+    });
+    listEl.innerHTML = '';
+    if (!mineOnly.length) { emptyEl.style.display = 'block'; return; }
+    emptyEl.style.display = 'none';
+    mineOnly.forEach(r => listEl.appendChild(renderEvent({
+      id: r.id,
+      title: r.title || '(無題)',
+      venue: r.venue || r.place || '',
+      time: r.time || r.date || '',
+      rawDate: r.date || (r.time || '').match(/\d{4}-\d{2}-\d{2}/)?.[0] || '',
+      author: r.author || r.by || '',
+      by: r.author || r.by || '',
+      type: r._type,
+      cat: r._type.toUpperCase(),
+      catColor: r._type === 'event' ? '#E8100A' : (r._type === 'workshop' ? '#F5C842' : '#00E5A0'),
+      meta: r.meta || '',
+      tags: Array.isArray(r.tags) ? r.tags : [],
+      cover: r.cover || null,
+    })));
+  }
+
+  render();
+  window.addEventListener('focus', render);
+})();
+
+/* ─────────────────────────────────────────────
+   DISCOVERY tab — followed users' SCREEN posts in a shuffled grid.
+   Uses Fisher-Yates on the filtered article list. The "AIの判断"
+   part is fuzzed via a light recency-weighted jitter so newer work
+   bubbles up even after shuffle. Full layout-engine (article_system)
+   is a later pass.
+   ───────────────────────────────────────────── */
+(function initDiscoveryGrid(){
+  const grid    = document.getElementById('discGrid');
+  const emptyEl = document.getElementById('discEmpty');
+  if (!grid) return;
+
+  function getFollowing(){
+    try {
+      const raw = JSON.parse(localStorage.getItem('livepass_following') || '[]');
+      return new Set(raw.map(x => (typeof x === 'string' ? x : (x && x.name) || '')).filter(Boolean).map(s => s.toUpperCase()));
+    } catch(e){ return new Set(); }
+  }
+
+  function shuffleWithRecencyBias(arr){
+    // Fisher-Yates, then nudge the top-3 newest entries into the
+    // first 6 slots so freshness still shows through the shuffle.
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    const scored = arr.map(x => ({ x, t: new Date(x.createdAt || 0).getTime() || 0 }))
+                      .sort((p, q) => q.t - p.t)
+                      .slice(0, 3)
+                      .map(s => s.x);
+    const seen = new Set();
+    const head = scored.filter(x => x && (seen.add(x.id), true));
+    const tail = a.filter(x => !head.includes(x));
+    return [...head, ...tail];
+  }
+
+  function render(){
+    const following = getFollowing();
+    if (!following.size) { emptyEl.style.display = 'block'; grid.innerHTML = ''; return; }
+    let arts = [];
+    try { arts = JSON.parse(localStorage.getItem('livepass_articles') || '[]'); } catch(e){}
+    const mine = arts.filter(a => {
+      const author = ((a.author || '') + '').toUpperCase();
+      return author && following.has(author);
+    });
+    if (!mine.length) { emptyEl.style.display = 'block'; grid.innerHTML = ''; return; }
+    emptyEl.style.display = 'none';
+    const ordered = shuffleWithRecencyBias(mine);
+
+    grid.innerHTML = ordered.map(a => {
+      const cover = a.cover
+        ? `<img src="${a.cover}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">`
+        : `<div style="position:absolute;inset:0;background:${a.bgColor || '#222'};display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.55);font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;font-size:12px;padding:12px;text-align:center">${(a.title || '').slice(0,40)}</div>`;
+      const layout = a.layout || 'square';
+      // Simple span rules: poster cards stay single-column, cinema
+      // spans two columns. This is a starter layout — full system is
+      // in livepass_article_system.html for later integration.
+      const span = (layout === 'cinema' || layout === 'wide') ? 'grid-column:span 2' : '';
+      const aspect = layout === 'poster' ? '3/5' :
+                     layout === 'wide' || layout === 'cinema' ? '16/9' :
+                     layout === '9:16' ? '9/16' : '1/1';
+      return `
+        <a href="/screen?post=${encodeURIComponent(a.id)}"
+          style="position:relative;display:block;border-radius:8px;overflow:hidden;aspect-ratio:${aspect};${span};background:#111">
+          ${cover}
+          <div style="position:absolute;left:10px;right:10px;bottom:10px;color:#fff;font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;font-weight:700;text-shadow:0 1px 6px rgba(0,0,0,.8);line-height:1.3">
+            ${(a.title || '').slice(0, 60)}
+          </div>
+          <div style="position:absolute;left:10px;top:10px;color:rgba(255,255,255,.85);font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.2em;text-transform:uppercase;text-shadow:0 1px 4px rgba(0,0,0,.7)">
+            @${(a.author || '').toLowerCase()}
+          </div>
+        </a>
+      `;
+    }).join('');
+  }
+
+  render();
+  window.addEventListener('focus', render);
+})();
 
 function renderEvent(e) {
   const div = document.createElement('div');

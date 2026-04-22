@@ -984,6 +984,46 @@ document.querySelectorAll('.tag-pill').forEach(p => {
   let DIRECTORY = buildDirectory();
   function refreshDirectory(){ DIRECTORY = buildDirectory(); }
 
+  // ── Firestore-backed directory ──
+  // The old DIRECTORY only included hardcoded samples + past
+  // post authors. Friends who just registered weren't searchable.
+  // We fetch the usernames/ collection once on first focus and
+  // merge it in. Read access is gated to signed-in users via
+  // Firestore Rules so the public can't scrape handles.
+  let REMOTE_LOADED = false;
+  async function loadRemoteDirectory(){
+    if (REMOTE_LOADED) return;
+    REMOTE_LOADED = true;
+    try {
+      if (!window.FB) await new Promise(r =>
+        window.addEventListener('fb-auth-ready', r, { once:true })
+      );
+      if (!window.FB || !window.FB.currentUser) return;
+      const { collection, getDocs, db } = window.FB;
+      const snap = await getDocs(collection(db, 'usernames'));
+      const me = (localStorage.getItem('livepass_account_name') || '').toUpperCase();
+      const add = [];
+      snap.forEach(d => {
+        const data = d.data() || {};
+        const name = data.name || d.id.toUpperCase();
+        if (!name || name.toUpperCase() === me) return;
+        // Only add if the local DIRECTORY doesn't already have it.
+        if (!DIRECTORY.some(a => (a.name || '').toUpperCase() === name.toUpperCase())) {
+          add.push({ name, role: data.role || '', uid: data.uid || null });
+        }
+      });
+      DIRECTORY = DIRECTORY.concat(add);
+      // Re-render current query with the expanded directory.
+      render(input.value);
+    } catch (err) {
+      console.warn('Firestore directory load failed:', err);
+    }
+  }
+
+  // Pre-load when the field is focused so the first keystroke already
+  // has remote accounts available.
+  input.addEventListener('focus', loadRemoteDirectory);
+
   function render(q){
     const query = (q || '').trim().toLowerCase();
     if (!query) { results.classList.remove('open'); results.innerHTML = ''; return; }
