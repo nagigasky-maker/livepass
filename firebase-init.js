@@ -4,7 +4,7 @@
      <script type="module" src="/firebase-init.js"></script>
    ───────────────────────────────────────────── */
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js';
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail }
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, sendEmailVerification, reload }
   from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js';
 import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, query, orderBy, limit, where, deleteDoc, serverTimestamp }
   from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js';
@@ -34,6 +34,8 @@ window.FB = {
   signInWithEmailAndPassword,
   signOut,
   sendPasswordResetEmail,
+  sendEmailVerification,
+  reload,
   // Firestore helpers
   doc, getDoc, setDoc, updateDoc,
   collection, addDoc, getDocs, query, orderBy, limit, where, deleteDoc,
@@ -49,6 +51,12 @@ window.FB.authReady = false;
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     window.FB.currentUser = user;
+    // Mirror the Firebase-owned verification flag into localStorage so
+    // UI gates can read it synchronously. `emailVerified` flips to true
+    // once the user clicks the link in the verification email.
+    try {
+      localStorage.setItem('livepass_email_verified', user.emailVerified ? '1' : '0');
+    } catch(_){}
     try {
       const snap = await getDoc(doc(db, 'users', user.uid));
       if (snap.exists()) {

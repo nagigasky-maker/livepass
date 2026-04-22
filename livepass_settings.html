@@ -645,26 +645,6 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
     <div class="field-chevron">›</div>
   </div>
 
-  <!-- ═══ MODE (ARTIST / USER) ═══ -->
-  <div class="sec-label">MODE</div>
-  <div style="padding:0 20px 8px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;line-height:1.7;color:rgba(237,235,230,.35);letter-spacing:.02em">
-    この端末のアカウントがどんな役割かを選びます。いつでも切替えできます。
-  </div>
-  <div style="padding:6px 20px 30px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
-    <button type="button" data-tier="artist" class="tier-btn"
-      style="display:block;padding:14px 14px;border-radius:12px;background:rgba(255,255,255,.02);border:0.5px solid rgba(237,235,230,.1);text-align:left;color:var(--white);transition:background .18s,border-color .18s">
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.28em;color:var(--mint);margin-bottom:6px">ARTIST</div>
-      <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:800;font-size:13px;margin-bottom:4px">出す人</div>
-      <div style="font-size:10px;line-height:1.5;color:rgba(237,235,230,.4)">Atelier・投稿・レコード作成まで</div>
-    </button>
-    <button type="button" data-tier="user" class="tier-btn"
-      style="display:block;padding:14px 14px;border-radius:12px;background:rgba(255,255,255,.02);border:0.5px solid rgba(237,235,230,.1);text-align:left;color:var(--white);transition:background .18s,border-color .18s">
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.28em;color:var(--blue);margin-bottom:6px">USER</div>
-      <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:800;font-size:13px;margin-bottom:4px">見る人</div>
-      <div style="font-size:10px;line-height:1.5;color:rgba(237,235,230,.4)">SCREEN・CALENDAR・COLLECTION</div>
-    </button>
-  </div>
-
   <!-- ═══ MULTI-ACCOUNT ═══ -->
   <div class="sec-label">ACCOUNTS</div>
   <div id="accountsList" style="padding:0 20px 10px"></div>
@@ -685,6 +665,31 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
         <button type="button" id="addAccountSave"
           style="padding:8px 16px;border-radius:99px;background:var(--blue);color:#fff;border:1px solid var(--blue);font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;font-weight:600">作成して切替</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ═══ VERIFICATION ═══ -->
+  <div class="sec-label">VERIFICATION</div>
+  <div style="padding:10px 20px 4px">
+    <div id="verifyRow"
+      style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.03);border:0.5px solid rgba(237,235,230,.1)">
+      <div id="verifyIcon" style="width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0"></div>
+      <div style="flex:1;min-width:0">
+        <div id="verifyTitle"
+          style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;font-size:13px;color:var(--white);letter-spacing:.02em"></div>
+        <div id="verifyHint"
+          style="font-family:Arial,'Noto Sans JP',sans-serif;font-size:10.5px;color:rgba(237,235,230,.5);letter-spacing:.02em;margin-top:2px;line-height:1.6"></div>
+      </div>
+      <button type="button" id="verifyAction"
+        style="padding:8px 14px;border-radius:99px;background:var(--blue);color:#fff;border:1px solid var(--blue);font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;font-weight:700;letter-spacing:.06em;flex-shrink:0;white-space:nowrap">
+        認証メールを送信
+      </button>
+    </div>
+    <div id="verifyMsg"
+      style="margin-top:8px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;letter-spacing:.02em;min-height:12px;color:rgba(237,235,230,.55)"></div>
+    <div
+      style="margin-top:6px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:9px;letter-spacing:.04em;color:rgba(237,235,230,.35);line-height:1.7">
+      ※ 匿名アカウントは予約・物販・プラン変更がご利用いただけません。なりすまし防止のため本人確認メールの認証をお願いしています。
     </div>
   </div>
 
@@ -1037,6 +1042,78 @@ nameInput.addEventListener('input', () => {
   } catch(e) {}
 });
 
+/* ─────────────────────────────────────────────
+   Email-verification row
+   Mirrors the Firebase flag into localStorage and lets the creator
+   resend the confirmation email. Unverified accounts are visibly
+   flagged so the creator understands why gated actions (reserve,
+   sell, plan upgrade) are blocked.
+   ───────────────────────────────────────────── */
+(function initVerifyRow(){
+  const row    = document.getElementById('verifyRow');
+  const iconEl = document.getElementById('verifyIcon');
+  const titleEl= document.getElementById('verifyTitle');
+  const hintEl = document.getElementById('verifyHint');
+  const actEl  = document.getElementById('verifyAction');
+  const msgEl  = document.getElementById('verifyMsg');
+  if (!row) return;
+
+  function paintVerified(){
+    iconEl.style.background = 'rgba(0,229,160,.14)';
+    iconEl.style.color = '#00E5A0';
+    iconEl.innerHTML =
+      '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg>';
+    titleEl.textContent = '本人確認済み';
+    hintEl.textContent  = 'メール認証が完了しています。予約・販売・プラン変更が可能です。';
+    actEl.style.display = 'none';
+  }
+  function paintPending(email){
+    iconEl.style.background = 'rgba(245,200,66,.14)';
+    iconEl.style.color = '#F5C842';
+    iconEl.innerHTML =
+      '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><polyline points="3,7 12,13 21,7"/></svg>';
+    titleEl.textContent = '未認証アカウント';
+    hintEl.textContent  = email
+      ? (email + ' 宛てに認証リンクを送信します。受信後、リンクをタップして完了してください。')
+      : 'メールアドレスが未登録です。先に登録してください。';
+    actEl.style.display = '';
+  }
+
+  function currentUser(){ return window.FB && window.FB.currentUser; }
+
+  async function refresh(){
+    const u = currentUser();
+    if (!u) { paintPending(localStorage.getItem('livepass_last_email') || ''); return; }
+    // Pull the freshest state from Firebase (the flag flips as soon as
+    // the recipient clicks the link — reload() picks that up).
+    try { if (window.FB.reload) await window.FB.reload(u); } catch(_){}
+    const v = !!u.emailVerified;
+    try { localStorage.setItem('livepass_email_verified', v ? '1' : '0'); } catch(_){}
+    if (v) paintVerified(); else paintPending(u.email || '');
+  }
+
+  actEl.addEventListener('click', async () => {
+    const u = currentUser();
+    if (!u || !window.FB.sendEmailVerification) {
+      msgEl.textContent = 'Firebase 接続が確立していません。少し待ってから再試行してください。';
+      return;
+    }
+    actEl.disabled = true; actEl.textContent = '送信中…';
+    try {
+      await window.FB.sendEmailVerification(u);
+      msgEl.textContent = '認証メールを送信しました。受信ボックスをご確認ください。';
+    } catch(err) {
+      console.warn(err);
+      msgEl.textContent = '送信に失敗しました。少し待ってから再試行してください。';
+    } finally {
+      actEl.disabled = false; actEl.textContent = '認証メールを再送';
+    }
+  });
+
+  if (window.FB && window.FB.authReady) refresh();
+  else window.addEventListener('fb-auth-ready', refresh, { once: true });
+})();
+
 /* Plan display + upgrade button — opens the shared paywall */
 (function initPlanRow(){
   const planEl   = document.getElementById('srCurrentPlan');
@@ -1046,39 +1123,19 @@ nameInput.addEventListener('input', () => {
   if (planEl) planEl.textContent = label;
   if (upBtn) {
     upBtn.addEventListener('click', () => {
+      // Verification gate — impersonation prevention.
+      const verified = (localStorage.getItem('livepass_email_verified') === '1');
+      if (!verified) {
+        alert('プラン変更・招待コードの適用はメール認証済みアカウントのみご利用いただけます。\n\n上の VERIFICATION から認証メールを送信してください。');
+        return;
+      }
       if (typeof window.openPaywall === 'function') window.openPaywall('default');
       else alert('サブスクライセンスはイベント当日に起動します。');
     });
   }
 })();
 
-/* Tier (artist / user) — gates Atelier + record creation */
-(function initTierToggle(){
-  const TIER_KEY = 'livepass_tier';
-  const btns = document.querySelectorAll('.tier-btn');
-  if (!btns.length) return;
-  let current = 'artist';
-  try { current = localStorage.getItem(TIER_KEY) || 'artist'; } catch(e){}
-  function render(t){
-    btns.forEach(b => {
-      const active = b.dataset.tier === t;
-      b.style.background = active ? 'rgba(255,255,255,.06)' : 'rgba(255,255,255,.02)';
-      b.style.borderColor = active ? 'rgba(237,235,230,.5)' : 'rgba(237,235,230,.1)';
-    });
-  }
-  render(current);
-  btns.forEach(b => {
-    b.addEventListener('click', () => {
-      const t = b.dataset.tier;
-      try { localStorage.setItem(TIER_KEY, t); } catch(e){}
-      render(t);
-      if (navigator.vibrate) navigator.vibrate(12);
-      if (window.FB && window.FB.currentUser) {
-        try { window.FB.updateDoc(window.FB.doc(window.FB.db, 'users', window.FB.currentUser.uid), { tier: t }); } catch(e){}
-      }
-    });
-  });
-})();
+
 
 /* Compose selector bottom sheet */
 (function initComposeSheet(){
@@ -1214,13 +1271,18 @@ document.getElementById('signOutBtn')?.addEventListener('click', async () => {
     ensureSelfInList();
     const me = (localStorage.getItem('livepass_account_name') || '').toUpperCase();
     const list = getList();
+    const activeAvatarType = (localStorage.getItem('livepass_avatar_type') || 'image').toLowerCase();
     listEl.innerHTML = list.map(a => {
       const active = (a.name || '').toUpperCase() === me;
       const initial = (a.name || '?').slice(0, 2).toUpperCase();
+      // The avatar slot mirrors /collection's ph-avatar: a JPEG poster
+      // renders first (from a.avatar or the livepass_avatar cache), then
+      // — only for the active account with a video avatar — we swap in
+      // <video autoplay muted loop> via AvatarDB after render.
       return `
-        <div class="account-card" style="display:flex;align-items:center;gap:12px;padding:12px 14px;margin-bottom:8px;background:rgba(255,255,255,.03);border:0.5px solid ${active ? 'rgba(61,170,255,.4)' : 'rgba(237,235,230,.1)'};border-radius:12px">
-          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#3DAAFF,#0a1020);border:1px solid rgba(237,235,230,.15);display:flex;align-items:center;justify-content:center;font-family:Arial,sans-serif;font-weight:900;font-size:14px;color:var(--white);overflow:hidden;flex-shrink:0">
-            ${a.avatar ? `<img src="${a.avatar}" alt="" style="width:100%;height:100%;object-fit:cover">` : initial}
+        <div class="account-card" data-name="${encodeURIComponent(a.name || '')}" style="display:flex;align-items:center;gap:12px;padding:12px 14px;margin-bottom:8px;background:rgba(255,255,255,.03);border:0.5px solid ${active ? 'rgba(61,170,255,.4)' : 'rgba(237,235,230,.1)'};border-radius:12px">
+          <div class="ac-avatar" data-active="${active ? '1' : '0'}" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#3DAAFF,#0a1020);border:1px solid rgba(237,235,230,.15);display:flex;align-items:center;justify-content:center;font-family:Arial,sans-serif;font-weight:900;font-size:14px;color:var(--white);overflow:hidden;flex-shrink:0">
+            ${a.avatar ? `<img src="${a.avatar}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">` : initial}
           </div>
           <div style="flex:1;min-width:0">
             <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;font-size:13px;color:var(--white)">${a.name}${active ? ' <span style="font-size:9px;letter-spacing:.2em;color:var(--blue);margin-left:8px">ACTIVE</span>' : ''}</div>
@@ -1235,6 +1297,18 @@ document.getElementById('signOutBtn')?.addEventListener('click', async () => {
         </div>
       `;
     }).join('');
+
+    // Video-avatar hydration (active account only) — match /collection.
+    if (activeAvatarType === 'video') {
+      const activeSlot = listEl.querySelector('.ac-avatar[data-active="1"]');
+      if (activeSlot) {
+        AvatarDB.get('avatar_blob').then(blob => {
+          if (!blob) return;
+          const url = URL.createObjectURL(blob);
+          activeSlot.innerHTML = `<video src="${url}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block"></video>`;
+        }).catch(()=>{});
+      }
+    }
   }
 
   listEl.addEventListener('click', (e) => {
