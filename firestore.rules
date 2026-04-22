@@ -67,6 +67,22 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // ── Usernames / handle registry ──
+    // One doc per lowercased handle: { uid, name, claimedAt }.
+    // Read: any signed-in user, so onboarding can probe availability
+    //        before creating an auth account.
+    // Create: must be signed in AND the claim must point to the
+    //         current user's own uid.
+    // Update / delete: only the owner of the claim.
+    match /usernames/{nameLower} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.keys().hasOnly(['uid','name','claimedAt']);
+      allow update, delete: if isSignedIn()
+                             && resource.data.uid == request.auth.uid;
+    }
+
     // ── Posts (articles / events / workshops / exhibitions) ──
     // Stored flat under /posts/{id} with a `type` field.
     match /posts/{postId} {

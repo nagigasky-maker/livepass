@@ -302,10 +302,48 @@ async function submitSignup() {
 
   try {
     if (!window.FB) await new Promise(r => window.addEventListener('fb-auth-ready', r, { once:true }));
-    const { auth, db, createUserWithEmailAndPassword, doc, setDoc, serverTimestamp, sendEmailVerification } = window.FB;
+    const { auth, db, createUserWithEmailAndPassword, doc, setDoc, serverTimestamp, sendEmailVerification, getDoc } = window.FB;
+
+    // ── Username uniqueness check ──
+    // The lowercase of the display name is the canonical key in
+    // `usernames/{nameLower}`. If it already exists, reject the
+    // signup before we burn a Firebase Auth account.
+    const nameLower = name.toLowerCase();
+    try {
+      const taken = await getDoc(doc(db, 'usernames', nameLower));
+      if (taken.exists()) {
+        showError('このアカウント名はすでに使われています。別の名前を試してください。');
+        next2.disabled = false;
+        next2.textContent = 'アカウント作成';
+        return;
+      }
+    } catch (err) {
+      // Availability check failed (offline / rules) — continue and
+      // rely on the transactional claim below. Better to surface a
+      // race-condition error than to block signup on network glitches.
+      console.warn('username availability check failed:', err);
+    }
 
     const cred = await createUserWithEmailAndPassword(auth, email, pass);
     const uid = cred.user.uid;
+
+    // Claim the username. If this throws (another signup raced us),
+    // roll back — delete the freshly-created auth account and surface
+    // the collision to the user.
+    try {
+      await setDoc(doc(db, 'usernames', nameLower), {
+        uid: uid,
+        name: name,
+        claimedAt: serverTimestamp(),
+      });
+    } catch (err) {
+      console.error('username claim failed:', err);
+      try { await cred.user.delete(); } catch(_){}
+      showError('このアカウント名はすでに使われています。別の名前を試してください。');
+      next2.disabled = false;
+      next2.textContent = 'アカウント作成';
+      return;
+    }
 
     await setDoc(doc(db, 'users', uid), {
       name: name,
