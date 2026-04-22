@@ -101,7 +101,7 @@ html,body{
 (function(){
   const qs      = new URLSearchParams(location.search);
   const preview = qs.get('preview') === '1';
-  const dest    = qs.get('dest') || '/screen';
+  const dest    = qs.get('dest') || '/collection';
   const txtEl   = document.getElementById('txt');
   const skipBtn = document.getElementById('skip');
 
