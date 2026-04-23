@@ -138,16 +138,17 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   content:"";position:absolute;left:0;right:0;bottom:-0.5px;height:2px;background:var(--mint);
 }
 /* Panels */
-.disc-following{display:none;padding:14px 0 0}
+/* Panel visibility — the body carries a class for the active tab:
+     (none) → 検索 (.disc-search visible)
+     .disc-following  → フォロー中
+     .disc-followers  → フォロワー
+*/
+.disc-search,.disc-following,.disc-followers{padding:14px 0 0}
+.disc-following,.disc-followers{display:none}
+body.disc-following .disc-search,
+body.disc-followers .disc-search{display:none}
 body.disc-following .disc-following{display:block}
-body.disc-following .search-bar,
-body.disc-following #accountResults,
-body.disc-following .account-add-wrap,
-body.disc-following .tag-row,
-body.disc-following .ai-badge,
-body.disc-following .sec-label,
-body.disc-following .scroll-row,
-body.disc-following .sug-grid{display:none !important}
+body.disc-followers .disc-followers{display:block}
 
 .disc-list{display:flex;flex-direction:column}
 .disc-empty{padding:60px 28px;text-align:center}
@@ -548,79 +549,68 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 
 <main class="content">
   <header class="search-header">
-    <div class="sh-label">AI Discovery · For You</div>
     <div class="sh-title">SEARCH</div>
   </header>
 
-  <!-- FOLLOWING / DISCOVERY tabs -->
+  <!-- SEARCH / FOLLOWING / FOLLOWERS tabs -->
   <nav class="disc-tabs" id="discTabs">
-    <button class="dt-btn" data-disc="following">FOLLOWING</button>
-    <button class="dt-btn active" data-disc="discovery">DISCOVERY</button>
+    <button class="dt-btn active" data-disc="search">検索</button>
+    <button class="dt-btn" data-disc="following">フォロー中</button>
+    <button class="dt-btn" data-disc="followers">フォロワー</button>
   </nav>
 
-  <!-- FOLLOWING panel — shown when body has .disc-following -->
+  <!-- SEARCH panel (default) — input + registered accounts -->
+  <section class="disc-search" id="discSearch">
+    <div class="search-bar">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="accountSearchInput" placeholder="アカウント名で検索…" autocomplete="off">
+    </div>
+
+    <!-- Account search results (friend discovery) -->
+    <div id="accountResults" class="account-results"></div>
+
+    <!-- Manual account add (kept for offline / not-yet-registered friends) -->
+    <div class="account-add-wrap">
+      <button id="accountAddToggle" type="button" class="account-add-btn">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        新しいアカウントを追加
+      </button>
+      <div id="accountAddForm" class="account-add-form">
+        <input type="text" id="accountAddName" placeholder="アカウント名（例: TARO）" autocomplete="off">
+        <input type="text" id="accountAddRole" placeholder="役割・肩書き（例: Photographer）" autocomplete="off">
+        <div class="account-add-actions">
+          <button type="button" id="accountAddCancel" class="account-add-cancel">キャンセル</button>
+          <button type="button" id="accountAddSave" class="account-add-save">追加してフォロー</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Browse: registered EXPASS accounts -->
+    <div class="sec-label" id="browseLabel">EXPASS アカウント</div>
+    <div class="disc-list" id="browseList"></div>
+    <div class="disc-empty" id="browseEmpty" style="display:none">
+      <div class="de-title">まだ登録アカウントがいません</div>
+      <div class="de-sub">上の + から友達をリストに追加できます。</div>
+    </div>
+  </section>
+
+  <!-- FOLLOWING panel — my following list -->
   <section class="disc-following" id="discFollowing">
-    <div class="disc-empty" id="discEmpty" style="display:none">
-      <div class="de-title">まだフォローしているアカウントがありません</div>
-      <div class="de-sub">DISCOVERY からアーティストを探してフォローしましょう。</div>
+    <div id="follEmpty" class="disc-empty" style="display:none">
+      <div class="de-title">まだフォロー中のアカウントがありません</div>
+      <div class="de-sub">「検索」タブからアカウントを探してフォローしましょう。</div>
     </div>
     <div class="disc-list" id="discFollowList"></div>
   </section>
 
-  <div class="search-bar">
-    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <input type="text" id="accountSearchInput" placeholder="アカウント名で検索してつながる…" autocomplete="off">
-  </div>
-
-  <!-- Account search results (friend discovery) -->
-  <div id="accountResults" class="account-results"></div>
-
-  <!-- Manual account add (for friends not yet in the directory) -->
-  <div class="account-add-wrap">
-    <button id="accountAddToggle" type="button" class="account-add-btn">
-      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      新しいアカウントを追加
-    </button>
-    <div id="accountAddForm" class="account-add-form">
-      <input type="text" id="accountAddName" placeholder="アカウント名（例: TARO）" autocomplete="off">
-      <input type="text" id="accountAddRole" placeholder="役割・肩書き（例: Photographer）" autocomplete="off">
-      <div class="account-add-actions">
-        <button type="button" id="accountAddCancel" class="account-add-cancel">キャンセル</button>
-        <button type="button" id="accountAddSave" class="account-add-save">追加してフォロー</button>
-      </div>
+  <!-- FOLLOWERS panel — who follows me -->
+  <section class="disc-followers" id="discFollowers">
+    <div id="followersEmpty" class="disc-empty" style="display:none">
+      <div class="de-title">まだフォロワーがいません</div>
+      <div class="de-sub">アカウント名をシェアして友達を招待しましょう。</div>
     </div>
-  </div>
-
-  <div class="tag-row">
-    <button class="tag-pill active">ALL</button>
-    <button class="tag-pill">HOUSE</button>
-    <button class="tag-pill">BREAKING</button>
-    <button class="tag-pill">WAACKING</button>
-    <button class="tag-pill">TECHNO</button>
-    <button class="tag-pill">STUDIO</button>
-    <button class="tag-pill">FASHION</button>
-  </div>
-
-  <div class="ai-badge">
-    <svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>
-    AI Curated for you
-  </div>
-
-  <!-- Suggested artists -->
-  <div class="sec-label">ARTISTS YOU MIGHT LIKE</div>
-  <div class="scroll-row" id="artistsRow"></div>
-
-  <!-- Suggested events -->
-  <div class="sec-label">EVENTS FOR YOUR TASTE</div>
-  <div class="sug-grid" id="eventsGrid"></div>
-
-  <!-- Suggested studios -->
-  <div class="sec-label">STUDIOS NEAR YOU</div>
-  <div class="scroll-row" id="studiosRow"></div>
-
-  <!-- Suggested lessons -->
-  <div class="sec-label">LESSONS MATCHING YOUR HISTORY</div>
-  <div class="sug-grid" id="lessonsGrid"></div>
+    <div class="disc-list" id="discFollowersList"></div>
+  </section>
 
   <div class="content-bottom-padding"></div>
 </main>
@@ -659,175 +649,74 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 </nav>
 
 <script>
-/* Sample AI suggestion data */
-const ARTISTS = [
-  { name:'SACHI',   sub:'Waacking',      hue:'320,70,30', cover:'https://images.unsplash.com/photo-1550684376-efcbd6e3f031?w=400&q=80' },
-  { name:'ALI',     sub:'House',         hue:'0,70,30',   cover:'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=400&q=80' },
-  { name:'DUBLA®',  sub:'Fashion',       hue:'280,60,30', cover:'https://images.unsplash.com/photo-1558171813-4c088753af8f?w=400&q=80' },
-  { name:'CREW NRG',sub:'Breaking',      hue:'45,70,30',  cover:'https://images.unsplash.com/photo-1535525153412-5a42439a210d?w=400&q=80' },
-  { name:'DJ KEITA',sub:'Techno',        hue:'220,70,20', cover:'https://images.unsplash.com/photo-1461784180009-21121b2f204c?w=400&q=80' },
-];
-const EVENTS = [
-  { cat:'EVENT',    catColor:'#E8100A', name:'All Must Dance', meta:'May 4 · Club Asia',  hue:'0,70,30',  score:'97%', cover:'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=400&q=80' },
-  { cat:'WORKSHOP', catColor:'#F4C0D1', name:'Waacking Lab',   meta:'May 18 · 代官山',    hue:'320,70,30',score:'92%', cover:'https://images.unsplash.com/photo-1504805572947-34fad45aed93?w=400&q=80' },
-  { cat:'EVENT',    catColor:'#bf5af2', name:'DUBLA Launch',   meta:'Jun 1 · WOMB',       hue:'280,60,30',score:'89%', cover:'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&q=80' },
-  { cat:'WORKSHOP', catColor:'#F5C842', name:'Cypher Lab',     meta:'Jun 1 · WOMB 2F',    hue:'45,70,30', score:'86%', cover:'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400&q=80' },
-];
-const STUDIOS = [
-  { name:'代官山 Studio A', sub:'House · Waacking', hue:'160,60,25' },
-  { name:'渋谷 WOMB 2F',    sub:'Breaking',          hue:'220,70,25' },
-  { name:'原宿 NRG',        sub:'All Styles',        hue:'280,60,25' },
-  { name:'中野 Noah',       sub:'Private',           hue:'45,60,25' },
-];
-const LESSONS = [
-  { cat:'HOUSE',    catColor:'#A8E63D', name:'House Fundamentals', meta:'NOBBY · Weekly',   hue:'90,70,25', score:'95%' },
-  { cat:'BREAKING', catColor:'#F5C842', name:'Cypher 101',         meta:'CREW NRG · Fri',   hue:'45,70,25', score:'88%' },
-  { cat:'WAACKING', catColor:'#F4C0D1', name:'Body as Language',   meta:'SACHI · Sat',      hue:'320,70,25',score:'84%' },
-  { cat:'DJ',       catColor:'#3DAAFF', name:'Turntables 01',      meta:'DJ KEITA · Mon',   hue:'200,70,25',score:'80%' },
-];
+<!-- AI sample artists / events / studios / lessons were removed in the
+     simplified launch layout. Only live Firestore accounts + locally
+     created content are surfaced here now. -->
 
-/* SVG placeholder for thumbnails (no network) */
-function phSVG(hue, text) {
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'>
-    <defs><linearGradient id='g${hue.replace(/,/g,'')}' x1='0' y1='0' x2='1' y2='1'>
-      <stop offset='0' stop-color='hsla(${hue},.45)'/>
-      <stop offset='1' stop-color='hsla(${hue},.1)'/>
-    </linearGradient></defs>
-    <rect width='200' height='200' fill='url(%23g${hue.replace(/,/g,'')})'/>
-    <text x='100' y='120' text-anchor='middle' font-family='Arial' font-weight='900' font-size='42' fill='rgba(255,255,255,.08)'>${text}</text>
-  </svg>`.replace(/\s+/g,' ').replace(/</g,'%3C').replace(/>/g,'%3E').replace(/#/g,'%23').replace(/"/g,"'");
-  return 'data:image/svg+xml;charset=utf-8,' + svg;
-}
-
-/* Render artists row */
-const artistsRow = document.getElementById('artistsRow');
-ARTISTS.forEach(a => {
-  const card = document.createElement('div');
-  card.className = 'sr-card';
-  card.innerHTML = `
-    <div class="sr-av"><img src="${a.cover || phSVG(a.hue, a.name.charAt(0))}" alt="" style="width:100%;height:100%;object-fit:cover"></div>
-    <div class="sr-name">${a.name}</div>
-    <div class="sr-sub">${a.sub}</div>
-  `;
-  artistsRow.appendChild(card);
-});
-
-/* Render events grid */
-const eventsGrid = document.getElementById('eventsGrid');
-EVENTS.forEach(e => {
-  const card = document.createElement('div');
-  card.className = 'sug-card';
-  card.style.setProperty('--sug-color', e.catColor);
-  card.innerHTML = `
-    <div class="sug-img">
-      <img src="${e.cover || phSVG(e.hue, e.cat)}" alt="">
-      <div class="sug-score">${e.score}</div>
-    </div>
-    <div class="sug-body">
-      <div class="sug-cat">${e.cat}</div>
-      <div class="sug-name">${e.name}</div>
-      <div class="sug-meta">${e.meta}</div>
-    </div>
-  `;
-  eventsGrid.appendChild(card);
-});
-
-/* Render studios row */
-const studiosRow = document.getElementById('studiosRow');
-STUDIOS.forEach(s => {
-  const card = document.createElement('div');
-  card.className = 'sr-card';
-  card.innerHTML = `
-    <div class="sr-av"><img src="${phSVG(s.hue, '◎')}" alt="" style="width:100%;height:100%;object-fit:cover"></div>
-    <div class="sr-name">${s.name}</div>
-    <div class="sr-sub">${s.sub}</div>
-  `;
-  studiosRow.appendChild(card);
-});
-
-/* Render lessons grid */
-const lessonsGrid = document.getElementById('lessonsGrid');
-LESSONS.forEach(l => {
-  const card = document.createElement('div');
-  card.className = 'sug-card';
-  card.style.setProperty('--sug-color', l.catColor);
-  card.innerHTML = `
-    <div class="sug-img">
-      <img src="${phSVG(l.hue, l.cat)}" alt="">
-      <div class="sug-score">${l.score}</div>
-    </div>
-    <div class="sug-body">
-      <div class="sug-cat">${l.cat}</div>
-      <div class="sug-name">${l.name}</div>
-      <div class="sug-meta">${l.meta}</div>
-    </div>
-  `;
-  lessonsGrid.appendChild(card);
-});
-
-/* Tag pill toggle */
-document.querySelectorAll('.tag-pill').forEach(p => {
-  p.addEventListener('click', () => {
-    document.querySelectorAll('.tag-pill').forEach(x => x.classList.remove('active'));
-    p.classList.add('active');
-  });
-});
-
-/* FOLLOWING / DISCOVERY tab switcher */
+/* SEARCH / FOLLOWING / FOLLOWERS tab switcher */
 (function initDiscTabs(){
   const btns = document.querySelectorAll('.dt-btn');
-  const followList = document.getElementById('discFollowList');
-  const emptyEl = document.getElementById('discEmpty');
+  const followList     = document.getElementById('discFollowList');
+  const followersList  = document.getElementById('discFollowersList');
+  const follEmptyEl    = document.getElementById('follEmpty');
+  const followersEmpty = document.getElementById('followersEmpty');
 
-  // Escape user-controlled strings before embedding them in innerHTML to
-  // keep a malicious localStorage.livepass_following entry from running
-  // arbitrary scripts.
+  // Escape user-controlled strings before embedding them in innerHTML
+  // to keep a malicious localStorage entry from running arbitrary JS.
   function esc(s){
     return String(s == null ? '' : s)
       .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
       .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   }
-  // Avatar images are only allowed if they're data: URLs we wrote ourselves
-  // or plain https: URLs. Any javascript: / vbscript: is rejected.
+  // Only allow known-safe avatar URLs.
   function safeAvatar(src){
     const s = String(src || '');
     if (/^data:image\//.test(s) || /^https:\/\//.test(s)) return s;
     return '';
   }
+  function normList(key){
+    try {
+      return (JSON.parse(localStorage.getItem(key) || '[]') || [])
+        .map(x => typeof x === 'string' ? { name:x, role:'', avatar:'' } : x)
+        .filter(x => x && x.name);
+    } catch(e){ return []; }
+  }
+
+  function rowHtml(u, opts){
+    const name = esc(u.name);
+    const role = esc(u.role || '');
+    const avSrc = safeAvatar(u.avatar);
+    const av = avSrc
+      ? `<img src="${esc(avSrc)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
+      : '';
+    const btn = opts && opts.button === 'unfollow'
+      ? `<button class="ar-unfollow" data-name="${encodeURIComponent(u.name)}" type="button">フォロー中</button>`
+      : opts && opts.button === 'followback'
+        ? `<button class="ar-unfollow" data-followback="${encodeURIComponent(u.name)}" data-role="${encodeURIComponent(u.role||'')}" type="button" style="background:rgba(0,229,160,.1);border-color:var(--mint);color:var(--mint)">フォロバ</button>`
+        : '';
+    return `
+      <a class="disc-row" href="/profile?user=${encodeURIComponent(u.name)}">
+        <div class="ar-av">${av}</div>
+        <div class="ar-meta">
+          <div class="ar-name">${name}</div>
+          <div class="ar-role">${role}</div>
+        </div>
+        ${btn}
+      </a>
+    `;
+  }
 
   function renderFollowing(){
     if (!followList) return;
-    let list = [];
-    try { list = JSON.parse(localStorage.getItem('livepass_following') || '[]'); } catch(e){}
-    // Normalize — older entries are plain strings, newer are {name, role, avatar}
-    list = list.map(x => typeof x === 'string' ? { name:x, role:'', avatar:'' } : x)
-               .filter(x => x && x.name);
+    const list = normList('livepass_following');
     if (!list.length) {
-      if (emptyEl) emptyEl.style.display = 'block';
+      if (follEmptyEl) follEmptyEl.style.display = 'block';
       followList.innerHTML = '';
       return;
     }
-    if (emptyEl) emptyEl.style.display = 'none';
-    followList.innerHTML = list.map(u => {
-      const name = esc(u.name);
-      const role = esc(u.role || '');
-      const avSrc = safeAvatar(u.avatar);
-      const av = avSrc
-        ? `<img src="${esc(avSrc)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
-        : '';
-      return `
-        <a class="disc-row" href="/profile?user=${encodeURIComponent(u.name)}">
-          <div class="ar-av">${av}</div>
-          <div class="ar-meta">
-            <div class="ar-name">${name}</div>
-            <div class="ar-role">${role}</div>
-          </div>
-          <button class="ar-unfollow" data-name="${encodeURIComponent(u.name)}" type="button">フォロー中</button>
-        </a>
-      `;
-    }).join('');
+    if (follEmptyEl) follEmptyEl.style.display = 'none';
+    followList.innerHTML = list.map(u => rowHtml(u, { button:'unfollow' })).join('');
 
-    // Unfollow handler — stops propagation so the row link doesn't fire
     followList.querySelectorAll('.ar-unfollow').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault(); e.stopPropagation();
@@ -843,22 +732,59 @@ document.querySelectorAll('.tag-pill').forEach(p => {
     });
   }
 
+  function renderFollowers(){
+    if (!followersList) return;
+    const list = normList('livepass_followers');
+    const following = new Set(normList('livepass_following').map(x => (x.name || '').toUpperCase()));
+    if (!list.length) {
+      if (followersEmpty) followersEmpty.style.display = 'block';
+      followersList.innerHTML = '';
+      return;
+    }
+    if (followersEmpty) followersEmpty.style.display = 'none';
+    followersList.innerHTML = list.map(u => {
+      const isMutual = following.has((u.name || '').toUpperCase());
+      return rowHtml(u, { button: isMutual ? null : 'followback' });
+    }).join('');
+
+    // Followback handler
+    followersList.querySelectorAll('[data-followback]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault(); e.stopPropagation();
+        const name = decodeURIComponent(btn.dataset.followback || '');
+        const role = decodeURIComponent(btn.dataset.role || '');
+        if (!name) return;
+        let cur = [];
+        try { cur = JSON.parse(localStorage.getItem('livepass_following') || '[]'); } catch(_){}
+        if (!cur.some(x => (typeof x === 'string' ? x : x && x.name) === name)) {
+          cur.unshift({ name, role });
+          localStorage.setItem('livepass_following', JSON.stringify(cur));
+        }
+        if (navigator.vibrate) navigator.vibrate(8);
+        renderFollowers();
+      });
+    });
+  }
+
   btns.forEach(b => {
     b.addEventListener('click', () => {
       btns.forEach(x => x.classList.remove('active'));
       b.classList.add('active');
       const mode = b.dataset.disc;
       document.body.classList.toggle('disc-following', mode === 'following');
+      document.body.classList.toggle('disc-followers', mode === 'followers');
       if (mode === 'following') renderFollowing();
+      if (mode === 'followers') renderFollowers();
     });
   });
 
-  // If URL has ?tab=following, start on Following
+  // Deep-link support: ?tab=following / ?tab=followers
   try {
     const qs = new URLSearchParams(location.search);
-    if (qs.get('tab') === 'following') {
-      const followBtn = document.querySelector('.dt-btn[data-disc="following"]');
-      if (followBtn) followBtn.click();
+    const tab = qs.get('tab');
+    if (tab === 'following' || tab === 'followers') {
+      const nextBtn = document.querySelector(`.dt-btn[data-disc="${tab}"]`);
+      if (nextBtn) nextBtn.click();
     }
   } catch(e){}
 })();
@@ -916,21 +842,12 @@ document.querySelectorAll('.tag-pill').forEach(p => {
   const results = document.getElementById('accountResults');
   if (!input || !results) return;
 
-  const KNOWN_ACCOUNTS = [
-    { name: 'MOZYSKYE',      role: 'Artist / Illustrator' },
-    { name: 'KENJI',         role: 'DJ / Producer' },
-    { name: 'SAKURA',        role: 'Dancer / Choreographer' },
-    { name: 'YUKI',          role: 'Photographer' },
-    { name: 'TAKUYA',        role: 'DJ / House' },
-    { name: 'MARI',          role: 'VJ / Visual Artist' },
-    { name: 'REN',           role: 'DJ / Techno' },
-    { name: 'AMI',           role: 'Vocalist' },
-    { name: 'KOTA',          role: 'Live Band' },
-    { name: 'HARUKA',        role: 'DJ / Disco' },
-    { name: 'RYO',           role: 'Producer' },
-    { name: 'SPACE COOKING', role: 'Collective' },
-  ];
-
+  // Demo / sample accounts have been removed. The directory is built
+  // from real sources only:
+  //   · locally added custom accounts (manual adds)
+  //   · authors / featured artists from this device's post history
+  //   · already followed / follower lists
+  //   · Firestore `usernames/` registry (loaded on first focus)
   function getList(key){
     try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch(e){ return []; }
   }
@@ -952,11 +869,10 @@ document.querySelectorAll('.tag-pill').forEach(p => {
 
   function buildDirectory(){
     const map = new Map();
-    KNOWN_ACCOUNTS.forEach(a => map.set(a.name, a));
-    // User-added custom accounts (manual adds) come first so their role wins
+    // User-added custom accounts (manual adds)
     getList('livepass_custom_accounts').forEach(u => {
       const name = typeof u === 'string' ? u : u && u.name;
-      if (name) map.set(name, { name, role: (u && u.role) || 'Custom' });
+      if (name) map.set(name, { name, role: (u && u.role) || '' });
     });
     // Past authors from any post type
     const postKeys = ['livepass_articles','livepass_events','livepass_workshops','livepass_exhibitions'];
@@ -969,7 +885,7 @@ document.querySelectorAll('.tag-pill').forEach(p => {
         });
       });
     });
-    // Already followed / followers (just in case they're not in any post)
+    // Already followed / followers (in case they're not in any post yet)
     ['livepass_following','livepass_followers'].forEach(k => {
       getList(k).forEach(u => {
         const name = typeof u === 'string' ? u : u && u.name;
@@ -1013,8 +929,10 @@ document.querySelectorAll('.tag-pill').forEach(p => {
         }
       });
       DIRECTORY = DIRECTORY.concat(add);
-      // Re-render current query with the expanded directory.
+      // Re-render current query AND the browse list with the expanded
+      // directory so new Firestore accounts appear in both surfaces.
       render(input.value);
+      renderBrowse();
     } catch (err) {
       console.warn('Firestore directory load failed:', err);
     }
@@ -1024,9 +942,24 @@ document.querySelectorAll('.tag-pill').forEach(p => {
   // has remote accounts available.
   input.addEventListener('focus', loadRemoteDirectory);
 
+  function accountRow(a){
+    const initial = (a.name || '?').slice(0, 2).toUpperCase();
+    const following = isFollowing(a.name);
+    return `
+      <div class="account-row" data-name="${encodeURIComponent(a.name)}">
+        <div class="account-av">${initial}</div>
+        <div class="account-body">
+          <div class="account-name">${a.name}</div>
+          <div class="account-role">${a.role || ''}</div>
+        </div>
+        <button class="account-follow ${following ? 'following' : ''}" data-name="${encodeURIComponent(a.name)}" data-role="${encodeURIComponent(a.role || '')}" type="button">${following ? 'フォロー中' : 'フォロー'}</button>
+      </div>
+    `;
+  }
+
   function render(q){
     const query = (q || '').trim().toLowerCase();
-    if (!query) { results.classList.remove('open'); results.innerHTML = ''; return; }
+    if (!query) { results.classList.remove('open'); results.innerHTML = ''; renderBrowse(); return; }
     const matches = DIRECTORY
       .filter(a => (a.name || '').toLowerCase().includes(query) || (a.role || '').toLowerCase().includes(query))
       .slice(0, 12);
@@ -1035,23 +968,49 @@ document.querySelectorAll('.tag-pill').forEach(p => {
       results.innerHTML = `<div class="account-empty">No accounts match "${query}"</div>`;
       return;
     }
-    results.innerHTML = matches.map(a => {
-      const initial = (a.name || '?').slice(0, 2).toUpperCase();
-      const following = isFollowing(a.name);
-      return `
-        <div class="account-row" data-name="${encodeURIComponent(a.name)}">
-          <div class="account-av">${initial}</div>
-          <div class="account-body">
-            <div class="account-name">${a.name}</div>
-            <div class="account-role">${a.role || ''}</div>
-          </div>
-          <button class="account-follow ${following ? 'following' : ''}" data-name="${encodeURIComponent(a.name)}" data-role="${encodeURIComponent(a.role || '')}" type="button">${following ? 'フォロー中' : 'フォロー'}</button>
-        </div>
-      `;
-    }).join('');
+    results.innerHTML = matches.map(accountRow).join('');
   }
 
+  // Browse list — shows every known account under the search bar when
+  // no query is active. Updates whenever the directory refreshes
+  // (e.g. after Firestore load).
+  const browseEl    = document.getElementById('browseList');
+  const browseEmpty = document.getElementById('browseEmpty');
+  function renderBrowse(){
+    if (!browseEl) return;
+    if (!DIRECTORY.length) {
+      browseEl.innerHTML = '';
+      if (browseEmpty) browseEmpty.style.display = 'block';
+      return;
+    }
+    if (browseEmpty) browseEmpty.style.display = 'none';
+    browseEl.innerHTML = DIRECTORY.slice(0, 50).map(accountRow).join('');
+  }
+  renderBrowse();
+
+  // Re-render browse list on account directory changes.
+  const _refresh = refreshDirectory;
+  refreshDirectory = function(){ _refresh(); renderBrowse(); };
+
   input.addEventListener('input', () => render(input.value));
+  browseEl?.addEventListener('click', (e) => {
+    const btn = e.target.closest('.account-follow');
+    const row = e.target.closest('.account-row');
+    if (btn) {
+      e.stopPropagation();
+      const name = decodeURIComponent(btn.dataset.name);
+      const role = decodeURIComponent(btn.dataset.role || '');
+      const nowFollowing = toggleFollow(name, role);
+      btn.classList.toggle('following', nowFollowing);
+      btn.textContent = nowFollowing ? 'フォロー中' : 'フォロー';
+      if (navigator.vibrate) navigator.vibrate(10);
+      return;
+    }
+    if (row) {
+      const name = decodeURIComponent(row.dataset.name);
+      location.href = '/profile?user=' + encodeURIComponent(name);
+    }
+  });
   results.addEventListener('click', (e) => {
     const btn = e.target.closest('.account-follow');
     const row = e.target.closest('.account-row');
