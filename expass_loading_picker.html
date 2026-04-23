@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>EXPASS — Loading</title>
+<style>
+html,body{margin:0;padding:0;width:100%;height:100%;background:#000;overflow:hidden}
+</style>
+</head>
+<body>
+<script>
+/* ─────────────────────────────────────────────
+   /loading — random splash picker
+   ─────────────────────────────────────────────
+   Rewrite target for the first-visit splash gate. Picks one of the
+   available loading variants uniformly at random and replaces the
+   current navigation so the user never sees this dispatcher page
+   itself.
+
+   To preview a specific variant directly while designing, open the
+   variant file directly (e.g. /expass_loading.html?preview=1) —
+   each variant's own script honours ?preview=1 and disables the
+   auto-advance.
+   ───────────────────────────────────────────── */
+(function(){
+  const VARIANTS = [
+    '/expass_loading.html',         // CRT typewriter
+    '/expass_loading_visual.html',  // EXPASS WORLD visual loop
+  ];
+
+  const qs = new URLSearchParams(location.search);
+  // Preserve any ?dest= / ?preview= params so the variant knows
+  // where to redirect after it finishes.
+  const suffix = location.search || '';
+
+  // Uniform random pick. (Math.random is fine — no security concern.)
+  const pick = VARIANTS[Math.floor(Math.random() * VARIANTS.length)];
+  location.replace(pick + suffix);
+})();
+</script>
+</body>
+</html>
