@@ -1200,11 +1200,13 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
   function refreshDirectory(){ DIRECTORY = buildDirectory(); }
 
   // ── Firestore-backed directory ──
-  // The old DIRECTORY only included hardcoded samples + past
-  // post authors. Friends who just registered weren't searchable.
-  // We fetch the usernames/ collection once on first focus and
-  // merge it in. Read access is gated to signed-in users via
-  // Firestore Rules so the public can't scrape handles.
+  // Load the directory from two Firestore collections in parallel:
+  //   1) `usernames/` — canonical lowercase handle registry, populated
+  //      by the onboarding claim. Recent signups live here.
+  //   2) `users/{uid}` — the older per-user profile doc. Everyone has
+  //      one of these from before the usernames claim shipped, so this
+  //      is where *existing* members are found.
+  // Both are gated to signed-in readers by the Firestore Rules.
   let REMOTE_LOADED = false;
   async function loadRemoteDirectory(){
     if (REMOTE_LOADED) return;
@@ -1213,23 +1215,60 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
       if (!window.FB) await new Promise(r =>
         window.addEventListener('fb-auth-ready', r, { once:true })
       );
-      if (!window.FB || !window.FB.currentUser) return;
+      if (!window.FB || !window.FB.currentUser) {
+        console.warn('search: skipping Firestore directory load — not signed in');
+        return;
+      }
       const { collection, getDocs, db } = window.FB;
-      const snap = await getDocs(collection(db, 'usernames'));
       const me = (localStorage.getItem('livepass_account_name') || '').toUpperCase();
+      const myUid = window.FB.currentUser.uid;
       const add = [];
-      snap.forEach(d => {
-        const data = d.data() || {};
-        const name = data.name || d.id.toUpperCase();
-        if (!name || name.toUpperCase() === me) return;
-        // Only add if the local DIRECTORY doesn't already have it.
-        if (!DIRECTORY.some(a => (a.name || '').toUpperCase() === name.toUpperCase())) {
-          add.push({ name, role: data.role || '', uid: data.uid || null });
-        }
-      });
+      const seen = new Set(DIRECTORY.map(a => (a.name || '').toUpperCase()));
+
+      // Try usernames first (cheapest). If rules aren't deployed yet
+      // this throws permission-denied and we still have users/ below.
+      try {
+        const snap = await getDocs(collection(db, 'usernames'));
+        snap.forEach(d => {
+          const data = d.data() || {};
+          const name = data.name || d.id.toUpperCase();
+          if (!name || name.toUpperCase() === me) return;
+          const k = name.toUpperCase();
+          if (!seen.has(k)) {
+            add.push({ name, role: data.role || '', uid: data.uid || null });
+            seen.add(k);
+          }
+        });
+      } catch (err) {
+        console.warn('search: usernames/ read failed:', err && err.code, err && err.message);
+      }
+
+      // Fallback: users/ — broader, may include accounts without a
+      // usernames doc (pre-claim signups).
+      try {
+        const snap = await getDocs(collection(db, 'users'));
+        snap.forEach(d => {
+          if (d.id === myUid) return;
+          const data = d.data() || {};
+          const name = data.name || '';
+          if (!name || name.toUpperCase() === me) return;
+          const k = name.toUpperCase();
+          if (!seen.has(k)) {
+            add.push({ name, role: data.role || '', uid: d.id });
+            seen.add(k);
+          }
+        });
+      } catch (err) {
+        console.warn('search: users/ read failed:', err && err.code, err && err.message);
+      }
+
+      if (add.length === 0) {
+        console.warn('search: Firestore returned zero additional accounts — check that firestore.rules are deployed and that users/ has any documents.');
+      } else {
+        console.log(`search: +${add.length} accounts from Firestore`);
+      }
+
       DIRECTORY = DIRECTORY.concat(add);
-      // Re-render current query AND the browse list with the expanded
-      // directory so new Firestore accounts appear in both surfaces.
       render(input.value);
       renderBrowse();
     } catch (err) {
@@ -1240,6 +1279,16 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
   // Pre-load when the field is focused so the first keystroke already
   // has remote accounts available.
   input.addEventListener('focus', loadRemoteDirectory);
+
+  // Also kick off the load as soon as Firebase auth resolves so the
+  // browse list is populated without waiting for a tap. Without this,
+  // users who open /discovery and scroll the browse list would only
+  // see locally-known authors.
+  if (window.FB && window.FB.authReady && window.FB.currentUser) {
+    loadRemoteDirectory();
+  } else {
+    window.addEventListener('fb-auth-ready', () => loadRemoteDirectory(), { once:true });
+  }
 
   function accountRow(a){
     const initial = (a.name || '?').slice(0, 2).toUpperCase();
