@@ -385,7 +385,11 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   background:none;border:1px solid rgba(237,235,230,.15);
   color:rgba(237,235,230,.6);
   font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
-  font-size:11px;border-radius:99px;letter-spacing:.02em;}
+  font-size:11px;border-radius:99px;letter-spacing:.02em;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  cursor:pointer;transition:background .2s ease,color .2s ease,border-color .2s ease;}
+.em-sub-btn:active{background:rgba(255,255,255,.04);color:var(--white)}
+.em-sub-btn svg{stroke:currentColor;display:block}
 
 /* ───── Card registration sheet (simulated Stripe SetupIntent) ───── */
 #cardSheetOverlay{position:fixed;inset:0;z-index:1400;background:rgba(0,0,0,0);pointer-events:none;opacity:0;transition:background .3s ease,opacity .2s ease}
@@ -1537,8 +1541,14 @@ function openEventDetail(e) {
         ` : ''}
       </div>
       <div class="em-sub-actions">
-        <button class="em-sub-btn" data-em-act="save">🔖 保存</button>
-        <button class="em-sub-btn" data-em-act="share">📤 共有</button>
+        <button class="em-sub-btn" data-em-act="save" type="button">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg>
+          <span>保存</span>
+        </button>
+        <button class="em-sub-btn" data-em-act="share" type="button">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v13"/><polyline points="7 8 12 3 17 8"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>
+          <span>共有</span>
+        </button>
       </div>
     </div>
   `;
