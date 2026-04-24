@@ -192,9 +192,11 @@ body.other-user .topbar .tb-icon svg{stroke:#fff !important}
 /* PNG icons can't be recoloured via color, so flatten to white with a
    brightness→invert filter chain. brightness(0) makes every pixel
    black first, then invert(1) flips to pure white — regardless of
-   the source logo's colours. */
+   the source logo's colours. !important is required because the
+   light-mode rule at the bottom of this stylesheet forces filter:none
+   on the same selector. */
 body.other-user .topbar .tb-brand img{
-  filter:brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0,0,0,.45));
+  filter:brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0,0,0,.45)) !important;
 }
 body.other-user .topbar .ph-heart-btn{
   background:rgba(255,255,255,.12) !important;
@@ -203,7 +205,7 @@ body.other-user .topbar .ph-heart-btn{
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
 }
 body.other-user .topbar .ph-heart-btn img{
-  filter:brightness(0) invert(1);
+  filter:brightness(0) invert(1) !important;
 }
 
 /* Subtab visibility for other-user mode */
