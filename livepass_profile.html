@@ -1146,12 +1146,14 @@ body.other-user.prof-view-calendar .sst-btn[data-tab="article"]{display:none !im
   position:relative;padding:40px 22px 30px;
   background:linear-gradient(180deg,var(--cat-color-soft,rgba(232,16,10,.08)) 0%,transparent 100%);
 }
-.pm-hero.with-cover{padding:0;aspect-ratio:9/14;overflow:hidden;background:#0a0a0a}
-.pm-hero.with-cover img{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
-}
+/* ARTICLE with-cover hero — display the cover at its ORIGINAL aspect
+   ratio. No forced 9:14 slot, no object-fit:cover crop. The image
+   itself drives the hero height. min-height keeps the slot from
+   collapsing while the image is loading. */
+.pm-hero.with-cover{padding:0;overflow:hidden;background:#0a0a0a;min-height:240px}
+.pm-hero.with-cover img{display:block;width:100%;height:auto}
 .pm-hero.with-cover::after{
-  content:'';position:absolute;inset:0;
+  content:'';position:absolute;inset:0;pointer-events:none;
   background:linear-gradient(to top,rgba(0,0,0,.92) 0%,transparent 45%);
 }
 .pm-hero.with-cover .pm-hero-text{
@@ -1187,22 +1189,25 @@ body.other-user.prof-view-calendar .sst-btn[data-tab="article"]{display:none !im
 .pm-tags{display:flex;gap:6px;margin-top:16px;flex-wrap:wrap}
 .pm-tags .ev-tag{padding:4px 12px;font-size:9px}
 
-/* Event/Workshop/Exhibition cover hero — cover image with the info hero
-   overlaid on top (poster-style). Uses object-fit:contain so the full
-   image is visible without cropping; a blurred-copy fills the letterbox. */
+/* Event/Workshop/Exhibition cover hero — displays the cover at its
+   ORIGINAL aspect ratio (no fixed slot, no cropping). A blurred copy
+   of the same image still sits behind to fill any side letterbox
+   nicely on very wide viewports, but it's sized to the same height
+   so it never exceeds the natural image height. */
 .pm-cover{
   position:relative;width:100%;
-  height:min(80vh, 720px);min-height:480px;
+  min-height:200px;
   background:#0a0a0a;overflow:hidden;
 }
 .pm-cover-bg{
   position:absolute;inset:0;width:100%;height:100%;
   object-fit:cover;filter:blur(40px) brightness(.35);
   transform:scale(1.15);opacity:.7;z-index:0;
+  pointer-events:none;
 }
 .pm-cover img.pm-cover-fg{
-  position:absolute;inset:0;z-index:1;
-  display:block;width:100%;height:100%;object-fit:contain;
+  position:relative;z-index:1;
+  display:block;width:100%;height:auto;margin:0 auto;
 }
 /* Hero info block overlaid on top of the cover image at the bottom */
 .pm-hero.over-cover{
@@ -1722,30 +1727,19 @@ html,body{background:#FFFFFF !important;color:#0A0A0A !important}
 .panel-head,.sec-en,.sec-label{color:#0A0A0A !important}
 .sec-ja,.panel-sub{color:rgba(10,10,10,.45) !important}
 
-/* Modals & sheets — light */
+/* Modals & sheets — light (post detail + card/org sheets + zoom).
+   The + compose sheet is intentionally excluded — it stays on the
+   shared dark look from the base stylesheet so it matches Home /
+   Calendar / Search. Leaving it light here was the reason /collection
+   was the only page where the compose sheet rendered as white. */
 #postModal,#cardSheetOverlay .cs-sheet,#orgSheetOverlay .cs-sheet,
-#composeSheet,#zoomOverlay{
+#zoomOverlay{
   background:#FFFFFF !important;
 }
-#postModal *,#composeSheet *{color:inherit}
+#postModal *{color:inherit}
 #postModal .dm-hero-text .dm-cat,#postModal .dm-title,#postModal .dm-by{color:#0A0A0A !important}
 #postModal .dm-content,#postModal .dm-p{color:#0A0A0A !important}
 #postModal .dm-close{color:#0A0A0A !important}
-
-/* Compose sheet — light */
-#composeSheet{
-  border-top:0.5px solid rgba(10,10,10,.1) !important;
-  box-shadow:0 -12px 40px rgba(0,0,0,.08) !important;
-}
-.cs-handle{background:rgba(10,10,10,.18) !important}
-.cs-title{color:rgba(10,10,10,.4) !important}
-.cs-opt{
-  background:rgba(10,10,10,.02) !important;
-  border-color:rgba(10,10,10,.08) !important;
-  color:#0A0A0A !important;
-}
-.cs-opt-title{color:#0A0A0A !important}
-.cs-opt-sub{color:rgba(10,10,10,.45) !important}
 .cs-close{
   background:rgba(10,10,10,.03) !important;
   border-color:rgba(10,10,10,.08) !important;
@@ -1976,7 +1970,7 @@ body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;c
 
 /* ── Header: logo centered, keep the + create icon on the right ── */
 .topbar{min-height:calc(var(--safe-top,0px) + 48px) !important;padding:calc(var(--safe-top,0px) + 6px) 18px 10px !important}
-.topbar .tb-icon:not(#tbCreate):not(#tbSearch){display:none !important}
+.topbar .tb-icon:not(#tbCreate):not(#tbSearch):not(#tbMessages){display:none !important}
 .topbar #tbCreate{position:absolute !important;right:18px !important;top:calc(var(--safe-top,0px) + 10px) !important;color:#0A0A0A !important}
 .topbar #tbCreate svg{stroke:#0A0A0A !important;color:#0A0A0A !important}
 .topbar #tbCreate svg line{stroke:#0A0A0A !important}
@@ -2011,7 +2005,7 @@ body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;c
   </button>
 
   <!-- Messages -->
-  <a class="tb-icon" href="/messages" aria-label="Messages" title="メッセージ">
+  <a class="tb-icon" id="tbMessages" href="/messages" aria-label="Messages" title="メッセージ">
     <svg viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><polyline points="3,7 12,13 21,7"/></svg>
     <span class="badge" id="msgBadge">0</span>
   </a>

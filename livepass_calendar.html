@@ -44,7 +44,7 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .tb-icon{background:none;border:none;cursor:pointer;position:relative;
   width:26px;height:26px;display:flex;align-items:center;justify-content:center;color:var(--white);}
 /* Hide all topbar icons except the + at first paint to avoid FOUC. */
-.topbar .tb-icon:not(#tbCreate):not(#tbSearch){display:none}
+.topbar .tb-icon:not(#tbCreate):not(#tbSearch):not(#tbMessages){display:none}
 .topbar #tbCreate{position:absolute;right:18px;top:calc(var(--safe-top,0px) + 10px);}
 .tb-icon svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
 .tb-icon .badge{position:absolute;top:-4px;right:-6px;background:var(--red);color:#fff;
@@ -222,23 +222,21 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 .em-sec-body{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
   font-size:12px;line-height:1.8;color:rgba(237,235,230,.75);letter-spacing:.02em;}
 
-/* Event cover hero — poster-style layout: hero info overlaid on cover image */
+/* Event cover hero — poster-style layout: hero info overlaid on cover image.
+   The cover renders at the image's ORIGINAL aspect ratio (no crop). We
+   keep a min-height so the slot never collapses to 0 while the image
+   is still loading, but otherwise the image itself drives the height. */
 .em-cover{
   position:relative;width:100%;
   background:#0a0a0a;overflow:hidden;
-  /* Reserve a 16/9 hero slot so the title and meta don't push down
-     the moment the cover image arrives. object-fit:cover fills the
-     reserved area. Posts without a cover fall back to the natural
-     height (em-hero-text carries its own padding). */
-  aspect-ratio:16/9;
+  min-height:200px;
 }
-.em-cover.no-cover{aspect-ratio:auto;min-height:200px}
+.em-cover.no-cover{min-height:200px}
 .em-cover-bg{
   display:none;
 }
 .em-cover img.em-cover-fg{
-  position:absolute;inset:0;
-  display:block;width:100%;height:100%;object-fit:cover;
+  display:block;width:100%;height:auto;
 }
 /* Hero info overlaid on the cover at bottom */
 .em-hero.over-cover{
@@ -748,7 +746,7 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 /* ── Header: hide the topbar chrome, float only the + button over the cover ── */
 .topbar{background:transparent !important;border:none !important;pointer-events:none !important;min-height:0 !important;padding:0 !important}
 .topbar .tb-brand{display:none !important}
-.topbar .tb-icon:not(#tbCreate):not(#tbSearch){display:none !important}
+.topbar .tb-icon:not(#tbCreate):not(#tbSearch):not(#tbMessages){display:none !important}
 .topbar #tbCreate{pointer-events:auto !important;background:rgba(0,0,0,.35) !important;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:0.5px solid rgba(255,255,255,.25) !important;border-radius:50% !important;color:#fff !important;position:absolute !important;right:14px !important;top:calc(var(--safe-top,0px) + 14px) !important}
 .topbar #tbSearch{pointer-events:auto !important;background:rgba(0,0,0,.35) !important;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:0.5px solid rgba(255,255,255,.25) !important;border-radius:50% !important;color:#fff !important;position:absolute !important;left:14px !important;top:calc(var(--safe-top,0px) + 14px) !important;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
 .topbar #tbSearch svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8}
@@ -764,7 +762,7 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
   <a class="tb-brand" href="/screen" aria-label="EXPASS"><img src="/expass_icon.png" alt="EXPASS"></a>
   <a class="tb-icon" id="tbSearch" href="/discovery" aria-label="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/></svg></a>
   <button class="tb-icon" id="tbCreate" aria-label="Create"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round"/></svg></button>
-  <a class="tb-icon" href="/messages" aria-label="Messages"><svg viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><polyline points="3,7 12,13 21,7"/></svg><span class="badge" id="msgBadge">0</span></a>
+  <a class="tb-icon" id="tbMessages" href="/messages" aria-label="Messages"><svg viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><polyline points="3,7 12,13 21,7"/></svg><span class="badge" id="msgBadge">0</span></a>
   <a class="tb-icon" href="/settings" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a>
 </div>
 
@@ -1037,6 +1035,14 @@ function getUserSchedule(){
 }
 
 const MERGED = [...getUserSchedule(), ...SCHEDULE];
+// Sort by date ascending so upcoming events always appear in order,
+// regardless of whether they came from localStorage (user posts) or
+// the baked-in sample SCHEDULE. Items missing a rawDate fall to the end.
+MERGED.sort((a, b) => {
+  const ta = new Date(a.rawDate || a.time || 0).getTime() || Infinity;
+  const tb = new Date(b.rawDate || b.time || 0).getTime() || Infinity;
+  return ta - tb;
+});
 const followingList = document.getElementById('followingList');
 MERGED.forEach(e => followingList.appendChild(renderEvent(e)));
 
