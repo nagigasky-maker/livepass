@@ -499,40 +499,11 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
    In production these would come from a backend.
    Sent messages are persisted to localStorage.
    ───────────────────────────────────────────── */
-const CONTACTS = [
-  { id:'sachi',    name:'SACHI',    hue:'#F4C0D1', unread:2,
-    preview:'ワッキングの動画送ったよ！見てね', time:'14:30',
-    history:[
-      { from:'them', text:'ワッキングの動画送ったよ！見てね', t:'14:30' },
-      { from:'them', text:'今度のWSの詳細も送るね', t:'14:31' },
-    ] },
-  { id:'ali',      name:'ALI',      hue:'#E8100A', unread:0,
-    preview:'次の All Must Dance 楽しみ', time:'昨日',
-    history:[
-      { from:'me',   text:'次のイベントの DJ リスト決まった？', t:'20:12' },
-      { from:'them', text:'うん、来週発表する予定！', t:'20:45' },
-      { from:'me',   text:'了解！楽しみにしてる', t:'20:46' },
-      { from:'them', text:'次の All Must Dance 楽しみ', t:'21:00' },
-    ] },
-  { id:'dubla',    name:'DUBLA®',   hue:'#bf5af2', unread:1,
-    preview:'SS26 コレクションのフライヤー添付したよ', time:'4/10',
-    history:[
-      { from:'them', text:'SS26 コレクションのフライヤー添付したよ', t:'18:00' },
-    ] },
-  { id:'keita',    name:'DJ KEITA', hue:'#3DAAFF', unread:0,
-    preview:'スタジオ空いてるか確認するね', time:'4/9',
-    history:[
-      { from:'me',   text:'来週の日曜、Studio A 空いてる？', t:'11:20' },
-      { from:'them', text:'スタジオ空いてるか確認するね', t:'12:05' },
-    ] },
-  { id:'nrg',      name:'CREW NRG', hue:'#F5C842', unread:0,
-    preview:'サイファー参加人数20人超えた！', time:'4/8',
-    history:[
-      { from:'them', text:'サイファー参加人数20人超えた！', t:'16:30' },
-      { from:'me',   text:'すごいね！会場大丈夫そう？', t:'16:55' },
-      { from:'them', text:'大丈夫、WOMB 2F 広いから', t:'17:02' },
-    ] },
-];
+// Ship empty — the real DM list comes from the user's own
+// conversations (stored per-contact at livepass_dm_<id>). The mock
+// artists that used to live here were pre-launch fillers and were
+// confusing once the empty-state UI landed.
+const CONTACTS = [];
 
 const DM_KEY = 'livepass_dm_';
 

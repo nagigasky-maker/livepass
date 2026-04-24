@@ -26,11 +26,10 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#000;overflow:hid
    ───────────────────────────────────────────── */
 (function(){
   const VARIANTS = [
-    '/expass_loading.html',         // CRT typewriter
-    '/expass_loading_visual.html',  // EXPASS WORLD visual loop
+    '/expass_loading.html',      // CRT typewriter boot sequence
+    '/expass_loading_img.html',  // EXPASS WORLD visual photo loop
   ];
 
-  const qs = new URLSearchParams(location.search);
   // Preserve any ?dest= / ?preview= params so the variant knows
   // where to redirect after it finishes.
   const suffix = location.search || '';
