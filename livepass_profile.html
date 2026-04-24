@@ -154,18 +154,40 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 /* ─── Other-user: cinematic cover with avatar + name INSIDE it ─── */
 body.other-user .ph-cover{
   display:block;
-  /* Tall editorial banner — avatar + name overlay the lower third. */
-  height:clamp(280px, 46vh, 380px) !important;
-  /* Stronger bottom fade so name/role stay legible on any cover image. */
+  position:relative;
+  /* Reach the very top of the viewport — the topbar floats over it. */
+  height:clamp(360px, 58vh, 480px) !important;
+  padding-top:calc(var(--safe-top,0px) + 44px);
+  /* Strong dual fade: dark at top for topbar legibility, dark at
+     bottom for name/role legibility, open in the middle. */
   background:
-    linear-gradient(180deg,rgba(0,0,0,0) 38%,rgba(0,0,0,.82) 100%),
+    linear-gradient(180deg,
+      rgba(0,0,0,.55) 0%,
+      rgba(0,0,0,.12) 18%,
+      rgba(0,0,0,0) 38%,
+      rgba(0,0,0,.85) 100%),
     linear-gradient(135deg,hsla(var(--cover-hue,200),60%,28%,1),hsla(var(--cover-hue,200),40%,8%,1));
 }
 body.other-user .ph-cover.has-img{
   background-image:
-    linear-gradient(180deg,rgba(0,0,0,0) 38%,rgba(0,0,0,.82) 100%),
+    linear-gradient(180deg,
+      rgba(0,0,0,.55) 0%,
+      rgba(0,0,0,.12) 18%,
+      rgba(0,0,0,0) 38%,
+      rgba(0,0,0,.85) 100%),
     var(--cover-img);
 }
+/* Let the cover start at the true top — no topbar padding. */
+body.other-user .content{padding-top:0 !important}
+
+/* Transparent topbar over the cover so artwork reaches the top. */
+body.other-user .topbar{
+  background:linear-gradient(to bottom,rgba(0,0,0,.55) 0%,transparent 100%) !important;
+  backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
+  border-bottom:none !important;
+}
+body.other-user .topbar .tb-icon{color:#fff !important}
+body.other-user .topbar .tb-brand img{filter:invert(1) brightness(1.4)}
 
 /* Subtab visibility for other-user mode */
 .st-btn[data-sub="calendar"]{display:none}
@@ -183,12 +205,13 @@ body.other-user #panel-saved{display:none !important}
    see the artist-subscription entry point. */
 body.other-user .topbar a[href="/settings"]{display:none !important}
 
-/* Lift the profile hero UP so it sits inside the cover's lower third.
-   The negative margin-top is tuned to leave roughly 24px of cover
-   above the avatar's top edge on mobile. */
+/* The profile hero is moved INTO .ph-cover at runtime (see JS below)
+   and pinned to its bottom edge, so subtabs can flow naturally after
+   the cover without any negative-margin overlap games. */
 body.other-user .profile-hero{
-  position:relative;z-index:2;
-  margin-top:calc(-1 * clamp(120px, 20vh, 160px)) !important;
+  position:absolute !important;
+  left:0;right:0;bottom:0;
+  margin:0 !important;z-index:2;
   padding:0 clamp(16px,5vw,22px) clamp(18px,5vw,24px) !important;
   flex-direction:row !important;
   gap:14px !important;
@@ -4253,6 +4276,11 @@ if (isOtherUser) {
   if (cover) {
     const hue = (mock.bgHue || '200,60,25').split(',')[0];
     cover.style.setProperty('--cover-hue', hue);
+    // Move the profile hero INTO the cover so it can be absolutely
+    // pinned to the cover's bottom edge without overlapping the
+    // subtabs that come after.
+    const hero = document.querySelector('.profile-hero');
+    if (hero && !cover.contains(hero)) cover.appendChild(hero);
   }
 
   // Start on SCREEN tab (PASS is owner-only). Also set prof-view-screen so
