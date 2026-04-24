@@ -73,7 +73,7 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   width:26px;height:26px;display:flex;align-items:center;justify-content:center;color:var(--white);}
 /* Hide all topbar icons except the + (tbCreate) at first paint to prevent
    a flash of the old icons before the late style block loads. */
-.topbar .tb-icon:not(#tbCreate):not(#tbSearch){display:none}
+.topbar .tb-icon:not(#tbCreate):not(#tbSearch):not(#tbMessages){display:none}
 .topbar #tbCreate{position:absolute;right:18px;top:calc(var(--safe-top,0px) + 10px);}
 .tb-icon svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
 .tb-icon .badge{position:absolute;top:-4px;right:-6px;background:var(--red);color:#fff;
@@ -314,23 +314,18 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   scrollbar-width:none;
 }
 .dm-body::-webkit-scrollbar{display:none}
-.dm-hero{position:relative;width:100%;background:#f5f3ee;overflow:hidden}
-/* Reserve hero height based on the post layout so text below doesn't
-   jump when the image/video arrives. object-fit:cover fills the
-   reserved slot. */
-.dm-hero[data-hero-layout="poster"]  {aspect-ratio:3/5}
-.dm-hero[data-hero-layout="square"]  {aspect-ratio:1/1}
-.dm-hero[data-hero-layout="wide"]    {aspect-ratio:16/9}
-.dm-hero[data-hero-layout="9:16"]    {aspect-ratio:9/16}
-.dm-hero[data-hero-layout="sq-large"]{aspect-ratio:1/1}
-.dm-hero[data-hero-layout="cinema"]  {aspect-ratio:21/9}
-.dm-hero[data-hero-layout] svg,
-.dm-hero[data-hero-layout] img,
-.dm-hero[data-hero-layout] video{
-  position:absolute !important;inset:0 !important;
-  width:100% !important;height:100% !important;object-fit:cover !important;
+.dm-hero{position:relative;width:100%;background:#f5f3ee;overflow:hidden;min-height:180px}
+/* The post detail always shows the image at its ORIGINAL aspect
+   ratio — no cropping. The data-hero-layout attribute used to force
+   a fixed slot (3:5 / 16:9 / etc.) with object-fit:cover, which is
+   what was auto-trimming submissions. Kept as a loose hint (min
+   height) for posts that haven't loaded yet but the image / video
+   itself now dictates final hero height. */
+.dm-hero img,
+.dm-hero video{
+  display:block;width:100%;height:auto;
 }
-.dm-hero svg,.dm-hero img{position:relative;width:100%;height:auto;object-fit:contain;display:block}
+.dm-hero svg{display:block;width:100%;height:auto}
 .dm-hero::after{
   content:'';position:absolute;inset:0;
   background:linear-gradient(to top,rgba(0,0,0,.92) 0%,transparent 40%);
@@ -730,7 +725,7 @@ html,body{background:#FFFFFF !important;color:#0A0A0A !important}
   <a class="tb-brand" href="/screen" aria-label="EXPASS"><img src="/expass_icon.png" alt="EXPASS"></a>
   <a class="tb-icon" id="tbSearch" href="/discovery" aria-label="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/></svg></a>
   <button class="tb-icon" id="tbCreate" aria-label="Create"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round"/></svg></button>
-  <a class="tb-icon" href="/messages" aria-label="Messages"><svg viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><polyline points="3,7 12,13 21,7"/></svg><span class="badge" id="msgBadge">0</span></a>
+  <a class="tb-icon" id="tbMessages" href="/messages" aria-label="Messages"><svg viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><polyline points="3,7 12,13 21,7"/></svg><span class="badge" id="msgBadge">0</span></a>
   <a class="tb-icon" href="/settings" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a>
 </div>
 
@@ -2443,7 +2438,7 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 /* ── Header: hide the topbar chrome; float only the + button over the TOP cover ── */
 .topbar{background:transparent !important;border:none !important;pointer-events:none !important;min-height:0 !important;padding:0 !important;}
 .topbar .tb-brand{display:none !important}
-.topbar .tb-icon:not(#tbCreate):not(#tbSearch){display:none !important}
+.topbar .tb-icon:not(#tbCreate):not(#tbSearch):not(#tbMessages){display:none !important}
 .topbar #tbCreate{pointer-events:auto !important;background:rgba(0,0,0,.35) !important;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:0.5px solid rgba(255,255,255,.25) !important;border-radius:50% !important;color:#fff !important;position:absolute !important;right:14px !important;top:calc(var(--safe-top,0px) + 14px) !important}
 .topbar #tbSearch{pointer-events:auto !important;background:rgba(0,0,0,.35) !important;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:0.5px solid rgba(255,255,255,.25) !important;border-radius:50% !important;color:#fff !important;position:absolute !important;left:14px !important;top:calc(var(--safe-top,0px) + 14px) !important;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
 .topbar #tbSearch svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8}

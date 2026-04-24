@@ -553,7 +553,7 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 <div class="topbar">
   <a class="tb-brand" href="/screen" aria-label="EXPASS"><img src="/expass_icon.png" alt="EXPASS"></a>
   <button class="tb-icon" id="tbCreate" aria-label="Create"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round"/></svg></button>
-  <a class="tb-icon" href="/messages" aria-label="Messages"><svg viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><polyline points="3,7 12,13 21,7"/></svg><span class="badge" id="msgBadge">0</span></a>
+  <a class="tb-icon" id="tbMessages" href="/messages" aria-label="Messages"><svg viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><polyline points="3,7 12,13 21,7"/></svg><span class="badge" id="msgBadge">0</span></a>
   <a class="tb-icon" href="/settings" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a>
 </div>
 
@@ -800,6 +800,56 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
   <div style="padding:14px 20px 8px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;color:rgba(237,235,230,.45);letter-spacing:.02em;line-height:1.8">
     現在のプラン：<strong id="srCurrentPlan" style="color:rgba(237,235,230,.85);letter-spacing:.1em">FREE</strong>
   </div>
+
+  <!-- Plan detail cards — what you get at each tier and its monthly price. -->
+  <div class="plan-detail-list" style="padding:4px 20px 10px;display:flex;flex-direction:column;gap:10px">
+    <!-- FREE -->
+    <div class="plan-detail" data-plan-detail="free" style="padding:16px 18px;border-radius:14px;background:rgba(255,255,255,.03);border:0.5px solid rgba(237,235,230,.08)">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px">
+        <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:14px;color:var(--white);letter-spacing:.06em">FREE</div>
+        <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:15px;color:rgba(237,235,230,.85)">¥0<span style="font-size:9px;font-weight:400;color:rgba(237,235,230,.4);margin-left:2px">/月</span></div>
+      </div>
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:10.5px;color:rgba(237,235,230,.62);letter-spacing:.02em;line-height:1.6">
+        <li>・投稿: ARTICLE / EVENT / WORKSHOP / EXHIBITION</li>
+        <li>・予約: 月2件まで</li>
+        <li>・EXPASS 手数料: 15%（Stripe 3.5% 別）</li>
+      </ul>
+    </div>
+
+    <!-- PRO -->
+    <div class="plan-detail" data-plan-detail="pro" style="padding:16px 18px;border-radius:14px;background:rgba(245,200,66,.05);border:0.5px solid rgba(245,200,66,.28)">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px">
+        <div style="display:flex;align-items:baseline;gap:8px">
+          <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:14px;color:var(--gold);letter-spacing:.06em">PRO</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:7.5px;letter-spacing:.22em;text-transform:uppercase;color:rgba(245,200,66,.65)">Recommended</div>
+        </div>
+        <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:15px;color:var(--gold)">¥980<span style="font-size:9px;font-weight:400;color:rgba(245,200,66,.5);margin-left:2px">/月</span></div>
+      </div>
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:10.5px;color:rgba(237,235,230,.72);letter-spacing:.02em;line-height:1.6">
+        <li>・FREE の全機能</li>
+        <li>・予約: 無制限</li>
+        <li>・Pulse メンバーシップの受付（月額）</li>
+        <li>・EXPASS 手数料: 10%（Stripe 3.5% 別）</li>
+        <li>・先行アーティスト100名は 0%（1年間）</li>
+      </ul>
+    </div>
+
+    <!-- BIZ -->
+    <div class="plan-detail" data-plan-detail="biz" style="padding:16px 18px;border-radius:14px;background:rgba(0,229,160,.05);border:0.5px solid rgba(0,229,160,.28)">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px">
+        <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:14px;color:var(--mint);letter-spacing:.06em">BIZ</div>
+        <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:15px;color:var(--mint)">¥2,980<span style="font-size:9px;font-weight:400;color:rgba(0,229,160,.5);margin-left:2px">/月</span></div>
+      </div>
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:10.5px;color:rgba(237,235,230,.72);letter-spacing:.02em;line-height:1.6">
+        <li>・PRO の全機能</li>
+        <li>・Pulse+ メンバーシップの受付（高額）</li>
+        <li>・複数アカウント管理・チーム権限</li>
+        <li>・EXPASS 手数料: 8%（Stripe 3.5% 別）</li>
+        <li>・優先サポート・カスタムブランディング</li>
+      </ul>
+    </div>
+  </div>
+
   <div style="padding:4px 20px 26px">
     <button id="srUpgradeBtn" type="button"
       style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-radius:12px;background:linear-gradient(135deg,rgba(245,200,66,.14),rgba(245,200,66,.04));border:0.5px solid rgba(245,200,66,.35);color:#F5C842;font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:12px;letter-spacing:.08em;text-align:left">
@@ -1126,12 +1176,18 @@ async function uploadProfileImage(bucket, blob, fieldName){
 
 /* Plan selection — writes to localStorage so profile can react */
 const PLAN_KEY = 'livepass_plan';
-// Initial sync from storage (if stored)
+// Initial sync from storage (if stored). If the user is already on a
+// paid plan (e.g. invited-BIZ NOBBY) the card is LOCKED by default —
+// unlock it so the card visually matches the badge that syncProfileRow
+// paints on the profile row below.
 try {
   const stored = (localStorage.getItem(PLAN_KEY) || 'free').toLowerCase();
   document.querySelectorAll('.plan').forEach(x => x.classList.remove('active'));
   const match = document.querySelector(`.plan[data-plan="${stored}"]`);
-  if (match && !match.classList.contains('locked')) match.classList.add('active');
+  if (match) {
+    match.classList.remove('locked');
+    match.classList.add('active');
+  }
 } catch(e) {}
 document.querySelectorAll('.plan').forEach(p => {
   p.addEventListener('click', () => {
