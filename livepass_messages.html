@@ -403,6 +403,27 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 .chat-input::placeholder{color:rgba(10,10,10,.3) !important}
 .chat-send{color:#0A0A0A !important}
 
+/* Tab bar (メッセージ / お知らせ) — dark pill stays, but make sure the
+   active state reads cleanly on the light page. */
+.mtabs{background:#0A0A0A !important;border-bottom-color:rgba(255,255,255,.08) !important}
+
+/* Notifications list — the default dark-theme tile becomes invisible
+   on the light page, so override background + text to dark-on-light. */
+.m-empty-title{color:#0A0A0A !important}
+.m-empty-sub{color:rgba(10,10,10,.5) !important}
+.m-empty svg{stroke:rgba(10,10,10,.25) !important}
+
+.notif-item{
+  background:rgba(10,10,10,.04) !important;
+  border-color:rgba(10,10,10,.08) !important;
+}
+.notif-item:active{background:rgba(10,10,10,.08) !important}
+.notif-av{
+  border-color:rgba(10,10,10,.1) !important;
+}
+.notif-text{color:#0A0A0A !important}
+.notif-time{color:rgba(10,10,10,.4) !important}
+
 
 /* ── Global text scale (slightly larger) ── */
 .sec-en{font-size:42px !important}
