@@ -40,10 +40,92 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
 /* Conversation list */
 .conv-list{
   position:fixed;top:0;left:0;right:0;bottom:0;
-  padding-top:calc(var(--safe-top) + 64px);
+  padding-top:calc(var(--safe-top) + 110px);
   overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
 }
 .conv-list::-webkit-scrollbar{display:none}
+
+/* ── Messages / Notifications tab switcher ───────────── */
+.mtabs{
+  position:fixed;left:0;right:0;z-index:9;
+  top:calc(var(--safe-top) + 52px);
+  display:flex;align-items:stretch;padding:0 20px;
+  background:#000;
+  border-bottom:0.5px solid var(--border);
+}
+.mtab{
+  flex:1;font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(237,235,230,.3);padding:14px 0 12px;
+  border-bottom:2px solid transparent;cursor:pointer;background:none;border-top:0;border-left:0;border-right:0;
+}
+.mtab.active{color:var(--white);border-bottom-color:var(--blue)}
+.mtab .mtab-dot{
+  display:inline-block;width:7px;height:7px;border-radius:50%;
+  background:var(--red);margin-left:6px;vertical-align:middle;
+}
+
+.m-panel{display:none}
+.m-panel.active{display:block}
+
+/* ── Empty state (shared) ───────────────────────────── */
+.m-empty{
+  padding:90px 24px 40px;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:14px;
+}
+.m-empty svg{width:48px;height:48px;stroke:rgba(237,235,230,.2);
+  fill:none;stroke-width:1.6}
+.m-empty-title{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:15px;color:var(--white);letter-spacing:.02em;
+}
+.m-empty-sub{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
+  font-size:11px;color:rgba(237,235,230,.4);
+  letter-spacing:.02em;line-height:1.7;max-width:300px;
+}
+
+/* ── Notification item ──────────────────────────────── */
+#notifList{padding:14px 18px 40px;display:flex;flex-direction:column;gap:8px}
+.notif-item{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;
+  background:rgba(255,255,255,.03);
+  border:0.5px solid rgba(255,255,255,.06);
+  border-radius:12px;
+  cursor:pointer;transition:background .2s ease;
+}
+.notif-item:active{background:rgba(255,255,255,.06)}
+.notif-av{
+  width:36px;height:36px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--av-hue,#3DAAFF),#0a1020);
+  border:1px solid rgba(237,235,230,.12);
+  display:flex;align-items:center;justify-content:center;
+  font-family:Arial,sans-serif;font-weight:900;font-size:13px;color:var(--white);
+  overflow:hidden;
+}
+.notif-av.kind{
+  background:rgba(255,255,255,.04);border-color:rgba(237,235,230,.15);
+}
+.notif-av.kind svg{width:16px;height:16px;stroke:var(--blue);fill:none;stroke-width:1.8}
+.notif-body{flex:1;min-width:0}
+.notif-text{
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:11px;color:var(--white);letter-spacing:.02em;
+  line-height:1.5;margin-bottom:3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.notif-text b{font-weight:900}
+.notif-time{
+  font-family:'IBM Plex Mono',ui-monospace,monospace;
+  font-size:8px;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(237,235,230,.35);
+}
+.notif-dot{
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;
+  background:var(--blue);
+}
+.notif-item.read .notif-dot{opacity:0}
 
 .conv-item{
   display:flex;align-items:center;gap:14px;
@@ -369,7 +451,32 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
   <div class="hdr-title">Messages</div>
 </header>
 
-<div class="conv-list" id="convList"></div>
+<nav class="mtabs" role="tablist" aria-label="メッセージ切替">
+  <button class="mtab active" data-mtab="msg" type="button" role="tab">メッセージ</button>
+  <button class="mtab" data-mtab="notif" type="button" role="tab">お知らせ<span class="mtab-dot" id="notifUnreadDot" style="display:none"></span></button>
+</nav>
+
+<div class="conv-list" id="mBody">
+  <!-- Messages panel (existing DM list) -->
+  <div class="m-panel active" id="msgPanel">
+    <div id="convList"></div>
+    <div class="m-empty" id="msgEmpty" style="display:none">
+      <svg viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><polyline points="3,7 12,13 21,7"/></svg>
+      <div class="m-empty-title">まだメッセージはありません</div>
+      <div class="m-empty-sub">フォロー中のアーティストからの DM がここに届きます</div>
+    </div>
+  </div>
+
+  <!-- Notifications panel -->
+  <div class="m-panel" id="notifPanel">
+    <div id="notifList"></div>
+    <div class="m-empty" id="notifEmpty" style="display:none">
+      <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7v5l-2 3h18l-2-3V9a7 7 0 0 0-7-7z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>
+      <div class="m-empty-title">お知らせはまだありません</div>
+      <div class="m-empty-sub">フォローやイベント公開、リマインダーなどがここに届きます</div>
+    </div>
+  </div>
+</div>
 
 <!-- Chat view overlay -->
 <div id="chatView">
@@ -457,8 +564,14 @@ CONTACTS.sort((a, b) => lastActivityTime(b) - lastActivityTime(a));
 
 /* ── Render conversation list ── */
 const convList = document.getElementById('convList');
+const msgEmpty = document.getElementById('msgEmpty');
 function renderConvList(){
   convList.innerHTML = '';
+  if (!CONTACTS.length) {
+    if (msgEmpty) msgEmpty.style.display = 'flex';
+    return;
+  }
+  if (msgEmpty) msgEmpty.style.display = 'none';
   CONTACTS.forEach(c => {
     const userMsgs = loadUserMessages(c.id);
     const lastUserMsg = userMsgs.length ? userMsgs[userMsgs.length-1] : null;
@@ -482,6 +595,146 @@ function renderConvList(){
   });
 }
 renderConvList();
+
+/* ─────────────────────────────────────────────
+   NOTIFICATIONS
+   ─────────────────────────────────────────────
+   Stored at livepass_notifications. Schema:
+     { id, type, at:ISO, read:bool, ...data }
+   Types currently rendered:
+     · follow     { who }
+     · new_event  { who, event }
+     · reminder   { who, event, when }
+     · message    { who, preview }
+   The addNotification() helper is also exposed on window so other
+   pages can push events without duplicating storage logic.
+   ───────────────────────────────────────────── */
+const NOTIF_KEY = 'livepass_notifications';
+
+function loadNotifications(){
+  try {
+    const raw = localStorage.getItem(NOTIF_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(_){}
+  // Seed with sample notifications on first visit so the お知らせ tab
+  // demonstrates its layout. Subsequent visits use whatever the user has.
+  const now = Date.now();
+  const seed = [
+    { id:'n'+(now-60e3),     type:'follow',    who:'SACHI',   hue:'#F4C0D1',
+      at:new Date(now - 60e3).toISOString(),     read:false },
+    { id:'n'+(now-45*60e3),  type:'new_event', who:'ALI',     hue:'#E8100A',
+      event:'All Must Dance Vol.12',
+      at:new Date(now - 45*60e3).toISOString(),  read:false },
+    { id:'n'+(now-3*3600e3), type:'reminder',  who:'CREW NRG',hue:'#F5C842',
+      event:'Cypher Night',
+      when:'明日 21:00',
+      at:new Date(now - 3*3600e3).toISOString(), read:true },
+    { id:'n'+(now-26*3600e3),type:'follow',    who:'DJ KEITA',hue:'#3DAAFF',
+      at:new Date(now - 26*3600e3).toISOString(),read:true },
+  ];
+  try { localStorage.setItem(NOTIF_KEY, JSON.stringify(seed)); } catch(_){}
+  return seed;
+}
+
+function saveNotifications(list){
+  try { localStorage.setItem(NOTIF_KEY, JSON.stringify(list.slice(0, 100))); } catch(_){}
+}
+
+function addNotification(type, data){
+  const list = loadNotifications();
+  list.unshift({ id:'n'+Date.now(), type, ...data, at:new Date().toISOString(), read:false });
+  saveNotifications(list);
+  renderNotifList();
+  paintUnreadDot();
+}
+window.addNotification = addNotification;
+
+function fmtNotifTime(iso){
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '';
+  const diffMin = (Date.now() - d.getTime()) / 60000;
+  if (diffMin < 1)  return 'たった今';
+  if (diffMin < 60) return Math.floor(diffMin) + '分前';
+  if (diffMin < 60*24) return Math.floor(diffMin / 60) + '時間前';
+  return d.toLocaleDateString('ja-JP', { month:'numeric', day:'numeric' });
+}
+
+function notifBody(n){
+  const name = `<b>${(n.who || '').replace(/</g,'&lt;')}</b>`;
+  switch (n.type) {
+    case 'follow':    return `${name}があなたをフォローしました`;
+    case 'new_event': return `${name}が新しいイベント「${n.event || ''}」を公開しました`;
+    case 'reminder':  return `${n.when || ''}: ${n.event || ''}（${name}）`;
+    case 'message':   return `${name}「${(n.preview || '').slice(0,40)}」`;
+    default:          return (n.text || '通知');
+  }
+}
+
+const notifList  = document.getElementById('notifList');
+const notifEmpty = document.getElementById('notifEmpty');
+
+function renderNotifList(){
+  const list = loadNotifications();
+  notifList.innerHTML = '';
+  if (!list.length) {
+    if (notifEmpty) notifEmpty.style.display = 'flex';
+    return;
+  }
+  if (notifEmpty) notifEmpty.style.display = 'none';
+  list.forEach(n => {
+    const initial = (n.who || '?').charAt(0).toUpperCase();
+    const item = document.createElement('div');
+    item.className = 'notif-item' + (n.read ? ' read' : '');
+    item.dataset.id = n.id;
+    item.innerHTML = `
+      <div class="notif-av" style="--av-hue:${n.hue || '#3DAAFF'}">${initial}</div>
+      <div class="notif-body">
+        <div class="notif-text">${notifBody(n)}</div>
+        <div class="notif-time">${fmtNotifTime(n.at)}</div>
+      </div>
+      <div class="notif-dot"></div>
+    `;
+    item.addEventListener('click', () => {
+      // Mark single notification as read and navigate to the actor.
+      const all = loadNotifications();
+      const hit = all.find(x => x.id === n.id);
+      if (hit) hit.read = true;
+      saveNotifications(all);
+      item.classList.add('read');
+      paintUnreadDot();
+      if (n.who) location.href = '/profile?user=' + encodeURIComponent(n.who);
+    });
+    notifList.appendChild(item);
+  });
+}
+
+function paintUnreadDot(){
+  const any = loadNotifications().some(n => !n.read);
+  const dot = document.getElementById('notifUnreadDot');
+  if (dot) dot.style.display = any ? 'inline-block' : 'none';
+}
+
+renderNotifList();
+paintUnreadDot();
+
+/* ── Tab switcher ─────────────────────────────────── */
+document.querySelectorAll('.mtab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mtab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const key = btn.dataset.mtab;
+    document.getElementById('msgPanel').classList.toggle('active',  key === 'msg');
+    document.getElementById('notifPanel').classList.toggle('active', key === 'notif');
+    if (key === 'notif') {
+      // Mark all read on tab visit
+      const all = loadNotifications();
+      let changed = false;
+      all.forEach(n => { if (!n.read) { n.read = true; changed = true; } });
+      if (changed) { saveNotifications(all); renderNotifList(); }
+      paintUnreadDot();
+    }
+  });
+});
 
 /* ── Auto-open a chat from ?open=<nameOrId> ── */
 (function handleOpenParam(){

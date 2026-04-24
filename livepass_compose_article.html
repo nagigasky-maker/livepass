@@ -978,8 +978,8 @@ footer{background-color:#FFF !important}
       <label class="ticket-opt" style="display:flex;align-items:center;gap:12px;padding:14px;border:1px solid rgba(10,10,10,.12);border-radius:10px;cursor:pointer">
         <input type="checkbox" id="supporterEnable" style="width:18px;height:18px;accent-color:#0A0A0A">
         <div style="flex:1">
-          <div style="font-weight:600;font-size:13px">SUPPORTER PASS</div>
-          <div style="font-size:10px;color:rgba(10,10,10,.5)">月額サポーター (STANDARD プラン以上)</div>
+          <div style="font-weight:600;font-size:13px">PULSE PASS</div>
+          <div style="font-size:10px;color:rgba(10,10,10,.5)">月額 Pulse メンバー (STANDARD プラン以上)</div>
         </div>
         <input type="number" id="supporterPrice" placeholder="¥0" min="0" style="width:100px;padding:8px;border:1px solid rgba(10,10,10,.15);border-radius:6px;font-size:13px;text-align:right">
       </label>
@@ -987,8 +987,8 @@ footer{background-color:#FFF !important}
       <label class="ticket-opt" style="display:flex;align-items:center;gap:12px;padding:14px;border:1px solid rgba(10,10,10,.12);border-radius:10px;cursor:pointer">
         <input type="checkbox" id="vipEnable" style="width:18px;height:18px;accent-color:#0A0A0A">
         <div style="flex:1">
-          <div style="font-weight:600;font-size:13px">VIP PASS</div>
-          <div style="font-size:10px;color:rgba(10,10,10,.5)">高額サポーター (PRO プラン推奨)</div>
+          <div style="font-weight:600;font-size:13px">PULSE+ PASS</div>
+          <div style="font-size:10px;color:rgba(10,10,10,.5)">Pulse+ メンバー (PRO プラン推奨)</div>
         </div>
         <input type="number" id="vipPrice" placeholder="¥0" min="0" style="width:100px;padding:8px;border:1px solid rgba(10,10,10,.15);border-radius:6px;font-size:13px;text-align:right">
       </label>
@@ -1003,7 +1003,7 @@ footer{background-color:#FFF !important}
         style="display:none;padding:12px 14px;margin-top:4px;border-radius:10px;background:rgba(0,229,160,.06);border:0.5px solid rgba(0,229,160,.28);font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;color:rgba(10,10,10,.72);line-height:1.7">
         <div style="font-weight:800;font-size:12px;color:#0a5a43;margin-bottom:4px">EXPASS が販売を代行します</div>
         決済は EXPASS 名義で Stripe を通じて受け取り、手数料を引いて投稿者へ自動送金します (個人情報の公開は不要)。
-        ローンチ時点では<b>投げ銭・サブスク</b>と CALENDAR の<b>予約受付</b>のみ稼働。<br>
+        ローンチ時点では<b>Props・Pulse</b>と CALENDAR の<b>予約受付</b>のみ稼働。<br>
         物販・音源販売・EXPASS PASS は <b>近日公開</b> — ボタン自体は投稿に残り、タップ時に案内モーダルを表示します。
         <a href="/terms/tokushou" style="display:inline-block;margin-top:4px;color:#0a5a43;text-decoration:underline">特定商取引法に基づく表記 →</a>
       </div>
@@ -2007,8 +2007,8 @@ submitBtn.addEventListener('click', async () => {
       if ($('goodsEnable')?.checked)     t.push({type:'goods',    label:'物販',           price:Number($('goodsPrice').value)||0});
       if ($('audioEnable')?.checked)     t.push({type:'audio',    label:'音源販売',       price:Number($('audioPrice').value)||0});
       if ($('expassEnable')?.checked)    t.push({type:'expass',   label:'EXPASS を購入',   price:Number($('expassPrice').value)||0});
-      if ($('supporterEnable')?.checked) t.push({type:'supporter',label:'SUPPORTER PASS', price:Number($('supporterPrice').value)||0});
-      if ($('vipEnable')?.checked)       t.push({type:'vip',      label:'VIP PASS',       price:Number($('vipPrice').value)||0});
+      if ($('supporterEnable')?.checked) t.push({type:'supporter',label:'PULSE PASS',      price:Number($('supporterPrice').value)||0});
+      if ($('vipEnable')?.checked)       t.push({type:'vip',      label:'PULSE+ PASS',    price:Number($('vipPrice').value)||0});
       return t;
     })(),
     collaborators: state.collaborators.slice(),

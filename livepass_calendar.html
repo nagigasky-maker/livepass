@@ -13,6 +13,7 @@
 <style>html.tier-user .bn-btn[aria-label="Lab"],html.tier-user .bn-btn[aria-label="Atelier"]{display:none!important}</style>
 <script src="/livepass_paywall.js" defer></script>
 <script src="/livepass_categories.js" defer></script>
+<script src="/livepass_share.js" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -1530,8 +1531,8 @@ function openEventDetail(e) {
         ` : ''}
       </div>
       <div class="em-sub-actions">
-        <button class="em-sub-btn">🔖 保存</button>
-        <button class="em-sub-btn">📤 共有</button>
+        <button class="em-sub-btn" data-em-act="save">🔖 保存</button>
+        <button class="em-sub-btn" data-em-act="share">📤 共有</button>
       </div>
     </div>
   `;
@@ -1544,6 +1545,24 @@ function openEventDetail(e) {
       if (navigator.vibrate) navigator.vibrate(8);
       const name = decodeURIComponent(btn.dataset.artist || '');
       if (name) location.href = '/profile?user=' + encodeURIComponent(name);
+    });
+  });
+
+  // Native share + save — the save button is still a stub for now.
+  emBody.querySelectorAll('[data-em-act="share"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (navigator.vibrate) navigator.vibrate(8);
+      const title = (e.title || 'EXPASS') + ' | EXPASS';
+      const parts = [];
+      if (e.date || e.when) parts.push(String(e.date || e.when));
+      if (e.venue || e.place) parts.push(String(e.venue || e.place));
+      const text = parts.join(' · ');
+      const shareUrl = location.origin + '/event/' + e.id;
+      if (typeof shareContent === 'function') {
+        shareContent(title, text, shareUrl);
+      } else {
+        prompt('リンクをコピー:', shareUrl);
+      }
     });
   });
 

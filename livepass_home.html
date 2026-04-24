@@ -28,6 +28,7 @@
 <style>html.tier-user .bn-btn[aria-label="Lab"],html.tier-user .bn-btn[aria-label="Atelier"]{display:none!important}</style>
 <script src="/livepass_paywall.js" defer></script>
 <script src="/livepass_categories.js" defer></script>
+<script src="/livepass_share.js" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -2008,8 +2009,8 @@ function openDetail(a) {
         ticket:    'チケット販売',
         goods:     '物販',
         audio:     '音源販売',
-        supporter: 'SUPPORTER PASS',
-        vip:       'VIP PASS',
+        supporter: 'PULSE PASS',
+        vip:       'PULSE+ PASS',
       };
       const label = LABEL[type] || 'この機能';
       ov.innerHTML = `
@@ -2025,7 +2026,7 @@ function openDetail(a) {
             </div>
           </div>
           <p style="font-size:12px;line-height:1.8;color:rgba(237,235,230,.72);margin:12px 0 0">
-            ローンチ時点では <b style="color:#EDEBE6">予約受付 / 投げ銭 / サブスク</b> のみ稼働しています。
+            ローンチ時点では <b style="color:#EDEBE6">予約受付 / Props / Pulse</b> のみ稼働しています。
             決済は EXPASS が代行 (Stripe) — 本機能はイベント当日にオンになります。
           </p>
           <button type="button" id="cmsClose"
@@ -2043,7 +2044,7 @@ function openDetail(a) {
 
   // Ticket / purchase buttons — at launch only 予約 is a live flow.
   // TICKET / EXPASS tap → "近日公開" modal.
-  // SUPPORTER / VIP tap → artist subscription panel (existing).
+  // PULSE / PULSE+ tap → artist Props & Pulse panel (existing).
   dmBody.querySelectorAll('.dm-ticket-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -2086,7 +2087,26 @@ function openDetail(a) {
         const now = toggleId('livepass_saves', a.id);
         btn.classList.toggle('saved', now);
       } else if (act === 'share') {
-        openShareSheet(a, btn);
+        // Primary: native OS share sheet (Web Share API). Falls back
+        // to clipboard + toast. The old in-app share sheet (repost +
+        // URL copy) stays reachable via long-press in a future pass —
+        // for now the native path is enough for external / social
+        // spread, which is what actually drives growth.
+        const kind = (a.type === 'event' || a.type === 'workshop' || a.type === 'exhibition')
+          ? a.type : 'article';
+        const title = (a.title || 'EXPASS') + ' | EXPASS';
+        const parts = [];
+        if (a.date || a.when) parts.push(String(a.date || a.when));
+        if (a.venue || a.place) parts.push(String(a.venue || a.place));
+        if (!parts.length && a.category) parts.push(String(a.category));
+        const text = parts.join(' · ');
+        const shareUrl = location.origin + '/' + kind + '/' + a.id;
+        if (typeof shareContent === 'function') {
+          shareContent(title, text, shareUrl);
+        } else {
+          openShareSheet(a, btn);
+        }
+        if (navigator.vibrate) navigator.vibrate(8);
         return;
       }
       if (navigator.vibrate) navigator.vibrate(6);
