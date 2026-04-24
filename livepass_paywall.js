@@ -144,15 +144,15 @@
       </p>
       <div class="pw-tiers">
         <div class="pw-tier artist">
-          <span class="pw-pill">Artist</span>
+          <span class="pw-pill">Artist · ¥980/月</span>
           <div class="pw-tier-txt">ミュージシャン・DJ・プロデューサー・ダンサー・カメラマン・芸術家・スケーター</div>
         </div>
         <div class="pw-tier pro">
-          <span class="pw-pill">Pro</span>
+          <span class="pw-pill">Pro · ¥2,480/月</span>
           <div class="pw-tier-txt">オーガナイザー・スポーツ選手・クリエイター・プログラマー</div>
         </div>
         <div class="pw-tier business">
-          <span class="pw-pill">Business</span>
+          <span class="pw-pill">Business · ¥2,980/月</span>
           <div class="pw-tier-txt">企業・アパレル・飲食・小売店舗</div>
         </div>
       </div>

@@ -196,13 +196,24 @@ html,body{
     ctaBtn.disabled = true;
     ctaLbl.innerHTML = '<span class="spinner"></span>登録中…';
     try {
-      // The server endpoint doesn't exist yet — until /api/claim-card
-      // lands we write the card directly to users/{uid}.cards via
-      // updateDoc. Launch-ready behaviour is to move this to a
-      // server call so the card registry can be validated.
+      // Server validates the card id against CARD_IDS_ALLOWLIST so
+      // forgeries are rejected before we write. On ok, the client
+      // performs the arrayUnion — Firestore Rules scope that write to
+      // the authenticated owner.
+      const resp = await fetch('/api/claim-card', {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json' },
+        body: JSON.stringify({ cardId, uid }),
+      });
+      const data = await resp.json().catch(()=>({}));
+      if (!resp.ok || !data.ok) {
+        ctaBtn.disabled = false;
+        ctaLbl.textContent = 'もう一度試す';
+        setMsg(data && data.reason || 'カードIDを確認できませんでした。', 'err');
+        return;
+      }
       const { updateDoc, doc, db } = window.FB;
       const ref = doc(db, 'users', uid);
-      // Append to an array field atomically.
       const { arrayUnion } = await import('https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js');
       await updateDoc(ref, { cards: arrayUnion(cardId) });
       // Mirror locally so Collection can light up without a reload round-trip.

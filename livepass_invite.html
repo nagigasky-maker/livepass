@@ -213,8 +213,9 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   // plan is assigned by the server — we only guess the perk list here.
   function guessPlan(c){
     if (/^EXPASS-?PRO-/i.test(c))      return 'pro';
-    if (/^EXPASS-?STD-/i.test(c))      return 'standard';
-    if (/^EXPASS-?STANDARD-/i.test(c)) return 'standard';
+    if (/^EXPASS-?STD-/i.test(c))      return 'artist';
+    if (/^EXPASS-?STANDARD-/i.test(c)) return 'artist';
+    if (/^EXPASS-?ARTIST-/i.test(c))   return 'artist';
     if (/^EXPASS-?SEED-/i.test(c))     return 'pro';        // legacy
     if (/^EXPASS-?BIZ-/i.test(c))      return 'business';
     if (/^EXPASS-?BUSINESS-/i.test(c)) return 'business';
@@ -222,20 +223,20 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   }
   const PERKS = {
     pro: [
-      'PRO プラン 1年無償 (通常 ¥2,480/月)',
+      'Pro プラン 1年無償 (通常 ¥2,480/月)',
       '4K動画アップロード・無制限ストレージ',
       'AI機能フル・詳細アナリティクス',
       'PASSカード販売・収益管理フル',
       'SCREEN 最優先掲載',
     ],
-    standard: [
-      'STANDARD プラン 1年無償 (通常 ¥980/月)',
+    artist: [
+      'Artist プラン 1年無償 (通常 ¥980/月)',
       '音源アップロード無制限・動画HD',
       'SCREEN 掲載・分析データ基本版',
       'PASSカード販売・収益管理フル',
     ],
     business: [
-      'BUSINESS プラン 1年無償',
+      'Business プラン 1年無償 (通常 ¥2,980/月)',
       'EC出店・商品登録無制限',
       'PASSカード連動・イベント協賛枠',
     ],

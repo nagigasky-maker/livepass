@@ -10,14 +10,16 @@
  *                           Founding-artist seed bucket — plan for
  *                           20 key artists. Convention: EXPASS-PRO-XXXX.
  *                           Waives ¥2,480/mo × 12 = ¥29,760 per artist.
- *   INVITE_CODES_STANDARD — grants plan="standard" for 365 days
- *                           30 seats for next-tier artists.
- *                           Convention: EXPASS-STD-XXXX.
+ *   INVITE_CODES_STANDARD — grants plan="artist" for 365 days
+ *                           (env var name kept for backward compat;
+ *                            the plan was renamed standard → artist to
+ *                            match the paywall UI). 30 seats for
+ *                            next-tier artists. Convention: EXPASS-STD-XXXX.
  *                           Waives ¥980/mo × 12 = ¥11,760 per artist.
  *   INVITE_CODES_BUSINESS — grants plan="business" for 365 days
  *                           (Phase 2 — not used at launch).
  *   INVITE_CODES_SEED     — legacy alias for PRO (earlier naming).
- *   INVITE_CODES_ARTIST   — legacy alias for STANDARD.
+ *   INVITE_CODES_ARTIST   — legacy alias for STANDARD (now plan="artist").
  *
  * Delivery channels (both supported end-to-end):
  *   1) Code entry via Settings → Upgrade → paywall invite field.
@@ -68,11 +70,11 @@ module.exports = async function handler(req, res) {
   const tiers = [
     // SEED grants PRO — use this bucket for the 30–50 founding artists.
     { plan:'pro',      env:'INVITE_CODES_SEED'     },
-    { plan:'standard', env:'INVITE_CODES_STANDARD' },
+    { plan:'artist',   env:'INVITE_CODES_STANDARD' },
     { plan:'pro',      env:'INVITE_CODES_PRO'      },
     { plan:'business', env:'INVITE_CODES_BUSINESS' },
-    // Legacy alias — older ARTIST codes now map to STANDARD.
-    { plan:'standard', env:'INVITE_CODES_ARTIST'   },
+    // Legacy alias — older ARTIST codes now map to the artist plan.
+    { plan:'artist',   env:'INVITE_CODES_ARTIST'   },
   ];
 
   for (const t of tiers) {
