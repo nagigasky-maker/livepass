@@ -747,9 +747,9 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 .pr-role{font-size:11px !important}
 
 
-/* ── Header: hide the topbar chrome, float only the 🔍 ✉️ + trio
-   over the cover as glass pills. Each one is absolutely positioned
-   so they never collide with the flex flow. */
+/* ── Header: hide the topbar chrome, float the 🔍 ✉️ + trio as a
+   right-edge cluster of glass pills over the cover. Absolute-pinned
+   so they never overlap and read left→right as Search · Messages · +. */
 .topbar{background:transparent !important;border:none !important;pointer-events:none !important;min-height:0 !important;padding:0 !important}
 .topbar .tb-brand{display:none !important}
 .topbar .tb-icon:not(#tbCreate):not(#tbSearch):not(#tbMessages){display:none !important}
@@ -768,9 +768,9 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
   display:flex !important;align-items:center;justify-content:center;
   margin:0 !important;
 }
-.topbar #tbSearch  {left:14px !important}
-.topbar #tbCreate  {right:14px !important}
-.topbar #tbMessages{right:60px !important}
+.topbar #tbCreate   {right:14px !important}
+.topbar #tbMessages {right:60px !important}
+.topbar #tbSearch   {right:106px !important}
 .topbar #tbSearch svg,
 .topbar #tbMessages svg,
 .topbar #tbCreate svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8}

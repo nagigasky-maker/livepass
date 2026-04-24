@@ -1968,17 +1968,28 @@ body.show-sub .ph-heart-btn img{opacity:0}
 body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;color:#0A0A0A;position:absolute;line-height:1}
 
 
-/* ── Header: logo centered, keep the + create icon on the right ── */
+/* ── Header: logo centered, pin 🔍 ✉️ + as a right-edge trio ──
+   Each icon is absolutely positioned with explicit rights so they
+   never overlap. Order left→right on-screen: Search · Messages · +. */
 .topbar{min-height:calc(var(--safe-top,0px) + 48px) !important;padding:calc(var(--safe-top,0px) + 6px) 18px 10px !important}
 .topbar .tb-icon:not(#tbCreate):not(#tbSearch):not(#tbMessages){display:none !important}
-.topbar #tbCreate{position:absolute !important;right:18px !important;top:calc(var(--safe-top,0px) + 10px) !important;color:#0A0A0A !important}
-.topbar #tbCreate svg{stroke:#0A0A0A !important;color:#0A0A0A !important}
-.topbar #tbCreate svg line{stroke:#0A0A0A !important}
-/* On /collection, the heart-button already owns the topbar's left
-   edge. Sit the search icon next to the + so both of them live on
-   the right half. */
-.topbar #tbSearch{position:absolute !important;right:58px !important;top:calc(var(--safe-top,0px) + 10px) !important;color:#0A0A0A !important;width:28px;height:28px;display:flex !important;align-items:center;justify-content:center;background:none !important;border:none !important}
+.topbar #tbCreate,
+.topbar #tbMessages,
+.topbar #tbSearch{
+  position:absolute !important;
+  top:calc(var(--safe-top,0px) + 10px) !important;
+  width:32px !important;height:32px !important;
+  display:flex !important;align-items:center !important;justify-content:center !important;
+  background:none !important;border:none !important;
+  color:#0A0A0A !important;margin:0 !important;
+}
+.topbar #tbCreate   {right:14px !important}
+.topbar #tbMessages {right:54px !important}
+.topbar #tbSearch   {right:94px !important}
+.topbar #tbCreate svg,
+.topbar #tbMessages svg,
 .topbar #tbSearch svg{width:22px;height:22px;stroke:#0A0A0A !important;fill:none;stroke-width:1.8}
+.topbar #tbCreate svg line{stroke:#0A0A0A !important}
 .topbar .tb-brand{position:relative !important;left:auto !important;top:auto !important;transform:none !important;margin:0 auto !important;height:32px !important}
 
 </style>
