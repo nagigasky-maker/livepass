@@ -347,48 +347,139 @@ body.disc-followers .disc-followers{display:block}
 .cs-opt.exhibition svg{color:var(--mint)}
 .cs-close{display:block;width:100%;padding:14px;background:none;border:0.5px solid rgba(237,235,230,.12);border-radius:99px;margin-top:16px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;color:rgba(237,235,230,.5)}
 
-/* ── Account search results (friend discovery) ─────────────── */
-.account-results{padding:0 18px 18px;display:none}
+/* ── Artist roster (hero cards, one per artist) ─────────────
+   Each artist gets a full-width hero tile — cover art / video
+   if they've posted, brand gradient + monogram otherwise.
+   Designed to feel like a credits roll, not a contact list. */
+.account-results{padding:0 clamp(14px,4vw,20px) 24px;display:none}
 .account-results.open{display:block}
+#browseList{padding:0 clamp(14px,4vw,20px) 32px}
+
 .account-row{
-  display:flex;align-items:center;gap:14px;
-  padding:12px 14px;margin-bottom:8px;
-  background:rgba(255,255,255,.03);
-  border:0.5px solid rgba(255,255,255,.08);
-  border-radius:12px;cursor:pointer;
+  position:relative;display:block;
+  width:100%;aspect-ratio:4/5;
+  margin:0 0 clamp(22px,5vw,38px);
+  border:0;border-radius:14px;
+  overflow:hidden;isolation:isolate;
+  background:#0A0A0A;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  transition:transform .25s ease;
 }
-.account-row:active{background:rgba(255,255,255,.06)}
-.account-av{
-  width:44px;height:44px;border-radius:50%;flex-shrink:0;
-  background:linear-gradient(135deg,var(--av-hue,#3DAAFF),#0a1020);
-  border:1px solid rgba(237,235,230,.15);
-  display:flex;align-items:center;justify-content:center;
-  font-family:Arial,sans-serif;font-weight:900;font-size:16px;color:var(--white);
-  overflow:hidden;
+.account-row:active{transform:scale(.985)}
+
+/* Hero media layer */
+.account-hero{
+  position:absolute;inset:0;z-index:0;
+  background-size:cover;background-position:center;
+  transform:scale(1.02);
+  transition:transform 1.2s ease;
 }
-.account-body{flex:1;min-width:0}
+.account-row:hover .account-hero{transform:scale(1.06)}
+.account-hero.gradient{
+  background:
+    radial-gradient(ellipse at 28% 22%, var(--av-hue,#1b3a66) 0%, transparent 55%),
+    radial-gradient(ellipse at 72% 78%, var(--av-hue2,#2a1a48) 0%, transparent 60%),
+    linear-gradient(145deg, #0A0A0A 0%, #1a1a22 100%);
+}
+.account-hero video{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;
+}
+
+/* Monogram — sits behind the name as typographic texture */
+.account-initial{
+  position:absolute;left:clamp(16px,5vw,24px);top:clamp(16px,5vw,24px);
+  z-index:1;
+  font-family:'IBM Plex Mono','Helvetica Neue',sans-serif;
+  font-weight:500;
+  font-size:clamp(56px,17vw,110px);
+  line-height:.85;
+  letter-spacing:-.06em;
+  color:rgba(255,255,255,.06);
+  mix-blend-mode:overlay;
+  user-select:none;pointer-events:none;
+}
+.account-hero:not(.gradient) ~ .account-initial{opacity:0}
+
+/* Shadow fade to keep bottom text legible */
+.account-row::after{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(to top,
+    rgba(0,0,0,.88) 0%,
+    rgba(0,0,0,.55) 22%,
+    rgba(0,0,0,.15) 45%,
+    rgba(0,0,0,0) 62%);
+}
+
+/* Subtle grain */
+.account-row::before{
+  content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.015) 0 1px, transparent 1px 2px);
+  mix-blend-mode:overlay;opacity:.6;
+}
+
+.account-body{
+  position:absolute;left:0;right:0;bottom:0;z-index:3;
+  padding:clamp(16px,4.5vw,22px) clamp(18px,5vw,24px) clamp(18px,5vw,24px);
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:14px;
+}
+.account-body-text{min-width:0;flex:1}
+
 .account-name{
-  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
-  font-size:14px;color:var(--white);margin-bottom:2px;
+  font-family:'Helvetica Neue','Arial Narrow',Arial,sans-serif;
+  font-weight:800;
+  font-size:clamp(24px,7.5vw,38px);
+  line-height:.95;
+  letter-spacing:-.015em;
+  text-transform:uppercase;
+  color:#fff;
+  margin:0 0 8px;
+  text-shadow:0 2px 24px rgba(0,0,0,.4);
+  word-break:break-word;
+  overflow-wrap:anywhere;
 }
+
 .account-role{
-  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;
-  font-size:11px;color:rgba(237,235,230,.45);letter-spacing:.04em;
+  font-family:'IBM Plex Mono',ui-monospace,monospace;
+  font-size:10px;
+  letter-spacing:.28em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.62);
 }
+.account-role::before{
+  content:"— ";opacity:.5;
+}
+
+/* Ghost circle FOLLOW — minimal, stays out of the image's way */
 .account-follow{
-  flex-shrink:0;padding:7px 16px;border-radius:99px;
-  font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;font-weight:600;
-  background:var(--blue);color:#fff;border:1px solid var(--blue);
-  cursor:pointer;letter-spacing:.04em;
+  flex-shrink:0;
+  width:46px;height:46px;
+  border-radius:50%;
+  background:rgba(255,255,255,.06);
+  border:0.5px solid rgba(255,255,255,.35);
+  backdrop-filter:blur(14px) saturate(1.2);
+  -webkit-backdrop-filter:blur(14px) saturate(1.2);
+  color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:20px;font-weight:300;line-height:1;
+  cursor:pointer;
+  transition:transform .2s ease, background .2s ease, color .2s ease;
 }
+.account-follow:active{transform:scale(.9)}
 .account-follow.following{
-  background:rgba(61,170,255,.1);color:var(--blue);border-color:var(--blue);
+  background:#fff;color:#0A0A0A;border-color:#fff;
+  font-weight:500;
 }
+
 .account-empty{
-  padding:30px 20px;text-align:center;
+  padding:40px 20px;text-align:center;
   font-family:'IBM Plex Mono',monospace;font-size:10px;
-  letter-spacing:.22em;text-transform:uppercase;
-  color:rgba(237,235,230,.35);
+  letter-spacing:.28em;text-transform:uppercase;
+  color:rgba(237,235,230,.32);
 }
 
 /* ── Manual account add ─────────────────────── */
@@ -1271,8 +1362,57 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
       DIRECTORY = DIRECTORY.concat(add);
       render(input.value);
       renderBrowse();
+
+      // Second pass: fetch recent posts, attach each artist's most
+      // recent cover/video to their roster tile so the grid becomes
+      // a true artist gallery instead of a gradient farm.
+      hydrateHeroCovers();
     } catch (err) {
       console.warn('Firestore directory load failed:', err);
+    }
+  }
+
+  // Pull the most recent post from each artist and use its cover /
+  // video as that artist's roster hero image. Runs once per session
+  // after the directory is populated — the N=1-per-artist reduction
+  // keeps this to a single collection scan regardless of user count.
+  let heroesHydrated = false;
+  async function hydrateHeroCovers(){
+    if (heroesHydrated) return;
+    heroesHydrated = true;
+    if (!window.FB || !window.FB.db) return;
+    try {
+      const { collection, query, orderBy, limit, getDocs, db } = window.FB;
+      const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'), limit(250));
+      const snap = await getDocs(q);
+      const byAuthor = new Map();    // uid → { cover, videoUrl }
+      const byAuthorName = new Map(); // uppercase name → same
+      snap.forEach(d => {
+        const data = d.data() || {};
+        const pick = {
+          cover:    data.cover    || data.coverUrl || null,
+          videoUrl: (data.videoLoop && data.videoUrl) ? data.videoUrl : null,
+        };
+        if (!pick.cover && !pick.videoUrl) return;
+        if (data.authorUid && !byAuthor.has(data.authorUid))   byAuthor.set(data.authorUid, pick);
+        const nm = (data.authorName || data.author || '').toUpperCase();
+        if (nm && !byAuthorName.has(nm)) byAuthorName.set(nm, pick);
+      });
+      let matched = 0;
+      DIRECTORY = DIRECTORY.map(a => {
+        const nm = (a.name || '').toUpperCase();
+        const m = (a.uid && byAuthor.get(a.uid)) || byAuthorName.get(nm);
+        if (!m) return a;
+        matched++;
+        return { ...a, cover: a.cover || m.cover, videoUrl: a.videoUrl || m.videoUrl };
+      });
+      if (matched > 0) {
+        console.log(`search: hydrated ${matched} hero covers`);
+        render(input.value);
+        renderBrowse();
+      }
+    } catch (err) {
+      console.warn('search: hero hydration failed:', err && err.code, err && err.message);
     }
   }
 
@@ -1290,18 +1430,73 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
     window.addEventListener('fb-auth-ready', () => loadRemoteDirectory(), { once:true });
   }
 
+  // Deterministic two-tone hue from the artist name so every tile
+  // still has its own identity even without a cover image.
+  function nameToHues(s){
+    let h = 0;
+    const str = String(s || '');
+    for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
+    const h1 = Math.abs(h) % 360;
+    const h2 = (h1 + 55 + (Math.abs(h >> 8) % 40)) % 360;
+    return {
+      a: `hsl(${h1}, 55%, 22%)`,
+      b: `hsl(${h2}, 45%, 18%)`,
+    };
+  }
+
+  // Escape strings going into template literals so stray quotes or
+  // angle brackets in an artist name can't break the HTML.
+  function escHTML(s){
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  // Role → display label. Keep it short + editorial.
+  function roleLabel(r){
+    const v = String(r || '').trim().toLowerCase();
+    if (!v) return 'artist';
+    // Collapse noisy internal slugs to something readable.
+    const map = {
+      'artist':'artist','creator':'creator','dj':'dj','producer':'producer',
+      'vocalist':'vocalist','band':'band','dancer':'dancer','organizer':'organizer',
+      'featured artist':'featured artist','fan':'fan','curator':'curator',
+    };
+    return map[v] || v;
+  }
+
   function accountRow(a){
-    const initial = (a.name || '?').slice(0, 2).toUpperCase();
+    const initial   = (a.name || '?').slice(0, 2).toUpperCase();
     const following = isFollowing(a.name);
+    const { a: hueA, b: hueB } = nameToHues(a.name);
+    const role     = roleLabel(a.role);
+    const nameEsc  = escHTML(a.name);
+    const roleEsc  = escHTML(role);
+    // Priority: video loop > cover image > brand-gradient monogram.
+    let hero;
+    if (a.videoUrl) {
+      hero = `<div class="account-hero"><video src="${escHTML(a.videoUrl)}" muted playsinline webkit-playsinline autoplay loop preload="metadata"></video></div>`;
+    } else if (a.cover) {
+      hero = `<div class="account-hero" style="background-image:url('${escHTML(a.cover).replace(/'/g,"%27")}')"></div>`;
+    } else {
+      hero = `<div class="account-hero gradient"></div>`;
+    }
     return `
-      <div class="account-row" data-name="${encodeURIComponent(a.name)}">
-        <div class="account-av">${initial}</div>
+      <article class="account-row" data-name="${encodeURIComponent(a.name)}" style="--av-hue:${hueA};--av-hue2:${hueB}">
+        ${hero}
+        <div class="account-initial">${escHTML(initial)}</div>
         <div class="account-body">
-          <div class="account-name">${a.name}</div>
-          <div class="account-role">${a.role || ''}</div>
+          <div class="account-body-text">
+            <div class="account-name">${nameEsc}</div>
+            <div class="account-role">${roleEsc}</div>
+          </div>
+          <button class="account-follow ${following ? 'following' : ''}"
+                  data-name="${encodeURIComponent(a.name)}"
+                  data-role="${encodeURIComponent(a.role || '')}"
+                  type="button"
+                  aria-label="${following ? 'Unfollow' : 'Follow'} ${nameEsc}">${following ? '✓' : '+'}</button>
         </div>
-        <button class="account-follow ${following ? 'following' : ''}" data-name="${encodeURIComponent(a.name)}" data-role="${encodeURIComponent(a.role || '')}" type="button">${following ? 'フォロー中' : 'フォロー'}</button>
-      </div>
+      </article>
     `;
   }
 
@@ -1310,13 +1505,14 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
     if (!query) { results.classList.remove('open'); results.innerHTML = ''; renderBrowse(); return; }
     const matches = DIRECTORY
       .filter(a => (a.name || '').toLowerCase().includes(query) || (a.role || '').toLowerCase().includes(query))
-      .slice(0, 12);
+      .slice(0, 40);
     results.classList.add('open');
     if (matches.length === 0) {
       results.innerHTML = `<div class="account-empty">No accounts match "${query}"</div>`;
       return;
     }
     results.innerHTML = matches.map(accountRow).join('');
+    wireHeroVideos(results);
   }
 
   // Browse list — shows every known account under the search bar when
@@ -1332,9 +1528,41 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
       return;
     }
     if (browseEmpty) browseEmpty.style.display = 'none';
-    browseEl.innerHTML = DIRECTORY.slice(0, 50).map(accountRow).join('');
+    browseEl.innerHTML = DIRECTORY.map(accountRow).join('');
+    wireHeroVideos(browseEl);
   }
   renderBrowse();
+
+  // iOS Safari rejects autoplay if src is assigned before muted is
+  // applied, so we re-poke each video element after render and also
+  // pause any that scroll off-screen to save battery.
+  let heroVideoObserver = null;
+  function wireHeroVideos(scope){
+    if (!scope) return;
+    const vids = scope.querySelectorAll('.account-hero video');
+    if (!vids.length) return;
+    vids.forEach(v => {
+      try {
+        v.muted = true; v.defaultMuted = true; v.playsInline = true;
+        v.setAttribute('muted',''); v.setAttribute('playsinline','');
+        v.setAttribute('webkit-playsinline',''); v.setAttribute('autoplay','');
+        requestAnimationFrame(() => { const p = v.play(); if (p && p.catch) p.catch(()=>{}); });
+      } catch(_){}
+    });
+    if (!('IntersectionObserver' in window)) return;
+    if (heroVideoObserver) { try { heroVideoObserver.disconnect(); } catch(_){} }
+    heroVideoObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const v = entry.target;
+        if (entry.isIntersecting) {
+          try { const p = v.play(); if (p && p.catch) p.catch(()=>{}); } catch(_){}
+        } else {
+          try { v.pause(); } catch(_){}
+        }
+      });
+    }, { threshold: 0, rootMargin: '0px 0px 300px 0px' });
+    vids.forEach(v => heroVideoObserver.observe(v));
+  }
 
   // Re-render browse list on account directory changes.
   const _refresh = refreshDirectory;
