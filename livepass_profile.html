@@ -2149,8 +2149,18 @@ body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;c
         <button id="tipBtn" style="display:block;width:100%;padding:16px;background:var(--gold);color:#000;font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:13px;letter-spacing:.16em;text-transform:uppercase;border-radius:99px;border:none;cursor:pointer;box-shadow:0 6px 24px rgba(245,200,66,.2)">Props ¥500</button>
       </div>
 
-      <!-- Monthly Pulse tiers -->
-      <div style="background:rgba(255,255,255,.03);border:0.5px solid rgba(237,235,230,.08);border-radius:14px;padding:20px;margin-bottom:16px">
+      <!-- Monthly Pulse tiers — NOT LIVE YET. The card is styled with
+           a dimmed look + a "Coming soon" pill so fans understand the
+           subscription flow isn't running at launch. Benefits are
+           marked as examples ("例") so the copy doesn't imply these
+           are the final per-artist perk lists. -->
+      <div style="position:relative;background:rgba(255,255,255,.02);border:0.5px solid rgba(237,235,230,.08);border-radius:14px;padding:20px;margin-bottom:16px;opacity:.78">
+        <!-- Coming-soon pill -->
+        <div style="position:absolute;top:16px;right:16px;display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;background:rgba(0,229,160,.12);border:0.5px solid rgba(0,229,160,.32);font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:8px;letter-spacing:.24em;text-transform:uppercase;color:var(--mint)">
+          <span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--mint);box-shadow:0 0 6px rgba(0,229,160,.65)"></span>
+          Coming soon
+        </div>
+
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M3 12h4l3-8 4 16 3-8h4" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:16px;color:var(--white)">Pulse</div>
@@ -2160,24 +2170,30 @@ body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;c
         </div>
 
         <div style="display:flex;flex-direction:column;gap:10px">
-          <!-- Pulse (standard) -->
+          <!-- Pulse (standard) — example tier -->
           <div style="display:flex;align-items:center;gap:14px;padding:16px;background:rgba(255,255,255,.02);border:0.5px solid rgba(237,235,230,.08);border-radius:12px;border-left:3px solid var(--green)">
             <div style="flex:1">
-              <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;font-size:13px;color:var(--white);margin-bottom:3px">Pulse</div>
-              <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;font-size:9px;color:rgba(237,235,230,.5);line-height:1.5">限定 ARTICLE 閲覧 · 月刊ニュースレター</div>
+              <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px">
+                <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;font-size:13px;color:var(--white)">Pulse</div>
+                <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:7.5px;letter-spacing:.24em;text-transform:uppercase;color:rgba(237,235,230,.35)">例</div>
+              </div>
+              <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;font-size:9px;color:rgba(237,235,230,.5);line-height:1.5">例) 限定 ARTICLE 閲覧 · 月刊ニュースレター</div>
             </div>
             <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:14px;color:var(--green)">¥620<span style="font-size:9px;font-weight:400;color:rgba(237,235,230,.4)">/月</span></div>
           </div>
-          <!-- Pulse+ (premium) -->
+          <!-- Pulse+ (premium) — example tier -->
           <div style="display:flex;align-items:center;gap:14px;padding:16px;background:rgba(255,255,255,.02);border:0.5px solid rgba(237,235,230,.08);border-radius:12px;border-left:3px solid var(--blue)">
             <div style="flex:1">
-              <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;font-size:13px;color:var(--white);margin-bottom:3px">Pulse+</div>
-              <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;font-size:9px;color:rgba(237,235,230,.5);line-height:1.5">全特典 + PASS 先行予約 + 限定 WS 招待</div>
+              <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px">
+                <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;font-size:13px;color:var(--white)">Pulse+</div>
+                <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:7.5px;letter-spacing:.24em;text-transform:uppercase;color:rgba(237,235,230,.35)">例</div>
+              </div>
+              <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:400;font-size:9px;color:rgba(237,235,230,.5);line-height:1.5">例) 全特典 + PASS 先行予約 + 限定 WS 招待</div>
             </div>
             <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:14px;color:var(--blue)">¥1,980<span style="font-size:9px;font-weight:400;color:rgba(237,235,230,.4)">/月</span></div>
           </div>
         </div>
-        <div style="margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.24em;text-transform:uppercase;color:rgba(237,235,230,.22);text-align:center">Stripe 月額決済 — 5/4後に実装予定</div>
+        <div style="margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.24em;text-transform:uppercase;color:rgba(237,235,230,.32);text-align:center">Preview · 近日公開予定</div>
       </div>
     </div>
     <div style="height:40px"></div>

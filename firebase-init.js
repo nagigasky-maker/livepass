@@ -66,12 +66,18 @@ onAuthStateChanged(auth, async (user) => {
         if (!localStorage.getItem('livepass_role')) localStorage.setItem('livepass_role', data.role || '');
         if (!localStorage.getItem('livepass_avatar') && data.avatar) localStorage.setItem('livepass_avatar', data.avatar);
         if (!localStorage.getItem('livepass_plan')) localStorage.setItem('livepass_plan', data.plan || 'free');
-        // NOBBY = promo BIZ account. We only reflect the plan locally; the
-        // actual plan field in Firestore is server-controlled (Stripe
-        // webhook / invite endpoint) per the Rules whitelist.
+        // NOBBY = promo PRO account. We only reflect the plan locally;
+        // the actual plan field in Firestore is server-controlled
+        // (Stripe webhook / invite endpoint) per the Rules whitelist.
+        // (Deck schema: FREE / STANDARD ¥980 / PRO ¥2,480 — no BIZ.)
         const acctName = (data.name || localStorage.getItem('livepass_account_name') || '').toUpperCase();
         if (acctName === 'NOBBY') {
-          localStorage.setItem('livepass_plan', 'biz');
+          localStorage.setItem('livepass_plan', 'pro');
+        }
+        // Migrate any legacy 'biz' cache to 'pro' so old sessions land
+        // on the new PRO tier instead of showing no card active.
+        if (localStorage.getItem('livepass_plan') === 'biz') {
+          localStorage.setItem('livepass_plan', 'pro');
         }
         localStorage.setItem('livepass_uid', user.uid);
       }

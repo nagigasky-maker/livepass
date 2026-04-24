@@ -585,22 +585,22 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
       <div class="plan-price"><strong>FREE</strong> / 月額</div>
     </div>
 
+    <!-- STANDARD (locked) -->
+    <div class="plan locked" data-plan="standard">
+      <div class="plan-icon">
+        <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+      </div>
+      <div class="plan-pill">STANDARD</div>
+      <div class="plan-price"><strong>¥980</strong> / 月額</div>
+    </div>
+
     <!-- PRO (locked) -->
     <div class="plan locked" data-plan="pro">
       <div class="plan-icon">
         <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
       </div>
       <div class="plan-pill">PRO</div>
-      <div class="plan-price"><strong>¥980</strong> / 月額</div>
-    </div>
-
-    <!-- BIZ (locked) -->
-    <div class="plan locked" data-plan="biz">
-      <div class="plan-icon">
-        <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
-      </div>
-      <div class="plan-pill">BIZ</div>
-      <div class="plan-price"><strong>¥2,980</strong> / 月額</div>
+      <div class="plan-price"><strong>¥2,480</strong> / 月額</div>
     </div>
   </div>
 
@@ -797,12 +797,20 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 
   <!-- ═══ SUBSCRIPTION ═══ -->
   <div class="sec-label">SUBSCRIPTION</div>
-  <div style="padding:14px 20px 8px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;color:rgba(237,235,230,.45);letter-spacing:.02em;line-height:1.8">
+  <div style="padding:14px 20px 4px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;color:rgba(237,235,230,.45);letter-spacing:.02em;line-height:1.8">
     現在のプラン：<strong id="srCurrentPlan" style="color:rgba(237,235,230,.85);letter-spacing:.1em">FREE</strong>
   </div>
+  <!-- Subscription system isn't live yet — the cards below are a
+       read-only preview of what each tier will include at launch. -->
+  <div style="padding:0 20px 8px;display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:rgba(0,229,160,.85)">
+    <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--mint);box-shadow:0 0 8px rgba(0,229,160,.6)"></span>
+    <span>Preview · 近日公開</span>
+  </div>
 
-  <!-- Plan detail cards — what you get at each tier and its monthly price. -->
-  <div class="plan-detail-list" style="padding:4px 20px 10px;display:flex;flex-direction:column;gap:10px">
+  <!-- Plan detail cards — pricing + features per the public deck.
+       The subscription flow itself is not live yet (cards are muted +
+       the "近日公開" pill above makes that explicit). -->
+  <div class="plan-detail-list" style="padding:4px 20px 10px;display:flex;flex-direction:column;gap:10px;opacity:.88">
     <!-- FREE -->
     <div class="plan-detail" data-plan-detail="free" style="padding:16px 18px;border-radius:14px;background:rgba(255,255,255,.03);border:0.5px solid rgba(237,235,230,.08)">
       <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px">
@@ -810,44 +818,54 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
         <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:15px;color:rgba(237,235,230,.85)">¥0<span style="font-size:9px;font-weight:400;color:rgba(237,235,230,.4);margin-left:2px">/月</span></div>
       </div>
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:10.5px;color:rgba(237,235,230,.62);letter-spacing:.02em;line-height:1.6">
-        <li>・投稿: ARTICLE / EVENT / WORKSHOP / EXHIBITION</li>
-        <li>・予約: 月2件まで</li>
-        <li>・EXPASS 手数料: 15%（Stripe 3.5% 別）</li>
+        <li>・プロフィール・PASSカード販売</li>
+        <li>・収益ダッシュボード</li>
+        <li>・基本投稿 (音源5本・動画3本)</li>
       </ul>
     </div>
 
-    <!-- PRO -->
-    <div class="plan-detail" data-plan-detail="pro" style="padding:16px 18px;border-radius:14px;background:rgba(245,200,66,.05);border:0.5px solid rgba(245,200,66,.28)">
+    <!-- STANDARD -->
+    <div class="plan-detail" data-plan-detail="standard" style="padding:16px 18px;border-radius:14px;background:rgba(245,200,66,.05);border:0.5px solid rgba(245,200,66,.28)">
       <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px">
         <div style="display:flex;align-items:baseline;gap:8px">
-          <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:14px;color:var(--gold);letter-spacing:.06em">PRO</div>
+          <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:14px;color:var(--gold);letter-spacing:.06em">STANDARD</div>
           <div style="font-family:'IBM Plex Mono',monospace;font-size:7.5px;letter-spacing:.22em;text-transform:uppercase;color:rgba(245,200,66,.65)">Recommended</div>
         </div>
         <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:15px;color:var(--gold)">¥980<span style="font-size:9px;font-weight:400;color:rgba(245,200,66,.5);margin-left:2px">/月</span></div>
       </div>
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:10.5px;color:rgba(237,235,230,.72);letter-spacing:.02em;line-height:1.6">
         <li>・FREE の全機能</li>
-        <li>・予約: 無制限</li>
-        <li>・Pulse メンバーシップの受付（月額）</li>
-        <li>・EXPASS 手数料: 10%（Stripe 3.5% 別）</li>
-        <li>・先行アーティスト100名は 0%（1年間）</li>
+        <li>・音源 無制限</li>
+        <li>・動画 HD</li>
+        <li>・SCREEN 掲載</li>
+        <li>・分析データ 基本版</li>
       </ul>
     </div>
 
-    <!-- BIZ -->
-    <div class="plan-detail" data-plan-detail="biz" style="padding:16px 18px;border-radius:14px;background:rgba(0,229,160,.05);border:0.5px solid rgba(0,229,160,.28)">
+    <!-- PRO -->
+    <div class="plan-detail" data-plan-detail="pro" style="padding:16px 18px;border-radius:14px;background:rgba(0,229,160,.05);border:0.5px solid rgba(0,229,160,.28)">
       <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px">
-        <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:14px;color:var(--mint);letter-spacing:.06em">BIZ</div>
-        <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:15px;color:var(--mint)">¥2,980<span style="font-size:9px;font-weight:400;color:rgba(0,229,160,.5);margin-left:2px">/月</span></div>
+        <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:14px;color:var(--mint);letter-spacing:.06em">PRO</div>
+        <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:15px;color:var(--mint)">¥2,480<span style="font-size:9px;font-weight:400;color:rgba(0,229,160,.5);margin-left:2px">/月</span></div>
       </div>
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:10.5px;color:rgba(237,235,230,.72);letter-spacing:.02em;line-height:1.6">
-        <li>・PRO の全機能</li>
-        <li>・Pulse+ メンバーシップの受付（高額）</li>
-        <li>・複数アカウント管理・チーム権限</li>
-        <li>・EXPASS 手数料: 8%（Stripe 3.5% 別）</li>
-        <li>・優先サポート・カスタムブランディング</li>
+        <li>・STANDARD の全機能</li>
+        <li>・4K 動画</li>
+        <li>・無制限ストレージ</li>
+        <li>・AI 機能フル</li>
+        <li>・詳細分析</li>
+        <li>・優先サポート</li>
       </ul>
     </div>
+  </div>
+
+  <!-- Fee model — flat row so the 0% story on Props/Pulse reads clearly. -->
+  <div style="padding:6px 20px 10px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;color:rgba(237,235,230,.5);line-height:1.8">
+    <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:8px;letter-spacing:.28em;text-transform:uppercase;color:rgba(237,235,230,.32);margin-bottom:6px">EXPASS 手数料</div>
+    <div>物販・デジタル音源・Props・Pulse：<b style="color:var(--mint)">0%</b></div>
+    <div>PASS チケット（NFC/QR）：<b style="color:rgba(237,235,230,.85)">8%</b></div>
+    <div>NFT 作品：<b style="color:rgba(237,235,230,.85)">12%</b></div>
+    <div style="margin-top:4px;color:rgba(237,235,230,.35);font-size:9.5px">※ Stripe 決済手数料 3.6% は別途（全プラン共通）</div>
   </div>
 
   <div style="padding:4px 20px 26px">
