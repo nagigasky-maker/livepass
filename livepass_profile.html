@@ -64,16 +64,16 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
    ───────────────────────────────────────────── */
 .topbar{
   position:fixed;top:0;left:0;right:0;z-index:100;
-  padding:calc(var(--safe-top) + 4px) 18px 8px;
-  display:flex;align-items:center;gap:14px;
+  padding:calc(var(--safe-top) + 4px) 12px 8px;
+  display:flex;align-items:center;gap:4px;
   background:linear-gradient(to bottom,rgba(0,0,0,.95) 70%,transparent);
 }
 .tb-brand{display:flex;align-items:center;margin-right:auto;height:22px;flex-shrink:0}
 .tb-brand img{height:100%;width:auto;display:block;image-rendering:-webkit-optimize-contrast}
 .tb-icon{
   background:none;border:none;cursor:pointer;position:relative;
-  width:26px;height:26px;display:flex;align-items:center;justify-content:center;
-  color:var(--white);
+  width:38px;height:38px;display:flex;align-items:center;justify-content:center;
+  color:var(--white);margin-left:2px;
 }
 .tb-icon svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
 .tb-icon .badge{
@@ -2001,7 +2001,7 @@ body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;c
 
   <!-- Messages (paper plane) -->
   <a class="tb-icon" id="tbMessages" href="/messages" aria-label="Messages" title="メッセージ">
-    <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13" stroke-linecap="round"/><polygon points="22,2 15,22 11,13 2,9" stroke-linejoin="round"/></svg>
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21.854 2.147 10.61 13.39"/><path d="M21.854 2.147 14.802 22.335 10.61 13.39 1.665 9.199z"/></svg>
     <span class="badge" id="msgBadge">0</span>
   </a>
 
