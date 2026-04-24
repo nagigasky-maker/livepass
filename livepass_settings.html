@@ -13,6 +13,7 @@
 <style>html.tier-user .bn-btn[aria-label="Lab"],html.tier-user .bn-btn[aria-label="Atelier"]{display:none!important}</style>
 <script src="/livepass_paywall.js" defer></script>
 <script src="/livepass_categories.js" defer></script>
+<script src="/livepass_cropper.js" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -218,6 +219,12 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   border:1.5px solid rgba(237,235,230,.15);
 }
 .photo-row .pr-av img{width:100%;height:100%;object-fit:cover}
+.photo-row .pr-cover-prev{
+  width:72px;height:45px;border-radius:6px;overflow:hidden;flex-shrink:0;
+  background:linear-gradient(135deg,#1a2030,#0a1020);
+  border:0.5px solid rgba(237,235,230,.15);
+}
+.photo-row .pr-cover-prev img{width:100%;height:100%;object-fit:cover;display:block}
 .photo-row .pr-label{
   flex:1;font-family:Arial,'Noto Sans JP',sans-serif;
   font-weight:500;font-size:13px;color:var(--white);
@@ -618,6 +625,14 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
     <input id="avatarUpload" type="file" accept="image/*,video/mp4,video/webm">
   </div>
 
+  <!-- Cover photo upload (goes in the banner of your profile) -->
+  <div class="photo-row">
+    <div class="pr-cover-prev" id="coverPreview"></div>
+    <div class="pr-label">カバー画像</div>
+    <label class="upload" for="coverUpload">変更</label>
+    <input id="coverUpload" type="file" accept="image/*">
+  </div>
+
   <div class="field-row">
     <div class="field-icon teal">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>
@@ -973,24 +988,138 @@ document.getElementById('avatarUpload').addEventListener('change', async (e) => 
     return;
   }
 
-  // Image path (unchanged)
-  const reader = new FileReader();
-  reader.onload = async (ev) => {
-    const dataUrl = ev.target.result;
-    try { localStorage.setItem(AVATAR_KEY, dataUrl); }
-    catch(err) {
-      alert('画像が大きすぎます。2MB以下にしてください。');
-      return;
-    }
-    localStorage.setItem(AVATAR_TYPE_KEY, 'image');
-    // Drop any stale looping-avatar blob so the profile renders the
-    // new still image instead of the previous video.
-    try { await AvatarDB.delete('avatar_blob'); } catch(_){}
-    renderAvatar(dataUrl, 'image');
-    if (navigator.vibrate) navigator.vibrate(12);
-  };
-  reader.readAsDataURL(file);
+  // Image path — open crop modal, then store + upload the cropped JPEG.
+  if (!window.LivepassCropper) {
+    alert('クロップエディタの読み込みに失敗しました。ページを再読み込みしてください。');
+    e.target.value = '';
+    return;
+  }
+  let cropped;
+  try {
+    cropped = await window.LivepassCropper.open({
+      file,
+      aspectRatio:  1,
+      outputWidth:  512,
+      outputHeight: 512,
+      quality:      0.88,
+      title:        'アバターをトリミング',
+      circle:       true,
+    });
+  } catch(err) {
+    // Cancelled or failed — reset the input so picking the same file
+    // again still fires change.
+    e.target.value = '';
+    return;
+  }
+  try { localStorage.setItem(AVATAR_KEY, cropped.dataUrl); }
+  catch(err) {
+    alert('画像が大きすぎます。サイズを下げてもう一度お試しください。');
+    e.target.value = '';
+    return;
+  }
+  localStorage.setItem(AVATAR_TYPE_KEY, 'image');
+  // Drop any stale looping-avatar blob so the profile renders the
+  // new still image instead of the previous video.
+  try { await AvatarDB.delete('avatar_blob'); } catch(_){}
+  renderAvatar(cropped.dataUrl, 'image');
+  // Push the cropped avatar to Firebase Storage so other users see
+  // it too. Fire-and-forget — local render already happened.
+  uploadProfileImage('avatars', cropped.blob, 'avatarUrl')
+    .catch(err => console.warn('avatar upload failed:', err && err.code, err && err.message));
+  if (navigator.vibrate) navigator.vibrate(12);
+  e.target.value = '';
 });
+
+/* ─── Cover upload ──────────────────────────────────────
+   Opens the crop modal at 16:10 (cinematic banner), pushes the
+   cropped JPEG to Firebase Storage → covers/{uid}.jpg, and writes
+   the download URL to users/{uid}.coverUrl so other viewers get
+   the banner too. The data URL is also cached in localStorage for
+   instant render on the owner's own profile. */
+const COVER_URL_KEY = 'livepass_cover_url';
+
+function renderCoverPreview(dataUrl){
+  const el = document.getElementById('coverPreview');
+  if (!el) return;
+  if (dataUrl) el.innerHTML = `<img src="${dataUrl}" alt="cover">`;
+  else el.innerHTML = '';
+}
+
+// Hydrate the preview on load from whatever we have cached.
+try { renderCoverPreview(localStorage.getItem(COVER_URL_KEY)); } catch(_){}
+// Refresh from Firestore once auth resolves (may be newer than local).
+window.addEventListener('fb-auth-ready', async ({ detail }) => {
+  if (!detail.user || !window.FB) return;
+  try {
+    const snap = await window.FB.getDoc(window.FB.doc(window.FB.db, 'users', detail.user.uid));
+    if (!snap.exists()) return;
+    const url = snap.data().coverUrl;
+    if (url) {
+      try { localStorage.setItem(COVER_URL_KEY, url); } catch(_){}
+      renderCoverPreview(url);
+    }
+  } catch(_){}
+});
+
+document.getElementById('coverUpload').addEventListener('change', async (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  if (!window.LivepassCropper) {
+    alert('クロップエディタの読み込みに失敗しました。ページを再読み込みしてください。');
+    e.target.value = '';
+    return;
+  }
+  let cropped;
+  try {
+    cropped = await window.LivepassCropper.open({
+      file,
+      aspectRatio:  16/10,
+      outputWidth:  1600,
+      outputHeight: 1000,
+      quality:      0.84,
+      title:        'カバー画像をトリミング',
+      circle:       false,
+    });
+  } catch(err) {
+    e.target.value = '';
+    return;
+  }
+  // Local preview first so the user sees something instantly even
+  // while the Storage upload is still in flight.
+  renderCoverPreview(cropped.dataUrl);
+  try { localStorage.setItem(COVER_URL_KEY, cropped.dataUrl); } catch(_){}
+  try {
+    const url = await uploadProfileImage('covers', cropped.blob, 'coverUrl');
+    if (url) {
+      try { localStorage.setItem(COVER_URL_KEY, url); } catch(_){}
+      renderCoverPreview(url);
+    }
+  } catch(err) {
+    console.warn('cover upload failed:', err && err.code, err && err.message);
+    alert('カバー画像のアップロードに失敗しました。しばらく経ってから再度お試しください。');
+  }
+  if (navigator.vibrate) navigator.vibrate(12);
+  e.target.value = '';
+});
+
+/* Shared: push a JPEG Blob to Firebase Storage, then mirror the
+   returned download URL onto the user's Firestore doc under the
+   given field. Returns the URL. */
+async function uploadProfileImage(bucket, blob, fieldName){
+  if (!window.FB || !window.FB.currentUser) {
+    console.warn('uploadProfileImage: not signed in');
+    return null;
+  }
+  const { storage, storageRef, uploadBytes, getDownloadURL,
+          doc, updateDoc, db } = window.FB;
+  const uid = window.FB.currentUser.uid;
+  const path = `${bucket}/${uid}.jpg`;
+  const ref  = storageRef(storage, path);
+  await uploadBytes(ref, blob, { contentType: 'image/jpeg' });
+  const url = await getDownloadURL(ref);
+  await updateDoc(doc(db, 'users', uid), { [fieldName]: url });
+  return url;
+}
 
 /* Plan selection — writes to localStorage so profile can react */
 const PLAN_KEY = 'livepass_plan';

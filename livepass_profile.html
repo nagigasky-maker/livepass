@@ -4289,8 +4289,9 @@ if (isOtherUser) {
   // Flip the page into other-user mode (enables .ph-cover, swaps subtabs, etc.)
   document.body.classList.add('other-user');
 
-  // Cover — gradient tint from mock.bgHue (hue only); cover image comes later
-  // when we have a real users/{uid}.coverUrl field.
+  // Cover — gradient tint from mock.bgHue as a fallback; if the user
+  // has uploaded a cover in Settings (users/{uid}.coverUrl) we'll swap
+  // it in after we resolve their uid from the username claim below.
   const cover = document.getElementById('phCover');
   if (cover) {
     const hue = (mock.bgHue || '200,60,25').split(',')[0];
@@ -4301,6 +4302,51 @@ if (isOtherUser) {
     const hero = document.querySelector('.profile-hero');
     if (hero && !cover.contains(hero)) cover.appendChild(hero);
   }
+
+  // Resolve viewingUser → uid via usernames/, then hydrate the cover
+  // banner + avatar + role from that user's Firestore doc.
+  (function hydrateOtherUser(){
+    function go(){
+      if (!window.FB || !window.FB.db) return;
+      const { doc, getDoc, db } = window.FB;
+      const nameLower = String(viewingUser).toLowerCase();
+      (async () => {
+        let uid = null;
+        try {
+          const unsnap = await getDoc(doc(db, 'usernames', nameLower));
+          if (unsnap.exists()) uid = unsnap.data().uid || null;
+        } catch(err) {
+          console.warn('profile: usernames lookup failed:', err && err.code);
+        }
+        if (!uid) return;
+        try {
+          const usnap = await getDoc(doc(db, 'users', uid));
+          if (!usnap.exists()) return;
+          const data = usnap.data();
+          if (data.coverUrl && cover) {
+            cover.classList.add('has-img');
+            // URL-encode single quotes so a stray quote in the
+            // download URL can't break out of the CSS string.
+            const safe = String(data.coverUrl).replace(/'/g,"%27");
+            cover.style.setProperty('--cover-img', `url('${safe}')`);
+          }
+          if (data.avatarUrl) {
+            const inner = document.querySelector('#phAvatar .ph-avatar-inner');
+            if (inner) inner.innerHTML =
+              `<img src="${String(data.avatarUrl).replace(/"/g,'&quot;')}" alt="${viewingUser}">`;
+          }
+          if (data.role) {
+            const r = document.querySelector('.ph-role');
+            if (r) r.textContent = data.role;
+          }
+        } catch(err) {
+          console.warn('profile: user doc read failed:', err && err.code);
+        }
+      })();
+    }
+    if (window.FB && window.FB.authReady) go();
+    else window.addEventListener('fb-auth-ready', go, { once:true });
+  })();
 
   // Start on SCREEN tab (PASS is owner-only). Also set prof-view-screen so
   // the sub-sub-tab row hides EVENT / WORKSHOP / EXHIBITION by default;
