@@ -187,7 +187,23 @@ body.other-user .topbar{
   border-bottom:none !important;
 }
 body.other-user .topbar .tb-icon{color:#fff !important}
-body.other-user .topbar .tb-brand img{filter:invert(1) brightness(1.4)}
+body.other-user .topbar .tb-icon svg{stroke:#fff !important}
+/* PNG icons can't be recoloured via color, so flatten to white with a
+   brightness→invert filter chain. brightness(0) makes every pixel
+   black first, then invert(1) flips to pure white — regardless of
+   the source logo's colours. */
+body.other-user .topbar .tb-brand img{
+  filter:brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0,0,0,.45));
+}
+body.other-user .topbar .ph-heart-btn{
+  background:rgba(255,255,255,.12) !important;
+  border:0.5px solid rgba(255,255,255,.4) !important;
+  color:#fff !important;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+}
+body.other-user .topbar .ph-heart-btn img{
+  filter:brightness(0) invert(1);
+}
 
 /* Subtab visibility for other-user mode */
 .st-btn[data-sub="calendar"]{display:none}
