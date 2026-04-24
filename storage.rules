@@ -40,6 +40,31 @@ service firebase.storage {
     }
 
     // ── User avatars ──
+    //
+    // The Settings → profile photo upload writes a cropped JPEG here
+    // and the returned download URL lands on users/{uid}.avatarUrl in
+    // Firestore. Public read so feeds on other devices can load it;
+    // writes locked to the account owner.
+    match /avatars/{uid}.{ext} {
+      allow read: if true;
+      allow write: if isOwner(uid)
+                   && request.resource.contentType.matches('image/.*')
+                   && maxImage();
+    }
+
+    // ── Profile covers ──
+    // Same shape as avatars — Settings → cover image writes a cropped
+    // 16:10 JPEG here and the URL mirrors onto users/{uid}.coverUrl.
+    match /covers/{uid}.{ext} {
+      allow read: if true;
+      allow write: if isOwner(uid)
+                   && request.resource.contentType.matches('image/.*')
+                   && maxImage();
+    }
+
+    // ── Legacy avatar path (pre-refactor) ──
+    // Kept around so existing avatar URLs written to users/{uid}.avatar
+    // before the Storage split don't 404. New uploads go to /avatars.
     match /users/{uid}/avatar.{ext} {
       allow read: if true;
       allow write: if isOwner(uid)
