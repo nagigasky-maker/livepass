@@ -12,6 +12,7 @@
 <script>try{if(localStorage.getItem('livepass_tier')==='user')document.documentElement.classList.add('tier-user')}catch(e){}</script>
 <style>html.tier-user .bn-btn[aria-label="Lab"],html.tier-user .bn-btn[aria-label="Atelier"]{display:none!important}</style>
 <script src="/livepass_paywall.js" defer></script>
+<script src="/livepass_categories.js" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -227,6 +228,51 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   padding:6px 14px;border:0.5px solid var(--blue);border-radius:99px;
 }
 .photo-row input{display:none}
+
+/* ── Category toggles (PROFILE → show / hide ARTICLE / EVENT / …) ── */
+.cat-row{
+  display:flex;align-items:center;gap:14px;
+  padding:15px 20px;
+  border-bottom:0.5px solid rgba(255,255,255,.04);
+}
+.cat-row .cat-dot{
+  width:10px;height:10px;border-radius:50%;flex-shrink:0;
+  background:var(--green);
+  box-shadow:0 0 0 0.5px rgba(255,255,255,.15);
+}
+.cat-row[data-cat="event"] .cat-dot{background:var(--red)}
+.cat-row[data-cat="workshop"] .cat-dot{background:var(--gold)}
+.cat-row[data-cat="exhibition"] .cat-dot{background:var(--mint)}
+.cat-row .cat-label{
+  flex:1;min-width:0;
+  font-family:Arial,'Noto Sans JP',sans-serif;
+}
+.cat-row .cat-name{
+  font-weight:700;font-size:13px;color:var(--white);
+  letter-spacing:.04em;
+}
+.cat-row .cat-desc{
+  font-weight:400;font-size:10px;color:rgba(237,235,230,.45);
+  letter-spacing:.02em;margin-top:2px;
+}
+/* iOS-style switch */
+.sw{
+  position:relative;flex-shrink:0;
+  width:44px;height:26px;border-radius:99px;
+  background:rgba(255,255,255,.12);
+  border:0.5px solid rgba(255,255,255,.18);
+  cursor:pointer;transition:background .2s ease, border-color .2s ease;
+}
+.sw::after{
+  content:"";position:absolute;top:2px;left:2px;
+  width:20px;height:20px;border-radius:50%;
+  background:#fff;
+  transition:transform .22s cubic-bezier(.2,.8,.2,1);
+  box-shadow:0 2px 6px rgba(0,0,0,.35);
+}
+.sw input{position:absolute;opacity:0;width:100%;height:100%;cursor:pointer;margin:0}
+.sw.on{background:var(--blue);border-color:var(--blue)}
+.sw.on::after{transform:translateX(18px)}
 
 /* Compose selector bottom sheet (shared) */
 #composeSheetOverlay{position:fixed;inset:0;z-index:1100;background:rgba(0,0,0,0);pointer-events:none;opacity:0;transition:background .3s ease, opacity .2s ease}
@@ -691,6 +737,44 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
       style="margin-top:6px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:9px;letter-spacing:.04em;color:rgba(237,235,230,.35);line-height:1.7">
       ※ 匿名アカウントは予約・物販・プラン変更がご利用いただけません。なりすまし防止のため本人確認メールの認証をお願いしています。
     </div>
+  </div>
+
+  <!-- ═══ CATEGORIES ═══ -->
+  <div class="sec-label">PROFILE CATEGORIES</div>
+  <div style="padding:6px 20px 2px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;color:rgba(237,235,230,.42);letter-spacing:.02em;line-height:1.7">
+    プロフィールと＋ボタンに表示するカテゴリを選べます。OFFにしても既存の投稿は残ります。
+  </div>
+  <div class="cat-row" data-cat="article">
+    <div class="cat-dot"></div>
+    <div class="cat-label">
+      <div class="cat-name">ARTICLE</div>
+      <div class="cat-desc">記事 · 写真 · 縦長/正方形/横長</div>
+    </div>
+    <label class="sw"><input type="checkbox" data-cat="article" checked></label>
+  </div>
+  <div class="cat-row" data-cat="event">
+    <div class="cat-dot"></div>
+    <div class="cat-label">
+      <div class="cat-name">EVENT</div>
+      <div class="cat-desc">イベント · ライブ · パーティ</div>
+    </div>
+    <label class="sw"><input type="checkbox" data-cat="event" checked></label>
+  </div>
+  <div class="cat-row" data-cat="workshop">
+    <div class="cat-dot"></div>
+    <div class="cat-label">
+      <div class="cat-name">WORKSHOP</div>
+      <div class="cat-desc">ワークショップ · レッスン</div>
+    </div>
+    <label class="sw"><input type="checkbox" data-cat="workshop" checked></label>
+  </div>
+  <div class="cat-row" data-cat="exhibition">
+    <div class="cat-dot"></div>
+    <div class="cat-label">
+      <div class="cat-name">EXHIBITION</div>
+      <div class="cat-desc">展示 · アート · 写真</div>
+    </div>
+    <label class="sw"><input type="checkbox" data-cat="exhibition" checked></label>
   </div>
 
   <!-- ═══ SUBSCRIPTION ═══ -->
@@ -1185,6 +1269,108 @@ document.getElementById('signOutBtn')?.addEventListener('click', async () => {
   if (navigator.vibrate) navigator.vibrate([18, 40, 18]);
   location.replace('/login');
 });
+
+/* ─────────────────────────────────────────────
+   PROFILE CATEGORIES — per-account visibility toggles
+   ─────────────────────────────────────────────
+   The 4 top-level post types (ARTICLE / EVENT / WORKSHOP / EXHIBITION)
+   are each gated by a user-controlled toggle.
+   Written to:
+     · localStorage.livepass_visible_categories (JSON array)
+     · users/{uid}.visibleCategories (Firestore) — so other users
+       viewing this profile see the same restriction
+   Turning a category OFF hides it on the profile page AND removes
+   it from the + compose menu. Existing posts in that category are
+   NOT deleted — they come back when the toggle is re-enabled.
+   ───────────────────────────────────────────── */
+(function initCategoryToggles(){
+  const KEY = 'livepass_visible_categories';
+  const ALL = ['article','event','workshop','exhibition'];
+
+  function load(){
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return ALL.slice();
+      const arr = JSON.parse(raw);
+      return Array.isArray(arr) && arr.length ? arr.filter(c => ALL.includes(c)) : ALL.slice();
+    } catch(_){ return ALL.slice(); }
+  }
+
+  function paint(cats){
+    document.querySelectorAll('input[data-cat]').forEach(input => {
+      const on = cats.includes(input.dataset.cat);
+      input.checked = on;
+      input.closest('.sw')?.classList.toggle('on', on);
+    });
+  }
+
+  function save(cats){
+    try { localStorage.setItem(KEY, JSON.stringify(cats)); } catch(_){}
+    // Mirror to Firestore so other viewers see the same filter.
+    if (window.FB && window.FB.currentUser && window.FB.db) {
+      const { doc, updateDoc, db } = window.FB;
+      updateDoc(doc(db, 'users', window.FB.currentUser.uid), {
+        visibleCategories: cats
+      }).catch(err => console.warn('visibleCategories sync failed:', err && err.code, err && err.message));
+    }
+  }
+
+  // Initial paint from whatever's cached.
+  paint(load());
+
+  // After auth, pull the Firestore value (may differ from local if
+  // the user toggled on another device).
+  window.addEventListener('fb-auth-ready', async ({ detail }) => {
+    if (!detail.user || !window.FB) return;
+    try {
+      const snap = await window.FB.getDoc(window.FB.doc(window.FB.db, 'users', detail.user.uid));
+      if (!snap.exists()) return;
+      const remote = snap.data().visibleCategories;
+      if (Array.isArray(remote) && remote.length) {
+        const filtered = remote.filter(c => ALL.includes(c));
+        if (filtered.length) {
+          try { localStorage.setItem(KEY, JSON.stringify(filtered)); } catch(_){}
+          paint(filtered);
+        }
+      }
+    } catch(_){}
+  });
+
+  // Wire toggles
+  document.querySelectorAll('input[data-cat]').forEach(input => {
+    input.addEventListener('change', () => {
+      let cats = load();
+      const cat = input.dataset.cat;
+      if (input.checked) {
+        if (!cats.includes(cat)) cats.push(cat);
+      } else {
+        // Prevent turning everything off — keep at least one.
+        if (cats.length <= 1) {
+          input.checked = true;
+          input.closest('.sw')?.classList.add('on');
+          if (navigator.vibrate) navigator.vibrate([6, 40, 6]);
+          return;
+        }
+        cats = cats.filter(c => c !== cat);
+      }
+      // Preserve canonical order
+      cats = ALL.filter(c => cats.includes(c));
+      input.closest('.sw')?.classList.toggle('on', input.checked);
+      save(cats);
+      // Live-update the compose sheet on this page too
+      applyCategoriesToComposeSheet(cats);
+      if (navigator.vibrate) navigator.vibrate(8);
+    });
+  });
+
+  function applyCategoriesToComposeSheet(cats){
+    document.querySelectorAll('.cs-opt[data-type]').forEach(btn => {
+      const t = btn.dataset.type;
+      if (ALL.includes(t)) btn.style.display = cats.includes(t) ? '' : 'none';
+    });
+  }
+  applyCategoriesToComposeSheet(load());
+})();
 </script>
 
 <!-- ═══ COMPOSE SELECTOR BOTTOM SHEET (shared) ═══ -->

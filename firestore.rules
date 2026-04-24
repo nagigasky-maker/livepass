@@ -41,15 +41,15 @@ service cloud.firestore {
       allow read: if isSignedIn();                 // signed-in users can look up profiles
       allow create: if isOwner(uid)
                     && request.resource.data.keys().hasOnly([
-                         'name','email','plan','avatar','role','bio',
-                         'coverUrl','profession','tier',
+                         'name','email','plan','avatar','avatarUrl','role','bio',
+                         'coverUrl','profession','tier','visibleCategories',
                          'agreedTermsAt','createdAt','updatedAt'
                        ])
                     && (!('plan' in request.resource.data) || request.resource.data.plan == 'free');
       allow update: if isOwner(uid)
                     && request.resource.data.keys().hasOnly([
-                         'name','email','plan','avatar','role','bio',
-                         'coverUrl','profession','tier','cards',
+                         'name','email','plan','avatar','avatarUrl','role','bio',
+                         'coverUrl','profession','tier','cards','visibleCategories',
                          'planExpiresAt','planSource',
                          'agreedTermsAt','createdAt','updatedAt'
                        ])
