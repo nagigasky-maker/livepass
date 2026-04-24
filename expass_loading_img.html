@@ -257,7 +257,7 @@ function replayAll() {
 (function autoAdvance(){
   const qs = new URLSearchParams(location.search);
   if (qs.get('preview') === '1') return;       // designer preview, loop forever
-  const dest = qs.get('dest') || '/screen';
+  const dest = qs.get('dest') || '/collection';
   const delay = 5200;                           // slightly past the progress fill
   setTimeout(() => {
     try { sessionStorage.setItem('livepass_splash_shown', '1'); } catch(_){}
