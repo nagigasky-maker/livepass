@@ -151,8 +151,21 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
   var(--cover-img);
   background-size:cover;background-position:center;
 }
-body.other-user .ph-cover{display:block}
-body.other-user .profile-hero{margin-top:-28px;position:relative;z-index:1}
+/* ─── Other-user: cinematic cover with avatar + name INSIDE it ─── */
+body.other-user .ph-cover{
+  display:block;
+  /* Tall editorial banner — avatar + name overlay the lower third. */
+  height:clamp(280px, 46vh, 380px) !important;
+  /* Stronger bottom fade so name/role stay legible on any cover image. */
+  background:
+    linear-gradient(180deg,rgba(0,0,0,0) 38%,rgba(0,0,0,.82) 100%),
+    linear-gradient(135deg,hsla(var(--cover-hue,200),60%,28%,1),hsla(var(--cover-hue,200),40%,8%,1));
+}
+body.other-user .ph-cover.has-img{
+  background-image:
+    linear-gradient(180deg,rgba(0,0,0,0) 38%,rgba(0,0,0,.82) 100%),
+    var(--cover-img);
+}
 
 /* Subtab visibility for other-user mode */
 .st-btn[data-sub="calendar"]{display:none}
@@ -170,23 +183,82 @@ body.other-user #panel-saved{display:none !important}
    see the artist-subscription entry point. */
 body.other-user .topbar a[href="/settings"]{display:none !important}
 
-/* Override the own-profile centered-avatar layout for other-user:
-   go back to avatar-left / name+role-center / actions-right row. */
+/* Lift the profile hero UP so it sits inside the cover's lower third.
+   The negative margin-top is tuned to leave roughly 24px of cover
+   above the avatar's top edge on mobile. */
 body.other-user .profile-hero{
+  position:relative;z-index:2;
+  margin-top:calc(-1 * clamp(120px, 20vh, 160px)) !important;
+  padding:0 clamp(16px,5vw,22px) clamp(18px,5vw,24px) !important;
   flex-direction:row !important;
-  gap:12px !important;
-  padding:14px 18px 12px !important;
-  align-items:center !important;
+  gap:14px !important;
+  align-items:flex-end !important;
   text-align:left !important;
 }
-body.other-user .ph-avatar{width:64px !important;height:64px !important}
-body.other-user .ph-name-block{
-  flex:1 1 0 !important;gap:4px !important;
-  align-items:flex-start !important;text-align:left !important;
+body.other-user .ph-avatar{
+  width:clamp(84px,22vw,108px) !important;
+  height:clamp(84px,22vw,108px) !important;
 }
-body.other-user .ph-name{font-size:17px !important;letter-spacing:0 !important;font-weight:900 !important}
-body.other-user .ph-role{font-size:10px !important;letter-spacing:.2em !important}
-body.other-user .ph-actions{display:flex !important;gap:8px !important;align-items:center !important;flex-shrink:0 !important}
+body.other-user .ph-avatar-inner{
+  border:2px solid rgba(255,255,255,.9) !important;
+  box-shadow:0 6px 24px rgba(0,0,0,.45);
+}
+body.other-user .ph-name-block{
+  flex:1 1 0 !important;gap:6px !important;
+  align-items:flex-start !important;text-align:left !important;
+  padding-bottom:4px;
+}
+body.other-user .ph-name{
+  font-family:'Helvetica Neue','Arial Narrow',Arial,'Noto Sans JP',sans-serif !important;
+  font-size:clamp(24px,6.8vw,32px) !important;
+  font-weight:800 !important;
+  letter-spacing:-.01em !important;
+  text-transform:uppercase;
+  color:#fff !important;
+  line-height:1 !important;
+  text-shadow:0 2px 18px rgba(0,0,0,.55), 0 1px 2px rgba(0,0,0,.4);
+  white-space:normal !important;
+}
+body.other-user .ph-role{
+  font-family:'IBM Plex Mono',ui-monospace,monospace !important;
+  font-size:10px !important;
+  font-weight:400 !important;
+  letter-spacing:.28em !important;
+  color:rgba(255,255,255,.78) !important;
+  text-transform:uppercase;
+  text-shadow:0 1px 8px rgba(0,0,0,.6);
+}
+body.other-user .ph-role::before{content:"— ";opacity:.6}
+body.other-user .ph-actions{
+  display:flex !important;gap:10px !important;
+  align-items:center !important;flex-shrink:0 !important;
+  padding-bottom:6px;
+}
+/* Glass follow / DM buttons — visible on any cover */
+body.other-user .ph-follow-btn{
+  background:rgba(255,255,255,.14) !important;
+  border:0.5px solid rgba(255,255,255,.55) !important;
+  color:#fff !important;
+  backdrop-filter:blur(14px) saturate(1.2);
+  -webkit-backdrop-filter:blur(14px) saturate(1.2);
+  font-family:'IBM Plex Mono',ui-monospace,monospace !important;
+  font-size:10px !important;font-weight:500 !important;
+  letter-spacing:.2em !important;text-transform:uppercase;
+  padding:9px 16px !important;
+}
+body.other-user .ph-follow-btn.following{
+  background:#fff !important;color:#0A0A0A !important;border-color:#fff !important;
+}
+body.other-user .ph-dm-btn{
+  width:40px !important;height:40px !important;
+  border-radius:50%;
+  background:rgba(255,255,255,.14);
+  border:0.5px solid rgba(255,255,255,.55);
+  backdrop-filter:blur(14px) saturate(1.2);
+  -webkit-backdrop-filter:blur(14px) saturate(1.2);
+  color:#fff !important;
+}
+body.other-user .ph-dm-btn svg{width:18px;height:18px;stroke:#fff}
 
 /* Other-user: split SCREEN vs CALENDAR within the shared #panel-screen.
    SCREEN  = only ARTICLE (articles / posts)
