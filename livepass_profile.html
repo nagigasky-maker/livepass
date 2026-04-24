@@ -28,6 +28,7 @@
 <script>try{if(localStorage.getItem('livepass_tier')==='user')document.documentElement.classList.add('tier-user')}catch(e){}</script>
 <style>html.tier-user .bn-btn[aria-label="Lab"],html.tier-user .bn-btn[aria-label="Atelier"]{display:none!important}</style>
 <script src="/livepass_paywall.js" defer></script>
+<script src="/livepass_categories.js" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
 /* ─────────────────────────────────────────────
@@ -4470,6 +4471,58 @@ if (!isOtherUser) {
 </script>
 
 <div id="__v">v66</div>
+<script>
+/* ─── Profile category visibility ───────────────────────
+   Own profile: apply from localStorage (written by /settings).
+   Other profile (?user=NAME): look up the target's uid via
+   usernames/{nameLower} → fetch users/{uid}.visibleCategories →
+   apply to the sub-sub-tabs and to the compose sheet. Falls back
+   to showing all 4 tabs if the remote value is missing. */
+(function applyProfileCategories(){
+  function run(){
+    if (!window.LivepassCategories) return;
+    const L  = window.LivepassCategories;
+    const qs = new URLSearchParams(location.search);
+    const viewing = qs.get('user');
+    const me = (localStorage.getItem('livepass_account_name') || 'NOBBY').toUpperCase();
+    const isOther = viewing && viewing.toUpperCase() !== me;
+    if (!isOther) {
+      L.applyToTabs(L.load());
+      L.applyToCompose(L.load());
+      return;
+    }
+    // Other-user: wait for auth, then resolve name → uid → doc.
+    function fetchRemote(){
+      if (!window.FB || !window.FB.db) { L.applyToTabs(L.ALL.slice()); return; }
+      const { doc, getDoc, db } = window.FB;
+      const nameLower = viewing.toLowerCase();
+      (async () => {
+        try {
+          let uid = null;
+          try {
+            const unsnap = await getDoc(doc(db, 'usernames', nameLower));
+            if (unsnap.exists()) uid = unsnap.data().uid || null;
+          } catch(_){}
+          if (!uid) { L.applyToTabs(L.ALL.slice()); return; }
+          const usnap = await getDoc(doc(db, 'users', uid));
+          const cats = (usnap.exists() && Array.isArray(usnap.data().visibleCategories))
+            ? usnap.data().visibleCategories.filter(c => L.ALL.includes(c))
+            : L.ALL.slice();
+          L.applyToTabs(cats.length ? cats : L.ALL.slice());
+        } catch(err) {
+          console.warn('profile cats: remote lookup failed:', err && err.code, err && err.message);
+          L.applyToTabs(L.ALL.slice());
+        }
+      })();
+    }
+    if (window.FB && window.FB.authReady) fetchRemote();
+    else window.addEventListener('fb-auth-ready', fetchRemote, { once:true });
+  }
+  if (window.LivepassCategories) run();
+  else window.addEventListener('DOMContentLoaded', run);
+})();
+</script>
+
 <script>
 /* ─── Avatar sync: replace bottom-nav initial with uploaded profile photo ─── */
 (function syncBnAvatar(){
