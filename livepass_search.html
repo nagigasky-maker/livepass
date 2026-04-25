@@ -606,6 +606,13 @@ body.disc-followers .disc-followers{display:block}
 
 .content{padding-top:0 !important}
 
+/* Per the magazine spec the page starts directly under the system
+   status bar — the EXPASS chrome topbar (logo + ✉️ + 🔍 + +) is not
+   shown on /search. Compose stays reachable from /screen and
+   /collection where + still lives. */
+.topbar{display:none !important}
+.bottomnav{background:rgba(255,255,255,.97) !important;border-top:0.5px solid var(--s-fg-5) !important}
+
 /* ── Header ───────────────────────────────────── */
 .s-header{
   padding:calc(var(--safe-top,0px) + 18px) 18px 6px;
