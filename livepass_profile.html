@@ -355,11 +355,76 @@ body.other-user.prof-view-calendar .sst-btn[data-tab="article"]{display:none !im
   padding:6px 12px;border-radius:99px;letter-spacing:.02em;
   white-space:nowrap;
 }
-.ph-dm-btn{
+.ph-dm-btn,
+.ph-curator-btn{
   width:30px;height:30px;display:flex;align-items:center;justify-content:center;
-  color:var(--blue);
+  color:var(--blue);background:none;border:0;cursor:pointer;
 }
-.ph-dm-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
+.ph-dm-btn svg,
+.ph-curator-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
+.ph-curator-btn{color:var(--mint)}
+.ph-curator-btn:active{transform:scale(.92)}
+
+/* ── AI Curator chat overlay ─────────────────────────
+   Bottom-sheet (mobile) / centered card (desktop). The artist
+   profile is sent to /api/curator each turn so the model only
+   answers from registered fields — never speculation. */
+#curatorOverlay{position:fixed;inset:0;z-index:2200;background:rgba(0,0,0,0);
+  pointer-events:none;opacity:0;display:flex;align-items:flex-end;
+  transition:background .3s ease, opacity .2s ease}
+#curatorOverlay.open{background:rgba(0,0,0,.74);pointer-events:all;opacity:1;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#curatorSheet{position:relative;width:100%;
+  background:#0a0a0a;color:var(--white);
+  border-top:0.5px solid rgba(237,235,230,.08);
+  border-top-left-radius:18px;border-top-right-radius:18px;
+  padding:20px 20px calc(24px + var(--safe-bot,0px));
+  transform:translateY(100%);
+  transition:transform .35s cubic-bezier(.2,.8,.2,1);
+  box-shadow:0 -12px 40px rgba(0,0,0,.7);
+  max-height:88vh;display:flex;flex-direction:column}
+#curatorOverlay.open #curatorSheet{transform:translateY(0)}
+.cur-handle{width:40px;height:4px;border-radius:99px;background:rgba(237,235,230,.18);margin:0 auto 16px}
+.cur-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.cur-icon{width:28px;height:28px;border-radius:50%;background:rgba(0,229,160,.14);
+  display:flex;align-items:center;justify-content:center;color:var(--mint);flex-shrink:0}
+.cur-icon svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8}
+.cur-title{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;
+  letter-spacing:.28em;text-transform:uppercase;color:rgba(0,229,160,.85)}
+.cur-sub{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
+  font-size:14px;color:var(--white);margin-top:2px}
+.cur-stream{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;padding:8px 4px 12px;display:flex;flex-direction:column;gap:14px}
+.cur-stream::-webkit-scrollbar{display:none}
+.cur-msg{font-family:Arial,'Noto Sans JP',sans-serif;font-size:13px;line-height:1.85;letter-spacing:.02em}
+.cur-msg.you{align-self:flex-end;max-width:82%;padding:10px 14px;border-radius:14px;
+  background:rgba(255,255,255,.06);color:rgba(237,235,230,.92)}
+.cur-msg.ai{color:rgba(237,235,230,.88);white-space:pre-wrap}
+.cur-msg.ai .cur-cursor{display:inline-block;width:.55em;height:1em;vertical-align:text-bottom;
+  background:var(--mint);box-shadow:0 0 6px rgba(0,229,160,.5);
+  animation:curBlink 1s steps(2) infinite;margin-left:2px}
+@keyframes curBlink{50%{opacity:0}}
+.cur-quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.cur-quick button{padding:8px 12px;border-radius:99px;
+  background:rgba(255,255,255,.04);border:0.5px solid rgba(237,235,230,.18);
+  color:rgba(237,235,230,.78);font-family:Arial,'Noto Sans JP',sans-serif;
+  font-size:10.5px;letter-spacing:.04em;cursor:pointer}
+.cur-quick button:active{background:rgba(255,255,255,.08)}
+.cur-input-row{display:flex;gap:8px;align-items:center;margin-top:12px;
+  border-top:0.5px solid rgba(237,235,230,.08);padding-top:12px}
+.cur-input{flex:1;background:rgba(255,255,255,.04);
+  border:0.5px solid rgba(237,235,230,.12);border-radius:99px;
+  padding:11px 16px;color:var(--white);font-family:Arial,'Noto Sans JP',sans-serif;
+  font-size:13px;outline:none}
+.cur-input::placeholder{color:rgba(237,235,230,.32)}
+.cur-send{width:38px;height:38px;border-radius:50%;
+  background:var(--mint);color:#000;border:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.cur-send:disabled{background:rgba(0,229,160,.25);color:rgba(0,0,0,.4)}
+.cur-send svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
+.cur-close{position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:50%;
+  background:rgba(255,255,255,.06);color:rgba(237,235,230,.6);border:0;
+  display:flex;align-items:center;justify-content:center;cursor:pointer}
+.cur-close svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
 
 /* Sub-tab icon row */
 .subtabs{
@@ -2043,11 +2108,14 @@ body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;c
       <div class="ph-name"></div>
       <div class="ph-role"></div>
     </div>
-    <!-- Follow / DM only shown when viewing another user's profile via ?user= -->
+    <!-- Follow / DM / Ask AI — only shown when viewing another user's profile via ?user= -->
     <div class="ph-actions" id="phActions" style="display:none">
       <button class="ph-follow-btn" id="phFollowBtn" style="display:none">フォロー</button>
+      <button class="ph-curator-btn" id="phCuratorBtn" aria-label="AIに聞く" title="AIに聞く" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v3"/><circle cx="12" cy="12" r="6"/><path d="M9 11h.01"/><path d="M15 11h.01"/><path d="M9 15c1 1 4 1 6 0"/><path d="M5 14h-1"/><path d="M20 14h-1"/></svg>
+      </button>
       <button class="ph-dm-btn" id="phDmBtn" aria-label="Messages">
-        <svg viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><polyline points="3,7 12,13 21,7"/></svg>
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21.854 2.147 10.61 13.39"/><path d="M21.854 2.147 14.802 22.335 10.61 13.39 1.665 9.199z"/></svg>
       </button>
     </div>
   </div>
@@ -2294,6 +2362,32 @@ body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;c
     <div class="org-sub"   id="orgSub">—</div>
     <div class="org-list"  id="orgList"></div>
     <button class="org-close" id="orgClose" type="button">閉じる</button>
+  </div>
+</div>
+
+<!-- ═══ AI CURATOR OVERLAY ═══ -->
+<div id="curatorOverlay" aria-hidden="true">
+  <div id="curatorSheet" role="dialog" aria-label="AI キュレーターに聞く">
+    <div class="cur-handle"></div>
+    <button class="cur-close" id="curClose" type="button" aria-label="閉じる">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+    </button>
+    <div class="cur-head">
+      <div class="cur-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v3"/><circle cx="12" cy="12" r="6"/><path d="M9 11h.01"/><path d="M15 11h.01"/><path d="M9 15c1 1 4 1 6 0"/></svg>
+      </div>
+      <div>
+        <div class="cur-title">EXPASS Curator</div>
+        <div class="cur-sub" id="curArtistName">—</div>
+      </div>
+    </div>
+    <div class="cur-stream" id="curStream"></div>
+    <div class="cur-input-row">
+      <input class="cur-input" id="curInput" type="text" placeholder="このアーティストについて質問する…" maxlength="240" autocomplete="off">
+      <button class="cur-send" id="curSend" type="button" aria-label="送信">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21.854 2.147 10.61 13.39"/><path d="M21.854 2.147 14.802 22.335 10.61 13.39 1.665 9.199z"/></svg>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -4327,6 +4421,8 @@ if (isOtherUser) {
 
   // Resolve viewingUser → uid via usernames/, then hydrate the cover
   // banner + avatar + role from that user's Firestore doc.
+  // Also stash the full artist snapshot on window.__expassArtist so the
+  // curator chat (below) can ground its answers in registered fields.
   (function hydrateOtherUser(){
     function go(){
       if (!window.FB || !window.FB.db) return;
@@ -4340,11 +4436,31 @@ if (isOtherUser) {
         } catch(err) {
           console.warn('profile: usernames lookup failed:', err && err.code);
         }
-        if (!uid) return;
+        if (!uid) {
+          window.__expassArtist = { name: viewingUser };
+          return;
+        }
         try {
           const usnap = await getDoc(doc(db, 'users', uid));
-          if (!usnap.exists()) return;
+          if (!usnap.exists()) {
+            window.__expassArtist = { name: viewingUser };
+            return;
+          }
           const data = usnap.data();
+          // Snapshot the AI-curator-relevant fields. Avoid private
+          // keys like email / cards / plan that the curator should
+          // never see.
+          window.__expassArtist = {
+            name:         data.name || viewingUser,
+            role:         data.role || '',
+            disciplines:  Array.isArray(data.disciplines)  ? data.disciplines  : [],
+            style:        Array.isArray(data.style)        ? data.style        : [],
+            region:       data.region || '',
+            era:          data.era || '',
+            bio:          data.bio || '',
+            achievements: Array.isArray(data.achievements) ? data.achievements : [],
+            socialLinks:  Array.isArray(data.socialLinks)  ? data.socialLinks  : [],
+          };
           if (data.coverUrl && cover) {
             cover.classList.add('has-img');
             // URL-encode single quotes so a stray quote in the
@@ -4363,6 +4479,7 @@ if (isOtherUser) {
           }
         } catch(err) {
           console.warn('profile: user doc read failed:', err && err.code);
+          window.__expassArtist = { name: viewingUser };
         }
       })();
     }
@@ -4542,6 +4659,149 @@ if (!isOtherUser) {
 
 <div id="__v">v66</div>
 <script>
+/* ─── AI Curator chat (other-user profile) ───────────────
+   Uses /api/curator with the artist snapshot stashed on
+   window.__expassArtist by hydrateOtherUser above. The curator is
+   instructed to answer ONLY from registered fields, so empty BIOs
+   produce "本人未登録のため不明" rather than invented credits. */
+(function initCuratorChat(){
+  const overlay  = document.getElementById('curatorOverlay');
+  const stream   = document.getElementById('curStream');
+  const input    = document.getElementById('curInput');
+  const sendBtn  = document.getElementById('curSend');
+  const closeBtn = document.getElementById('curClose');
+  const nameEl   = document.getElementById('curArtistName');
+  const trigger  = document.getElementById('phCuratorBtn');
+  if (!overlay || !trigger) return;
+
+  const history = [];
+  let typing = false;
+
+  const QUICK_QUESTIONS = [
+    'この人はどんな活動・表現をしている？',
+    '主なジャンル / スタイルは？',
+    '主な実績を教えて',
+  ];
+
+  function escapeHTML(s){
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function open(){
+    const a = window.__expassArtist || { name: viewingUser };
+    nameEl.textContent = a.name || 'ARTIST';
+    if (!stream.children.length) {
+      // Render an opening line + quick-question chips.
+      const intro = document.createElement('div');
+      intro.className = 'cur-msg ai';
+      intro.innerHTML = escapeHTML(`${a.name || 'このアーティスト'}について、登録されている情報の範囲でお答えします。`);
+      stream.appendChild(intro);
+
+      const quick = document.createElement('div');
+      quick.className = 'cur-quick';
+      QUICK_QUESTIONS.forEach(q => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = q;
+        b.addEventListener('click', () => {
+          input.value = q;
+          submit();
+        });
+        quick.appendChild(b);
+      });
+      stream.appendChild(quick);
+    }
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden','false');
+    setTimeout(() => input.focus(), 350);
+  }
+
+  function close(){
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden','true');
+  }
+
+  function appendUser(text){
+    const el = document.createElement('div');
+    el.className = 'cur-msg you';
+    el.textContent = text;
+    stream.appendChild(el);
+    stream.scrollTop = stream.scrollHeight;
+  }
+
+  function appendAIShell(){
+    const el = document.createElement('div');
+    el.className = 'cur-msg ai';
+    el.innerHTML = '<span class="cur-text"></span><span class="cur-cursor"></span>';
+    stream.appendChild(el);
+    stream.scrollTop = stream.scrollHeight;
+    return el;
+  }
+
+  function typewriter(el, text){
+    return new Promise(resolve => {
+      typing = true;
+      const txtEl = el.querySelector('.cur-text');
+      let i = 0;
+      function step(){
+        if (i >= text.length) {
+          el.querySelector('.cur-cursor')?.remove();
+          typing = false;
+          resolve();
+          return;
+        }
+        txtEl.textContent += text[i++];
+        stream.scrollTop = stream.scrollHeight;
+        setTimeout(step, 14 + Math.random() * 18);
+      }
+      step();
+    });
+  }
+
+  async function submit(){
+    if (typing) return;
+    const q = (input.value || '').trim();
+    if (!q) return;
+    input.value = '';
+    sendBtn.disabled = true;
+
+    appendUser(q);
+    history.push({ role:'user', text:q });
+    const aiEl = appendAIShell();
+
+    try {
+      const r = await fetch('/api/curator', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          artist:   window.__expassArtist || { name: viewingUser },
+          question: q,
+          history,
+        }),
+      });
+      const data = await r.json();
+      const text = data.text || '（応答がありませんでした）';
+      await typewriter(aiEl, text);
+      history.push({ role:'assistant', text });
+    } catch(err) {
+      aiEl.querySelector('.cur-cursor')?.remove();
+      aiEl.querySelector('.cur-text').textContent =
+        '通信に失敗しました: ' + (err.message || 'unknown');
+    } finally {
+      sendBtn.disabled = false;
+    }
+  }
+
+  trigger.addEventListener('click', open);
+  closeBtn.addEventListener('click', close);
+  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+  sendBtn.addEventListener('click', submit);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit(); }
+  });
+})();
+
 /* ─── Profile category visibility ───────────────────────
    Own profile: apply from localStorage (written by /settings).
    Other profile (?user=NAME): look up the target's uid via
