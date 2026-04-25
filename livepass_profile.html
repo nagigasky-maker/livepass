@@ -362,8 +362,9 @@ body.other-user.prof-view-calendar .sst-btn[data-tab="article"]{display:none !im
 }
 .ph-dm-btn svg,
 .ph-curator-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
-.ph-curator-btn{color:var(--mint)}
-.ph-curator-btn:active{transform:scale(.92)}
+/* Mono icon, no tinted color — sparkle reads as AI cleanly. */
+.ph-curator-btn{color:rgba(237,235,230,.78)}
+.ph-curator-btn:active{transform:scale(.92);color:var(--white)}
 
 /* ── AI Curator chat overlay ─────────────────────────
    Bottom-sheet (mobile) / centered card (desktop). The artist
@@ -386,11 +387,13 @@ body.other-user.prof-view-calendar .sst-btn[data-tab="article"]{display:none !im
 #curatorOverlay.open #curatorSheet{transform:translateY(0)}
 .cur-handle{width:40px;height:4px;border-radius:99px;background:rgba(237,235,230,.18);margin:0 auto 16px}
 .cur-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-.cur-icon{width:28px;height:28px;border-radius:50%;background:rgba(0,229,160,.14);
-  display:flex;align-items:center;justify-content:center;color:var(--mint);flex-shrink:0}
-.cur-icon svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8}
+.cur-icon{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.06);
+  border:0.5px solid rgba(237,235,230,.18);
+  display:flex;align-items:center;justify-content:center;
+  color:rgba(237,235,230,.85);flex-shrink:0}
+.cur-icon svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.6}
 .cur-title{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;
-  letter-spacing:.28em;text-transform:uppercase;color:rgba(0,229,160,.85)}
+  letter-spacing:.28em;text-transform:uppercase;color:rgba(237,235,230,.55)}
 .cur-sub{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;
   font-size:14px;color:var(--white);margin-top:2px}
 .cur-stream{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
@@ -401,7 +404,7 @@ body.other-user.prof-view-calendar .sst-btn[data-tab="article"]{display:none !im
   background:rgba(255,255,255,.06);color:rgba(237,235,230,.92)}
 .cur-msg.ai{color:rgba(237,235,230,.88);white-space:pre-wrap}
 .cur-msg.ai .cur-cursor{display:inline-block;width:.55em;height:1em;vertical-align:text-bottom;
-  background:var(--mint);box-shadow:0 0 6px rgba(0,229,160,.5);
+  background:rgba(237,235,230,.85);
   animation:curBlink 1s steps(2) infinite;margin-left:2px}
 @keyframes curBlink{50%{opacity:0}}
 .cur-quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
@@ -418,8 +421,9 @@ body.other-user.prof-view-calendar .sst-btn[data-tab="article"]{display:none !im
   font-size:13px;outline:none}
 .cur-input::placeholder{color:rgba(237,235,230,.32)}
 .cur-send{width:38px;height:38px;border-radius:50%;
-  background:var(--mint);color:#000;border:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.cur-send:disabled{background:rgba(0,229,160,.25);color:rgba(0,0,0,.4)}
+  background:rgba(237,235,230,.92);color:#0A0A0A;border:0;
+  display:flex;align-items:center;justify-content:center;cursor:pointer}
+.cur-send:disabled{background:rgba(237,235,230,.25);color:rgba(10,10,10,.4)}
 .cur-send svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
 .cur-close{position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:50%;
   background:rgba(255,255,255,.06);color:rgba(237,235,230,.6);border:0;
@@ -2112,7 +2116,7 @@ body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;c
     <div class="ph-actions" id="phActions" style="display:none">
       <button class="ph-follow-btn" id="phFollowBtn" style="display:none">フォロー</button>
       <button class="ph-curator-btn" id="phCuratorBtn" aria-label="AIに聞く" title="AIに聞く" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v3"/><circle cx="12" cy="12" r="6"/><path d="M9 11h.01"/><path d="M15 11h.01"/><path d="M9 15c1 1 4 1 6 0"/><path d="M5 14h-1"/><path d="M20 14h-1"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 13 9 20 12 13 15 12 22 11 15 4 12 11 9 Z"/></svg>
       </button>
       <button class="ph-dm-btn" id="phDmBtn" aria-label="Messages">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21.854 2.147 10.61 13.39"/><path d="M21.854 2.147 14.802 22.335 10.61 13.39 1.665 9.199z"/></svg>
@@ -2374,7 +2378,7 @@ body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;c
     </button>
     <div class="cur-head">
       <div class="cur-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v3"/><circle cx="12" cy="12" r="6"/><path d="M9 11h.01"/><path d="M15 11h.01"/><path d="M9 15c1 1 4 1 6 0"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 13 9 20 12 13 15 12 22 11 15 4 12 11 9 Z"/></svg>
       </div>
       <div>
         <div class="cur-title">EXPASS Curator</div>
