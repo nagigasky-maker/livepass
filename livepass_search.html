@@ -585,8 +585,304 @@ body.disc-followers .disc-followers{display:block}
   font:9px/1 'IBM Plex Mono',monospace;color:rgba(237,235,230,.18);
   letter-spacing:.1em;pointer-events:none;user-select:none}
 
+/* ═══════════════════════════════════════════════
+   SEARCH MAGAZINE LAYOUT — design system
+   ═══════════════════════════════════════════════
+   Background: #FFFFFF, accent: #050B1F (navy black).
+   No red. Apple system + monospace for meta.
+*/
+:root{
+  --s-bg:#FFFFFF;
+  --s-fg:#050B1F;
+  --s-fg-2:rgba(5,11,31,.62);
+  --s-fg-3:rgba(5,11,31,.42);
+  --s-fg-4:rgba(5,11,31,.18);
+  --s-fg-5:rgba(5,11,31,.08);
+  --s-fg-6:rgba(5,11,31,.04);
+  --s-shade-1:#1a2440;
+  --s-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+  --s-sans: -apple-system, BlinkMacSystemFont, 'Inter','Helvetica Neue', Arial, sans-serif;
+}
+
+.content{padding-top:0 !important}
+
+/* ── Header ───────────────────────────────────── */
+.s-header{
+  padding:calc(var(--safe-top,0px) + 18px) 18px 6px;
+  background:var(--s-bg);
+}
+.s-tabs{
+  display:flex;gap:18px;margin-bottom:14px;
+}
+.s-tab{
+  background:none;border:0;padding:6px 0 8px;cursor:pointer;
+  font-family:var(--s-sans);font-size:11px;font-weight:600;
+  letter-spacing:1.5px;color:var(--s-fg-3);
+  border-bottom:2px solid transparent;
+  transition:color .18s ease, border-color .18s ease;
+}
+.s-tab.active{color:var(--s-fg);border-bottom-color:var(--s-fg)}
+.s-title{
+  font-family:var(--s-sans);font-weight:700;font-size:28px;
+  letter-spacing:-.5px;color:var(--s-fg);
+  margin:6px 0 14px;line-height:1;
+}
+.s-input{
+  display:flex;align-items:center;gap:10px;
+  background:var(--s-fg-6);border-radius:10px;
+  padding:11px 14px;
+}
+.s-input svg{
+  width:16px;height:16px;flex-shrink:0;
+  stroke:var(--s-fg-3);fill:none;stroke-width:1.8;
+}
+.s-input input{
+  flex:1;background:none;border:0;outline:none;
+  font-family:var(--s-sans);font-size:13px;color:var(--s-fg);
+  letter-spacing:0;
+}
+.s-input input::placeholder{color:var(--s-fg-3)}
+
+/* ── Panels ───────────────────────────────────── */
+.s-panel{display:none}
+.s-panel.active{display:block}
+
+/* ── FEATURED block ──────────────────────────── */
+.s-feat{
+  position:relative;display:block;
+  width:100vw;margin-left:calc(-1 * (50vw - 50%));
+  margin-top:18px;margin-bottom:0;
+  height:280px;
+  border-radius:0;border:0;
+  background:#0A0F1F;color:#fff;overflow:hidden;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.s-feat[data-feat-size="mid"]{height:260px;margin-top:32px}
+.s-feat:active{transform:none}
+.s-feat-bg{
+  position:absolute;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse at 50% 100%, var(--s-shade-1) 0%, transparent 60%),
+    linear-gradient(180deg, #0A0F1F 0%, var(--s-shade-1) 100%);
+  background-size:cover;background-position:center;
+}
+.s-feat-bg.has-img{background-blend-mode:normal}
+.s-feat-bg video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.s-feat-shade{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:
+    linear-gradient(180deg, rgba(5,11,31,.35) 0%, transparent 28%, transparent 50%, rgba(5,11,31,.85) 100%);
+}
+.s-feat-tag{
+  position:absolute;top:18px;left:18px;z-index:2;
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 12px;border-radius:99px;
+  background:rgba(0,0,0,.32);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border:0.5px solid rgba(255,255,255,.4);color:#fff;
+  font-family:var(--s-mono);font-size:9px;letter-spacing:2.5px;text-transform:uppercase;
+}
+.s-feat-tag.live::before{
+  content:"";display:inline-block;width:6px;height:6px;border-radius:50%;
+  background:#fff;animation:sLive 2s ease-in-out infinite;
+}
+@keyframes sLive{0%,100%{opacity:1}50%{opacity:.25}}
+.s-feat-text{
+  position:absolute;left:0;right:0;bottom:0;z-index:2;
+  padding:0 22px 26px;
+}
+.s-feat-name{
+  font-family:var(--s-sans);font-weight:700;font-size:44px;letter-spacing:-1px;
+  color:#fff;line-height:1.05;margin-bottom:8px;
+  text-shadow:0 2px 18px rgba(0,0,0,.55);
+  word-break:break-word;
+}
+.s-feat[data-feat-size="mid"] .s-feat-name{font-size:36px}
+.s-feat-meta{
+  font-family:var(--s-mono);font-size:10px;letter-spacing:1.4px;
+  color:rgba(255,255,255,.7);text-transform:uppercase;
+}
+
+/* ── Section labels ─────────────────────────── */
+.s-sec{
+  display:flex;align-items:baseline;justify-content:space-between;
+  padding:24px 18px 12px;
+}
+.s-sec-label{
+  font-family:var(--s-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--s-fg-3);
+}
+.s-sec-link{
+  font-family:var(--s-mono);font-size:10px;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--s-fg-3);text-decoration:none;
+}
+
+/* ── Masonry grid (CSS columns + JS height variation) ── */
+.s-masonry{
+  column-count:2;column-gap:2px;
+  padding:0;
+}
+.s-tile{
+  break-inside:avoid;-webkit-column-break-inside:avoid;page-break-inside:avoid;
+  margin:0 0 2px;width:100%;display:block;
+  position:relative;overflow:hidden;cursor:pointer;
+  background:linear-gradient(140deg, var(--s-shade-1) 0%, #0A0F1F 100%);
+  color:#fff;border:0;border-radius:0;
+  -webkit-tap-highlight-color:transparent;
+}
+.s-tile.h-tall   {height:240px}
+.s-tile.h-mid    {height:200px}
+.s-tile.h-short  {height:170px}
+.s-tile.h-xshort {height:140px}
+.s-tile-bg{
+  position:absolute;inset:0;z-index:0;
+  background-size:cover;background-position:center;
+  transform:scale(1.02);transition:transform .8s ease;
+}
+.s-tile:hover .s-tile-bg{transform:scale(1.06)}
+.s-tile-bg video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.s-tile-grain{
+  position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.1;
+  background-image:radial-gradient(rgba(255,255,255,.55) 1px, transparent 1.5px);
+  background-size:3px 3px;
+  mix-blend-mode:overlay;
+}
+.s-tile-shade{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg, transparent 45%, rgba(0,0,0,.65) 100%);
+}
+.s-tile-tag{
+  position:absolute;top:12px;left:12px;z-index:2;
+  font-family:var(--s-mono);font-size:8.5px;letter-spacing:1.8px;
+  text-transform:uppercase;color:rgba(255,255,255,.85);
+  padding:3px 8px;border-radius:99px;
+  background:rgba(0,0,0,.35);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  border:0.5px solid rgba(255,255,255,.25);
+}
+.s-tile-live{
+  position:absolute;top:12px;right:12px;z-index:2;
+  width:6px;height:6px;border-radius:50%;background:#fff;
+  box-shadow:0 0 0 2px rgba(255,255,255,.18);
+  animation:sLive 2s ease-in-out infinite;
+}
+.s-tile-text{
+  position:absolute;left:14px;right:14px;bottom:14px;z-index:2;
+}
+.s-tile-name{
+  font-family:var(--s-sans);font-weight:700;font-size:15px;letter-spacing:-.2px;
+  color:#fff;line-height:1.15;margin-bottom:3px;
+  text-shadow:0 2px 10px rgba(0,0,0,.4);
+  word-break:break-word;
+}
+.s-tile-meta{
+  font-family:var(--s-mono);font-size:8.5px;letter-spacing:1.4px;
+  color:rgba(255,255,255,.7);text-transform:uppercase;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+/* ── Loader sentinel ──────────────────────────── */
+.s-loader{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:36px 0 60px;
+}
+.s-load-dot{
+  width:6px;height:6px;border-radius:50%;background:var(--s-fg-4);
+  animation:sLoadDot 1.2s ease-in-out infinite;
+}
+.s-load-dot:nth-child(2){animation-delay:.18s}
+.s-load-dot:nth-child(3){animation-delay:.36s}
+@keyframes sLoadDot{0%,80%,100%{opacity:.2;transform:scale(.85)}40%{opacity:1;transform:scale(1.15)}}
+
+/* ── Mini list (FOLLOWING / DISCOVERY placeholders) ── */
+.s-mini-list{padding:18px 18px 60px;display:flex;flex-direction:column;gap:8px}
+.s-mini-row{
+  display:flex;align-items:center;gap:14px;padding:12px;
+  background:var(--s-fg-6);border-radius:12px;cursor:pointer;
+}
+.s-mini-av{
+  width:44px;height:44px;border-radius:50%;flex-shrink:0;overflow:hidden;
+  background:linear-gradient(135deg, var(--s-shade-1), #0A0F1F);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--s-sans);font-weight:800;font-size:15px;color:#fff;
+}
+.s-mini-av img,.s-mini-av video{width:100%;height:100%;object-fit:cover}
+.s-mini-name{font-family:var(--s-sans);font-weight:700;font-size:14px;color:var(--s-fg)}
+.s-mini-role{font-family:var(--s-mono);font-size:9px;letter-spacing:1.4px;color:var(--s-fg-3);text-transform:uppercase;margin-top:2px}
+.s-mini-empty{padding:80px 24px;text-align:center}
+.s-mini-empty-title{font-family:var(--s-sans);font-weight:700;font-size:14px;color:var(--s-fg)}
+.s-mini-empty-sub{font-family:var(--s-sans);font-size:11px;color:var(--s-fg-3);line-height:1.7;margin-top:8px;max-width:300px;margin-inline:auto}
+
+/* ═══════════════════════════════════════════════
+   AI CONCIERGE MODAL
+   ═══════════════════════════════════════════════ */
+#aiOverlay{
+  position:fixed;inset:0;z-index:2400;
+  background:rgba(5,11,31,0);pointer-events:none;
+  display:flex;align-items:flex-end;
+  transition:background .3s ease;
+}
+#aiOverlay.open{
+  background:rgba(5,11,31,.85);pointer-events:all;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+}
+#aiSheet{
+  position:relative;width:100%;
+  background:rgba(255,255,255,.05);
+  border-top:0.5px solid rgba(255,255,255,.18);
+  border-top-left-radius:18px;border-top-right-radius:18px;
+  backdrop-filter:blur(20px) saturate(1.2);-webkit-backdrop-filter:blur(20px) saturate(1.2);
+  color:#fff;
+  padding:18px 22px calc(28px + var(--safe-bot,0px));
+  transform:translateY(100%);
+  transition:transform .3s cubic-bezier(.2,.8,.2,1);
+  max-height:78vh;display:flex;flex-direction:column;
+}
+#aiOverlay.open #aiSheet{transform:translateY(0)}
+.ai-grab{width:40px;height:4px;border-radius:99px;background:rgba(255,255,255,.18);margin:0 auto 16px}
+.ai-head{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.ai-icon{
+  width:28px;height:28px;border-radius:50%;
+  background:rgba(255,255,255,.08);
+  border:0.5px solid rgba(255,255,255,.22);
+  display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,.92);
+}
+.ai-icon svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.6}
+.ai-meta{font-family:var(--s-mono);font-size:9px;letter-spacing:2.2px;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.ai-prompt{
+  font-family:var(--s-sans);font-size:18px;line-height:1.4;color:#fff;
+  margin-bottom:22px;min-height:28px;
+}
+.ai-caret{
+  display:inline-block;width:8px;height:18px;background:#fff;vertical-align:text-bottom;margin-left:2px;
+  animation:aiCaret 1s steps(2) infinite;
+}
+@keyframes aiCaret{50%{opacity:0}}
+.ai-choices{display:flex;flex-direction:column;gap:8px}
+.ai-choice{
+  width:100%;text-align:left;
+  padding:12px 14px;border-radius:10px;
+  background:rgba(255,255,255,.05);
+  border:0.5px solid rgba(255,255,255,.15);color:#fff;
+  font-family:var(--s-sans);font-size:13px;letter-spacing:0;cursor:pointer;
+  transition:background .15s ease;
+}
+.ai-choice:active,.ai-choice:hover{background:rgba(255,255,255,.1)}
+.ai-stream{
+  font-family:var(--s-sans);font-size:14px;line-height:1.85;
+  color:rgba(255,255,255,.92);
+  margin-top:18px;padding:0;display:none;white-space:pre-wrap;
+}
+.ai-stream.active{display:block}
+.ai-stream .ai-caret{height:16px}
+.ai-hint{
+  margin-top:auto;padding-top:18px;text-align:center;
+  font-family:var(--s-mono);font-size:9px;letter-spacing:1.8px;text-transform:uppercase;
+  color:rgba(255,255,255,.4);
+}
+
 /* ═══ LIGHT MODE ═══ */
-html,body{background:#FFF !important;color:#0A0A0A !important}
+html,body{background:var(--s-bg) !important;color:var(--s-fg) !important}
 .topbar{background:rgba(255,255,255,.85) !important;backdrop-filter:blur(20px) !important;-webkit-backdrop-filter:blur(20px) !important}
 .topbar .tb-brand{position:absolute !important;left:50% !important;top:calc(var(--safe-top,0px) + 16px) !important;transform:translateX(-50%) !important;margin:0 !important}
 .topbar .tb-icon{color:#0A0A0A !important}
@@ -717,122 +1013,99 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 </div>
 
 <main class="content">
-  <header class="search-header">
-    <div class="sh-title">SEARCH</div>
+  <header class="s-header">
+    <nav class="s-tabs" role="tablist" aria-label="探索タブ">
+      <button class="s-tab active" data-stab="search"    type="button">SEARCH</button>
+      <button class="s-tab"        data-stab="following" type="button">FOLLOWING</button>
+      <button class="s-tab"        data-stab="discovery" type="button">DISCOVERY</button>
+    </nav>
+    <h1 class="s-title">SEARCH</h1>
+    <label class="s-input">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/></svg>
+      <input id="sQuery" type="search" placeholder="アーティスト・パーティ・スタイル…" autocomplete="off">
+    </label>
   </header>
 
-  <!-- SEARCH / FOLLOWING / FOLLOWERS tabs -->
-  <nav class="disc-tabs" id="discTabs">
-    <button class="dt-btn active" data-disc="search">検索</button>
-    <button class="dt-btn" data-disc="following">フォロー中</button>
-    <button class="dt-btn" data-disc="followers">フォロワー</button>
-  </nav>
+  <!-- ═══ SEARCH PANEL — magazine layout ═══ -->
+  <section class="s-panel active" id="sPanel-search">
+    <!-- FEATURED #1 — hard-coded NOBBY for the May 4 demo -->
+    <article class="s-feat" data-feat-size="hero" data-artist="NOBBY"
+             data-feat-title="NOBBY" data-feat-meta="DANCER · ALL MUST DANCE™ · TOKYO">
+      <div class="s-feat-bg"></div>
+      <div class="s-feat-shade"></div>
+      <div class="s-feat-tag">FEATURED · THIS WEEK</div>
+      <div class="s-feat-text">
+        <div class="s-feat-name">NOBBY</div>
+        <div class="s-feat-meta">DANCER · ALL MUST DANCE™ · TOKYO</div>
+      </div>
+    </article>
 
-  <!-- SEARCH panel (default) — has two sub-modes: アカウント / パーティ -->
-  <section class="disc-search" id="discSearch">
-    <!-- Sub-mode pills -->
-    <div class="sm-row">
-      <button type="button" class="sm-btn active" data-smode="account">アカウント</button>
-      <button type="button" class="sm-btn" data-smode="party">パーティ・イベント</button>
+    <div class="s-sec">
+      <div class="s-sec-label">DISCOVER</div>
+      <a class="s-sec-link" href="#" data-batch="1">SEE ALL →</a>
     </div>
+    <div class="s-masonry" id="sMasonry1" data-batch="1"></div>
 
-    <!-- Account sub-mode wrapper -->
-    <div class="sm-account" id="smAccount">
-      <div class="search-bar">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="accountSearchInput" placeholder="アカウント名で検索…" autocomplete="off">
+    <!-- FEATURED #2 — picked from directory after first paint -->
+    <article class="s-feat" data-feat-size="mid" data-artist=""
+             data-feat-title="" data-feat-meta="" id="sFeat2">
+      <div class="s-feat-bg"></div>
+      <div class="s-feat-shade"></div>
+      <div class="s-feat-tag">FEATURED · ARTIST</div>
+      <div class="s-feat-text">
+        <div class="s-feat-name"></div>
+        <div class="s-feat-meta"></div>
       </div>
+    </article>
 
-    <!-- Account search results (friend discovery) -->
-      <div id="accountResults" class="account-results"></div>
-
-      <!-- Browse: registered EXPASS accounts -->
-      <div class="sec-label" id="browseLabel">EXPASS アカウント</div>
-      <div class="disc-list" id="browseList"></div>
-      <div class="disc-empty" id="browseEmpty" style="display:none">
-        <div class="de-title">まだ登録アカウントがいません</div>
-        <div class="de-sub">友達にアプリをシェアして招待しましょう。</div>
-      </div>
+    <div class="s-sec">
+      <div class="s-sec-label">MORE TO DISCOVER</div>
+      <a class="s-sec-link" href="#" data-batch="2">SEE ALL →</a>
     </div>
+    <div class="s-masonry" id="sMasonry2" data-batch="2"></div>
 
-    <!-- Party sub-mode: category chips + area select + event list -->
-    <div class="sm-party" id="smParty" style="display:none">
-      <div class="cat-chip-row" id="catChipRow">
-        <button type="button" class="cat-chip active" data-cat="all">すべて</button>
-        <button type="button" class="cat-chip" data-cat="club">CLUB</button>
-        <button type="button" class="cat-chip" data-cat="dj-bar">DJ BAR</button>
-        <button type="button" class="cat-chip" data-cat="live">LIVE</button>
-        <button type="button" class="cat-chip" data-cat="fes">FES</button>
-        <button type="button" class="cat-chip" data-cat="dance">DANCE</button>
-        <button type="button" class="cat-chip" data-cat="battle">BATTLE</button>
-        <button type="button" class="cat-chip" data-cat="workshop">WORKSHOP</button>
-        <button type="button" class="cat-chip" data-cat="exhibition">EXHIBITION</button>
-      </div>
-
-      <div class="area-row">
-        <label for="areaSelect" class="area-label">エリア</label>
-        <select id="areaSelect" class="area-select">
-          <option value="">すべてのエリア</option>
-          <optgroup label="都心">
-            <option value="渋谷">渋谷</option>
-            <option value="新宿">新宿</option>
-            <option value="六本木">六本木</option>
-            <option value="池袋">池袋</option>
-            <option value="銀座">銀座</option>
-            <option value="原宿">原宿</option>
-            <option value="表参道">表参道</option>
-            <option value="恵比寿">恵比寿</option>
-            <option value="代官山">代官山</option>
-            <option value="青山">青山</option>
-          </optgroup>
-          <optgroup label="副都心 / その他">
-            <option value="中野">中野</option>
-            <option value="下北沢">下北沢</option>
-            <option value="高円寺">高円寺</option>
-            <option value="秋葉原">秋葉原</option>
-            <option value="上野">上野</option>
-            <option value="品川">品川</option>
-            <option value="五反田">五反田</option>
-            <option value="目黒">目黒</option>
-          </optgroup>
-          <optgroup label="ベイエリア / 郊外">
-            <option value="お台場">お台場</option>
-            <option value="横浜">横浜</option>
-            <option value="川崎">川崎</option>
-            <option value="その他">その他</option>
-          </optgroup>
-        </select>
-      </div>
-
-      <div class="sec-label" id="partyLabel">パーティ / イベント</div>
-      <div class="disc-list" id="partyList"></div>
-      <div class="disc-empty" id="partyEmpty" style="display:none">
-        <div class="de-title">条件に合うパーティが見つかりません</div>
-        <div class="de-sub">カテゴリやエリアを変えてみてください。</div>
-      </div>
+    <!-- Sentinel for IntersectionObserver-driven infinite scroll -->
+    <div class="s-loader" id="sLoader">
+      <span class="s-load-dot"></span><span class="s-load-dot"></span><span class="s-load-dot"></span>
     </div>
   </section>
 
-  <!-- FOLLOWING panel — my following list -->
-  <section class="disc-following" id="discFollowing">
-    <div id="follEmpty" class="disc-empty" style="display:none">
-      <div class="de-title">まだフォロー中のアカウントがありません</div>
-      <div class="de-sub">「検索」タブからアカウントを探してフォローしましょう。</div>
+  <!-- ═══ FOLLOWING PANEL — minimal list ═══ -->
+  <section class="s-panel" id="sPanel-following">
+    <div class="s-mini-list" id="sFollowingList"></div>
+    <div class="s-mini-empty" id="sFollowingEmpty">
+      <div class="s-mini-empty-title">フォロー中のアーティストはまだいません</div>
+      <div class="s-mini-empty-sub">気になるアーティストを SEARCH からフォローすると、ここに並びます</div>
     </div>
-    <div class="disc-list" id="discFollowList"></div>
   </section>
 
-  <!-- FOLLOWERS panel — who follows me -->
-  <section class="disc-followers" id="discFollowers">
-    <div id="followersEmpty" class="disc-empty" style="display:none">
-      <div class="de-title">まだフォロワーがいません</div>
-      <div class="de-sub">アカウント名をシェアして友達を招待しましょう。</div>
+  <!-- ═══ DISCOVERY PANEL — placeholder ═══ -->
+  <section class="s-panel" id="sPanel-discovery">
+    <div class="s-mini-empty">
+      <div class="s-mini-empty-title">DISCOVERY</div>
+      <div class="s-mini-empty-sub">あなたの好みから新しいアーティストを提案します — 近日公開</div>
     </div>
-    <div class="disc-list" id="discFollowersList"></div>
   </section>
 
   <div class="content-bottom-padding"></div>
 </main>
+
+<!-- ═══ AI CONCIERGE MODAL — tap any FEATURED or tile to open ═══ -->
+<div id="aiOverlay" aria-hidden="true">
+  <div id="aiSheet" role="dialog" aria-label="EXPASS AI コンシェルジュ">
+    <div class="ai-grab"></div>
+    <div class="ai-head">
+      <div class="ai-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 13 9 20 12 13 15 12 22 11 15 4 12 11 9 Z"/></svg>
+      </div>
+      <div class="ai-meta">EXPASS · AI CONCIERGE</div>
+    </div>
+    <div class="ai-prompt"><span id="aiPromptText"></span><span class="ai-caret"></span></div>
+    <div class="ai-choices" id="aiChoices"></div>
+    <div class="ai-stream" id="aiStream"></div>
+    <div class="ai-hint">↓ SWIPE TO CLOSE</div>
+  </div>
+</div>
 
 <!-- ═══ COMPOSE SELECTOR BOTTOM SHEET (shared) ═══ -->
 <div id="composeSheetOverlay" aria-hidden="true">
@@ -868,316 +1141,417 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 </nav>
 
 <script>
-/* AI sample artists / events / studios / lessons were removed in the
-   simplified launch layout. Only live Firestore accounts + locally
-   created content are surfaced here now. */
-
-/* SEARCH / FOLLOWING / FOLLOWERS tab switcher */
-(function initDiscTabs(){
-  const btns = document.querySelectorAll('.dt-btn');
-  const followList     = document.getElementById('discFollowList');
-  const followersList  = document.getElementById('discFollowersList');
-  const follEmptyEl    = document.getElementById('follEmpty');
-  const followersEmpty = document.getElementById('followersEmpty');
-
-  // Escape user-controlled strings before embedding them in innerHTML
-  // to keep a malicious localStorage entry from running arbitrary JS.
-  function esc(s){
-    return String(s == null ? '' : s)
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-  }
-  // Only allow known-safe avatar URLs.
-  function safeAvatar(src){
-    const s = String(src || '');
-    if (/^data:image\//.test(s) || /^https:\/\//.test(s)) return s;
-    return '';
-  }
-  function normList(key){
-    try {
-      return (JSON.parse(localStorage.getItem(key) || '[]') || [])
-        .map(x => typeof x === 'string' ? { name:x, role:'', avatar:'' } : x)
-        .filter(x => x && x.name);
-    } catch(e){ return []; }
-  }
-
-  function rowHtml(u, opts){
-    const name = esc(u.name);
-    const role = esc(u.role || '');
-    const avSrc = safeAvatar(u.avatar);
-    const av = avSrc
-      ? `<img src="${esc(avSrc)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
-      : '';
-    const btn = opts && opts.button === 'unfollow'
-      ? `<button class="ar-unfollow" data-name="${encodeURIComponent(u.name)}" type="button">フォロー中</button>`
-      : opts && opts.button === 'followback'
-        ? `<button class="ar-unfollow" data-followback="${encodeURIComponent(u.name)}" data-role="${encodeURIComponent(u.role||'')}" type="button" style="background:rgba(0,229,160,.1);border-color:var(--mint);color:var(--mint)">フォロバ</button>`
-        : '';
-    return `
-      <a class="disc-row" href="/profile?user=${encodeURIComponent(u.name)}">
-        <div class="ar-av">${av}</div>
-        <div class="ar-meta">
-          <div class="ar-name">${name}</div>
-          <div class="ar-role">${role}</div>
-        </div>
-        ${btn}
-      </a>
-    `;
-  }
-
-  function renderFollowing(){
-    if (!followList) return;
-    const list = normList('livepass_following');
-    if (!list.length) {
-      if (follEmptyEl) follEmptyEl.style.display = 'block';
-      followList.innerHTML = '';
-      return;
-    }
-    if (follEmptyEl) follEmptyEl.style.display = 'none';
-    followList.innerHTML = list.map(u => rowHtml(u, { button:'unfollow' })).join('');
-
-    followList.querySelectorAll('.ar-unfollow').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault(); e.stopPropagation();
-        const name = decodeURIComponent(btn.dataset.name || '');
-        if (!name) return;
-        let cur = [];
-        try { cur = JSON.parse(localStorage.getItem('livepass_following') || '[]'); } catch(_){}
-        cur = cur.filter(x => (typeof x === 'string' ? x : x && x.name) !== name);
-        localStorage.setItem('livepass_following', JSON.stringify(cur));
-        if (navigator.vibrate) navigator.vibrate(8);
-        renderFollowing();
-      });
-    });
-  }
-
-  function renderFollowers(){
-    if (!followersList) return;
-    const list = normList('livepass_followers');
-    const following = new Set(normList('livepass_following').map(x => (x.name || '').toUpperCase()));
-    if (!list.length) {
-      if (followersEmpty) followersEmpty.style.display = 'block';
-      followersList.innerHTML = '';
-      return;
-    }
-    if (followersEmpty) followersEmpty.style.display = 'none';
-    followersList.innerHTML = list.map(u => {
-      const isMutual = following.has((u.name || '').toUpperCase());
-      return rowHtml(u, { button: isMutual ? null : 'followback' });
-    }).join('');
-
-    // Followback handler
-    followersList.querySelectorAll('[data-followback]').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault(); e.stopPropagation();
-        const name = decodeURIComponent(btn.dataset.followback || '');
-        const role = decodeURIComponent(btn.dataset.role || '');
-        if (!name) return;
-        let cur = [];
-        try { cur = JSON.parse(localStorage.getItem('livepass_following') || '[]'); } catch(_){}
-        if (!cur.some(x => (typeof x === 'string' ? x : x && x.name) === name)) {
-          cur.unshift({ name, role });
-          localStorage.setItem('livepass_following', JSON.stringify(cur));
-        }
-        if (navigator.vibrate) navigator.vibrate(8);
-        renderFollowers();
-      });
-    });
-  }
-
-  btns.forEach(b => {
-    b.addEventListener('click', () => {
-      btns.forEach(x => x.classList.remove('active'));
-      b.classList.add('active');
-      const mode = b.dataset.disc;
-      document.body.classList.toggle('disc-following', mode === 'following');
-      document.body.classList.toggle('disc-followers', mode === 'followers');
-      if (mode === 'following') renderFollowing();
-      if (mode === 'followers') renderFollowers();
-    });
-  });
-
-  // Deep-link support: ?tab=following / ?tab=followers
-  try {
-    const qs = new URLSearchParams(location.search);
-    const tab = qs.get('tab');
-    if (tab === 'following' || tab === 'followers') {
-      const nextBtn = document.querySelector(`.dt-btn[data-disc="${tab}"]`);
-      if (nextBtn) nextBtn.click();
-    }
-  } catch(e){}
-})();
-
 /* ─────────────────────────────────────────────
-   SEARCH tab sub-mode: アカウント ↔ パーティ
+   SEARCH MAGAZINE LAYOUT — runtime
    ─────────────────────────────────────────────
-   Account mode: existing search-bar + EXPASS accounts browse list.
-   Party mode: category chips + area select + event list pulled from
-   localStorage (livepass_events / _workshops / _exhibitions) plus
-   any article posts tagged with party-shape categories.
+   · DIRECTORY  — built from local follow/follower lists + Firestore
+                  (users/) + most recent posts/. Each entry:
+                  { name, role, uid?, cover?, videoUrl? }.
+   · render()   — turns DIRECTORY into:
+                    1) FEATURED #1 hard-coded NOBBY (May 4 demo)
+                    2) Masonry batch 1 (12 tiles)
+                    3) FEATURED #2 (next-most-active artist)
+                    4) Masonry batch 2 (next 12)
+   · IntersectionObserver on #sLoader keeps appending FEATURED +
+     12-tile batches from the same DIRECTORY pool.
+   · Click on any FEATURED / tile → AI Concierge modal.
    ───────────────────────────────────────────── */
-(function initPartyMode(){
-  const btns    = document.querySelectorAll('.sm-btn');
-  const accPane = document.getElementById('smAccount');
-  const partyPane = document.getElementById('smParty');
-  const chips   = document.querySelectorAll('.cat-chip');
-  const areaSel = document.getElementById('areaSelect');
-  const listEl  = document.getElementById('partyList');
-  const emptyEl = document.getElementById('partyEmpty');
-  if (!btns.length || !partyPane || !listEl) return;
-
-  function esc(s){
-    return String(s == null ? '' : s)
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-  }
-
-  // Tiny keyword map — match a chip against words likely to appear in
-  // the event's title / venue / tags / category. Keeps the match
-  // loose enough that creators don't have to tag perfectly.
-  const CAT_KEYWORDS = {
-    all:        [],
-    club:       ['club','クラブ','womb','contact','asia','vent','sound museum'],
-    'dj-bar':   ['dj bar','djbar','bar ','ラウンジ','lounge'],
-    live:       ['live','ライブ','ギグ','house of live','liquid room','o-east','o-nest','shelter'],
-    fes:        ['fes','フェス','festival','フェスティバル','野外','outdoor'],
-    dance:      ['dance','ダンス','choreo','振付'],
-    battle:     ['battle','バトル','cypher','サイファー'],
-    workshop:   ['workshop','ワークショップ','lesson','レッスン','class'],
-    exhibition: ['exhibition','展示','エキシビ','gallery','ギャラリー'],
+(function initSearch(){
+  const FEATURED_HERO = {
+    name: 'NOBBY',
+    role: 'DANCER · ALL MUST DANCE™ · TOKYO',
+    tag:  'FEATURED · THIS WEEK',
   };
 
-  function matchesCategory(ev, cat){
-    if (!cat || cat === 'all') return true;
-    const hay = (
-      (ev.title || '') + ' ' +
-      (ev.venue || '') + ' ' +
-      (ev.category || '') + ' ' +
-      (Array.isArray(ev.tags) ? ev.tags.join(' ') : (ev.tags || '')) + ' ' +
-      (ev._type || '')
-    ).toLowerCase();
-    // WORKSHOP and EXHIBITION have their own _type tag, so match exact.
-    if (cat === 'workshop')   return ev._type === 'workshop'   || /workshop|ワークショップ|レッスン/.test(hay);
-    if (cat === 'exhibition') return ev._type === 'exhibition' || /exhibition|展示|ギャラリー/.test(hay);
-    const kws = CAT_KEYWORDS[cat] || [];
-    return kws.some(k => hay.includes(k));
-  }
-  function matchesArea(ev, area){
-    if (!area) return true;
-    const hay = ((ev.venue || '') + ' ' + (ev.place || '')).toLowerCase();
-    return hay.includes(area.toLowerCase());
+  // For the May 4 demo: only NOBBY has a curated AI script.
+  const AI_ANSWERS = {
+    NOBBY: {
+      activity:
+        'NOBBYは20年以上にわたって東京のダンスシーンと音楽シーンを横断する活動を続けています。' +
+        'SPACE COOKING™とALL MUST DANCE™の主宰者として、ストリートダンスからクラブシーンまで、' +
+        '現場でしか生まれない文化を記録し、次の世代に渡すことに取り組んでいます。',
+      events:
+        '次の出演はMAY 04のALL MUST DANCE™ at CLUB ASIA TOKYO。' +
+        '最新のMIXはMixcloudで公開されています。',
+      free:
+        'NOBBYについて、何でも聞いてください。プロフィールに登録された情報の範囲でお答えします。',
+    },
+  };
+
+  const HEIGHTS = ['h-tall','h-mid','h-short','h-xshort'];
+  const BATCH   = 12;
+
+  let DIRECTORY = [];
+  let renderedTo = 0;
+
+  function pushUnique(arr, name, extra){
+    if (!name) return;
+    const k = String(name).toUpperCase();
+    if (arr.some(a => (a.name || '').toUpperCase() === k)) return;
+    arr.push(Object.assign({ name }, extra || {}));
   }
 
-  function loadAllEvents(){
-    const sources = [
-      { key: 'livepass_events',      t: 'event'      },
-      { key: 'livepass_workshops',   t: 'workshop'   },
-      { key: 'livepass_exhibitions', t: 'exhibition' },
-    ];
+  function buildLocalDirectory(){
     const out = [];
-    sources.forEach(({ key, t }) => {
-      try {
-        (JSON.parse(localStorage.getItem(key) || '[]') || []).forEach(r => {
-          out.push(Object.assign({ _type: t }, r));
-        });
-      } catch(_){}
-    });
-    // Also include party-ish articles (category matches our chip set).
+    const me = (localStorage.getItem('livepass_account_name') || '').toUpperCase();
     try {
-      const arts = JSON.parse(localStorage.getItem('livepass_articles') || '[]') || [];
-      arts.forEach(a => {
-        const hay = ((a.category || '') + ' ' + (Array.isArray(a.tags) ? a.tags.join(' ') : '')).toLowerCase();
-        if (/club|live|fes|dance|battle|dj bar|workshop|exhibition/.test(hay)) {
-          out.push(Object.assign({ _type: 'article' }, a));
-        }
+      JSON.parse(localStorage.getItem('livepass_following') || '[]').forEach(x => {
+        const n = typeof x === 'string' ? x : x && x.name;
+        if (n && n.toUpperCase() !== me) pushUnique(out, n, { role: (x && x.role) || '' });
+      });
+    } catch(_){}
+    try {
+      JSON.parse(localStorage.getItem('livepass_followers') || '[]').forEach(x => {
+        const n = typeof x === 'string' ? x : x && x.name;
+        if (n && n.toUpperCase() !== me) pushUnique(out, n, { role: (x && x.role) || '' });
       });
     } catch(_){}
     return out;
   }
+  DIRECTORY = buildLocalDirectory();
 
-  function currentCategory(){
-    const active = document.querySelector('.cat-chip.active');
-    return active ? active.dataset.cat : 'all';
-  }
-
-  function render(){
-    const cat  = currentCategory();
-    const area = areaSel ? areaSel.value : '';
-    const all  = loadAllEvents();
-    const filtered = all.filter(ev => matchesCategory(ev, cat) && matchesArea(ev, area));
-    // Date ascending (upcoming first), undated last
-    filtered.sort((a, b) => {
-      const ta = new Date(a.date || a.time || a.createdAt || 0).getTime() || Infinity;
-      const tb = new Date(b.date || b.time || b.createdAt || 0).getTime() || Infinity;
-      return ta - tb;
-    });
-
-    if (!filtered.length) {
-      listEl.innerHTML = '';
-      emptyEl.style.display = 'block';
-      return;
+  async function loadRemoteDirectory(){
+    if (!window.FB) await new Promise(r => window.addEventListener('fb-auth-ready', r, { once:true }));
+    if (!window.FB || !window.FB.currentUser) return;
+    const { collection, getDocs, db, query, orderBy, limit } = window.FB;
+    const me = (localStorage.getItem('livepass_account_name') || '').toUpperCase();
+    try {
+      const snap = await getDocs(collection(db, 'users'));
+      snap.forEach(d => {
+        const data = d.data() || {};
+        const name = data.name || '';
+        if (!name || name.toUpperCase() === me) return;
+        pushUnique(DIRECTORY, name, {
+          role: data.role || '', uid: d.id,
+          cover: data.coverUrl || null, avatar: data.avatarUrl || null,
+        });
+      });
+    } catch(err){
+      console.warn('search: users/ load failed:', err && err.code);
     }
-    emptyEl.style.display = 'none';
-    listEl.innerHTML = filtered.map(ev => {
-      const cover = ev.cover
-        ? `<img src="${esc(ev.cover)}" alt="">`
-        : `<div style="position:absolute;inset:0;background:linear-gradient(135deg,#222,#0a0a0a);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.35);font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.2em">${esc((ev._type || 'EVENT').toUpperCase())}</div>`;
-      const catLabel = esc((ev.category || ev._type || 'EVENT').toUpperCase());
-      const date = ev.date || (ev.time || '').match(/\d{4}-\d{2}-\d{2}/)?.[0] || '';
-      const venue = ev.venue || ev.place || '';
-      const meta = [date, venue].filter(Boolean).join(' · ');
-      return `
-        <a class="ev-row" href="/calendar?event=${encodeURIComponent(ev.id || '')}">
-          <div class="ev-thumb">${cover}</div>
-          <div class="ev-body">
-            <div class="ev-cat">${catLabel}</div>
-            <div class="ev-title">${esc(ev.title || '(無題)')}</div>
-            <div class="ev-meta">${esc(meta || '日時未定')}</div>
-          </div>
-        </a>
-      `;
-    }).join('');
+    try {
+      const q = query(collection(db,'posts'), orderBy('createdAt','desc'), limit(250));
+      const snap = await getDocs(q);
+      const byName = new Map();
+      snap.forEach(d => {
+        const dt = d.data() || {};
+        const nm = (dt.authorName || dt.author || '').toUpperCase();
+        if (!nm || byName.has(nm)) return;
+        const cover = dt.cover || dt.coverUrl || null;
+        const videoUrl = (dt.videoLoop && dt.videoUrl) ? dt.videoUrl : null;
+        if (cover || videoUrl) byName.set(nm, { cover, videoUrl });
+      });
+      DIRECTORY = DIRECTORY.map(a => {
+        const m = byName.get((a.name || '').toUpperCase());
+        if (!m) return a;
+        return Object.assign({}, a, { cover: a.cover || m.cover, videoUrl: a.videoUrl || m.videoUrl });
+      });
+    } catch(err){
+      console.warn('search: posts hydrate failed:', err && err.code);
+    }
+    renderAll(true);
   }
 
-  // Sub-mode toggle (アカウント / パーティ)
-  btns.forEach(b => {
-    b.addEventListener('click', () => {
-      btns.forEach(x => x.classList.remove('active'));
-      b.classList.add('active');
-      const mode = b.dataset.smode;
-      if (accPane)   accPane.style.display   = mode === 'account' ? '' : 'none';
-      if (partyPane) partyPane.style.display = mode === 'party'   ? '' : 'none';
-      if (mode === 'party') render();
+  function escHTML(s){
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+  function nameHue(s){
+    let h = 0;
+    for (let i = 0; i < (s||'').length; i++) h = (h*31 + s.charCodeAt(i)) | 0;
+    return Math.abs(h) % 360;
+  }
+
+  function paintFeatured(el, data){
+    if (!el) return;
+    el.dataset.artist = data.name || '';
+    el.querySelector('.s-feat-name').textContent = data.name || '';
+    el.querySelector('.s-feat-meta').textContent = data.role || '';
+    const tagEl = el.querySelector('.s-feat-tag');
+    if (tagEl && data.tag) {
+      tagEl.textContent = data.tag;
+      tagEl.classList.toggle('live', !!data.videoUrl);
+    }
+    const bg = el.querySelector('.s-feat-bg');
+    if (!bg) return;
+    bg.innerHTML = '';
+    bg.style.backgroundImage = '';
+    bg.classList.remove('has-img');
+    if (data.videoUrl) {
+      bg.classList.add('has-img');
+      const v = document.createElement('video');
+      v.src = data.videoUrl;
+      v.muted = true; v.defaultMuted = true; v.playsInline = true;
+      v.setAttribute('muted',''); v.setAttribute('playsinline','');
+      v.setAttribute('webkit-playsinline',''); v.setAttribute('autoplay','');
+      v.setAttribute('loop',''); v.preload = 'metadata';
+      bg.appendChild(v);
+      requestAnimationFrame(() => { try { v.play(); } catch(_){} });
+    } else if (data.cover) {
+      bg.classList.add('has-img');
+      bg.style.backgroundImage = `url('${String(data.cover).replace(/'/g,"%27")}')`;
+    }
+  }
+
+  function tileEl(a, idx){
+    const el = document.createElement('article');
+    el.className = 's-tile ' + HEIGHTS[idx % HEIGHTS.length];
+    el.dataset.artist = a.name || '';
+    el.dataset.role   = a.role || '';
+    const role = (a.role || 'ARTIST').toString().split(/\s*[·/,]\s*/)[0];
+    el.innerHTML = `
+      <div class="s-tile-bg"></div>
+      <div class="s-tile-grain"></div>
+      <div class="s-tile-shade"></div>
+      <div class="s-tile-tag">${escHTML(role)}</div>
+      ${a.videoUrl ? '<div class="s-tile-live"></div>' : ''}
+      <div class="s-tile-text">
+        <div class="s-tile-name">${escHTML(a.name)}</div>
+        <div class="s-tile-meta">${escHTML((a.role || '').replace(/\s*·\s*/g,' · '))}</div>
+      </div>
+    `;
+    const bg = el.querySelector('.s-tile-bg');
+    if (a.videoUrl) {
+      const v = document.createElement('video');
+      v.src = a.videoUrl;
+      v.muted = true; v.defaultMuted = true; v.playsInline = true;
+      v.setAttribute('muted',''); v.setAttribute('playsinline','');
+      v.setAttribute('webkit-playsinline',''); v.setAttribute('autoplay','');
+      v.setAttribute('loop',''); v.preload = 'metadata';
+      bg.appendChild(v);
+      requestAnimationFrame(() => { try { v.play(); } catch(_){} });
+    } else if (a.cover) {
+      bg.style.backgroundImage = `url('${String(a.cover).replace(/'/g,"%27")}')`;
+    } else {
+      const h = nameHue(a.name);
+      bg.style.background = `linear-gradient(140deg, hsl(${h}, 35%, 14%), #050B1F)`;
+    }
+    el.addEventListener('click', () => openConcierge(a));
+    return el;
+  }
+
+  function renderBatchInto(grid, slice){
+    grid.innerHTML = '';
+    slice.forEach((a, i) => grid.appendChild(tileEl(a, i)));
+  }
+
+  function nextBatch(){
+    const slice = DIRECTORY.slice(renderedTo, renderedTo + BATCH);
+    renderedTo += slice.length;
+    return slice;
+  }
+
+  function appendBatch(){
+    if (renderedTo >= DIRECTORY.length) return false;
+    const wrap = document.createElement('div');
+    wrap.className = 's-stream-block';
+    const pickedArtist = DIRECTORY[renderedTo % Math.max(1, DIRECTORY.length)] || null;
+    if (!pickedArtist) return false;
+    wrap.innerHTML = `
+      <article class="s-feat" data-feat-size="mid"
+               data-artist="${escHTML(pickedArtist.name)}">
+        <div class="s-feat-bg"></div>
+        <div class="s-feat-shade"></div>
+        <div class="s-feat-tag">FEATURED · NEW</div>
+        <div class="s-feat-text">
+          <div class="s-feat-name">${escHTML(pickedArtist.name)}</div>
+          <div class="s-feat-meta">${escHTML(pickedArtist.role||'')}</div>
+        </div>
+      </article>
+      <div class="s-sec">
+        <div class="s-sec-label">MORE TO DISCOVER</div>
+        <a class="s-sec-link" href="#">SEE ALL →</a>
+      </div>
+      <div class="s-masonry"></div>
+    `;
+    const featEl    = wrap.querySelector('.s-feat');
+    const masonryEl = wrap.querySelector('.s-masonry');
+    paintFeatured(featEl, Object.assign({ tag:'FEATURED · NEW' }, pickedArtist));
+    featEl.addEventListener('click', () => openConcierge(pickedArtist));
+    renderBatchInto(masonryEl, nextBatch());
+    document.getElementById('sLoader').before(wrap);
+    return true;
+  }
+
+  function renderAll(reset){
+    if (reset) {
+      renderedTo = 0;
+      document.querySelectorAll('.s-stream-block').forEach(n => n.remove());
+    }
+    const heroEl = document.querySelector('.s-feat[data-feat-size="hero"]');
+    if (heroEl) {
+      const nobby = DIRECTORY.find(a => (a.name || '').toUpperCase() === 'NOBBY') || {};
+      paintFeatured(heroEl, Object.assign({}, FEATURED_HERO, { cover: nobby.cover, videoUrl: nobby.videoUrl }));
+      heroEl.onclick = () => openConcierge({ name: 'NOBBY', role: FEATURED_HERO.role });
+    }
+    const grid1 = document.getElementById('sMasonry1');
+    if (grid1) renderBatchInto(grid1, nextBatch());
+    const feat2 = document.getElementById('sFeat2');
+    if (feat2 && DIRECTORY.length) {
+      const a = DIRECTORY[renderedTo] || DIRECTORY[0];
+      paintFeatured(feat2, Object.assign({ tag:'FEATURED · ARTIST' }, a));
+      feat2.onclick = () => openConcierge(a);
+    }
+    const grid2 = document.getElementById('sMasonry2');
+    if (grid2) renderBatchInto(grid2, nextBatch());
+    const loader = document.getElementById('sLoader');
+    if (loader) loader.style.opacity = '';
+  }
+
+  document.querySelectorAll('.s-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.stab;
+      document.querySelectorAll('.s-tab').forEach(b => b.classList.toggle('active', b === btn));
+      document.querySelectorAll('.s-panel').forEach(p => p.classList.toggle('active', p.id === `sPanel-${key}`));
+      if (key === 'following') renderFollowing();
     });
   });
 
-  // Category chip toggle
-  chips.forEach(c => {
-    c.addEventListener('click', () => {
-      chips.forEach(x => x.classList.remove('active'));
-      c.classList.add('active');
-      render();
+  function renderFollowing(){
+    const list  = document.getElementById('sFollowingList');
+    const empty = document.getElementById('sFollowingEmpty');
+    if (!list) return;
+    let arr = [];
+    try { arr = JSON.parse(localStorage.getItem('livepass_following') || '[]'); } catch(_){}
+    arr = arr.map(x => typeof x === 'string' ? { name:x } : x).filter(x => x && x.name);
+    if (!arr.length) { list.innerHTML = ''; if (empty) empty.style.display = 'block'; return; }
+    if (empty) empty.style.display = 'none';
+    list.innerHTML = arr.map(a => `
+      <div class="s-mini-row" data-name="${escHTML(a.name)}">
+        <div class="s-mini-av">${escHTML((a.name||'?').slice(0,2).toUpperCase())}</div>
+        <div>
+          <div class="s-mini-name">${escHTML(a.name)}</div>
+          <div class="s-mini-role">${escHTML(a.role || 'ARTIST')}</div>
+        </div>
+      </div>
+    `).join('');
+    list.querySelectorAll('.s-mini-row').forEach(row => {
+      row.addEventListener('click', () => {
+        location.href = '/profile?user=' + encodeURIComponent(row.dataset.name);
+      });
     });
-  });
+  }
 
-  // Area select
-  areaSel?.addEventListener('change', render);
+  const sQuery = document.getElementById('sQuery');
+  if (sQuery) {
+    sQuery.addEventListener('input', () => {
+      const q = sQuery.value.trim().toLowerCase();
+      document.querySelectorAll('.s-tile').forEach(t => {
+        const name = (t.dataset.artist || '').toLowerCase();
+        const role = (t.dataset.role  || '').toLowerCase();
+        t.style.display = (!q || name.includes(q) || role.includes(q)) ? '' : 'none';
+      });
+    });
+  }
 
-  // Deep link: /discovery?mode=party&cat=club&area=渋谷
-  try {
-    const qs = new URLSearchParams(location.search);
-    if (qs.get('mode') === 'party') {
-      const btn = document.querySelector('.sm-btn[data-smode="party"]');
-      if (btn) btn.click();
-      const catQ = qs.get('cat');
-      if (catQ) {
-        const chip = document.querySelector(`.cat-chip[data-cat="${catQ}"]`);
-        if (chip) chip.click();
+  const loader = document.getElementById('sLoader');
+  if (loader && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          if (!appendBatch()) loader.style.opacity = '0.3';
+        }
+      });
+    }, { rootMargin: '300px 0px' });
+    io.observe(loader);
+  }
+
+  // ─── AI Concierge ───
+  const overlay   = document.getElementById('aiOverlay');
+  const sheet     = document.getElementById('aiSheet');
+  const promptEl  = document.getElementById('aiPromptText');
+  const choicesEl = document.getElementById('aiChoices');
+  const streamEl  = document.getElementById('aiStream');
+  let promptTimer = null, typeTimer = null;
+
+  function clearTypers(){
+    if (promptTimer) { clearInterval(promptTimer); promptTimer = null; }
+    if (typeTimer)   { clearInterval(typeTimer);   typeTimer   = null; }
+  }
+  function startTyping(el, text, speed){
+    el.textContent = '';
+    let i = 0;
+    promptTimer = setInterval(() => {
+      if (i < text.length) el.textContent += text[i++];
+      else { clearInterval(promptTimer); promptTimer = null; }
+    }, speed);
+  }
+  function streamAnswer(text){
+    streamEl.classList.add('active');
+    streamEl.innerHTML = '<span class="ai-text"></span><span class="ai-caret"></span>';
+    const tx = streamEl.querySelector('.ai-text');
+    let i = 0;
+    typeTimer = setInterval(() => {
+      if (i < text.length) {
+        tx.textContent += text[i++];
+        sheet.scrollTop = sheet.scrollHeight;
+      } else {
+        clearInterval(typeTimer); typeTimer = null;
+        const c = streamEl.querySelector('.ai-caret'); if (c) c.remove();
       }
-      const areaQ = qs.get('area');
-      if (areaQ && areaSel) { areaSel.value = areaQ; render(); }
-    }
-  } catch(_){}
+    }, 22);
+  }
+  function openConcierge(artist){
+    if (!overlay) return;
+    const name = (artist && artist.name) || 'ARTIST';
+    streamEl.classList.remove('active');
+    streamEl.innerHTML = '';
+    choicesEl.innerHTML = '';
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden','false');
+    startTyping(promptEl, `${name}について教えますか`, 50);
+
+    [
+      { label:'活動と表現について', key:'activity' },
+      { label:'最近のイベント・MIX', key:'events'   },
+      { label:'自由に質問する',     key:'free'     },
+    ].forEach(c => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'ai-choice';
+      b.textContent = c.label;
+      b.addEventListener('click', () => answer(name, c.key));
+      choicesEl.appendChild(b);
+    });
+  }
+  function answer(name, key){
+    const dataset = AI_ANSWERS[String(name).toUpperCase()];
+    const text = (dataset && dataset[key])
+      ? dataset[key]
+      : `${name} はまだプロフィール登録途中です。本人による登録が完了次第、活動・実績・ジャンルを参照してお答えします。`;
+    streamAnswer(text);
+  }
+  function closeConcierge(){
+    clearTypers();
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden','true');
+    sheet.style.transform = '';
+  }
+  if (overlay) {
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeConcierge(); });
+    let startY = null;
+    sheet.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive:true });
+    sheet.addEventListener('touchmove',  e => {
+      if (startY == null) return;
+      const dy = e.touches[0].clientY - startY;
+      if (dy > 0) sheet.style.transform = `translateY(${Math.min(dy, 200)}px)`;
+    }, { passive:true });
+    sheet.addEventListener('touchend',   e => {
+      if (startY == null) return;
+      const dy = (e.changedTouches[0].clientY - startY);
+      if (dy > 80) closeConcierge();
+      else sheet.style.transform = '';
+      startY = null;
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && overlay.classList.contains('open')) closeConcierge();
+    });
+  }
+
+  renderAll(true);
+  if (window.FB && window.FB.authReady) loadRemoteDirectory();
+  else window.addEventListener('fb-auth-ready', loadRemoteDirectory, { once:true });
 })();
 
 /* Top bar counters + unread badge */
