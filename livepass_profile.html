@@ -274,9 +274,10 @@ body.other-user .ph-role::before{content:"— ";opacity:.6}
 body.other-user .ph-actions{
   display:flex !important;gap:10px !important;
   align-items:center !important;flex-shrink:0 !important;
+  margin-left:auto !important;          /* shove follow to the right edge */
   padding-bottom:6px;
 }
-/* Glass follow / DM buttons — visible on any cover */
+/* Glass follow button — visible on any cover */
 body.other-user .ph-follow-btn{
   background:rgba(255,255,255,.14) !important;
   border:0.5px solid rgba(255,255,255,.55) !important;
@@ -291,16 +292,13 @@ body.other-user .ph-follow-btn{
 body.other-user .ph-follow-btn.following{
   background:#fff !important;color:#0A0A0A !important;border-color:#fff !important;
 }
-body.other-user .ph-dm-btn{
-  width:40px !important;height:40px !important;
-  border-radius:50%;
-  background:rgba(255,255,255,.14);
-  border:0.5px solid rgba(255,255,255,.55);
-  backdrop-filter:blur(14px) saturate(1.2);
-  -webkit-backdrop-filter:blur(14px) saturate(1.2);
-  color:#fff !important;
+/* Curator sparkle — same warm white as the other glass elements,
+   but sized to match the name typography rather than the buttons. */
+body.other-user .ph-curator-btn{
+  color:rgba(255,255,255,.92) !important;
+  width:30px !important;height:30px !important;
 }
-body.other-user .ph-dm-btn svg{width:18px;height:18px;stroke:#fff}
+body.other-user .ph-curator-btn svg{filter:drop-shadow(0 1px 4px rgba(0,0,0,.55))}
 
 /* Other-user: split SCREEN vs CALENDAR within the shared #panel-screen.
    SCREEN  = only ARTICLE (articles / posts)
@@ -355,16 +353,60 @@ body.other-user.prof-view-calendar .sst-btn[data-tab="article"]{display:none !im
   padding:6px 12px;border-radius:99px;letter-spacing:.02em;
   white-space:nowrap;
 }
-.ph-dm-btn,
-.ph-curator-btn{
+.ph-dm-btn{
   width:30px;height:30px;display:flex;align-items:center;justify-content:center;
   color:var(--blue);background:none;border:0;cursor:pointer;
 }
-.ph-dm-btn svg,
-.ph-curator-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
-/* Mono icon, no tinted color — sparkle reads as AI cleanly. */
-.ph-curator-btn{color:rgba(237,235,230,.78)}
+.ph-dm-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
+
+/* Name + AI sparkle row — inline so the sparkle reads as a property
+   of the name, not a separate action. Padding gives a generous tap
+   target without crowding the typography. */
+.ph-name-row{display:flex;align-items:center;gap:10px;min-width:0}
+.ph-curator-btn{
+  flex-shrink:0;
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:none;border:0;cursor:pointer;
+  color:rgba(237,235,230,.78);
+  position:relative;overflow:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+.ph-curator-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6;position:relative;z-index:1}
 .ph-curator-btn:active{transform:scale(.92);color:var(--white)}
+
+/* Periodic glint — every 4s a soft white sweep crosses the icon and
+   the sparkle briefly brightens. Tuned to be noticeable on the dark
+   cover but not distracting. */
+@keyframes phCuratorGlint{
+  0%, 70%, 100% {
+    color: rgba(237,235,230,.78);
+    filter: none;
+  }
+  78% {
+    color: #fff;
+    filter: drop-shadow(0 0 10px rgba(255,255,255,.85));
+  }
+  86% {
+    color: rgba(237,235,230,.78);
+    filter: none;
+  }
+}
+@keyframes phCuratorGlintSweep{
+  0%, 70%, 100% { transform: translateX(-130%) }
+  82%          { transform: translateX(130%) }
+}
+.ph-curator-btn{animation:phCuratorGlint 4.6s ease-in-out infinite}
+.ph-curator-btn::before{
+  content:"";position:absolute;inset:-2px;border-radius:50%;
+  background:linear-gradient(110deg,
+    transparent 35%,
+    rgba(255,255,255,.55) 50%,
+    transparent 65%);
+  transform:translateX(-130%);
+  animation:phCuratorGlintSweep 4.6s ease-in-out infinite;
+  pointer-events:none;mix-blend-mode:screen;z-index:0;
+}
 
 /* ── AI Curator chat overlay ─────────────────────────
    Bottom-sheet (mobile) / centered card (desktop). The artist
@@ -1966,18 +2008,18 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 .ph-role{font-size:10px !important;letter-spacing:.18em !important;color:rgba(10,10,10,.45) !important}
 .ph-heart-btn{
   position:absolute !important;right:20px !important;top:50% !important;transform:translateY(-50%) !important;
-  width:52px;height:52px;border-radius:50%;
+  width:36px;height:36px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  background:rgba(10,10,10,.04);border:1px solid rgba(10,10,10,.15);
+  background:rgba(10,10,10,.04);border:0.5px solid rgba(10,10,10,.18);
   color:#0A0A0A;cursor:pointer;transition:background .2s;
 }
 /* When the SUB button lives in the topbar, anchor it to the left. */
 .topbar .ph-heart-btn{
   position:absolute !important;left:14px !important;right:auto !important;
-  top:calc(var(--safe-top,0px) + 2px) !important;transform:none !important;
+  top:calc(var(--safe-top,0px) + 6px) !important;transform:none !important;
 }
-.topbar{min-height:calc(var(--safe-top,0px) + 60px) !important;padding-top:calc(var(--safe-top,0px) + 4px) !important}
-.ph-heart-btn svg,.ph-heart-btn img{width:50px;height:50px;fill:none;stroke:currentColor;object-fit:contain;display:block}
+.topbar{min-height:calc(var(--safe-top,0px) + 56px) !important;padding-top:calc(var(--safe-top,0px) + 4px) !important}
+.ph-heart-btn svg,.ph-heart-btn img{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;object-fit:contain;display:block}
 .ph-heart-btn:active{background:rgba(10,10,10,.08)}
 
 
@@ -2069,7 +2111,7 @@ body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;c
 <div class="topbar">
   <!-- SUB (subscription/tip) — toggles PASS ↔ SUB panel -->
   <button class="ph-heart-btn" id="phHeartBtn" aria-label="Props &amp; Pulse" onclick="document.body.classList.toggle('show-sub');this.classList.toggle('active');document.querySelector('.content')?.scrollTo({top:0,behavior:'smooth'})">
-    <img src="/sub.png" alt="Subscription" style="width:50px;height:50px;object-fit:contain;display:block">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8.5c0-2.6-2.1-4.5-4.5-4.5-1.7 0-3.2.9-4 2.3-.8-1.4-2.3-2.3-4-2.3C6.1 4 4 5.9 4 8.5c0 5.5 8 11.5 8 11.5s2.6-2 5-4.5"/><polyline points="13 11 15 13 17 9 19 11 21 11"/></svg>
   </button>
 
   <a class="tb-brand" href="/screen" aria-label="EXPASS"><img src="/expass_icon.png" alt="EXPASS"></a>
@@ -2109,18 +2151,19 @@ body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;c
       <span class="pro" id="phPlanBadge" style="display:none">FREE</span>
     </div>
     <div class="ph-name-block">
-      <div class="ph-name"></div>
+      <div class="ph-name-row">
+        <div class="ph-name"></div>
+        <!-- AI Curator — sits next to the name with a periodic glint -->
+        <button class="ph-curator-btn" id="phCuratorBtn" aria-label="AIに聞く" title="AIに聞く" type="button" style="display:none">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 13 9 20 12 13 15 12 22 11 15 4 12 11 9 Z"/></svg>
+        </button>
+      </div>
       <div class="ph-role"></div>
     </div>
-    <!-- Follow / DM / Ask AI — only shown when viewing another user's profile via ?user= -->
+    <!-- Follow — shown only when viewing another user's profile via ?user=
+         (DM lives in the topbar's paper-plane icon, unified with other pages). -->
     <div class="ph-actions" id="phActions" style="display:none">
       <button class="ph-follow-btn" id="phFollowBtn" style="display:none">フォロー</button>
-      <button class="ph-curator-btn" id="phCuratorBtn" aria-label="AIに聞く" title="AIに聞く" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 13 9 20 12 13 15 12 22 11 15 4 12 11 9 Z"/></svg>
-      </button>
-      <button class="ph-dm-btn" id="phDmBtn" aria-label="Messages">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21.854 2.147 10.61 13.39"/><path d="M21.854 2.147 14.802 22.335 10.61 13.39 1.665 9.199z"/></svg>
-      </button>
     </div>
   </div>
 
@@ -4519,9 +4562,11 @@ if (isOtherUser) {
     }
   }
 
-  // Show follow + DM buttons (hidden for own profile)
+  // Show follow button + AI sparkle (hidden by default for own profile).
   const actions = document.getElementById('phActions');
   if (actions) actions.style.display = 'flex';
+  const curBtn = document.getElementById('phCuratorBtn');
+  if (curBtn) curBtn.style.display = 'flex';
   const followBtn = document.getElementById('phFollowBtn');
   if (followBtn) {
     followBtn.style.display = '';
