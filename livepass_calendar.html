@@ -754,6 +754,134 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 .content{padding-top:var(--safe-top,0px) !important}
 .topbar .tb-brand{position:relative !important;left:auto !important;top:auto !important;transform:none !important;margin:0 auto !important;height:32px !important}
 
+/* ═══ EVENT CONCIERGE — choice sheet shown right after tap ═══ */
+#eventChoiceOverlay{
+  position:fixed;inset:0;z-index:10010;background:rgba(0,0,0,.72);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  display:none;align-items:flex-end;justify-content:center;
+  padding:0 0 env(safe-area-inset-bottom,0);
+  font-family:Arial,'Noto Sans JP',sans-serif;
+}
+#eventChoiceOverlay.active{display:flex;animation:ecoIn .25s ease-out both}
+@keyframes ecoIn{from{opacity:0}to{opacity:1}}
+.ec-sheet{
+  position:relative;width:100%;max-width:560px;background:#0a0a0a;color:#EDEBE6;
+  border-top-left-radius:20px;border-top-right-radius:20px;
+  border:0.5px solid rgba(255,255,255,.08);
+  padding:14px 22px calc(22px + env(safe-area-inset-bottom,0));
+  animation:ecSheetUp .3s cubic-bezier(.2,.8,.2,1) both;
+}
+@keyframes ecSheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.ec-handle{width:44px;height:4px;border-radius:99px;background:rgba(237,235,230,.25);margin:0 auto 14px}
+.ec-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.34em;
+  text-transform:uppercase;color:rgba(0,229,160,.7);margin-bottom:6px;text-align:center}
+.ec-title{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:14px;
+  letter-spacing:.02em;line-height:1.4;margin-bottom:14px;text-align:center;
+  color:#EDEBE6;
+  display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ec-actions{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.ec-btn{
+  display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;
+  border-radius:14px;background:rgba(255,255,255,.04);
+  border:0.5px solid rgba(255,255,255,.08);color:#EDEBE6;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;font-size:13px;
+  letter-spacing:.02em;text-align:left;
+}
+.ec-btn:active{transform:scale(.98);background:rgba(255,255,255,.07)}
+.ec-btn .ec-icon{
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+}
+.ec-btn.primary .ec-icon{background:rgba(0,229,160,.16);color:#00E5A0}
+.ec-btn.detail  .ec-icon{background:rgba(61,170,255,.16);color:#3DAAFF}
+.ec-btn.buy     .ec-icon{background:rgba(245,200,66,.18);color:#F5C842}
+.ec-btn-cap{display:block;font-size:10px;font-weight:400;color:rgba(237,235,230,.5);
+  margin-top:2px;letter-spacing:.02em;line-height:1.4}
+.ec-skip{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-top:14px;padding:6px 0;
+  font-size:10.5px;color:rgba(237,235,230,.45);
+}
+.ec-skip input{accent-color:#00E5A0;width:14px;height:14px}
+.ec-cancel{
+  display:block;width:100%;margin-top:8px;padding:11px;
+  background:transparent;border:0.5px solid rgba(237,235,230,.18);border-radius:99px;
+  color:rgba(237,235,230,.6);font-size:11px;letter-spacing:.14em;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:500;
+}
+
+/* ═══ AI EXPLAIN MODAL ═══ */
+#aiExplainOverlay{
+  position:fixed;inset:0;z-index:10020;background:rgba(0,0,0,.78);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  display:none;align-items:flex-end;justify-content:center;
+  padding:0 0 env(safe-area-inset-bottom,0);
+  font-family:Arial,'Noto Sans JP',sans-serif;
+}
+#aiExplainOverlay.active{display:flex;animation:ecoIn .25s ease-out both}
+.aix-sheet{
+  position:relative;width:100%;max-width:560px;
+  background:#0a0a0a;color:#EDEBE6;
+  border-top-left-radius:20px;border-top-right-radius:20px;
+  border:0.5px solid rgba(255,255,255,.08);
+  padding:14px 22px calc(22px + env(safe-area-inset-bottom,0));
+  max-height:90dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  animation:ecSheetUp .35s cubic-bezier(.2,.8,.2,1) both;
+}
+.aix-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.aix-mark{
+  width:28px;height:28px;border-radius:50%;
+  background:rgba(0,229,160,.16);color:#00E5A0;
+  display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;
+}
+.aix-eye{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.34em;
+  text-transform:uppercase;color:rgba(0,229,160,.7)}
+.aix-title{font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;
+  font-size:14px;color:#EDEBE6;line-height:1.4;
+  display:-webkit-box;-webkit-line-clamp:1;line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.aix-q-row{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 10px}
+.aix-q-chip{
+  padding:7px 12px;border-radius:99px;background:rgba(255,255,255,.05);
+  border:0.5px solid rgba(255,255,255,.1);
+  font-size:11px;color:rgba(237,235,230,.78);letter-spacing:.02em;
+  font-family:Arial,'Noto Sans JP',sans-serif;
+}
+.aix-q-chip:active{background:rgba(0,229,160,.1)}
+.aix-input-row{display:flex;gap:8px;margin-bottom:14px}
+.aix-input{
+  flex:1;min-width:0;padding:11px 14px;
+  background:rgba(255,255,255,.05);border:0.5px solid rgba(255,255,255,.12);border-radius:12px;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-size:12px;
+  color:#EDEBE6;outline:none;
+}
+.aix-input:focus{border-color:#00E5A0;background:rgba(0,229,160,.04)}
+.aix-send{
+  flex-shrink:0;padding:11px 16px;border-radius:12px;background:#00E5A0;color:#000;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:11px;
+  letter-spacing:.12em;text-transform:uppercase;
+}
+.aix-send:disabled{background:rgba(237,235,230,.12);color:rgba(237,235,230,.35)}
+.aix-answer{
+  background:rgba(255,255,255,.03);border:0.5px solid rgba(255,255,255,.06);
+  border-radius:14px;padding:14px 16px;
+  font-size:13px;line-height:1.85;color:#EDEBE6;letter-spacing:.01em;
+  white-space:pre-wrap;min-height:60px;
+}
+.aix-answer .aix-loading{display:inline-flex;align-items:center;gap:8px;color:rgba(237,235,230,.5);font-size:11px}
+.aix-answer .dot{width:5px;height:5px;border-radius:50%;background:#00E5A0;
+  animation:aixDot 1.2s ease-in-out infinite}
+.aix-answer .dot:nth-child(2){animation-delay:.15s}
+.aix-answer .dot:nth-child(3){animation-delay:.3s}
+@keyframes aixDot{0%,80%,100%{opacity:.25;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+.aix-cta-row{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.aix-cta{
+  width:100%;padding:14px;border-radius:14px;
+  font-family:Arial,'Noto Sans JP',sans-serif;font-weight:900;font-size:12px;
+  letter-spacing:.12em;text-transform:uppercase;
+}
+.aix-cta.primary{background:#00E5A0;color:#000;box-shadow:0 8px 28px rgba(0,229,160,.22)}
+.aix-cta.secondary{background:transparent;border:0.5px solid rgba(237,235,230,.18);color:rgba(237,235,230,.65)}
+
 </style>
 
 
@@ -820,6 +948,76 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
     <div class="em-label" id="emLabel">Event</div>
   </header>
   <div class="em-body" id="emBody"></div>
+</div>
+
+<!-- EVENT CONCIERGE CHOICE SHEET — shown right after a tap so the user
+     picks their journey instead of being dropped into the full detail
+     modal cold. Skipped automatically once the user opts out. -->
+<div id="eventChoiceOverlay" aria-hidden="true">
+  <div class="ec-sheet" role="dialog" aria-label="どう見ますか？">
+    <div class="ec-handle"></div>
+    <div class="ec-eyebrow">EXPASS · CONCIERGE</div>
+    <div class="ec-title" id="ecTitle">—</div>
+    <div class="ec-actions">
+      <button class="ec-btn primary" id="ecBtnAi" type="button">
+        <span class="ec-icon">✦</span>
+        <span>AI に説明してもらう
+          <span class="ec-btn-cap">見どころ・服装・アクセスなど聞ける</span>
+        </span>
+      </button>
+      <button class="ec-btn detail" id="ecBtnDetail" type="button">
+        <span class="ec-icon">▤</span>
+        <span>詳細を見る
+          <span class="ec-btn-cap">出演者・日時・本文をそのまま読む</span>
+        </span>
+      </button>
+      <button class="ec-btn buy" id="ecBtnBuy" type="button">
+        <span class="ec-icon">▶</span>
+        <span id="ecBtnBuyLabel">チケット・予約へ
+          <span class="ec-btn-cap">説明は要らない、すぐ購入する</span>
+        </span>
+      </button>
+    </div>
+    <label class="ec-skip">
+      <input type="checkbox" id="ecSkipNext"> 次回からこの画面をスキップ
+    </label>
+    <button class="ec-cancel" id="ecCancel" type="button">閉じる</button>
+  </div>
+</div>
+
+<!-- AI EXPLAIN MODAL — single-question Q&A grounded in the event data
+     (title / venue / time / desc / tags / aiNotes). After the answer,
+     soft CTA pushes the user to ticket purchase or reservation. -->
+<div id="aiExplainOverlay" aria-hidden="true">
+  <div class="aix-sheet" role="dialog" aria-label="AI コンシェルジュ">
+    <div class="ec-handle"></div>
+    <div class="aix-head">
+      <div class="aix-mark">✦</div>
+      <div>
+        <div class="aix-eye">EXPASS · ASK</div>
+        <div class="aix-title" id="aixTitle">—</div>
+      </div>
+    </div>
+    <div class="aix-q-row" id="aixSuggested">
+      <button class="aix-q-chip" type="button" data-q="このイベントの見どころは？">見どころは？</button>
+      <button class="aix-q-chip" type="button" data-q="どんな服装で行けばいい？">服装は？</button>
+      <button class="aix-q-chip" type="button" data-q="アクセス・最寄り駅を教えて">アクセス</button>
+      <button class="aix-q-chip" type="button" data-q="どんな人におすすめ？">どんな人向け？</button>
+    </div>
+    <div class="aix-input-row">
+      <input class="aix-input" id="aixInput" type="text"
+        placeholder="気になることを質問（例：終電は？年齢制限は？）"
+        autocomplete="off" maxlength="200">
+      <button class="aix-send" id="aixSend" type="button">送信</button>
+    </div>
+    <div class="aix-answer" id="aixAnswer">
+      <span class="aix-loading">気になる点を上のチップか入力欄から聞いてください</span>
+    </div>
+    <div class="aix-cta-row">
+      <button class="aix-cta primary" id="aixCtaBuy" type="button">チケット・予約へ進む</button>
+      <button class="aix-cta secondary" id="aixCtaDetail" type="button">先に詳細を見る</button>
+    </div>
+  </div>
 </div>
 
 <!-- ═══ COMPOSE SELECTOR BOTTOM SHEET (shared) ═══ -->
@@ -965,6 +1163,7 @@ function getUserSchedule(){
         artists: Array.isArray(e.artists) ? e.artists : [],
         team: Array.isArray(e.team) ? e.team : [],
         collaborators: Array.isArray(e.collaborators) ? e.collaborators : [],
+        aiNotes: e.aiNotes || '',
       });
     });
   } catch(err) {}
@@ -1100,6 +1299,11 @@ MERGED.forEach(e => followingList.appendChild(renderEvent(e)));
       meta: r.meta || '',
       tags: Array.isArray(r.tags) ? r.tags : [],
       cover: r.cover || null,
+      desc: r.body || '',
+      price: r.price || '',
+      reservation: !!r.reservation,
+      artists: Array.isArray(r.artists) ? r.artists : [],
+      aiNotes: r.aiNotes || '',
     })));
   }
 
@@ -1205,7 +1409,7 @@ function renderEvent(e) {
       <div class="ev-tags">${e.tags.slice(0,3).map(t => `<div class="ev-tag">${t}</div>`).join('')}</div>
     </div>
   `;
-  div.addEventListener('click', () => openEventDetail(e));
+  div.addEventListener('click', () => openEventChoice(e));
   return div;
 }
 
@@ -1228,7 +1432,162 @@ const emClose = document.getElementById('emClose');
 
 const initialsOf = (n) => (n || '?').replace(/[^A-Za-z0-9\u3040-\u30FF\u4E00-\u9FFF]/g, '').slice(0, 2).toUpperCase();
 
-function openEventDetail(e) {
+/* ─────────────────────────────────────────────
+   EVENT CONCIERGE — choice sheet + AI explain modal
+   ─────────────────────────────────────────────
+   Tapping an event card no longer opens the detail modal directly.
+   First we surface a 3-way choice so the user can pick their journey:
+     · AI に説明してもらう  → openAiExplain(e)
+     · 詳細を見る           → openEventDetail(e)
+     · チケット・予約へ     → openEventDetail(e) + scroll-to-CTA
+   Power users can opt out via the skip checkbox; we cache the choice
+   in localStorage.expass_concierge_skip so the sheet never appears
+   again for them. ───────────────────────────────────────────── */
+const ecOverlay   = document.getElementById('eventChoiceOverlay');
+const ecTitle     = document.getElementById('ecTitle');
+const ecBtnAi     = document.getElementById('ecBtnAi');
+const ecBtnDetail = document.getElementById('ecBtnDetail');
+const ecBtnBuy    = document.getElementById('ecBtnBuy');
+const ecBtnBuyLbl = document.getElementById('ecBtnBuyLabel');
+const ecCancel    = document.getElementById('ecCancel');
+const ecSkipNext  = document.getElementById('ecSkipNext');
+
+function shouldSkipChoice(){
+  try { return localStorage.getItem('expass_concierge_skip') === '1'; } catch(_){ return false; }
+}
+function rememberSkip(v){
+  try { localStorage.setItem('expass_concierge_skip', v ? '1' : '0'); } catch(_){}
+}
+
+function openEventChoice(e){
+  // Owner viewing their own post should bypass the concierge — they want
+  // edit/delete access immediately.
+  const me = localStorage.getItem('livepass_account_name') || '';
+  const isOwner = (e.author || '').toUpperCase() === me.toUpperCase();
+  if (isOwner || shouldSkipChoice()) { openEventDetail(e); return; }
+
+  ecTitle.textContent = e.title || '';
+  ecBtnBuyLbl.innerHTML = (e.reservation ? '予約・チケットへ' : 'チケットへ') +
+    '<span class="ec-btn-cap">説明は要らない、すぐ進む</span>';
+  ecSkipNext.checked = false;
+
+  ecBtnAi.onclick = () => {
+    if (ecSkipNext.checked) rememberSkip(true);
+    closeChoice();
+    openAiExplain(e);
+  };
+  ecBtnDetail.onclick = () => {
+    if (ecSkipNext.checked) rememberSkip(true);
+    closeChoice();
+    openEventDetail(e);
+  };
+  ecBtnBuy.onclick = () => {
+    if (ecSkipNext.checked) rememberSkip(true);
+    closeChoice();
+    openEventDetail(e, { scrollToCta: true });
+  };
+
+  ecOverlay.classList.add('active');
+  ecOverlay.setAttribute('aria-hidden','false');
+  if (navigator.vibrate) navigator.vibrate(6);
+}
+function closeChoice(){
+  ecOverlay.classList.remove('active');
+  ecOverlay.setAttribute('aria-hidden','true');
+}
+ecCancel.addEventListener('click', closeChoice);
+ecOverlay.addEventListener('click', (ev) => { if (ev.target === ecOverlay) closeChoice(); });
+
+/* AI explain modal — single-shot Q&A grounded in the event data. */
+const aixOverlay   = document.getElementById('aiExplainOverlay');
+const aixTitle     = document.getElementById('aixTitle');
+const aixInput     = document.getElementById('aixInput');
+const aixSend      = document.getElementById('aixSend');
+const aixAnswer    = document.getElementById('aixAnswer');
+const aixCtaBuy    = document.getElementById('aixCtaBuy');
+const aixCtaDetail = document.getElementById('aixCtaDetail');
+const aixSuggested = document.getElementById('aixSuggested');
+
+let _aixCurrentEvent = null;
+
+function openAiExplain(e){
+  _aixCurrentEvent = e;
+  aixTitle.textContent = e.title || '';
+  aixInput.value = '';
+  aixAnswer.innerHTML = '<span class="aix-loading">気になる点を上のチップか入力欄から聞いてください</span>';
+  aixOverlay.classList.add('active');
+  aixOverlay.setAttribute('aria-hidden','false');
+  if (navigator.vibrate) navigator.vibrate(6);
+}
+function closeAix(){
+  aixOverlay.classList.remove('active');
+  aixOverlay.setAttribute('aria-hidden','true');
+}
+aixOverlay.addEventListener('click', (ev) => { if (ev.target === aixOverlay) closeAix(); });
+
+aixSuggested.addEventListener('click', (ev) => {
+  const chip = ev.target.closest('.aix-q-chip');
+  if (!chip) return;
+  aixInput.value = chip.dataset.q || '';
+  askAi();
+});
+aixSend.addEventListener('click', askAi);
+aixInput.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') askAi(); });
+
+async function askAi(){
+  const e = _aixCurrentEvent; if (!e) return;
+  const q = (aixInput.value || '').trim();
+  if (!q) {
+    aixAnswer.innerHTML = '<span class="aix-loading" style="color:#FF7A7A">質問を入力してください</span>';
+    return;
+  }
+  aixSend.disabled = true;
+  aixAnswer.innerHTML = '<span class="aix-loading">考え中<span class="dot"></span><span class="dot"></span><span class="dot"></span></span>';
+  try {
+    const fields = {
+      title:    e.title,
+      category: e.cat,
+      venue:    e.venue,
+      date:     e.rawDate || '',
+      time:     e.time,
+      price:    e.price,
+      tags:     e.tags || [],
+      artists:  e.artists || [],
+      desc:     e.desc || e.body || '',
+      aiNotes:  e.aiNotes || '',
+    };
+    const resp = await fetch('/api/ai-write', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({ action:'event-explain', fields, question: q }),
+    });
+    const data = await resp.json().catch(()=>({}));
+    if (!resp.ok || !data.text) {
+      aixAnswer.textContent = (data && data.error) || 'うまく回答できませんでした。あとでもう一度試してください。';
+      aixSend.disabled = false;
+      return;
+    }
+    aixAnswer.textContent = data.text;
+  } catch(err) {
+    aixAnswer.textContent = '通信に失敗しました。電波状況を確認してください。';
+  } finally {
+    aixSend.disabled = false;
+  }
+}
+
+aixCtaBuy.addEventListener('click', () => {
+  const e = _aixCurrentEvent; if (!e) return;
+  closeAix();
+  openEventDetail(e, { scrollToCta: true });
+});
+aixCtaDetail.addEventListener('click', () => {
+  const e = _aixCurrentEvent; if (!e) return;
+  closeAix();
+  openEventDetail(e);
+});
+
+function openEventDetail(e, opts) {
+  opts = opts || {};
   if (navigator.vibrate) navigator.vibrate(8);
   emLabel.textContent = e.cat;
 
@@ -1536,6 +1895,17 @@ function openEventDetail(e) {
   `;
   eventModal.classList.add('active');
   eventModal.setAttribute('aria-hidden','false');
+
+  // Concierge "buy / reserve" path scrolls the user straight to the CTA
+  // section so they don't have to hunt for it.
+  if (opts.scrollToCta) {
+    setTimeout(() => {
+      const cta = emBody.querySelector('.em-cta');
+      if (cta && typeof cta.scrollIntoView === 'function') {
+        cta.scrollIntoView({ behavior:'smooth', block:'center' });
+      }
+    }, 220);
+  }
 
   // Artist chips → navigate to that user's profile
   emBody.querySelectorAll('.em-artist').forEach(btn => {

@@ -14,6 +14,11 @@
  *             block that ONLY adds information NOT already captured in the
  *             form. Output follows the "■ LABEL" format that the detail
  *             modal parses into credits-style rows.
+ *   "event-explain" — answer a reader's question about an event using the
+ *             structured fields (+ optional aiNotes the creator added in
+ *             compose). Used by the calendar concierge sheet so users can
+ *             ask "見どころは？" / "服装は？" / "終電は？" before deciding
+ *             whether to buy a ticket or reserve.
  *
  * Uses the Anthropic Messages API directly (no SDK) so the serverless
  * function stays small. Requires process.env.ANTHROPIC_API_KEY.
@@ -25,18 +30,22 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'method not allowed' });
   }
-  const { action, title, body, fields } = req.body || {};
-  if (!['write', 'proof', 'event-supplement'].includes(action)) {
+  const { action, title, body, fields, question } = req.body || {};
+  if (!['write', 'proof', 'event-supplement', 'event-explain'].includes(action)) {
     return res.status(400).json({ error: 'invalid action' });
   }
 
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) {
-    const stubText =
-      action === 'event-supplement'
-        ? '■ DRESS CODE\nFree (smart casual welcome)\n\n■ NOTES\nID必須 / 20歳未満入場不可\n撮影は DJブース側のみ OK\n\n■ ACCESS\n最寄駅から徒歩5分\n\n（※AI未設定のためサンプル出力。Vercel に ANTHROPIC_API_KEY を設定すると実際のイベント内容に合わせた補足が生成されます）'
-        : (body || '') +
-          '\n\n（AI機能を使うには Vercel の環境変数に ANTHROPIC_API_KEY を設定してください）';
+    let stubText;
+    if (action === 'event-supplement') {
+      stubText = '■ DRESS CODE\nFree (smart casual welcome)\n\n■ NOTES\nID必須 / 20歳未満入場不可\n撮影は DJブース側のみ OK\n\n■ ACCESS\n最寄駅から徒歩5分\n\n（※AI未設定のためサンプル出力。Vercel に ANTHROPIC_API_KEY を設定すると実際のイベント内容に合わせた補足が生成されます）';
+    } else if (action === 'event-explain') {
+      stubText = 'このイベントの見どころは、出演アーティストの組み合わせと会場の雰囲気にあります。\n\nサブスク加入者は割引価格で参加できるので、頻繁に通う方はそちらもおすすめです。\n\n（※AI未設定のためサンプル応答。Vercel に ANTHROPIC_API_KEY を設定すると実際のイベント内容に基づいた回答が返されます）';
+    } else {
+      stubText = (body || '') +
+        '\n\n（AI機能を使うには Vercel の環境変数に ANTHROPIC_API_KEY を設定してください）';
+    }
     return res.status(200).json({ text: stubText, stub: true });
   }
 
@@ -54,6 +63,34 @@ module.exports = async function handler(req, res) {
       '以下の日本語記事本文を校正してください。誤字脱字・漢字変換ミス・' +
       '不自然な表現を直し、文体と内容は保持してください。修正後の本文のみを返してください。\n\n' +
       body;
+  } else if (action === 'event-explain') {
+    const f = fields || {};
+    const summary = [
+      f.title    && `タイトル: ${f.title}`,
+      f.category && `カテゴリ: ${f.category}`,
+      f.venue    && `会場: ${f.venue}`,
+      f.date     && `日付: ${f.date}${f.time ? ' ' + f.time : ''}`,
+      f.price    && `価格: ¥${f.price}`,
+      f.tags     && f.tags.length    && `タグ: ${f.tags.join(', ')}`,
+      f.artists  && f.artists.length && `出演: ${f.artists.map(a => a.name || a).join(', ')}`,
+      f.desc     && `本文: ${String(f.desc).slice(0, 600)}`,
+      f.aiNotes  && `主催者からのメモ: ${String(f.aiNotes).slice(0, 800)}`,
+    ].filter(Boolean).join('\n');
+
+    const q = String(question || 'このイベントの見どころと、参加するならどんな人におすすめか教えてください。').slice(0, 400);
+
+    prompt =
+      'あなたは EXPASS（ダンス／DJ／イベントカルチャー）のイベントコンシェルジュです。\n' +
+      'ユーザーの質問に、登録されているイベント情報を根拠にして 120〜220 字の日本語で答えてください。\n\n' +
+      '【イベント情報】\n' + summary + '\n\n' +
+      '【ユーザーの質問】\n' + q + '\n\n' +
+      '回答ルール:\n' +
+      '- 既存情報から確実に言えることだけ書く。憶測は避ける。\n' +
+      '- 価格・時間・出演者などはイベント情報に書かれている数字をそのまま使う。\n' +
+      '- 見どころを2-3点に絞る。\n' +
+      '- 最後の1行で、興味を持ったらチケット購入か予約に進めることを軽く案内する（「下のボタンから」など）。\n' +
+      '- 絵文字・装飾記号は使わない。マークダウン記法も使わない。\n\n' +
+      '回答本文のみ返してください。';
   } else {
     // event-supplement
     const f = fields || {};

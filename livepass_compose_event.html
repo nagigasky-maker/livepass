@@ -699,6 +699,15 @@ html,body,.form,.content,.main,main,section,div,footer{background-color:#FFF !im
     <input class="input-box" id="tagsInput" placeholder="HOUSE, TECHNO, PARTY">
   </div>
 
+  <div class="form-section">
+    <div class="form-label">AI コンシェルジュ向けメモ <span style="opacity:.5;font-weight:400">(任意)</span></div>
+    <div style="font-size:11px;line-height:1.7;color:rgba(237,235,230,.55);margin-bottom:10px">
+      ユーザーがカレンダーで「AI に説明してもらう」を選んだとき、AI がここに書かれた情報を優先して回答します。<br>
+      例: 「このパーティーは BACK TO 90s が裏テーマ」「物販は CASH ONLY」「23時以降は身分証必須」など、本文には書きづらい裏情報や見どころ。
+    </div>
+    <textarea class="input-box" id="aiNotesInput" placeholder="このイベントの見どころ・想定されるよくある質問・服装/アクセス/年齢制限などの補足。読者には直接は表示されず、AI コンシェルジュ経由で案内されます。" rows="4"></textarea>
+  </div>
+
   <div style="padding:20px 18px calc(20px + var(--safe-bot) * 0.3)">
     <button class="submit-btn" id="submitBtn">イベントを投稿 →</button>
   </div>
@@ -1552,6 +1561,7 @@ submitBtn.addEventListener('click', async () => {
     collaborators:   state.collaborators.slice(),
     body:            bodyInput.value.trim(),
     tags:            document.getElementById('tagsInput').value.split(',').map(t => t.trim()).filter(Boolean),
+    aiNotes:         (document.getElementById('aiNotesInput')?.value || '').trim(),
     author:          (editingEvent && editingEvent.author) || localStorage.getItem('livepass_account_name') || 'NOBBY',
     authorUid:       uid || (editingEvent && editingEvent.authorUid) || null,
     createdAt:       (editingEvent && editingEvent.createdAt) || new Date().toISOString(),
@@ -1623,6 +1633,8 @@ if (editingEvent) {
   document.getElementById('priceInput').value = editingEvent.price || '';
   bodyInput.value = editingEvent.body || '';
   document.getElementById('tagsInput').value = (editingEvent.tags || []).join(', ');
+  const aiNotesEl = document.getElementById('aiNotesInput');
+  if (aiNotesEl) aiNotesEl.value = editingEvent.aiNotes || '';
 
   // Category pill
   const cat = editingEvent.category || 'DJ';
