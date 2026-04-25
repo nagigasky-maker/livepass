@@ -43,6 +43,7 @@ service cloud.firestore {
                     && request.resource.data.keys().hasOnly([
                          'name','email','plan','avatar','avatarUrl','role','bio',
                          'coverUrl','profession','tier','visibleCategories',
+                         'disciplines','style','region','era','achievements','socialLinks',
                          'agreedTermsAt','createdAt','updatedAt'
                        ])
                     && (!('plan' in request.resource.data) || request.resource.data.plan == 'free');
@@ -50,6 +51,7 @@ service cloud.firestore {
                     && request.resource.data.keys().hasOnly([
                          'name','email','plan','avatar','avatarUrl','role','bio',
                          'coverUrl','profession','tier','cards','visibleCategories',
+                         'disciplines','style','region','era','achievements','socialLinks',
                          'planExpiresAt','planSource',
                          'agreedTermsAt','createdAt','updatedAt'
                        ])

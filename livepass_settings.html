@@ -709,6 +709,69 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
     <div class="field-chevron">›</div>
   </div>
 
+  <!-- ═══ ARTIST PROFILE — feeds the AI curator ═══ -->
+  <div class="sec-label">ARTIST PROFILE</div>
+  <div style="padding:6px 20px 4px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;color:rgba(237,235,230,.42);letter-spacing:.02em;line-height:1.7">
+    AIキュレーターがあなたについて語る材料です。<b>ここに書かれた事実だけ</b>を根拠にAIが質問に答えます — 推測や創作は一切しません。
+  </div>
+
+  <!-- BIO -->
+  <div style="padding:14px 20px 10px">
+    <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;font-size:11px;color:rgba(237,235,230,.85);letter-spacing:.04em;margin-bottom:8px">BIO · 自己紹介</div>
+    <textarea id="apBio" placeholder="活動内容、表現、世界観など。長くて構いません。"
+      style="width:100%;min-height:96px;background:rgba(255,255,255,.03);border:0.5px solid rgba(237,235,230,.12);border-radius:10px;padding:12px 14px;color:var(--white);font-family:Arial,'Noto Sans JP',sans-serif;font-size:12px;letter-spacing:.02em;line-height:1.7;resize:vertical;outline:none"></textarea>
+  </div>
+
+  <!-- DISCIPLINES (multi-select chips) -->
+  <div style="padding:6px 20px 10px">
+    <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;font-size:11px;color:rgba(237,235,230,.85);letter-spacing:.04em;margin-bottom:8px">DISCIPLINES · 表現分野（複数選択可）</div>
+    <div id="apDisciplines" data-multi="disciplines" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+  </div>
+
+  <!-- STYLE (free text, comma-separated) -->
+  <div style="padding:6px 20px 10px">
+    <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;font-size:11px;color:rgba(237,235,230,.85);letter-spacing:.04em;margin-bottom:8px">STYLE · ジャンル / スタイル</div>
+    <input id="apStyle" type="text" placeholder="例) Locking, Funk, Jazz"
+      style="width:100%;background:rgba(255,255,255,.03);border:0.5px solid rgba(237,235,230,.12);border-radius:10px;padding:11px 14px;color:var(--white);font-family:Arial,'Noto Sans JP',sans-serif;font-size:12px;letter-spacing:.02em;outline:none">
+    <div style="margin-top:4px;font-family:Arial,'Noto Sans JP',sans-serif;font-size:9px;color:rgba(237,235,230,.32);letter-spacing:.02em">複数の場合はカンマ区切り</div>
+  </div>
+
+  <!-- REGION + ERA (side by side) -->
+  <div style="padding:6px 20px 10px;display:flex;gap:10px">
+    <div style="flex:1">
+      <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;font-size:11px;color:rgba(237,235,230,.85);letter-spacing:.04em;margin-bottom:8px">REGION · 拠点</div>
+      <input id="apRegion" type="text" placeholder="例) Tokyo"
+        style="width:100%;background:rgba(255,255,255,.03);border:0.5px solid rgba(237,235,230,.12);border-radius:10px;padding:11px 14px;color:var(--white);font-family:Arial,'Noto Sans JP',sans-serif;font-size:12px;letter-spacing:.02em;outline:none">
+    </div>
+    <div style="flex:1">
+      <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;font-size:11px;color:rgba(237,235,230,.85);letter-spacing:.04em;margin-bottom:8px">ERA · 活動歴</div>
+      <input id="apEra" type="text" placeholder="例) 2010-"
+        style="width:100%;background:rgba(255,255,255,.03);border:0.5px solid rgba(237,235,230,.12);border-radius:10px;padding:11px 14px;color:var(--white);font-family:Arial,'Noto Sans JP',sans-serif;font-size:12px;letter-spacing:.02em;outline:none">
+    </div>
+  </div>
+
+  <!-- ACHIEVEMENTS (one per line) -->
+  <div style="padding:6px 20px 10px">
+    <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;font-size:11px;color:rgba(237,235,230,.85);letter-spacing:.04em;margin-bottom:8px">ACHIEVEMENTS · 主な実績</div>
+    <textarea id="apAchievements" placeholder="1行に1つずつ。例)&#10;2018  Juste Debout 日本予選 優勝&#10;2020  ALL MUST DANCE™ 主催開始"
+      style="width:100%;min-height:90px;background:rgba(255,255,255,.03);border:0.5px solid rgba(237,235,230,.12);border-radius:10px;padding:12px 14px;color:var(--white);font-family:Arial,'Noto Sans JP',sans-serif;font-size:12px;letter-spacing:.02em;line-height:1.7;resize:vertical;outline:none"></textarea>
+  </div>
+
+  <!-- SOCIAL LINKS (label + url, dynamic) -->
+  <div style="padding:6px 20px 14px">
+    <div style="font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;font-size:11px;color:rgba(237,235,230,.85);letter-spacing:.04em;margin-bottom:8px">LINKS · 外部リンク</div>
+    <div id="apLinks" style="display:flex;flex-direction:column;gap:8px"></div>
+    <button type="button" id="apAddLink"
+      style="margin-top:8px;width:100%;padding:10px;border-radius:8px;background:rgba(255,255,255,.03);border:0.5px dashed rgba(237,235,230,.18);color:rgba(237,235,230,.6);font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em">＋ リンクを追加</button>
+  </div>
+
+  <!-- SAVE -->
+  <div style="padding:0 20px 26px">
+    <button type="button" id="apSaveBtn"
+      style="width:100%;padding:14px;border-radius:99px;background:var(--blue);color:#fff;border:1px solid var(--blue);font-family:Arial,'Noto Sans JP',sans-serif;font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase">プロフィールを保存</button>
+    <div id="apSaveMsg" style="margin-top:8px;text-align:center;font-family:Arial,'Noto Sans JP',sans-serif;font-size:10px;letter-spacing:.02em;min-height:14px;color:rgba(237,235,230,.55)"></div>
+  </div>
+
   <!-- ═══ MULTI-ACCOUNT ═══ -->
   <div class="sec-label">ACCOUNTS</div>
   <div id="accountsList" style="padding:0 20px 10px"></div>
@@ -1489,6 +1552,175 @@ document.getElementById('signOutBtn')?.addEventListener('click', async () => {
    it from the + compose menu. Existing posts in that category are
    NOT deleted — they come back when the toggle is re-enabled.
    ───────────────────────────────────────────── */
+/* ─────────────────────────────────────────────
+   ARTIST PROFILE — feeds the AI curator (/api/curator)
+   ─────────────────────────────────────────────
+   Bio / disciplines / style / region / era / achievements / socialLinks
+   are persisted to users/{uid} so the curator endpoint can read them
+   server-side too (it actually reads whatever the client sends, but
+   they're mirrored to Firestore so other-user profile views can pick
+   them up). All fields are optional — empty fields are simply omitted
+   from the curator's profile block, never invented around.
+   ───────────────────────────────────────────── */
+(function initArtistProfile(){
+  const DISCIPLINE_CHOICES = [
+    'dancer','dj','choreographer','producer','singer','rapper','musician',
+    'actor','model','photographer','videographer','organizer','curator',
+    'designer','artist',
+  ];
+
+  const els = {
+    bio:          document.getElementById('apBio'),
+    style:        document.getElementById('apStyle'),
+    region:       document.getElementById('apRegion'),
+    era:          document.getElementById('apEra'),
+    achievements: document.getElementById('apAchievements'),
+    disciplines:  document.getElementById('apDisciplines'),
+    links:        document.getElementById('apLinks'),
+    addLinkBtn:   document.getElementById('apAddLink'),
+    saveBtn:      document.getElementById('apSaveBtn'),
+    saveMsg:      document.getElementById('apSaveMsg'),
+  };
+  if (!els.bio) return;
+
+  const state = {
+    disciplines: new Set(),
+    links: [],
+  };
+
+  function renderDisciplines(){
+    els.disciplines.innerHTML = '';
+    DISCIPLINE_CHOICES.forEach(d => {
+      const on = state.disciplines.has(d);
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.dataset.d = d;
+      chip.textContent = d;
+      chip.style.cssText = `
+        padding:6px 12px;border-radius:99px;cursor:pointer;
+        font-family:'IBM Plex Mono',ui-monospace,monospace;
+        font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+        background:${on ? 'var(--blue)' : 'rgba(255,255,255,.04)'};
+        border:0.5px solid ${on ? 'var(--blue)' : 'rgba(237,235,230,.15)'};
+        color:${on ? '#fff' : 'rgba(237,235,230,.65)'};
+        transition:background .15s ease, color .15s ease, border-color .15s ease;
+      `;
+      chip.addEventListener('click', () => {
+        if (state.disciplines.has(d)) state.disciplines.delete(d);
+        else                          state.disciplines.add(d);
+        renderDisciplines();
+      });
+      els.disciplines.appendChild(chip);
+    });
+  }
+
+  function renderLinks(){
+    els.links.innerHTML = '';
+    state.links.forEach((lnk, i) => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;gap:6px;align-items:center';
+      row.innerHTML = `
+        <input class="ap-link-label" type="text" placeholder="ラベル (例: Instagram)" value="${escapeAttr(lnk.label || '')}"
+          style="width:34%;background:rgba(255,255,255,.03);border:0.5px solid rgba(237,235,230,.12);border-radius:8px;padding:9px 10px;color:var(--white);font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;outline:none">
+        <input class="ap-link-url" type="url" placeholder="https://..." value="${escapeAttr(lnk.url || '')}"
+          style="flex:1;background:rgba(255,255,255,.03);border:0.5px solid rgba(237,235,230,.12);border-radius:8px;padding:9px 10px;color:var(--white);font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;outline:none">
+        <button type="button" class="ap-link-rm" data-i="${i}"
+          style="width:28px;height:28px;border-radius:50%;background:rgba(232,16,10,.08);border:0.5px solid rgba(232,16,10,.3);color:#ff6b66;font-size:14px;line-height:1;cursor:pointer">×</button>
+      `;
+      els.links.appendChild(row);
+      const labelInp = row.querySelector('.ap-link-label');
+      const urlInp   = row.querySelector('.ap-link-url');
+      labelInp.addEventListener('input', () => { state.links[i].label = labelInp.value; });
+      urlInp  .addEventListener('input', () => { state.links[i].url   = urlInp.value;   });
+      row.querySelector('.ap-link-rm').addEventListener('click', () => {
+        state.links.splice(i, 1);
+        renderLinks();
+      });
+    });
+  }
+
+  function escapeAttr(s){
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  // Load from Firestore once auth resolves.
+  async function load(){
+    if (!window.FB || !window.FB.currentUser) return;
+    try {
+      const snap = await window.FB.getDoc(window.FB.doc(window.FB.db, 'users', window.FB.currentUser.uid));
+      if (!snap.exists()) { renderDisciplines(); renderLinks(); return; }
+      const d = snap.data();
+      els.bio.value          = d.bio || '';
+      els.style.value        = Array.isArray(d.style) ? d.style.join(', ') : (d.style || '');
+      els.region.value       = d.region || '';
+      els.era.value          = d.era || '';
+      els.achievements.value = Array.isArray(d.achievements) ? d.achievements.join('\n') : (d.achievements || '');
+      state.disciplines = new Set(Array.isArray(d.disciplines) ? d.disciplines : []);
+      state.links       = Array.isArray(d.socialLinks) ? d.socialLinks.slice() : [];
+      renderDisciplines();
+      renderLinks();
+    } catch(e){
+      console.warn('artist profile load:', e && e.code, e && e.message);
+      renderDisciplines();
+      renderLinks();
+    }
+  }
+  if (window.FB && window.FB.authReady) load();
+  else window.addEventListener('fb-auth-ready', load, { once:true });
+  // Initial paint even before auth resolves so the chips/links surfaces aren't empty.
+  renderDisciplines();
+  renderLinks();
+
+  els.addLinkBtn.addEventListener('click', () => {
+    state.links.push({ label:'', url:'' });
+    renderLinks();
+  });
+
+  els.saveBtn.addEventListener('click', async () => {
+    if (!window.FB || !window.FB.currentUser) {
+      els.saveMsg.textContent = 'ログインが必要です';
+      return;
+    }
+    els.saveBtn.disabled = true;
+    els.saveBtn.textContent = '保存中…';
+    els.saveMsg.textContent = '';
+    try {
+      const styleArr = els.style.value
+        .split(/[,、\n]/g).map(s => s.trim()).filter(Boolean);
+      const achievementsArr = els.achievements.value
+        .split('\n').map(s => s.trim()).filter(Boolean);
+      const linksArr = state.links
+        .map(l => ({ label: (l.label||'').trim(), url: (l.url||'').trim() }))
+        .filter(l => l.url);
+      const update = {
+        bio:          els.bio.value.trim() || null,
+        style:        styleArr,
+        region:       els.region.value.trim() || null,
+        era:          els.era.value.trim() || null,
+        achievements: achievementsArr,
+        disciplines:  Array.from(state.disciplines),
+        socialLinks:  linksArr,
+      };
+      // Strip null fields so we don't write null over existing data.
+      Object.keys(update).forEach(k => { if (update[k] === null) delete update[k]; });
+      const { doc, updateDoc, db } = window.FB;
+      await updateDoc(doc(db, 'users', window.FB.currentUser.uid), update);
+      els.saveMsg.style.color = 'var(--mint)';
+      els.saveMsg.textContent = '保存しました';
+      if (navigator.vibrate) navigator.vibrate(10);
+    } catch(e){
+      console.warn('artist profile save:', e && e.code, e && e.message);
+      els.saveMsg.style.color = '#ff6b66';
+      els.saveMsg.textContent = '保存に失敗しました: ' + (e.message || e.code || 'unknown');
+    } finally {
+      els.saveBtn.disabled = false;
+      els.saveBtn.textContent = 'プロフィールを保存';
+    }
+  });
+})();
+
 (function initCategoryToggles(){
   const KEY = 'livepass_visible_categories';
   const ALL = ['article','event','workshop','exhibition'];
