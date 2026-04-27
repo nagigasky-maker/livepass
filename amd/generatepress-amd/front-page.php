@@ -958,7 +958,14 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         </div>
         <div class="ticket-section">
           <div class="ticket-head"><span class="ticket-head-lbl">Tickets</span><span class="ticket-head-note lang-switchable" data-jp="Web only · 電子チケット" data-en="Web only · E-ticket">Web only · 電子チケット</span></div>
-          <a class="trow" href="https://zzazz-za.stores.jp/items/69c0e0ddb5941ff887100e5b" target="_blank"><div class="trow-left"><span class="trow-type">Advance</span><span class="trow-price">¥3,600</span></div><div class="trow-right"><span class="trow-arr">→</span></div></a>
+          <div onclick="openUnlockPass()" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:20px 0;border-bottom:1px solid rgba(237,235,230,0.14);transition:padding-left 0.2s;">
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <span style="font-size:8px;font-weight:500;letter-spacing:0.4em;text-transform:uppercase;color:var(--red);">🎫 Unlock Pass</span>
+              <span style="font-family:Arial,'Arial Black',sans-serif;font-size:20px;font-weight:900;line-height:1;color:var(--white);">¥3,500 — ¥9,999</span>
+              <span class="lang-switchable" data-jp="価格はあなたが決める" data-en="You decide the price" style="font-size:10px;font-weight:300;color:rgba(237,235,230,0.55);letter-spacing:0.1em;">価格はあなたが決める</span>
+            </div>
+            <span style="font-size:18px;color:var(--red);">→</span>
+          </div>
           <div class="trow disabled"><div class="trow-left"><span class="trow-type">Door</span><span class="trow-price">¥4,500</span></div><div class="trow-right"><span style="font-size:8px;letter-spacing:0.3em;text-transform:uppercase;color:var(--white)">On the Night</span></div></div>
         </div>
       </div>
@@ -1094,6 +1101,95 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
       <a class="sc" href="https://zzazz-za.stores.jp/items/69c04bdbd917113bede5e2fb" target="_blank"><div class="sc-vis"><img src="<?= get_stylesheet_directory_uri() ?>/artwear/amd09bl.png" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div><div class="sc-info"><div class="sc-cat">Artwork Wear</div><div class="sc-name">AMD BL</div></div></a>
       <a class="sc" href="https://zzazz-za.stores.jp/items/69c04c3bd9171143c6e5e2d0" target="_blank"><div class="sc-vis"><img src="<?= get_stylesheet_directory_uri() ?>/artwear/amd08blpk.png" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div><div class="sc-info"><div class="sc-cat">Artwork Wear</div><div class="sc-name">AMD BL PK</div></div></a>
       <a class="sc" href="https://zzazz-za.stores.jp/items/69c04cb6e126f8b4d7cb6b71" target="_blank"><div class="sc-vis"><img src="<?= get_stylesheet_directory_uri() ?>/artwear/amd07jktufo_1.PNG" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div><div class="sc-info"><div class="sc-cat">Artwork Wear</div><div class="sc-name">AMD JKT UFO</div></div></a>
+    </div>
+  </div>
+</div>
+
+<!-- UNLOCK PASS OVERLAY -->
+<div class="amd-ticket-overlay unlock-pass-overlay" id="unlockPassOverlay">
+  <button class="amd-ticket-close" onclick="closeUnlockPass()">×</button>
+  <div class="unlock-inner">
+    <!-- Hero / masthead -->
+    <div class="unlock-hero">
+      <div class="unlock-eyebrow lang-switchable" data-jp="EP.07 — ホームカミング" data-en="EP.07 — HOMECOMING">EP.07 — HOMECOMING</div>
+      <div class="unlock-title">🎫<br>UNLOCK<br>PASS</div>
+      <div class="unlock-sub lang-switchable" data-jp="価格はあなたが決める。<br>この夜の価値を、あなたの感覚で。" data-en="You decide the price.<br>Set the value of this night, your way.">価格はあなたが決める。<br>この夜の価値を、あなたの感覚で。</div>
+    </div>
+
+    <div class="unlock-divider"></div>
+
+    <!-- Reference pricing grid -->
+    <div class="unlock-ref-label lang-switchable" data-jp="参考価格 — 例" data-en="Reference pricing — examples">参考価格 — 例</div>
+    <div class="unlock-tiers">
+      <div class="unlock-tier-ref">
+        <div class="ut-tier-num">01</div>
+        <div class="ut-ref-label">Entrance</div>
+        <div class="ut-ref-price">¥3,500</div>
+      </div>
+      <div class="unlock-tier-ref">
+        <div class="ut-tier-num">02</div>
+        <div class="ut-ref-label">Standard<br>Groove</div>
+        <div class="ut-ref-price">¥5,000</div>
+      </div>
+      <div class="unlock-tier-ref">
+        <div class="ut-tier-num">03</div>
+        <div class="ut-ref-label">Deep<br>Support</div>
+        <div class="ut-ref-price">¥7,000</div>
+      </div>
+      <div class="unlock-tier-ref unlock-tier-ref-max">
+        <div class="ut-tier-num">04</div>
+        <div class="ut-ref-label">Maximum<br>Vibe</div>
+        <div class="ut-ref-price">¥9,999</div>
+      </div>
+    </div>
+
+    <!-- Range indicator -->
+    <div class="unlock-range">
+      <div class="unlock-range-bar">
+        <div class="unlock-range-dot" style="left:0%"></div>
+        <div class="unlock-range-dot" style="left:23%"></div>
+        <div class="unlock-range-dot" style="left:54%"></div>
+        <div class="unlock-range-dot unlock-range-dot-max" style="left:100%"></div>
+      </div>
+      <div class="unlock-range-labels">
+        <span>MIN ¥3,500</span>
+        <span>MAX ¥9,999</span>
+      </div>
+    </div>
+
+    <!-- Single CTA button -->
+    <a class="unlock-cta" href="https://buy.stripe.com/14AdRb5BidgW2pk82S48001" target="_blank" rel="noopener">
+      <span class="unlock-cta-label lang-switchable" data-jp="金額を入力して購入" data-en="Enter amount & unlock">金額を入力して購入</span>
+      <span class="unlock-cta-icon">🎫</span>
+    </a>
+    <div class="unlock-cta-note lang-switchable" data-jp="次の画面で ¥3,500 〜 ¥9,999 の範囲で金額を入力できます" data-en="On the next screen, enter any amount between ¥3,500 and ¥9,999">次の画面で ¥3,500 〜 ¥9,999 の範囲で金額を入力できます</div>
+
+    <div class="unlock-divider"></div>
+
+    <!-- Event details recap -->
+    <div class="unlock-event-info">
+      <div class="unlock-section-label">Event</div>
+      <div class="unlock-info-row"><span class="ik">Date</span><span class="iv"><?= esc_html($party_date) ?></span></div>
+      <div class="unlock-info-row"><span class="ik">Time</span><span class="iv"><?= esc_html($party_time) ?></span></div>
+      <div class="unlock-info-row"><span class="ik">Venue</span><span class="iv"><?= esc_html($party_venue) ?></span></div>
+    </div>
+
+    <!-- Artwork / Poster section -->
+    <div class="unlock-artwork">
+      <div class="unlock-section-label">Artwork &amp; Poster</div>
+      <div class="unlock-poster-card">
+        <div class="unlock-poster-visual">
+          <img class="unlock-poster-img" loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/04/amd2026asia%E3%81%AE%E3%82%B3%E3%83%94%E3%83%BC.jpg" alt="UNSEEN CITY Poster">
+          <div class="unlock-poster-limited">LIMITED 20</div>
+        </div>
+        <div class="unlock-poster-body">
+          <div class="unlock-poster-title-ja">見えない都市</div>
+          <div class="unlock-poster-title-en">UNSEEN CITY</div>
+          <div class="unlock-poster-meta">Limited Edition · 20 copies only</div>
+          <p class="unlock-poster-desc lang-switchable" data-jp="光によって、現れたり消えたりするポスター。<br>見えていなかったものが、ふと浮かび上がる。" data-en="A poster that appears and disappears with light.<br>See what only light can reveal.">光によって、現れたり消えたりするポスター。<br>見えていなかったものが、ふと浮かび上がる。</p>
+        </div>
+      </div>
+      <p class="unlock-artwork-desc lang-switchable" data-jp="この夜のために制作された『見えない都市 / UNSEEN CITY』は、会場限定20部の販売となります。あなたのUNLOCK PASSは、作品との出会いへのチケットでもある。" data-en="&lsquo;UNSEEN CITY&rsquo; — limited to 20 copies, sold only at the venue. Your UNLOCK PASS is also a ticket to encounter the art.">この夜のために制作された『見えない都市 / UNSEEN CITY』は、会場限定20部の販売となります。あなたのUNLOCK PASSは、作品との出会いへのチケットでもある。</p>
     </div>
   </div>
 </div>
@@ -1566,7 +1662,8 @@ function openWsTicketOverlay(){var d=document.getElementById('deck'),s=d?d.scrol
 function closeWsTicketOverlay(){var d=document.getElementById('deck'),s=d?d.scrollTop:0;document.body.classList.remove('overlay-open');document.getElementById('p1-2').classList.remove('open');unlockBodyScroll();if(d)d.scrollTop=s;}
 function openTicketOverlay(){var d=document.getElementById('deck'),s=d?d.scrollTop:0;document.body.classList.add('overlay-open');document.getElementById('p0-2').classList.add('open');lockBodyScroll();if(d)d.scrollTop=s;}
 function closeTicketOverlay(){var d=document.getElementById('deck'),s=d?d.scrollTop:0;document.body.classList.remove('overlay-open');document.getElementById('p0-2').classList.remove('open');unlockBodyScroll();if(d)d.scrollTop=s;}
-
+function openUnlockPass(){document.body.classList.add('overlay-open');document.getElementById('unlockPassOverlay').classList.add('open');lockBodyScroll();}
+function closeUnlockPass(){document.body.classList.remove('overlay-open');document.getElementById('unlockPassOverlay').classList.remove('open');unlockBodyScroll();}
 function openArtistPanel(){document.body.classList.add('overlay-open');document.getElementById('artistPanelOverlay').classList.add('open');lockBodyScroll();}
 function closeArtistPanel(){document.body.classList.remove('overlay-open');document.getElementById('artistPanelOverlay').classList.remove('open');unlockBodyScroll();}
 
