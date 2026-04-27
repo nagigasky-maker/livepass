@@ -2572,8 +2572,8 @@ function compressCalCoverToBlob(file, maxW = 1600, quality = 0.82) {
     if (item.cover) {
       bg.style.backgroundImage = `url('${String(item.cover).replace(/'/g,"%27")}')`;
     }
-    el.dataset.artist = item.author || 'NOBBY';
-    el.onclick = () => openConcierge({ name: item.author || 'NOBBY', role: type + ' · ' + (item.venue || '') });
+    el.dataset.eventId = item.id || '';
+    el.onclick = () => openConcierge(item);
   }
 
   function rowEl(item){
@@ -2602,9 +2602,7 @@ function compressCalCoverToBlob(file, maxW = 1600, quality = 0.82) {
         ${item.cover ? `<img src="${escHTML(item.cover)}" alt="">` : ''}
       </div>
     `;
-    row.addEventListener('click', () => {
-      openConcierge({ name: item.author || 'NOBBY', role: type + ' · ' + (item.venue || '') });
-    });
+    row.addEventListener('click', () => openConcierge(item));
     return row;
   }
 
@@ -2667,13 +2665,23 @@ function compressCalCoverToBlob(file, maxW = 1600, quality = 0.82) {
   const streamEl = document.getElementById('aiStream');
   let promptTimer = null, typeTimer = null;
 
-  const AI_ANSWERS = {
-    NOBBY: {
-      activity: 'NOBBYは20年以上にわたって東京のダンスシーンと音楽シーンを横断する活動を続けています。SPACE COOKING™とALL MUST DANCE™の主宰者として、ストリートダンスからクラブシーンまで、現場でしか生まれない文化を記録し、次の世代に渡すことに取り組んでいます。',
-      events:   '次の出演はMAY 04のALL MUST DANCE™ at CLUB ASIA TOKYO。最新のMIXはMixcloudで公開されています。',
-      free:     'NOBBYについて、何でも聞いてください。プロフィールに登録された情報の範囲でお答えします。',
+  // Curated event answers — only used as a fallback when an event
+  // doesn't carry its own structured fields (e.g. May 4 demo events).
+  const EVENT_PRESETS = {
+    'ALL MUST DANCE': {
+      basic:
+        '日時：2026年5月4日（祝）OPEN 22:00 / CLOSE 5:00\n' +
+        '会場：CLUB ASIA, 渋谷\n' +
+        '料金：¥3,500（DOOR） / ¥2,800（ADV）\n' +
+        '出演：NOBBY ほか',
+      details:
+        '東京のダンスシーンと音楽シーンを横断する一夜。\n' +
+        'ドレスコード：自由（踊れる靴推奨）\n' +
+        '注意事項：20歳未満入場不可・写真ID必須\n' +
+        'アクセス：渋谷駅から徒歩7分',
     },
   };
+
   function clearTypers(){
     if (promptTimer) { clearInterval(promptTimer); promptTimer = null; }
     if (typeTimer)   { clearInterval(typeTimer);   typeTimer   = null; }
@@ -2701,29 +2709,88 @@ function compressCalCoverToBlob(file, maxW = 1600, quality = 0.82) {
       }
     }, 22);
   }
-  function openConcierge(artist){
-    if (!overlay) return;
-    const name = (artist && artist.name) || 'ARTIST';
+
+  // ─── Build the structured "basic info" answer purely from the
+  // event object's own fields. No invention. ───
+  function buildBasicAnswer(it){
+    const d  = parseDate(it.date || it.time);
+    const dt = d
+      ? `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`
+      : null;
+    const lines = [];
+    if (dt)        lines.push(`日時：${dt}${it.time ? ' ' + it.time : ''}${it.endTime ? ' — ' + it.endTime : ''}`);
+    if (it.venue)  lines.push(`会場：${it.venue}`);
+    if (it.price && it.price !== '0') {
+      const ps = String(it.price).startsWith('¥') ? it.price : `¥${Number(it.price).toLocaleString()}`;
+      lines.push(`料金：${ps}`);
+    } else if (it.price === '0' || it.price === 0) {
+      lines.push('料金：無料');
+    }
+    if (Array.isArray(it.artists) && it.artists.length) {
+      lines.push(`出演：${it.artists.map(a => a.name || a).join(' / ')}`);
+    } else if (it.author) {
+      lines.push(`主催：${it.author}`);
+    }
+    if (Array.isArray(it.tags) && it.tags.length) {
+      lines.push(`ジャンル：${it.tags.join(' · ')}`);
+    }
+    if (it.reservation) lines.push('予約：受付中');
+    if (lines.length) return lines.join('\n');
+    // Fallback to curated preset by title match.
+    const preset = matchPreset(it);
+    if (preset && preset.basic) return preset.basic;
+    return 'このイベントは基本情報の登録がまだ途中です。主催者の登録が完了次第、ここに表示されます。';
+  }
+
+  function buildDetailsAnswer(it){
+    const body = (it.body || '').trim();
+    if (body) return body;
+    const preset = matchPreset(it);
+    if (preset && preset.details) return preset.details;
+    return 'このイベントの詳細は主催者からの追加情報を待っています。';
+  }
+
+  function matchPreset(it){
+    const t = (it.title || '').toUpperCase();
+    for (const key of Object.keys(EVENT_PRESETS)) {
+      if (t.includes(key)) return EVENT_PRESETS[key];
+    }
+    return null;
+  }
+
+  function openConcierge(item){
+    if (!overlay || !item) return;
     streamEl.classList.remove('active');
     streamEl.innerHTML = '';
     choicesEl.innerHTML = '';
     overlay.classList.add('open');
     overlay.setAttribute('aria-hidden','false');
-    startTyping(promptEl, `${name}について教えますか`, 50);
-    [
-      { label:'活動と表現について', key:'activity' },
-      { label:'最近のイベント・MIX', key:'events'   },
-      { label:'自由に質問する',     key:'free'     },
-    ].forEach(c => {
+    startTyping(promptEl, `このイベントの詳細を知りたいですか？`, 50);
+
+    const choices = [
+      {
+        label: '日時・場所など基本情報',
+        run:   () => streamAnswer(buildBasicAnswer(item)),
+      },
+      {
+        label: '詳細・注意事項',
+        run:   () => streamAnswer(buildDetailsAnswer(item)),
+      },
+      {
+        label: 'テキスト詳細ページを見る',
+        run:   () => {
+          // Hand off to the existing event-detail modal if available.
+          closeConcierge();
+          if (typeof openEventDetail === 'function') {
+            try { openEventDetail(item); } catch(e){ console.warn('openEventDetail failed:', e); }
+          }
+        },
+      },
+    ];
+    choices.forEach(c => {
       const b = document.createElement('button');
       b.type = 'button'; b.className = 'ai-choice'; b.textContent = c.label;
-      b.addEventListener('click', () => {
-        const dataset = AI_ANSWERS[String(name).toUpperCase()];
-        const text = (dataset && dataset[c.key])
-          ? dataset[c.key]
-          : `${name} はまだプロフィール登録途中です。本人による登録が完了次第、活動・実績・ジャンルを参照してお答えします。`;
-        streamAnswer(text);
-      });
+      b.addEventListener('click', c.run);
       choicesEl.appendChild(b);
     });
   }
