@@ -143,14 +143,87 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--black);color:var
 </div>
 
 <script>
-/* Show the Stripe session id for debugging; real fulfillment is handled
-   by the webhook. If we wanted to display the purchased item right away,
-   we could hit a lightweight /api/session?id=... endpoint — for now the
-   success page stays simple. */
-const id = new URLSearchParams(location.search).get('session_id');
-if (id) document.getElementById('sessionId').textContent = id;
-
+/* On a successful Stripe Checkout the URL is:
+     /checkout/success?session_id=...&p=<base64 JSON>
+   `p` is built by /api/checkout's success_url template and carries
+   { productType, productId, title, description, amount, cover } so
+   we can write a complete ticket record to users/{uid}.tickets
+   without round-tripping back to Stripe. The webhook will eventually
+   be the source of truth — this client write is the user-facing
+   immediate feedback. Idempotent on session_id so a back-button-and-
+   reload doesn't duplicate. */
+const params = new URLSearchParams(location.search);
+const sessionId = params.get('session_id') || '';
+const sessIdEl = document.getElementById('sessionId');
+if (sessionId && sessIdEl) sessIdEl.textContent = sessionId;
 if (navigator.vibrate) navigator.vibrate([20, 60, 40, 60, 200]);
+
+let payload = null;
+try {
+  const raw = params.get('p');
+  if (raw) payload = JSON.parse(atob(decodeURIComponent(raw)));
+} catch (e) { console.warn('checkout success: payload decode failed', e); }
+
+function writeTicket(){
+  if (!payload || !sessionId) return;
+  // Build a self-contained ticket record. The id is the Stripe
+  // session id so re-loads don't duplicate, and the QR scanner
+  // server-side can match against this same id.
+  const ticket = {
+    id:           sessionId,
+    productType:  payload.productType || 'event',
+    productId:    payload.productId   || '',
+    title:        payload.title       || 'EXPASS Ticket',
+    description:  payload.description || '',
+    amount:       Number(payload.amount) || 0,
+    cover:        payload.cover        || '',
+    purchasedAt:  new Date().toISOString(),
+    status:       'valid',  // → 'checked_in' once the venue scans it
+  };
+
+  // Mirror to localStorage immediately so /collection lights up even
+  // before Firebase finishes the round-trip.
+  try {
+    const list = JSON.parse(localStorage.getItem('livepass_tickets') || '[]');
+    if (!list.some(t => t.id === ticket.id)) {
+      list.push(ticket);
+      localStorage.setItem('livepass_tickets', JSON.stringify(list));
+    }
+  } catch(_){}
+
+  if (!window.FB || !window.FB.currentUser) return;
+  (async () => {
+    try {
+      const { db, doc, updateDoc } = window.FB;
+      // arrayUnion would add objects byte-equality, which is fragile
+      // for ticket records (server timestamps would differ across
+      // retries). Read-modify-write keeps it safe.
+      const { getDoc } = window.FB;
+      const ref = doc(db, 'users', window.FB.currentUser.uid);
+      const snap = await getDoc(ref);
+      const cur = (snap.exists() && Array.isArray(snap.data().tickets))
+        ? snap.data().tickets
+        : [];
+      if (cur.some(t => t.id === ticket.id)) return; // idempotent
+      await updateDoc(ref, { tickets: cur.concat([ticket]) });
+    } catch (err) {
+      console.warn('ticket sync failed:', err && err.code, err && err.message);
+    }
+  })();
+}
+
+if (window.FB && window.FB.authReady) writeTicket();
+else window.addEventListener('fb-auth-ready', writeTicket, { once:true });
+
+// Update the subtitle so the user knows what they just bought.
+if (payload && payload.title) {
+  const sub = document.querySelector('.subtitle');
+  if (sub) {
+    sub.innerHTML =
+      `<b style="color:var(--white)">${payload.title.replace(/</g,'&lt;')}</b><br>` +
+      `購入した PASS はプロフィール画面の<br>EXPASS HOLDER に表示されます。`;
+  }
+}
 </script>
 
 </body>

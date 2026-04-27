@@ -1645,10 +1645,13 @@ function openEventDetail(e) {
     </div>
   `;
 
-  // Owner reservation management button — visible when current user is
-  // the event author and the event accepts reservations
+  // Owner reservation management — visible when current user authored
+  // this event. Two separate buttons:
+  //   · 予約者 (when reservation flow is on) — count of confirmed bookings
+  //   · QRスキャン — opens /scan?event=<id> for door check-in
   const currentUser = localStorage.getItem('livepass_account_name') || 'NOBBY';
-  const isOwnerReservable = (e.author || e.by || 'NOBBY') === currentUser && !!e.reservation;
+  const isOwnerForOwnerActions = (e.author || e.by || 'NOBBY') === currentUser;
+  const isOwnerReservable = isOwnerForOwnerActions && !!e.reservation;
   let ownerReserveCount = 0;
   if (isOwnerReservable) {
     try {
@@ -1656,12 +1659,19 @@ function openEventDetail(e) {
       ownerReserveCount = all.filter(r => r.eventId === e.id && r.eventAuthor === currentUser && r.status === 'confirmed').length;
     } catch(err) {}
   }
-  const ownerActionsHtml = isOwnerReservable ? `
+  const scanHref = `/scan?event=${encodeURIComponent(e.id || '')}` +
+    (e.title ? `&title=${encodeURIComponent(e.title)}` : '');
+  const ownerActionsHtml = isOwnerForOwnerActions ? `
     <div class="em-owner-actions">
-      <button class="em-owner-reserves-btn" id="emOwnerReservesBtn" type="button">
-        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11h-6M19 8v6"/></svg>
-        予約者<span class="cnt">${ownerReserveCount}</span>
-      </button>
+      ${isOwnerReservable ? `
+        <button class="em-owner-reserves-btn" id="emOwnerReservesBtn" type="button">
+          <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11h-6M19 8v6"/></svg>
+          予約者<span class="cnt">${ownerReserveCount}</span>
+        </button>` : ''}
+      <a class="em-owner-reserves-btn" href="${scanHref}" id="emScanLink" style="text-decoration:none">
+        <svg viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg>
+        QRスキャン
+      </a>
     </div>
   ` : '';
 

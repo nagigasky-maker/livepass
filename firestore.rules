@@ -44,6 +44,7 @@ service cloud.firestore {
                          'name','email','plan','avatar','avatarUrl','role','bio',
                          'coverUrl','profession','tier','visibleCategories',
                          'disciplines','style','region','era','achievements','socialLinks',
+                         'tickets',
                          'agreedTermsAt','createdAt','updatedAt'
                        ])
                     && (!('plan' in request.resource.data) || request.resource.data.plan == 'free');
@@ -52,6 +53,7 @@ service cloud.firestore {
                          'name','email','plan','avatar','avatarUrl','role','bio',
                          'coverUrl','profession','tier','cards','visibleCategories',
                          'disciplines','style','region','era','achievements','socialLinks',
+                         'tickets',
                          'planExpiresAt','planSource',
                          'agreedTermsAt','createdAt','updatedAt'
                        ])
