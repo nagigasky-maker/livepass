@@ -4105,7 +4105,27 @@ function renderScreenPanels(overrides){
   }
   function readList(key){
     if (overrides && overrides[key]) return overrides[key];
-    try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) { return []; }
+    let list = [];
+    try { list = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) { return []; }
+    if (!Array.isArray(list)) return [];
+    // Per-account filter: SCREEN / CALENDAR collections in localStorage
+    // are shared across every account ever signed in on this device, so
+    // when the user switches from e.g. NOBBY to EXPASS we have to drop
+    // anything authored by someone else. Posts carry author + authorUid;
+    // unattributed records are kept (they pre-date the multi-account
+    // feature and have no other home).
+    const POST_KEYS = new Set([
+      'livepass_articles','livepass_events','livepass_workshops','livepass_exhibitions'
+    ]);
+    if (!POST_KEYS.has(key)) return list;
+    const me    = (localStorage.getItem('livepass_account_name') || '').toUpperCase();
+    const myUid = localStorage.getItem('livepass_uid') || '';
+    return list.filter(it => {
+      if (myUid && it.authorUid) return it.authorUid === myUid;
+      const a = (it.author || '').toUpperCase();
+      if (!a) return true;
+      return a === me;
+    });
   }
   function emptyState(typeLabel){
     return `<div class="sub-placeholder">
