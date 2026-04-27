@@ -2758,6 +2758,45 @@ function compressCalCoverToBlob(file, maxW = 1600, quality = 0.82) {
     return null;
   }
 
+  // Convert a raw localStorage event/workshop/exhibition record into
+  // the normalized shape that openEventDetail / runCheckout expect.
+  // Mirrors the same projection getUserSchedule() produces (id, type,
+  // cat, m, d, title, venue, time, by, author, meta, price, tags, …).
+  function normalizeForLegacy(it){
+    const d  = parseDate(it.date || it.time);
+    const badge = dateBadge(d);
+    const type = it._type || 'event';
+    const cat  = (it.category || type).toUpperCase();
+    const priceRaw = it.price || '0';
+    const priceFmt = (priceRaw && priceRaw !== '0' && Number(priceRaw))
+      ? '¥' + Number(priceRaw).toLocaleString()
+      : '無料';
+    return Object.assign({}, it, {
+      type, cat,
+      m: badge.mo, d: badge.day,
+      weekday: d ? ['SUN','MON','TUE','WED','THU','FRI','SAT'][d.getDay()] : '',
+      title:    it.title  || '',
+      venue:    it.venue  || '',
+      time:     `${it.date || ''} ${it.time || ''}`.trim(),
+      by:       it.author || '',
+      author:   it.author || '',
+      meta:     [it.author, it.time, it.venue].filter(Boolean).join(' · '),
+      priceRaw,
+      price:    priceFmt,
+      tags:     Array.isArray(it.tags) && it.tags.length ? it.tags : [cat],
+      desc:     it.body || '',
+      cover:    it.cover || null,
+      reservation:     !!it.reservation,
+      cancelFee:       Number(it.cancelFee || 0),
+      cancelDeadlineH: Number(it.cancelDeadlineH || 0),
+      rawDate:         it.date || '',
+      subscriberPrice: it.subscriberPrice || '',
+      artists:         Array.isArray(it.artists)       ? it.artists       : [],
+      team:            Array.isArray(it.team)          ? it.team          : [],
+      collaborators:   Array.isArray(it.collaborators) ? it.collaborators : [],
+    });
+  }
+
   function openConcierge(item){
     if (!overlay || !item) return;
     streamEl.classList.remove('active');
@@ -2766,6 +2805,9 @@ function compressCalCoverToBlob(file, maxW = 1600, quality = 0.82) {
     overlay.classList.add('open');
     overlay.setAttribute('aria-hidden','false');
     startTyping(promptEl, `このイベントの詳細を知りたいですか？`, 50);
+
+    const priceNum = Number(item.price || 0);
+    const hasPrice = priceNum > 0;
 
     const choices = [
       {
@@ -2776,23 +2818,75 @@ function compressCalCoverToBlob(file, maxW = 1600, quality = 0.82) {
         label: '詳細・注意事項',
         run:   () => streamAnswer(buildDetailsAnswer(item)),
       },
-      {
-        label: 'テキスト詳細ページを見る',
-        run:   () => {
-          // Hand off to the existing event-detail modal if available.
-          closeConcierge();
-          if (typeof openEventDetail === 'function') {
-            try { openEventDetail(item); } catch(e){ console.warn('openEventDetail failed:', e); }
-          }
-        },
-      },
     ];
+
+    // Show the ticket / reservation CTA only when the event actually
+    // has a price set. Reservation flows (no upfront payment) still
+    // route to the legacy detail page below — the buy button there
+    // collects the card.
+    if (hasPrice) {
+      choices.push({
+        label: `チケットを購入する  ¥${priceNum.toLocaleString()}`,
+        run:   () => buyTicket(item),
+      });
+    }
+
+    choices.push({
+      label: 'テキスト詳細ページを見る →',
+      run:   () => {
+        closeConcierge();
+        const normalized = normalizeForLegacy(item);
+        if (typeof openEventDetail === 'function') {
+          try { openEventDetail(normalized); }
+          catch(e){ console.warn('openEventDetail failed:', e); alert('詳細ページを開けませんでした'); }
+        } else {
+          alert('詳細ページが利用できません');
+        }
+      },
+    });
+
     choices.forEach(c => {
       const b = document.createElement('button');
       b.type = 'button'; b.className = 'ai-choice'; b.textContent = c.label;
       b.addEventListener('click', c.run);
       choicesEl.appendChild(b);
     });
+  }
+
+  // Direct checkout for the "チケットを購入する" choice — same /api/checkout
+  // contract as the in-modal buy button on the event-detail card.
+  async function buyTicket(item){
+    const amount = Number(item.price || 0);
+    if (amount < 1) { alert('価格が未設定です'); return; }
+    streamAnswer('決済ページを開いています…');
+    try {
+      const r = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productType: item._type || 'event',
+          productId:   item.id || '',
+          title:       item.title || 'EXPASS Ticket',
+          description: `${item.venue || ''} · ${item.date || ''}${item.time ? ' '+item.time : ''}`,
+          amount,
+          cover:       null,
+          userId:      (() => {
+            try { return JSON.parse(localStorage.getItem('livepass_holder') || '{}').id || ''; }
+            catch(_){ return ''; }
+          })(),
+        }),
+      });
+      const data = await r.json();
+      if (data.stub) {
+        streamAnswer(data.message || 'Stripe テストモード未設定（決済はローンチ当日に有効化）');
+        return;
+      }
+      if (!r.ok || !data.url) throw new Error(data.error || 'checkout failed');
+      if (navigator.vibrate) navigator.vibrate(12);
+      location.href = data.url;
+    } catch(err){
+      streamAnswer('決済ページを開けませんでした: ' + (err.message || 'unknown'));
+    }
   }
   function closeConcierge(){
     clearTypers();
