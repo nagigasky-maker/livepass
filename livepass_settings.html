@@ -947,7 +947,7 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 
   <!-- ═══ SIGN OUT ═══ -->
   <div class="sec-label">ACCOUNT</div>
-  <div style="padding:14px 20px 60px">
+  <div style="padding:14px 20px 18px">
     <button id="signOutBtn" type="button"
       style="width:100%;padding:16px;border-radius:12px;background:rgba(232,16,10,.06);border:0.5px solid rgba(232,16,10,.35);color:#ff6b66;font-family:Arial,'Noto Sans JP',sans-serif;font-weight:800;font-size:12px;letter-spacing:.12em;text-transform:uppercase">
       サインアウト
@@ -955,6 +955,19 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
     <div style="margin-top:10px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(237,235,230,.3);line-height:1.8">
       サインアウトするとこの端末のアカウント情報が消去されます<br>
       投稿・いいね・予約などは保持されます
+    </div>
+  </div>
+
+  <!-- ═══ DELETE ACCOUNT — destructive, removes all data ═══ -->
+  <div class="sec-label">DANGER ZONE</div>
+  <div style="padding:14px 20px 60px">
+    <button id="deleteAccountBtn" type="button"
+      style="width:100%;padding:16px;border-radius:12px;background:rgba(232,16,10,.16);border:0.5px solid #ff3b30;color:#ff3b30;font-family:Arial,'Noto Sans JP',sans-serif;font-weight:800;font-size:12px;letter-spacing:.12em;text-transform:uppercase">
+      アカウントを削除
+    </button>
+    <div style="margin-top:10px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(237,235,230,.3);line-height:1.8">
+      投稿・カバー写真・フォロー・DM など<br>
+      このアカウントの全データが完全に削除されます
     </div>
   </div>
 
@@ -2060,10 +2073,18 @@ document.getElementById('signOutBtn')?.addEventListener('click', async () => {
     }
     if (rm) {
       const name = decodeURIComponent(rm.dataset.remove);
-      if (!confirm(`「${name}」をアカウント一覧から削除しますか？\n（このアカウントの投稿や設定は消えません）`)) return;
+      if (!confirm(
+        `「${name}」をこの端末から削除しますか？\n\n` +
+        `投稿・カバー写真・フォロー・DMなどの保存データも全て消えます。\n` +
+        `この操作は元に戻せません。`
+      )) return;
+      // Drop the per-account snapshot + IndexedDB blob + list entry.
+      try { localStorage.removeItem('livepass_acct__' + name.toUpperCase()); } catch(_){}
+      try { await AvatarDB.delete('avatar_blob__' + name.toUpperCase()); } catch(_){}
       const list = getList().filter(a => (a.name || '').toUpperCase() !== name.toUpperCase());
       saveListArr(list);
       render();
+      if (navigator.vibrate) navigator.vibrate([14, 60, 14]);
     }
   });
 
@@ -2101,6 +2122,66 @@ document.getElementById('signOutBtn')?.addEventListener('click', async () => {
     if (role) localStorage.setItem('livepass_role', role);
     if (navigator.vibrate) navigator.vibrate([18, 40, 18]);
     location.reload();
+  });
+
+  /* ─── Delete the CURRENTLY active account ─────────────────
+     Wipes the active state, removes the entry from the accounts
+     list, drops the snapshot + avatar blob. If another account
+     exists locally we restore that one; otherwise we sign out
+     of Firebase and bounce the user to /login so they can start
+     a fresh onboarding. */
+  document.getElementById('deleteAccountBtn')?.addEventListener('click', async () => {
+    const name = (localStorage.getItem('livepass_account_name') || '').trim();
+    if (!name) {
+      alert('アクティブなアカウントがありません。');
+      return;
+    }
+    if (!confirm(
+      `${name} を完全に削除しますか？\n\n` +
+      `投稿・カバー写真・アバター・フォロー・DM など、このアカウントの全データが消えます。\n` +
+      `この操作は元に戻せません。`
+    )) return;
+    // Second confirmation — Instagram does this, and the cost of an
+    // accidental click here is high.
+    const typed = prompt(`削除を確定するため、アカウント名「${name}」を入力してください。`);
+    if (!typed || typed.trim().toUpperCase() !== name.toUpperCase()) {
+      alert('アカウント名が一致しなかったので削除をキャンセルしました。');
+      return;
+    }
+
+    // Wipe the active state.
+    clearAccountState();
+    try { await AvatarDB.delete('avatar_blob'); } catch(_){}
+    // Drop the snapshot + named avatar blob.
+    try { localStorage.removeItem('livepass_acct__' + name.toUpperCase()); } catch(_){}
+    try { await AvatarDB.delete('avatar_blob__' + name.toUpperCase()); } catch(_){}
+    // Remove from the accounts list.
+    const newList = getList().filter(a => (a.name || '').toUpperCase() !== name.toUpperCase());
+    saveListArr(newList);
+
+    if (newList.length) {
+      // Switch to the first remaining account, restoring its snapshot.
+      const next = newList[0];
+      restoreAccount(next.name);
+      await restoreAvatarBlob(next.name);
+      localStorage.setItem('livepass_account_name', next.name);
+      if (next.role)   localStorage.setItem('livepass_role',   next.role);
+      if (next.avatar) localStorage.setItem('livepass_avatar', next.avatar);
+      if (navigator.vibrate) navigator.vibrate([18, 40, 18]);
+      location.reload();
+      return;
+    }
+
+    // No accounts left — sign out of Firebase and go to /login.
+    try {
+      if (window.FB && window.FB.auth) await window.FB.signOut(window.FB.auth);
+    } catch(_){}
+    [
+      'livepass_account_name','livepass_account_name_ja','livepass_account_name_en',
+      'livepass_signed_in','livepass_uid','livepass_email','livepass_temp_email','livepass_last_email',
+    ].forEach(k => { try { localStorage.removeItem(k); } catch(_){} });
+    if (navigator.vibrate) navigator.vibrate([22, 60, 22]);
+    location.replace('/login');
   });
 
   render();
