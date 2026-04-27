@@ -12,6 +12,7 @@
 <script>try{if(localStorage.getItem('livepass_tier')==='user')document.documentElement.classList.add('tier-user')}catch(e){}</script>
 <style>html.tier-user .bn-btn[aria-label="Lab"],html.tier-user .bn-btn[aria-label="Atelier"]{display:none!important}</style>
 <script src="/livepass_paywall.js" defer></script>
+<script src="/livepass_plan.js"></script>
 <script src="/livepass_categories.js" defer></script>
 <script src="/livepass_share.js" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
@@ -2884,11 +2885,17 @@ function compressCalCoverToBlob(file, maxW = 1600, quality = 0.82) {
       },
     ];
 
-    // Show the ticket / reservation CTA only when the event actually
-    // has a price set. Reservation flows (no upfront payment) still
-    // route to the legacy detail page below — the buy button there
-    // collects the card.
-    if (hasPrice) {
+    // Show the ticket CTA only when:
+    //   1. the event has a price, AND
+    //   2. the current viewer is NOT a FREE-plan organizer of this event
+    //      (FREE plan cannot sell tickets, so hide the button from their own events)
+    const me = localStorage.getItem('livepass_account_name') || '';
+    const myUid = localStorage.getItem('livepass_uid') || '';
+    const isMyEvent = (myUid && item.authorUid)
+      ? item.authorUid === myUid
+      : (item.author || '').toUpperCase() === me.toUpperCase();
+    const isFreeOrganizer = isMyEvent && window.LivepassPlan && window.LivepassPlan.isFree();
+    if (hasPrice && !isFreeOrganizer) {
       choices.push({
         label: `チケットを購入する  ¥${priceNum.toLocaleString()}`,
         run:   () => buyTicket(item),

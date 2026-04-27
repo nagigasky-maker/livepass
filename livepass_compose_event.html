@@ -344,6 +344,7 @@ textarea.input-box{resize:vertical;min-height:120px;line-height:1.8;font-size:13
 .collab-total .me{color:#8fcaff}
 .collab-total .them{color:#d4a8ff}
 </style>
+<script src="/livepass_plan.js"></script>
 <script type="module" src="/firebase-init.js"></script>
 </head>
 <body><script>
@@ -1582,6 +1583,11 @@ submitBtn.addEventListener('click', async () => {
     if (!venueInput.value.trim())  missing.push('会場');
     if (!dateInput.value)          missing.push('日付');
     alert('以下を入力してください：\n・' + missing.join('\n・'));
+    return;
+  }
+  // FREE plan: max 3 event/workshop/exhibition posts (skip check when editing)
+  if (!state.editingId && window.LivepassPlan && window.LivepassPlan.isAtFreeEventCap()) {
+    alert(`FREEプランでは EVENT / WORKSHOP / EXHIBITION の登録は合計${window.LivepassPlan.FREE_EVENT_CAP}件までです。\nSTANDARDプランにアップグレードすると無制限になります。`);
     return;
   }
   submitBtn.disabled = true;
