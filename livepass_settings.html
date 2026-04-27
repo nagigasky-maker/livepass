@@ -1934,19 +1934,126 @@ document.getElementById('signOutBtn')?.addEventListener('click', async () => {
     }
   }
 
-  listEl.addEventListener('click', (e) => {
+  /* ─── Per-account state isolation ───────────────────────────
+     Instagram-style multi-account: each account has its own
+     SCREEN posts, CALENDAR events, follow lists, cover photos,
+     visible categories, etc. Snapshot the active account's state
+     to localStorage.livepass_acct__<NAME> before switching, and
+     restore the target account's snapshot (or start clean if it's
+     never been used).
+     ─────────────────────────────────────────────────────────── */
+  const PER_ACCT_KEYS = [
+    // Posts
+    'livepass_articles','livepass_events','livepass_workshops',
+    'livepass_exhibitions','livepass_records',
+    // Profile
+    'livepass_avatar','livepass_avatar_type','livepass_cover_url',
+    'livepass_role','livepass_style','livepass_phone','livepass_email',
+    'livepass_uid','livepass_email_verified',
+    // Plan
+    'livepass_plan','livepass_plan_expires','livepass_plan_source','livepass_tier',
+    // Page-level
+    'livepass_screen_top_image','livepass_calendar_top_image',
+    // Social graph
+    'livepass_following','livepass_followers',
+    'livepass_likes','livepass_saves','livepass_shares',
+    'livepass_subscribed_artists',
+    // App state
+    'livepass_visible_categories',
+    'livepass_notifications','livepass_reservations',
+    'livepass_cards','livepass_holder',
+    'livepass_deleted_ids',
+  ];
+  const PER_ACCT_PREFIXES = ['livepass_dm_','livepass_comments_'];
+
+  function snapshotAccount(name){
+    if (!name) return;
+    const key = 'livepass_acct__' + name.toUpperCase();
+    const data = {};
+    PER_ACCT_KEYS.forEach(k => { data[k] = localStorage.getItem(k); });
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k) continue;
+      if (PER_ACCT_PREFIXES.some(p => k.startsWith(p))) data[k] = localStorage.getItem(k);
+    }
+    try { localStorage.setItem(key, JSON.stringify(data)); }
+    catch(e){ console.warn('snapshotAccount failed:', e && e.message); }
+  }
+
+  function clearAccountState(){
+    PER_ACCT_KEYS.forEach(k => localStorage.removeItem(k));
+    const toRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k) continue;
+      if (PER_ACCT_PREFIXES.some(p => k.startsWith(p))) toRemove.push(k);
+    }
+    toRemove.forEach(k => localStorage.removeItem(k));
+  }
+
+  function restoreAccount(name){
+    clearAccountState();
+    if (!name) return;
+    const key = 'livepass_acct__' + name.toUpperCase();
+    const raw = localStorage.getItem(key);
+    if (!raw) return;
+    try {
+      const data = JSON.parse(raw);
+      Object.keys(data).forEach(k => {
+        if (data[k] != null) localStorage.setItem(k, data[k]);
+      });
+    } catch(e){ console.warn('restoreAccount failed:', e && e.message); }
+  }
+
+  // Mirror the active avatar Blob in IndexedDB across the swap so the
+  // looping video / large poster stays with its account. Stored under
+  // avatar_blob__<NAME> in the same livepass_avatars store.
+  async function snapshotAvatarBlob(name){
+    if (!name || typeof AvatarDB === 'undefined') return;
+    try {
+      const cur = await AvatarDB.get('avatar_blob');
+      if (cur) await AvatarDB.put('avatar_blob__' + name.toUpperCase(), cur);
+      else     await AvatarDB.delete('avatar_blob__' + name.toUpperCase());
+    } catch(_){}
+  }
+  async function restoreAvatarBlob(name){
+    if (typeof AvatarDB === 'undefined') return;
+    try { await AvatarDB.delete('avatar_blob'); } catch(_){}
+    if (!name) return;
+    try {
+      const stash = await AvatarDB.get('avatar_blob__' + name.toUpperCase());
+      if (stash) await AvatarDB.put('avatar_blob', stash);
+    } catch(_){}
+  }
+
+  listEl.addEventListener('click', async (e) => {
     const sw = e.target.closest('[data-switch]');
     const rm = e.target.closest('[data-remove]');
     if (sw) {
       const name = decodeURIComponent(sw.dataset.switch);
-      // Snapshot the currently active account before leaving it
       ensureSelfInList();
       const list = getList();
       const target = list.find(a => (a.name || '').toUpperCase() === name.toUpperCase());
       if (!target) return;
+      const outgoing = (localStorage.getItem('livepass_account_name') || '').trim();
+      // Snapshot every per-account key + the avatar blob under the
+      // outgoing account's name BEFORE we touch the active pointer.
+      if (outgoing) {
+        snapshotAccount(outgoing);
+        await snapshotAvatarBlob(outgoing);
+      }
+      // Wipe current state so a brand-new account doesn't inherit
+      // the previous user's posts / cover / follow list / DMs / etc.
+      clearAccountState();
+      try { await AvatarDB.delete('avatar_blob'); } catch(_){}
+      // Restore the incoming account's snapshot if it has one.
+      restoreAccount(target.name);
+      await restoreAvatarBlob(target.name);
+      // Keep the directory entry in sync with whatever cosmetic
+      // overrides the directory itself stores.
       localStorage.setItem('livepass_account_name', target.name);
-      if (target.role) localStorage.setItem('livepass_role', target.role); else localStorage.removeItem('livepass_role');
-      if (target.avatar) localStorage.setItem('livepass_avatar', target.avatar); else localStorage.removeItem('livepass_avatar');
+      if (target.role)   localStorage.setItem('livepass_role',   target.role);
+      if (target.avatar) localStorage.setItem('livepass_avatar', target.avatar);
       if (navigator.vibrate) navigator.vibrate([10, 40, 10]);
       location.reload();
       return;
@@ -1966,7 +2073,7 @@ document.getElementById('signOutBtn')?.addEventListener('click', async () => {
     if (!open) { nameIn.value = ''; roleIn.value = ''; setTimeout(() => nameIn.focus(), 50); }
   });
   cancelBt.addEventListener('click', () => { form.style.display = 'none'; });
-  saveBt.addEventListener('click', () => {
+  saveBt.addEventListener('click', async () => {
     const name = (nameIn.value || '').trim();
     const role = (roleIn.value || '').trim();
     if (!name) { nameIn.focus(); return; }
@@ -1979,10 +2086,19 @@ document.getElementById('signOutBtn')?.addEventListener('click', async () => {
     }
     list.unshift({ name: uname, role, avatar: '' });
     saveListArr(list);
-    // Switch to the newly created account immediately
+    // Snapshot the OUTGOING account before we wipe state, so the
+    // existing user's posts / cover / follow list etc. are preserved
+    // and reappear when they switch back.
+    const outgoing = (localStorage.getItem('livepass_account_name') || '').trim();
+    if (outgoing) {
+      snapshotAccount(outgoing);
+      await snapshotAvatarBlob(outgoing);
+    }
+    // Brand-new account starts with a clean slate.
+    clearAccountState();
+    try { await AvatarDB.delete('avatar_blob'); } catch(_){}
     localStorage.setItem('livepass_account_name', uname);
-    if (role) localStorage.setItem('livepass_role', role); else localStorage.removeItem('livepass_role');
-    localStorage.removeItem('livepass_avatar');
+    if (role) localStorage.setItem('livepass_role', role);
     if (navigator.vibrate) navigator.vibrate([18, 40, 18]);
     location.reload();
   });
