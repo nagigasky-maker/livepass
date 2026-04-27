@@ -958,14 +958,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         </div>
         <div class="ticket-section">
           <div class="ticket-head"><span class="ticket-head-lbl">Tickets</span><span class="ticket-head-note lang-switchable" data-jp="Web only · 電子チケット" data-en="Web only · E-ticket">Web only · 電子チケット</span></div>
-          <div onclick="openUnlockPass()" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:20px 0;border-bottom:1px solid rgba(237,235,230,0.14);transition:padding-left 0.2s;">
-            <div style="display:flex;flex-direction:column;gap:4px;">
-              <span style="font-size:8px;font-weight:500;letter-spacing:0.4em;text-transform:uppercase;color:var(--red);">🎫 Unlock Pass</span>
-              <span style="font-family:Arial,'Arial Black',sans-serif;font-size:20px;font-weight:900;line-height:1;color:var(--white);">¥3,500 — ¥9,999</span>
-              <span class="lang-switchable" data-jp="価格はあなたが決める" data-en="You decide the price" style="font-size:10px;font-weight:300;color:rgba(237,235,230,0.55);letter-spacing:0.1em;">価格はあなたが決める</span>
-            </div>
-            <span style="font-size:18px;color:var(--red);">→</span>
-          </div>
+          <a class="trow" href="https://zzazz-za.stores.jp/items/69c0e0ddb5941ff887100e5b" target="_blank"><div class="trow-left"><span class="trow-type">Advance</span><span class="trow-price">¥3,600</span></div><div class="trow-right"><span class="trow-arr">→</span></div></a>
           <div class="trow disabled"><div class="trow-left"><span class="trow-type">Door</span><span class="trow-price">¥4,500</span></div><div class="trow-right"><span style="font-size:8px;letter-spacing:0.3em;text-transform:uppercase;color:var(--white)">On the Night</span></div></div>
         </div>
       </div>
