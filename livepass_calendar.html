@@ -798,14 +798,44 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
    magazine header. */
 #calendarTopCover{display:none !important}
 
-/* Hide the EXPASS chrome topbar so only the system status bar sits
-   above the page content — matches the SEARCH spec. */
-.topbar{display:none !important}
+/* Topbar — keep the chrome out of the way but float the right-edge
+   trio (🔍 ✉️ +) on top of the magazine header so the create
+   button sits in the same place as on /collection. */
+.topbar{
+  position:fixed !important;top:0;left:0;right:0;z-index:50;
+  background:transparent !important;border:0 !important;
+  min-height:0 !important;padding:0 !important;
+  pointer-events:none !important;
+}
+.topbar .tb-brand{display:none !important}
+.topbar .tb-icon:not(#tbCreate):not(#tbSearch):not(#tbMessages){display:none !important}
+.topbar #tbCreate,
+.topbar #tbMessages,
+.topbar #tbSearch{
+  pointer-events:auto !important;
+  position:absolute !important;
+  top:calc(var(--safe-top,0px) + 14px) !important;
+  width:32px !important;height:32px !important;
+  display:flex !important;align-items:center !important;justify-content:center !important;
+  background:none !important;border:0 !important;
+  color:var(--c-fg) !important;margin:0 !important;
+}
+.topbar #tbCreate   {right:14px !important}
+.topbar #tbMessages {right:54px !important}
+.topbar #tbSearch   {right:94px !important}
+.topbar #tbSearch svg,
+.topbar #tbMessages svg,
+.topbar #tbCreate svg{
+  width:22px !important;height:22px !important;
+  stroke:currentColor !important;fill:none !important;stroke-width:1.8 !important;
+}
 .content{padding-top:0 !important}
 
 /* ── Magazine header ─────────────────────────── */
 .c-header{
-  padding:calc(var(--safe-top,0px) + 18px) 18px 14px;
+  /* Top padding clears the absolute-pinned 🔍 ✉️ + trio (32px tall
+     at safe-top + 14px) so the title never collides with the icons. */
+  padding:calc(var(--safe-top,0px) + 56px) 18px 14px;
   background:var(--c-bg);
 }
 .c-month{
