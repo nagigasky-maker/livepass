@@ -29,6 +29,7 @@
 <style>html.tier-user .bn-btn[aria-label="Lab"],html.tier-user .bn-btn[aria-label="Atelier"]{display:none!important}</style>
 <script src="/livepass_paywall.js" defer></script>
 <script src="/livepass_categories.js" defer></script>
+<script src="/livepass_qr.js" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
 /* ─────────────────────────────────────────────
@@ -2434,6 +2435,40 @@ body.show-sub .ph-heart-btn::after{content:'×';font-size:22px;font-weight:300;c
       <button class="cur-send" id="curSend" type="button" aria-label="送信">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21.854 2.147 10.61 13.39"/><path d="M21.854 2.147 14.802 22.335 10.61 13.39 1.665 9.199z"/></svg>
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PASS / TICKET QR MODAL ═══ -->
+<div id="ticketModal" aria-hidden="true"
+     style="position:fixed;inset:0;z-index:2300;background:rgba(5,11,31,0);pointer-events:none;
+            display:flex;align-items:center;justify-content:center;padding:24px;
+            transition:background .25s ease;opacity:0;">
+  <div id="ticketSheet"
+       style="width:100%;max-width:380px;background:#FFFFFF;color:#050B1F;
+              border-radius:18px;overflow:hidden;
+              box-shadow:0 30px 80px rgba(0,0,0,.55);
+              transform:translateY(20px) scale(.96);transition:transform .3s cubic-bezier(.2,.8,.2,1);">
+    <div style="padding:22px 22px 0;display:flex;align-items:center;justify-content:space-between">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:rgba(5,11,31,.45)" id="tkType">EXPASS PASS</div>
+      <button type="button" id="tkClose" aria-label="閉じる"
+              style="width:32px;height:32px;border-radius:50%;background:rgba(5,11,31,.06);border:0;color:rgba(5,11,31,.6);font-size:18px;cursor:pointer">×</button>
+    </div>
+    <div style="padding:8px 22px 0;font-family:-apple-system,'Inter','Noto Sans JP',sans-serif;font-weight:700;font-size:22px;letter-spacing:-.4px;color:#050B1F;line-height:1.25" id="tkTitle">—</div>
+    <div style="padding:6px 22px 18px;font-family:-apple-system,sans-serif;font-size:12px;color:rgba(5,11,31,.55);letter-spacing:.02em;line-height:1.6" id="tkMeta">—</div>
+
+    <div id="tkQrWrap" style="margin:0 22px;padding:18px;background:#F5F3EE;border-radius:14px;display:flex;justify-content:center;align-items:center;aspect-ratio:1"></div>
+
+    <div id="tkStatus"
+         style="margin:18px 22px 0;display:flex;align-items:center;gap:10px;
+                font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.22em;
+                text-transform:uppercase;color:#006B4E">
+      <span style="width:8px;height:8px;border-radius:50%;background:#00C28A;box-shadow:0 0 10px rgba(0,194,138,.6)"></span>
+      <span id="tkStatusLabel">VALID · 入場待ち</span>
+    </div>
+
+    <div style="padding:18px 22px 22px;font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.18em;color:rgba(5,11,31,.35);text-align:center">
+      入場時にこのQRをスタッフに見せてください
     </div>
   </div>
 </div>
@@ -4869,6 +4904,170 @@ if (!isOtherUser) {
   input.addEventListener('keydown', e => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit(); }
   });
+})();
+
+/* ─── PASS HOLDER tickets — render purchased tickets as fan cards
+   in the EXPASS HOLDER stack and wire tap → fullscreen QR. The
+   Stripe checkout success page already writes each ticket to
+   users/{uid}.tickets and mirrors to localStorage.livepass_tickets,
+   so we can render from local immediately and refresh from
+   Firestore as soon as auth resolves. */
+(function initTicketsAndQR(){
+  const track = document.getElementById('passFanTrack');
+  const countEl = document.getElementById('phCount');
+  const modal  = document.getElementById('ticketModal');
+  const sheet  = document.getElementById('ticketSheet');
+  const closeBtn = document.getElementById('tkClose');
+  const titleEl = document.getElementById('tkTitle');
+  const metaEl  = document.getElementById('tkMeta');
+  const typeEl  = document.getElementById('tkType');
+  const qrWrap  = document.getElementById('tkQrWrap');
+  const statusLabel = document.getElementById('tkStatusLabel');
+  if (!track || !modal) return;
+
+  function readLocal(){
+    try { return JSON.parse(localStorage.getItem('livepass_tickets') || '[]'); }
+    catch(_){ return []; }
+  }
+
+  function saveLocal(list){
+    try { localStorage.setItem('livepass_tickets', JSON.stringify(list)); } catch(_){}
+  }
+
+  function fmtDate(iso){
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+  }
+
+  function statusUI(status){
+    if (status === 'checked_in') return { color:'#FF8500', dot:'#FF8500', label:'CHECKED IN · 入場済み' };
+    return { color:'#006B4E', dot:'#00C28A', label:'VALID · 入場待ち' };
+  }
+
+  function escHTML(s){
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  function renderCards(list){
+    // Remove any previously inserted ticket cards (we re-render on
+    // every refresh so checked_in updates land visually too).
+    track.querySelectorAll('.pf-card[data-ticket-id]').forEach(n => n.remove());
+    list.forEach((t, i) => {
+      const card = document.createElement('div');
+      card.className = 'pf-card';
+      card.dataset.ticketId = t.id;
+      card.style.cssText = `
+        position:relative;
+        background:linear-gradient(140deg, #1a2440 0%, #050B1F 100%);
+        color:#fff;cursor:pointer;
+      `;
+      const checked = t.status === 'checked_in';
+      card.innerHTML = `
+        ${t.cover ? `<img src="${escHTML(t.cover)}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55">` : ''}
+        <div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(5,11,31,.4) 0%, rgba(5,11,31,.85) 100%);pointer-events:none"></div>
+        <div style="position:relative;height:100%;display:flex;flex-direction:column;justify-content:space-between;padding:18px 16px">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.7)">EXPASS PASS</div>
+            ${checked
+              ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:7.5px;letter-spacing:.22em;color:#FFB020;padding:3px 7px;border:0.5px solid rgba(255,176,32,.5);border-radius:99px">CHECKED IN</div>`
+              : `<div style="width:7px;height:7px;border-radius:50%;background:#00C28A;box-shadow:0 0 8px rgba(0,194,138,.6);align-self:center"></div>`}
+          </div>
+          <div>
+            <div style="font-family:-apple-system,'Inter','Noto Sans JP',sans-serif;font-weight:700;font-size:15px;letter-spacing:-.2px;line-height:1.25;margin-bottom:4px;text-shadow:0 2px 8px rgba(0,0,0,.4)">
+              ${escHTML(t.title || 'Ticket')}
+            </div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.16em;color:rgba(255,255,255,.65);text-transform:uppercase">
+              ${escHTML(t.description || '')}
+            </div>
+          </div>
+        </div>
+      `;
+      card.addEventListener('click', () => openModal(t));
+      // Insert before the NEXT-LIVE card so tickets sit on top of
+      // the stack and the call-to-buy stays at the back.
+      const next = track.querySelector('.pf-card.next-live');
+      if (next) track.insertBefore(card, next);
+      else      track.appendChild(card);
+    });
+    if (countEl) {
+      // +1 because the static EXPASS card data-card="card01" still counts
+      // as a holder card. Adjust if we ever drop it.
+      const real = list.length + 1;
+      countEl.textContent = real + ' PASS' + (real === 1 ? '' : 'ES');
+    }
+  }
+
+  function openModal(t){
+    if (!t) return;
+    typeEl.textContent  = (t.productType || 'event').toUpperCase() + ' TICKET';
+    titleEl.textContent = t.title || 'EXPASS Ticket';
+    metaEl.textContent  = [t.description, fmtDate(t.purchasedAt) && '購入: ' + fmtDate(t.purchasedAt)]
+      .filter(Boolean).join(' · ') || '—';
+    const ui = statusUI(t.status);
+    statusLabel.textContent = ui.label;
+    statusLabel.parentElement.style.color = ui.color;
+    statusLabel.previousElementSibling.style.background = ui.dot;
+    // Paint the QR. The ticket id is already globally unique (Stripe
+    // session id) so we don't need to add anything else; the scanner
+    // resolves it back to users/*/tickets.
+    qrWrap.innerHTML = '';
+    if (window.LivepassQR) {
+      window.LivepassQR.paintInto(qrWrap, 'expass://t/' + t.id, { size: 320 });
+    } else {
+      qrWrap.innerHTML = '<div style="font-family:\'IBM Plex Mono\',monospace;font-size:10px;color:rgba(5,11,31,.5)">QR loader unavailable</div>';
+    }
+    modal.style.opacity = '1';
+    modal.style.pointerEvents = 'all';
+    modal.style.background = 'rgba(5,11,31,.78)';
+    modal.style.backdropFilter = 'blur(20px)';
+    modal.style.webkitBackdropFilter = 'blur(20px)';
+    modal.setAttribute('aria-hidden','false');
+    sheet.style.transform = 'translateY(0) scale(1)';
+    if (navigator.vibrate) navigator.vibrate(8);
+  }
+
+  function closeModal(){
+    modal.style.opacity = '0';
+    modal.style.pointerEvents = 'none';
+    modal.style.background = 'rgba(5,11,31,0)';
+    modal.style.backdropFilter = '';
+    modal.style.webkitBackdropFilter = '';
+    modal.setAttribute('aria-hidden','true');
+    sheet.style.transform = 'translateY(20px) scale(.96)';
+  }
+
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') closeModal();
+  });
+
+  // Initial render from local cache.
+  renderCards(readLocal());
+
+  // Refresh from Firestore once auth resolves; mirror back to local.
+  function refreshFromFirestore(){
+    if (!window.FB || !window.FB.currentUser) return;
+    (async () => {
+      try {
+        const { db, doc, getDoc } = window.FB;
+        const snap = await getDoc(doc(db, 'users', window.FB.currentUser.uid));
+        if (!snap.exists()) return;
+        const remote = snap.data().tickets;
+        if (!Array.isArray(remote)) return;
+        saveLocal(remote);
+        renderCards(remote);
+      } catch(err){
+        console.warn('tickets refresh failed:', err && err.code, err && err.message);
+      }
+    })();
+  }
+  if (window.FB && window.FB.authReady) refreshFromFirestore();
+  else window.addEventListener('fb-auth-ready', refreshFromFirestore, { once:true });
 })();
 
 /* ─── Profile category visibility ───────────────────────

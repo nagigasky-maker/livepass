@@ -86,9 +86,27 @@ module.exports = async function handler(req, res) {
         productType: productType,
         productId:   productId || '',
         userId:      userId || '',
+        title:       title || '',
+        description: description || '',
+        amount:      String(unitAmount),
+        cover:       cover || '',
         app:         'livepass',
       },
-      success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      // Pass enough metadata in the success URL that the success page
+      // can write a complete ticket record to users/{uid}.tickets
+      // without having to call back into Stripe to read the session.
+      // Stripe injects {CHECKOUT_SESSION_ID}, the rest is base64-encoded
+      // JSON of the purchase so we never lose it.
+      success_url:
+        `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}` +
+        `&p=${encodeURIComponent(Buffer.from(JSON.stringify({
+          productType,
+          productId: productId || '',
+          title:     title     || '',
+          description: description || '',
+          amount:    unitAmount,
+          cover:     cover     || '',
+        })).toString('base64'))}`,
       cancel_url:  `${origin}/checkout/cancel`,
       locale: 'ja',
     });

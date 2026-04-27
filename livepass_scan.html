@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#050B1F">
+<title>EXPASS — 入場検証</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050B1F; --fg:#FFFFFF; --fg-2:rgba(255,255,255,.72); --fg-3:rgba(255,255,255,.42);
+  --ok:#00C28A; --ng:#FF3B30; --warn:#FFB020;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{
+  width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--fg);
+  font-family:-apple-system,'Inter','Noto Sans JP',Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none;
+  overflow:hidden;
+}
+.hdr{
+  position:fixed;top:0;left:0;right:0;z-index:10;
+  padding:calc(var(--safe-top) + 14px) 16px 12px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  background:linear-gradient(to bottom, rgba(5,11,31,.95), transparent);
+}
+.hdr-back{
+  background:rgba(255,255,255,.08);border:0.5px solid rgba(255,255,255,.18);
+  color:#fff;font-family:inherit;font-size:11px;letter-spacing:.04em;
+  padding:8px 14px;border-radius:99px;cursor:pointer;
+}
+.hdr-title{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.28em;
+  text-transform:uppercase;color:rgba(255,255,255,.6);
+}
+.stage{
+  position:fixed;inset:0;z-index:1;background:#000;
+}
+.stage video{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+}
+.scrim{
+  position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at center, transparent 38%, rgba(5,11,31,.7) 70%);
+}
+.target{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:min(72vw, 320px);aspect-ratio:1;border:1.5px solid rgba(255,255,255,.6);
+  border-radius:12px;pointer-events:none;
+  box-shadow:0 0 0 9999px rgba(5,11,31,.45);
+}
+.target::before,.target::after{
+  content:"";position:absolute;width:24px;height:24px;
+  border:3px solid #fff;
+}
+.target::before{top:-3px;left:-3px;border-right:0;border-bottom:0;border-top-left-radius:12px}
+.target::after{bottom:-3px;right:-3px;border-left:0;border-top:0;border-bottom-right-radius:12px}
+
+.foot{
+  position:fixed;left:0;right:0;bottom:0;z-index:5;
+  padding:18px 18px calc(var(--safe-bot) + 22px);
+  background:linear-gradient(to top, rgba(5,11,31,.95) 30%, transparent);
+  display:flex;flex-direction:column;gap:12px;align-items:center;
+}
+.event-pill{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.24em;
+  text-transform:uppercase;color:rgba(255,255,255,.65);
+  padding:6px 14px;border-radius:99px;
+  background:rgba(255,255,255,.06);border:0.5px solid rgba(255,255,255,.16);
+  text-align:center;max-width:90vw;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.hint{
+  font-family:-apple-system,sans-serif;font-size:12px;color:rgba(255,255,255,.6);
+  text-align:center;letter-spacing:.02em;line-height:1.5;
+}
+
+/* Result toast — slides up over the camera with the scanned ticket. */
+.result{
+  position:fixed;left:0;right:0;bottom:0;z-index:8;
+  padding:24px 22px calc(var(--safe-bot) + 28px);
+  background:rgba(255,255,255,.04);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:0.5px solid rgba(255,255,255,.16);
+  border-top-left-radius:18px;border-top-right-radius:18px;
+  transform:translateY(110%);transition:transform .3s cubic-bezier(.2,.8,.2,1);
+  display:flex;flex-direction:column;gap:14px;
+}
+.result.open{transform:translateY(0)}
+.result.open ~ .foot{display:none}
+.result-status{
+  display:flex;align-items:center;gap:10px;
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.22em;
+  text-transform:uppercase;
+}
+.result.ok   .result-status{color:var(--ok)}
+.result.warn .result-status{color:var(--warn)}
+.result.ng   .result-status{color:var(--ng)}
+.result-status::before{
+  content:"";width:8px;height:8px;border-radius:50%;background:currentColor;
+  box-shadow:0 0 12px currentColor;
+}
+.result-title{
+  font-family:-apple-system,sans-serif;font-weight:700;font-size:20px;
+  letter-spacing:-.3px;color:#fff;line-height:1.25;
+}
+.result-meta{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.16em;
+  color:rgba(255,255,255,.6);text-transform:uppercase;
+}
+.result-actions{display:flex;gap:10px;margin-top:6px}
+.result-btn{
+  flex:1;padding:14px;border-radius:99px;
+  font-family:-apple-system,sans-serif;font-weight:700;font-size:13px;
+  letter-spacing:.06em;cursor:pointer;border:0;
+}
+.result-btn.primary{background:#fff;color:#050B1F}
+.result-btn.ghost{background:rgba(255,255,255,.08);color:#fff;border:0.5px solid rgba(255,255,255,.2)}
+
+.empty{
+  position:fixed;inset:0;z-index:6;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;padding:40px 24px;
+  background:#050B1F;
+}
+.empty h1{
+  font-family:-apple-system,sans-serif;font-weight:700;font-size:22px;
+  letter-spacing:-.3px;color:#fff;margin-bottom:10px;
+}
+.empty p{
+  font-family:-apple-system,sans-serif;font-size:13px;color:rgba(255,255,255,.6);
+  line-height:1.7;max-width:280px;
+}
+</style>
+<script type="module" src="/firebase-init.js"></script>
+<script src="/livepass_qr.js" defer></script>
+</head>
+<body>
+
+<header class="hdr">
+  <button class="hdr-back" type="button" onclick="history.length > 1 ? history.back() : (location.href = '/calendar')">← Back</button>
+  <div class="hdr-title">VENUE SCANNER</div>
+  <span style="width:60px"></span>
+</header>
+
+<div class="stage" id="stage">
+  <video id="cam" muted playsinline autoplay></video>
+  <div class="scrim"></div>
+  <div class="target"></div>
+</div>
+
+<div class="foot" id="foot">
+  <div class="event-pill" id="eventPill">EVENT: —</div>
+  <div class="hint">QRコードを枠の中に合わせてください</div>
+</div>
+
+<div class="result" id="result" aria-hidden="true">
+  <div class="result-status" id="resultStatus">VALID</div>
+  <div class="result-title" id="resultTitle">—</div>
+  <div class="result-meta"  id="resultMeta">—</div>
+  <div class="result-actions">
+    <button class="result-btn primary" id="resultClose" type="button">続けてスキャン</button>
+  </div>
+</div>
+
+<div class="empty" id="empty" style="display:none">
+  <h1>カメラを起動できません</h1>
+  <p id="emptyMsg">この端末はQRスキャンに対応していないか、カメラへのアクセスが拒否されています。</p>
+</div>
+
+<script>
+/* ─────────────────────────────────────────────
+   /scan?event=<eventId> — venue check-in
+   ─────────────────────────────────────────────
+   Reads QR codes generated by /collection's PASS HOLDER. Each QR
+   payload encodes:
+     expass://t/<sessionId>
+   We resolve the sessionId against users/* in Firestore (any user
+   document whose tickets[] contains this id) and stamp the matching
+   ticket as checked_in. Already-checked tickets surface a yellow
+   warning so door staff can spot duplicates instantly.
+   ───────────────────────────────────────────── */
+const params  = new URLSearchParams(location.search);
+const eventId = params.get('event') || '';
+const eventTitle = decodeURIComponent(params.get('title') || '');
+
+const cam        = document.getElementById('cam');
+const eventPill  = document.getElementById('eventPill');
+const result     = document.getElementById('result');
+const resStatus  = document.getElementById('resultStatus');
+const resTitle   = document.getElementById('resultTitle');
+const resMeta    = document.getElementById('resultMeta');
+const resClose   = document.getElementById('resultClose');
+const empty      = document.getElementById('empty');
+const emptyMsg   = document.getElementById('emptyMsg');
+
+eventPill.textContent = eventTitle
+  ? `EVENT: ${eventTitle}`
+  : (eventId ? `EVENT: ${eventId}` : 'EVENT: 全件');
+
+let scanner = null;
+let busy = false;
+
+function showResult(kind, title, meta){
+  result.className = 'result open ' + kind;
+  resStatus.textContent = kind === 'ok'   ? 'CHECKED IN'
+                       :  kind === 'warn' ? 'ALREADY CHECKED IN'
+                       :                    'INVALID';
+  resTitle.textContent = title || '—';
+  resMeta.textContent  = meta  || '—';
+  if (navigator.vibrate) {
+    navigator.vibrate(kind === 'ok' ? [10, 30, 10] : kind === 'warn' ? [20, 60, 20] : [40, 80, 40]);
+  }
+}
+function dismissResult(){
+  result.classList.remove('open');
+  busy = false;
+}
+resClose.addEventListener('click', dismissResult);
+
+function decodePayload(raw){
+  // Accept either:
+  //   expass://t/<sessionId>
+  //   https://expass.app/v?p=<base64>     (signed payload, future)
+  //   <sessionId>                          (bare)
+  if (!raw) return null;
+  try {
+    const m = String(raw).match(/^expass:\/\/t\/([\w-]+)/);
+    if (m) return { kind:'session', id: m[1] };
+    if (raw.startsWith('http')) {
+      const u = new URL(raw);
+      const id = u.searchParams.get('t') || u.pathname.split('/').pop();
+      if (id) return { kind:'session', id };
+    }
+    if (/^[\w-]{8,}$/.test(raw)) return { kind:'session', id: raw };
+  } catch(_){}
+  return null;
+}
+
+async function verify(payload){
+  if (busy) return;
+  busy = true;
+  const decoded = decodePayload(payload);
+  if (!decoded) {
+    showResult('ng', '読み取れない QR コード', '形式が EXPASS チケットではありません');
+    return;
+  }
+  if (!window.FB || !window.FB.currentUser) {
+    showResult('ng', 'ログインが必要です', '主催者としてサインインしてからお試しください');
+    return;
+  }
+  const { db, collection, query, where, getDocs, doc, updateDoc } = window.FB;
+  try {
+    // Look up the ticket. The ticket id is the Stripe session id, so
+    // it's globally unique. We scan users/ for any doc whose
+    // tickets[] contains this id. Firestore can't query inside an
+    // array of objects, so we pull all users authored by the same
+    // event organiser. For the May 4 demo this is fine; production
+    // will move to a /tickets/{id} top-level collection.
+    const usersSnap = await getDocs(collection(db, 'users'));
+    let owner = null, ticket = null, ticketIndex = -1;
+    usersSnap.forEach(d => {
+      if (owner) return;
+      const data = d.data() || {};
+      if (!Array.isArray(data.tickets)) return;
+      const idx = data.tickets.findIndex(t => t && t.id === decoded.id);
+      if (idx >= 0) { owner = d; ticket = data.tickets[idx]; ticketIndex = idx; }
+    });
+    if (!owner || !ticket) {
+      showResult('ng', 'チケットが見つかりません', `ID: ${decoded.id.slice(0,12)}…`);
+      return;
+    }
+    // If a specific event was passed, require it to match.
+    if (eventId && ticket.productId && ticket.productId !== eventId) {
+      showResult('ng', '別のイベントのチケットです',
+        `購入: ${ticket.title || ticket.productId}`);
+      return;
+    }
+    // Already checked in?
+    if (ticket.status === 'checked_in') {
+      const at = ticket.checkedInAt
+        ? new Date(ticket.checkedInAt).toLocaleTimeString('ja-JP', { hour:'2-digit', minute:'2-digit' })
+        : '—';
+      showResult('warn', ticket.title || 'CHECKED IN',
+        `チェックイン済み · ${at}`);
+      return;
+    }
+    // Stamp checked_in.
+    const updated = (owner.data().tickets || []).slice();
+    updated[ticketIndex] = Object.assign({}, ticket, {
+      status: 'checked_in',
+      checkedInAt: new Date().toISOString(),
+    });
+    await updateDoc(doc(db, 'users', owner.id), { tickets: updated });
+    showResult('ok', ticket.title || 'チェックイン完了',
+      `${owner.data().name || '—'} · ¥${(ticket.amount || 0).toLocaleString()}`);
+  } catch(err){
+    console.warn('verify failed:', err && err.code, err && err.message);
+    showResult('ng', '検証に失敗しました', err.message || 'unknown');
+  }
+}
+
+async function start(){
+  if (!window.LivepassQR) {
+    setTimeout(start, 80);
+    return;
+  }
+  try {
+    scanner = await window.LivepassQR.scan(cam, async (raw) => {
+      if (busy) return;
+      await verify(raw);
+    });
+  } catch(err){
+    empty.style.display = 'flex';
+    emptyMsg.textContent = err.message || 'カメラを起動できませんでした。';
+  }
+}
+
+window.addEventListener('fb-auth-ready', start, { once:true });
+if (window.FB && window.FB.authReady) start();
+
+window.addEventListener('beforeunload', () => { if (scanner) scanner.stop(); });
+</script>
+</body>
+</html>
