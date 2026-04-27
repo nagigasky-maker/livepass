@@ -89,9 +89,9 @@ echo '<link rel="icon" href="' . get_stylesheet_directory_uri() . '/logos/amdhea
   --blue:  #1A2E6B;
   --line:  rgba(237,235,230,0.09);
 }
-html { height: 100%; overflow: hidden; overflow: auto; }
+html { height: 100%; overflow-x: hidden; overflow-y: auto; max-width: 100vw; overscroll-behavior-x: none; }
 body {
-  overflow-x: hidden; overflow-y: auto; min-height: 100vh; min-height: -webkit-fill-available;
+  overflow-x: hidden !important; overflow-y: auto; min-height: 100vh; min-height: -webkit-fill-available; max-width: 100vw; overscroll-behavior-x: none;
   background: var(--black); color: var(--white);
   font-family: "Noto Sans JP","Montserrat",sans-serif;
   font-weight: 300; font-feature-settings: "palt";
@@ -159,7 +159,7 @@ html.pwa-mode #deck {
 .h-section { font-family:Arial,"Arial Black",sans-serif; font-size:clamp(28px,5.5vw,52px); line-height:0.94; letter-spacing:0.01em; color:var(--white); margin-bottom:20px; font-weight:900; }
 .connect-h2 { font-family:Arial,"Arial Black",sans-serif; font-size:clamp(30px,6.5vw,56px); line-height:0.92; letter-spacing:0.01em; color:var(--white); margin-bottom:20px; font-weight:900; }
 .connect-h2 span { color:var(--red); }
-.af-name { font-family:Arial,"Arial Black",sans-serif; font-size:clamp(32px,7vw,64px); line-height:0.92; letter-spacing:0.01em; color:var(--white); margin-bottom:20px; font-weight:900; }
+.af-name { font-family:Arial,"Arial Black",sans-serif; font-size:clamp(32px,7vw,64px); line-height:0.92; letter-spacing:0.01em; color:var(--white); margin-bottom:20px; font-weight:900; max-width:480px; }
 .body-txt { font-size:14px; font-weight:300; line-height:2.0; color:var(--white); opacity:0.88; max-width:380px; letter-spacing:0.04em; }
 .body-txt-en { font-size:13px; font-weight:300; font-style:italic; line-height:1.9; color:var(--white); opacity:0.72; max-width:380px; margin-top:14px; }
 [data-lang="jp"] .body-txt { display:block; }
@@ -216,9 +216,9 @@ html.pwa-mode #deck {
 .ac-sub { font-size:7px; font-weight:200; letter-spacing:0.32em; text-transform:uppercase; color:var(--white); opacity:0.65; margin-top:2px; }
 .ac.mystery .ac-name { opacity:0.48; }
 .ac.mystery .ac-img { background:#080808; }
-.af-genre { font-size:11px; font-weight:400; letter-spacing:0.45em; text-transform:uppercase; color:var(--red); opacity:0.95; margin-bottom:18px; text-shadow:0 1px 8px rgba(0,0,0,0.95); }
-.af-desc { font-size:14px; font-weight:300; line-height:2.0; color:var(--white); opacity:0.92; max-width:560px; margin-top:0; margin-bottom:8px; text-shadow:0 1px 8px rgba(0,0,0,0.95); overflow:hidden; }
-.af-desc-en { font-size:14px; font-weight:400; font-style:italic; line-height:1.75; color:var(--white); opacity:0.88; max-width:560px; text-shadow:0 1px 8px rgba(0,0,0,0.95); overflow:hidden; }
+.af-genre { font-size:11px; font-weight:400; letter-spacing:0.45em; text-transform:uppercase; color:var(--red); opacity:0.95; margin-bottom:18px; text-shadow:0 1px 12px rgba(0,0,0,1), 0 0 40px rgba(0,0,0,0.8); }
+.af-desc { font-size:14px; font-weight:300; line-height:2.0; color:var(--white); opacity:0.92; max-width:none; margin-top:0; margin-bottom:8px; text-shadow:0 1px 12px rgba(0,0,0,1), 0 0 40px rgba(0,0,0,0.8); overflow:hidden; }
+.af-desc-en { font-size:14px; font-weight:400; font-style:italic; line-height:1.75; color:var(--white); opacity:0.88; max-width:none; text-shadow:0 1px 12px rgba(0,0,0,1), 0 0 40px rgba(0,0,0,0.8); overflow:hidden; }
 .amd-word { display:inline-block; will-change:transform,opacity; color:inherit; }
 .af-links { display:flex; gap:20px; margin-top:12px; align-items:center; }
 .art-cover-content { display:flex; flex-direction:column; justify-content:flex-end; height:100%; }
@@ -230,7 +230,10 @@ html.pwa-mode #deck {
 #amd-chapter-line { position:fixed; top:0; left:0; right:0; height:2px; background:var(--red); z-index:9998; transform-origin:left center; transform:scaleX(0); pointer-events:none; }
 .amd-red-flash { position:fixed; inset:0; z-index:9997; background:var(--red); opacity:0; pointer-events:none; }
 .amd-ticket-overlay { position:fixed; inset:0; z-index:8900; touch-action:pan-y; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); overflow-x:hidden; overflow-y:auto; -webkit-overflow-scrolling:touch; background:var(--black); display:flex; flex-direction:column; padding-top:max(72px, calc(env(safe-area-inset-top) + 60px)); overscroll-behavior-y:contain; isolation:isolate; }
-.amd-ticket-overlay .panel-content { padding-left:28px !important; padding-right:28px !important; }
+.amd-ticket-overlay .panel-content { padding-left:32px !important; padding-right:32px !important; }
+/* WS Artist overlay — force left/right margin on all text */
+#p1-1 .eyebrow, #p1-1 .af-genre, #p1-1 .af-name, #p1-1 .af-desc, #p1-1 .af-desc-en { margin-left:20px !important; margin-right:20px !important; }
+#p1-1 .amd-ticket-close { margin-right:40px !important; }
 .amd-ticket-overlay .body-txt, .amd-ticket-overlay .body-txt-en { max-width:100%; }
 .amd-ticket-overlay .eyebrow, .amd-ticket-overlay .h-section,
 .amd-ticket-overlay .info-table, .amd-ticket-overlay .ticket-section,
@@ -240,31 +243,62 @@ html.pwa-mode #deck {
 @media (max-width:860px) { .amd-ticket-overlay .two-col { grid-template-columns:1fr; } }
 .amd-ticket-overlay.open { transform:translateY(0); }
 .amd-ticket-close { position:absolute; bottom:max(32px, calc(env(safe-area-inset-bottom) + 24px)); right:28px; z-index:10000; background:rgba(12,15,26,0.6); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border:1px solid rgba(237,235,230,0.2); color:rgba(237,235,230,0.6); font-size:18px; line-height:1; width:44px; height:44px; display:flex; align-items:center; justify-content:center; cursor:pointer; border-radius:50%; transition:border-color .2s, color .2s; }
-.amd-artist-panel { position:fixed; inset:0; z-index:9000; touch-action:pan-y; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; isolation:isolate; }
+.amd-artist-panel { position:fixed; inset:0; z-index:9000; touch-action:pan-y; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); display:flex; flex-direction:column; overflow-x:hidden; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; isolation:isolate; }
 .amd-artist-panel.open { transform:translateY(0); }
 .amd-ap-bg { position:absolute; inset:0; background:rgba(12,15,26,0.97); }
 .amd-ap-inner { position:relative; z-index:2; height:100%; display:flex; flex-direction:column; padding:max(20px, calc(env(safe-area-inset-top) + 8px)) 0 0; overflow-y:auto; }
 .amd-ap-close { position:absolute; bottom:max(32px, calc(env(safe-area-inset-bottom) + 24px)); right:28px; z-index:10000; background:rgba(12,15,26,0.6); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border:1px solid rgba(237,235,230,0.2); color:rgba(237,235,230,0.6); font-size:18px; line-height:1; width:44px; height:44px; display:flex; align-items:center; justify-content:center; cursor:pointer; border-radius:50%; transition:border-color .2s, color .2s; }
-.amd-ap-title { font-size:9px; letter-spacing:0.42em; text-transform:uppercase; color:rgba(237,235,230,0.3); padding:0 20px; margin-bottom:16px; }
+.amd-ap-title { font-size:9px; letter-spacing:0.42em; text-transform:uppercase; color:rgba(237,235,230,0.3); padding:0 24px; margin-bottom:16px; }
 .amd-ap-groups { display:flex; flex-direction:column; gap:3px; padding:0 0 40px; }
 .amd-ap-group { position:relative; height:clamp(200px,28vh,280px); overflow:hidden; cursor:pointer; border-radius:0; }
 .amd-ap-group img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.65; transition:opacity 0.3s; }
 .amd-ap-group:hover img, .amd-ap-group:active img { opacity:0.88; }
 .amd-ap-group-vig { position:absolute; inset:0; background:linear-gradient(180deg,transparent 35%,rgba(12,15,26,0.82) 100%); }
-.amd-ap-group-info { position:absolute; bottom:0; left:0; right:0; padding:16px 20px; }
+.amd-ap-group-info { position:absolute; bottom:0; left:0; right:0; padding:16px 24px; }
 .amd-ap-group-sub { font-size:9px; letter-spacing:0.38em; text-transform:uppercase; color:var(--red); margin-bottom:4px; }
 .amd-ap-group-name { font-size:24px; font-weight:300; letter-spacing:0.05em; color:var(--white); line-height:1.1; }
 .amd-ap-group-members { font-size:10px; letter-spacing:0.18em; color:rgba(237,235,230,0.45); margin-top:6px; line-height:1.8; }
-.amd-card-stack { position:fixed; inset:0; z-index:9100; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); background:var(--black); touch-action:pan-y; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; isolation:isolate; }
+.amd-card-stack { position:fixed; inset:0; z-index:9100; transform:translateY(100%); transition:transform 0.45s cubic-bezier(0.32,0,0.2,1); background:var(--black); overflow:hidden; overscroll-behavior:contain; isolation:isolate; }
 .amd-card-stack.open { transform:translateY(0); }
 .amd-cs-close { position:absolute; top:max(22px, calc(env(safe-area-inset-top) + 14px)); left:24px; z-index:10000; background:none; border:none; color:rgba(237,235,230,0.5); font-size:11px; letter-spacing:0.28em; text-transform:uppercase; cursor:pointer; }
 .amd-cs-title { position:absolute; top:max(24px, calc(env(safe-area-inset-top) + 14px)); left:50%; transform:translateX(-50%); z-index:10000; font-size:9px; letter-spacing:0.38em; text-transform:uppercase; color:rgba(237,235,230,0.3); white-space:nowrap; }
 #cardStackStage { position:absolute; inset:0; }
-.amd-card { position:absolute; inset:0; will-change:transform,opacity; }
-.amd-card-content { position:absolute; inset:0; z-index:2; display:flex; flex-direction:column; justify-content:flex-end; padding:28px 28px 44px; }
-.amd-card-num { font-size:10px; letter-spacing:0.32em; color:rgba(237,235,230,0.28); margin-top:16px; }
-.amd-card-nav { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; align-items:center; padding:14px 24px; z-index:300; border-top:1px solid rgba(237,235,230,0.1); background:rgba(12,15,26,0.6); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
-.amd-card-nav-btn { background:none; border:none; color:rgba(237,235,230,0.55); font-size:11px; letter-spacing:0.32em; text-transform:uppercase; cursor:pointer; padding:8px 0; transition:color 0.2s; }
+.amd-card { position:absolute; inset:0; will-change:transform,opacity; overflow:hidden; background:#0a0d16; pointer-events:none; }
+/* Only the active card is interactive AND sits on top of the OTHER cards
+   (but stays below .amd-card-nav which lives at z:300) */
+.amd-card.amd-card-active { pointer-events:auto; z-index:50 !important; }
+
+/* NEW TWO-PANE LAYOUT
+   ────────────────────
+   Top 55%: photo hero (portrait-safe crop, fades into the info panel)
+   Bottom 45%: solid info panel with header + scrollable bio
+   This replaces the overlay approach so long bios always read cleanly. */
+.amd-card-photo { position:absolute; top:0; left:0; right:0; height:55%; overflow:hidden; background:#0a0d16; }
+.amd-card-photo img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center 22%; animation:amdPhotoDrift 22s cubic-bezier(.42,.08,.58,.92) infinite alternate; transform-origin:50% 40%; will-change:transform; }
+@keyframes amdPhotoDrift {
+  0%   { transform:scale(1.00) translate(0%, 0%); }
+  25%  { transform:scale(1.035) translate(-0.6%, -0.4%); }
+  50%  { transform:scale(1.055) translate(-0.2%, -0.9%); }
+  75%  { transform:scale(1.035) translate(0.4%, -0.5%); }
+  100% { transform:scale(1.02) translate(0.6%, 0.2%); }
+}
+/* Slight per-card phase offset so adjacent cards don't move in sync */
+.amd-card:nth-child(2n) .amd-card-photo img { animation-delay:-6s; }
+.amd-card:nth-child(3n) .amd-card-photo img { animation-delay:-12s; }
+.amd-card-photo::after { content:""; position:absolute; left:0; right:0; bottom:0; height:90px; background:linear-gradient(to bottom,transparent 0%,rgba(10,13,22,0.7) 55%,#0a0d16 100%); pointer-events:none; }
+
+.amd-card-num { position:absolute; top:max(22px,calc(env(safe-area-inset-top)+12px)); right:22px; z-index:4; font-size:9px; letter-spacing:0.32em; color:rgba(237,235,230,0.65); text-shadow:0 1px 8px rgba(0,0,0,0.85); margin-top:0; }
+
+.amd-card-info { position:absolute; left:0; right:0; top:55%; bottom:0; background:#0a0d16; display:flex; flex-direction:column; z-index:2; }
+.amd-card-header { flex-shrink:0; padding:18px 26px 14px; }
+.amd-card-bio { flex:1 1 auto; min-height:0; overflow-y:auto; padding:6px 26px calc(42px + env(safe-area-inset-bottom)) 26px; overscroll-behavior:contain; touch-action:pan-y; }
+.amd-card-bio::-webkit-scrollbar { display:none; }
+
+/* Fade at the top of the bio scroll area so scrolled text melts out instead
+   of hitting the header with a hard edge */
+.amd-card-bio::before { content:""; position:sticky; top:0; display:block; height:10px; margin-bottom:-10px; background:linear-gradient(to bottom,#0a0d16,transparent); z-index:1; pointer-events:none; }
+.amd-card-nav { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; align-items:center; padding:6px 24px calc(6px + env(safe-area-inset-bottom)) 24px; z-index:300; border-top:1px solid rgba(237,235,230,0.14); background:rgba(12,15,26,0.94); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+.amd-card-nav-btn { background:none; border:none; color:rgba(237,235,230,0.55); font-size:10px; letter-spacing:0.32em; text-transform:uppercase; cursor:pointer; padding:4px 0; transition:color 0.2s; }
 .amd-card-nav-btn:hover { color:var(--white); }
 .amd-card-nav-btn:disabled { opacity:0; cursor:default; pointer-events:none; }
 .art-detail-slide { position:absolute; inset:0; transition:transform 0.35s cubic-bezier(0.32,0,0.2,1); }
@@ -276,38 +310,67 @@ html.pwa-mode #deck {
 .af-link { display:inline-flex; align-items:center; justify-content:center; text-decoration:none; transition:opacity 0.2s, transform 0.2s; }
 .af-link:hover { color:var(--white); transform:scale(1.1); }
 .af-link svg { width:40px; height:40px; fill:currentColor; }
-/* ZINE */
-.zine-head { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:26px; }
-.zine-list { display:flex; flex-direction:column; margin-top:12px; }
-.zi { display:flex; align-items:baseline; gap:16px; padding:18px 0; border-bottom:1px solid rgba(237,235,230,0.1); text-decoration:none; color:var(--white); transition:padding-left 0.2s ease; position:relative; }
-.zi:hover { padding-left:8px; }
-.zi:first-child { border-top:1px solid rgba(237,235,230,0.1); }
-.zi-num { font-family:Arial,"Arial Black",sans-serif; font-size:36px; line-height:1; font-weight:900; color:var(--red); opacity:0.95; letter-spacing:0.02em; min-width:72px; text-align:right; flex-shrink:0; }
-.zi.zi-coming .zi-num { color:rgba(237,235,230,0.15); }
-.zi-body { flex:1; }
-.zi-ttl { font-family:Arial,"Arial Black",sans-serif; font-weight:900; font-size:26px; line-height:1.05; letter-spacing:0.03em; color:var(--white); margin-bottom:5px; }
-.zi.zi-coming .zi-ttl { color:rgba(237,235,230,0.25); }
-.zi-meta { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
-.zi-yr { font-size:11px; font-weight:400; letter-spacing:0.14em; color:rgba(237,235,230,0.55); }
-.zi-tag { font-size:10px; font-weight:500; letter-spacing:0.22em; text-transform:uppercase; color:var(--red); opacity:0.8; border:1px solid rgba(200,16,10,0.35); padding:2px 8px; }
-.zi-desc { font-size:12px; font-weight:300; line-height:1.7; color:rgba(237,235,230,0.58); margin-top:6px; max-width:420px; }
-.zi-arr { font-size:16px; color:var(--red); opacity:0; flex-shrink:0; transform:translateX(-4px); transition:opacity 0.2s,transform 0.2s; }
-.zi:hover .zi-arr { opacity:0.8; transform:translateX(0); }
-.zine-issue-wrap { display:flex; flex-direction:column; gap:24px; }
-.zine-ep-header { padding-bottom:20px; border-bottom:1px solid rgba(237,235,230,0.12); }
-.zine-issue-title { font-family:Arial,"Arial Black",sans-serif; font-size:clamp(26px,6.5vw,50px); font-weight:900; line-height:0.92; color:var(--white); margin:14px 0 10px; }
-.zine-issue-date { font-size:12px; font-weight:300; letter-spacing:0.18em; color:rgba(237,235,230,0.55); }
-.zine-issue-body p { font-size:14px; font-weight:300; line-height:2.1; color:rgba(237,235,230,0.82); margin-bottom:16px; }
-.zine-section-label { font-size:10px; font-weight:600; letter-spacing:0.4em; text-transform:uppercase; color:var(--red); margin:24px 0 10px; opacity:0.9; }
-.zine-lead { font-size:15px; font-weight:300; font-style:italic; color:rgba(237,235,230,0.88); margin-bottom:12px; line-height:1.7; }
-.zine-photo-grid { display:grid; grid-template-columns:1fr 1fr; gap:4px; margin:8px 0; }
-.zine-photo-grid img { width:100%; aspect-ratio:1/1; object-fit:cover; opacity:0.9; }
-.zine-music-list { margin:10px 0; }
-.zine-music-row { font-size:12px; font-weight:300; letter-spacing:0.06em; color:rgba(237,235,230,0.72); padding:7px 0; border-bottom:1px solid rgba(237,235,230,0.07); }
-.zine-credit-block { margin-top:20px; border-top:1px solid rgba(237,235,230,0.1); padding-top:16px; display:flex; flex-direction:column; }
-.zine-credit-row { display:flex; justify-content:space-between; align-items:baseline; padding:9px 0; border-bottom:1px solid rgba(237,235,230,0.06); gap:16px; }
-.zine-credit-row span:first-child { font-size:10px; font-weight:500; letter-spacing:0.32em; text-transform:uppercase; color:var(--red); opacity:0.85; white-space:nowrap; flex-shrink:0; }
-.zine-credit-row span:last-child { font-size:13px; font-weight:300; color:rgba(237,235,230,0.78); text-align:right; }
+/* ZINE — Magazine card stack layout (all cards same tall size) */
+.zine-feed { display:flex; flex-direction:column; gap:0; position:relative; }
+.zine-card, .zine-card-2col { position:sticky; top:0; }
+.zine-card { position:relative; overflow:hidden; border-radius:14px; text-decoration:none; color:var(--white); display:block; background:#0d1018; height:85vh; min-height:520px; max-height:720px; }
+.zine-card-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.75; }
+.zine-card-vig { position:absolute; inset:0; background:linear-gradient(to top,rgba(12,15,26,.95) 0%,rgba(12,15,26,.4) 50%,transparent 100%); }
+.zine-card-body { position:relative; z-index:2; display:flex; flex-direction:column; justify-content:flex-end; height:100%; padding:28px; box-sizing:border-box; }
+.zine-card-cat { font-size:9px; font-weight:600; letter-spacing:.4em; text-transform:uppercase; color:var(--red); margin-bottom:8px; }
+.zine-card-title { font-family:Arial,"Arial Black",sans-serif; font-weight:900; line-height:.95; letter-spacing:.01em; color:var(--white); font-size:clamp(26px,7vw,40px); }
+.zine-card-meta { font-size:10px; font-weight:300; letter-spacing:.15em; color:rgba(237,235,230,.45); margin-top:8px; }
+.zine-card-num { position:absolute; top:18px; right:20px; font-family:Arial,"Arial Black",sans-serif; font-size:clamp(48px,10vw,72px); font-weight:900; color:var(--red); opacity:.7; line-height:1; z-index:2; }
+/* ── ZINE Book (HOME COMING special) ── */
+.zine-book { position:relative; height:85vh; min-height:520px; max-height:720px; perspective:1800px; cursor:pointer; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+.zine-book-inner { position:relative; width:100%; height:100%; border-radius:14px; overflow:visible; }
+/* Page layers (stacked by z-index) */
+.zine-page-layer { position:absolute; inset:0; border-radius:14px; overflow:hidden; background:#0a0c14; }
+.zine-page-layer img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.8; }
+.zine-page-layer .zine-card-vig { z-index:2; }
+.zine-page-layer .zine-card-body { z-index:3; }
+.zine-page-layer[data-layer="0"] { z-index:12; }
+.zine-page-layer[data-layer="1"] { z-index:11; }
+.zine-page-layer[data-layer="2"] { z-index:10; }
+.zine-page-layer[data-layer="3"] { z-index:9; }
+.zine-page-layer[data-layer="4"] { z-index:8; }
+.zine-page-layer[data-layer="5"] { z-index:7; }
+.zine-page-layer[data-layer="6"] { z-index:6; }
+.zine-page-layer[data-layer="7"] { z-index:5; }
+.zine-page-layer[data-layer="8"] { z-index:4; }
+.zine-page-layer[data-layer="9"] { z-index:3; }
+.zine-page-layer[data-layer="10"] { z-index:2; }
+.zine-page-layer[data-layer="11"] { z-index:1; }
+.zine-page-back-credit { font-size:9px; font-weight:300; letter-spacing:.2em; color:rgba(237,235,230,.5); margin-top:12px; line-height:1.8; }
+/* Flippable pages */
+.zine-page-flip { transform-origin:left center; transition:transform 0.9s cubic-bezier(0.4,0,0.2,1); backface-visibility:hidden; will-change:transform; }
+.zine-page-flip.flipped { transform:rotateY(-160deg); pointer-events:none; }
+/* Close button */
+.zine-book-close { position:absolute; top:max(20px,calc(env(safe-area-inset-top)+12px)); right:20px; z-index:100; width:48px; height:48px; border-radius:50%; border:1px solid rgba(237,235,230,.25); background:rgba(12,15,26,.7); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); color:rgba(237,235,230,.7); font-size:18px; display:flex; align-items:center; justify-content:center; cursor:pointer; opacity:0; transition:opacity .3s .6s; pointer-events:none; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+.zine-book.open .zine-book-close { opacity:1; pointer-events:all; }
+/* Tap hint on cover */
+.zine-tap-hint { position:absolute; bottom:28px; right:28px; z-index:10; font-size:8px; letter-spacing:.4em; text-transform:uppercase; color:rgba(237,235,230,.35); animation:zinePulse 2.5s ease-in-out infinite; }
+@keyframes zinePulse { 0%,100%{opacity:.35} 50%{opacity:.7} }
+.zine-book.open .zine-tap-hint { opacity:0; transition:opacity .2s; }
+/* ZINE section global TAP pulse — shows center-right of viewport while
+   the ZINE chapter is visible, hides when the book is open */
+.zine-tap-pulse { position:fixed; top:50%; right:18px; transform:translate3d(0,-50%,0); z-index:80; width:64px; height:64px; pointer-events:none; opacity:0; visibility:hidden; transition:opacity .4s ease, visibility .4s ease; display:flex; align-items:center; justify-content:center; }
+.zine-tap-pulse.visible { opacity:1; visibility:visible; }
+.ztp-dot { position:absolute; width:12px; height:12px; border-radius:50%; background:var(--red); box-shadow:0 0 18px rgba(232,16,10,.7); }
+.ztp-ring { position:absolute; width:64px; height:64px; border-radius:50%; border:1.5px solid var(--red); animation:ztpRing 1.8s cubic-bezier(.4,0,.2,1) infinite; }
+.ztp-ring:nth-of-type(2) { animation-delay:.9s; }
+.ztp-label { position:absolute; right:calc(100% + 10px); font-size:8px; letter-spacing:.34em; color:rgba(237,235,230,.7); text-transform:uppercase; white-space:nowrap; animation:zinePulse 1.8s ease-in-out infinite; }
+@keyframes ztpRing { 0%{transform:scale(.35);opacity:1} 100%{transform:scale(1.35);opacity:0} }
+/* ZINE header bar (replaces site header in this section) */
+.zine-section-header { position:sticky; top:0; z-index:100; display:flex; justify-content:space-between; align-items:center; padding:max(60px,calc(env(safe-area-inset-top)+28px)) 24px 16px; background:linear-gradient(to bottom,rgba(12,15,26,.97) 0%,rgba(12,15,26,.85) 50%,rgba(12,15,26,.4) 80%,transparent 100%); pointer-events:none; }
+.zine-section-header > * { pointer-events:all; }
+/* View all link */
+.zine-view-all { display:block; text-align:center; padding:28px 0 max(40px,calc(env(safe-area-inset-bottom)+24px)); }
+.zine-view-all a { font-size:10px; letter-spacing:.3em; text-transform:uppercase; color:rgba(237,235,230,.4); text-decoration:none; border-bottom:1px solid rgba(237,235,230,.12); padding-bottom:3px; transition:color .2s; }
+.zine-view-all a:hover { color:var(--red); border-color:var(--red); }
+@media (max-width:480px) {
+  .zine-card-body { padding:20px; }
+}
 /* YOUTUBE */
 .yt-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:20px; }
 .yt-card { display:block; text-decoration:none; color:var(--white); border:1px solid rgba(237,235,230,0.08); transition:border-color 0.2s; }
@@ -329,6 +392,12 @@ html.pwa-mode #deck {
 .sc-badge { position:absolute; top:13px; left:13px; font-size:7px; font-weight:300; letter-spacing:0.3em; text-transform:uppercase; color:var(--red); border:1px solid rgba(200,16,10,0.4); padding:3px 8px; }
 .sc-info { padding:12px 14px 16px; border-top:1px solid var(--line); }
 .sc-cat { font-size:7px; font-weight:200; letter-spacing:0.42em; text-transform:uppercase; color:var(--white); opacity:0.42; margin-bottom:4px; }
+/* GOOD GOODS showcase (single product display) */
+.gg-item { position:absolute; display:flex; flex-direction:column; align-items:center; justify-content:center; width:85%; max-width:380px; text-decoration:none; color:var(--white); pointer-events:all; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.gg-item img { width:100%; max-height:62vh; object-fit:contain; filter:drop-shadow(0 8px 32px rgba(0,0,0,0.6)); }
+.gg-item-info { text-align:center; margin-top:12px; }
+.gg-item-name { font-family:Arial,"Arial Black",sans-serif; font-size:15px; font-weight:900; letter-spacing:0.06em; color:var(--white); margin-bottom:4px; text-shadow:0 2px 12px rgba(0,0,0,0.8); }
+.gg-item-cat { font-size:8px; font-weight:300; letter-spacing:0.35em; text-transform:uppercase; color:rgba(237,235,230,0.5); text-shadow:0 1px 8px rgba(0,0,0,0.8); }
 .sc-name { font-size:13px; font-weight:300; color:var(--white); margin-bottom:2px; }
 .sc-price { font-size:10px; font-weight:200; color:var(--white); opacity:0.65; }
 /* CONNECT */
@@ -423,9 +492,9 @@ html.pwa-mode #deck {
 .parallax-bg { position: absolute; inset: 0; z-index: 0; will-change: transform; transition: transform 0.1s linear; }
 .parallax-bg img, .parallax-bg video { width: 100%; height: 120%; object-fit: cover; position: absolute; top: -10%; left: 0; }
 /* SLIDE IN */
-.rv-left { opacity: 0; transform: translateX(-40px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
-.rv-right { opacity: 0; transform: translateX(40px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
-.rv-left.visible, .rv-right.visible { opacity: 1; transform: translateX(0); }
+.rv-left { opacity: 0; transform: translateY(20px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
+.rv-right { opacity: 0; transform: translateY(20px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
+.rv-left.visible, .rv-right.visible { opacity: 1; transform: translateY(0); }
 .rv-up { opacity: 0; transform: translateY(30px); transition: opacity 0.65s cubic-bezier(0.22,1,0.36,1), transform 0.65s cubic-bezier(0.22,1,0.36,1); }
 .rv-up.visible { opacity: 1; transform: translateY(0); }
 .rv-scale { opacity: 0; transform: scale(0.94); transition: opacity 0.7s ease, transform 0.7s ease; }
@@ -463,8 +532,8 @@ a.sc:hover { background: rgba(237,235,230,0.06); }
 @keyframes scrollPulse { 0%,100% { transform:scaleY(0.3); opacity:.25; } 50% { transform:scaleY(1); opacity:.7; } }
 /* SCROLL ANIMATIONS */
 .anim-up { opacity: 0; transform: translateY(32px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
-.anim-left { opacity: 0; transform: translateX(-36px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
-.anim-right { opacity: 0; transform: translateX(36px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
+.anim-left { opacity: 0; transform: translateY(20px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
+.anim-right { opacity: 0; transform: translateY(20px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
 .anim-up.in, .anim-left.in, .anim-right.in { opacity: 1; transform: translate(0); }
 ::selection { background:var(--red); color:var(--white); }
 /* ARTIST INDEX */
@@ -485,8 +554,8 @@ a.sc:hover { background: rgba(237,235,230,0.06); }
 /* MOBILE */
 @media (max-width: 860px) {
   #amd-header { padding:max(16px, calc(env(safe-area-inset-top) + 6px)) 20px 10px; }
-  .panel-content { padding:0 20px max(40px, calc(env(safe-area-inset-bottom) + 40px)); }
-  .content-panel .panel-content { padding:64px 20px 52px; }
+  .panel-content { padding:0 24px max(40px, calc(env(safe-area-inset-bottom) + 40px)); }
+  .content-panel .panel-content { padding:64px 24px 52px; }
   .panel-dots { left:20px; bottom:32px; }
   .back-btn { bottom:32px; right:20px; font-size:12px; }
   .two-col { grid-template-columns:1fr; gap:24px; }
@@ -518,9 +587,12 @@ a.sc:hover { background: rgba(237,235,230,0.06); }
   .menu-sub { display:none; }
   .menu-footer { flex-wrap:wrap; gap:16px; }
 }
-/* CARD STACK OVERRIDES */
-.amd-card-stack .af-desc { display:block; color:var(--white); overflow:visible; -webkit-line-clamp:unset; }
-.amd-card-stack .af-desc-en { display:none; color:var(--white); }
+/* CARD STACK OVERRIDES — two-pane layout typography */
+.amd-card-stack .af-genre { font-size:9px; letter-spacing:0.4em; color:var(--red); margin:0 0 8px 0; text-shadow:none; opacity:1; }
+.amd-card-stack .af-name { font-family:Arial,"Arial Black",sans-serif; font-weight:900; font-size:clamp(26px,6.5vw,40px); line-height:0.95; letter-spacing:0.01em; color:var(--white); margin:0 0 12px 0; text-shadow:none; max-width:none; }
+.amd-card-stack .af-links { display:flex; gap:10px; margin:0; }
+.amd-card-stack .af-desc { display:block; color:rgba(237,235,230,0.88); overflow:visible; -webkit-line-clamp:unset; font-size:11px; line-height:1.75; font-weight:300; margin:0 0 10px 0; text-shadow:none; }
+.amd-card-stack .af-desc-en { display:none; color:rgba(237,235,230,0.85); overflow:visible; -webkit-line-clamp:unset; font-size:11px; line-height:1.65; font-weight:300; font-style:italic; margin:0 0 10px 0; text-shadow:none; }
 [data-lang="en"] .amd-card-stack .af-desc { display:none; }
 [data-lang="en"] .amd-card-stack .af-desc-en { display:block; }
 body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opacity .2s; }
@@ -531,13 +603,35 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 .gsap-ready [data-lazy] { visibility: visible; }
 #c2-track, #c3-track, #c4-track { overflow: hidden !important; }
 #c2 .panel-content, #c3 .panel-content { padding-left:56px; }
-@media (max-width:860px) { #c2 .panel-content, #c3 .panel-content { padding-left:28px; } }
+@media (max-width:860px) { #c2 .panel-content, #c3 .panel-content { padding-left:28px; padding-right:28px; } }
 #c0 .rv, #c0 .rv-left, #c0 .rv-right, #c0 .rv-up, #c0 .rv-scale,
 #c1 .rv, #c1 .rv-left, #c1 .rv-right, #c1 .rv-up, #c1 .rv-scale {
   opacity: 1 !important; transform: none !important; transition: none !important; transition-delay: 0s !important;
 }
 /* PWA INSTALL BANNER */
 .pwa-banner{position:fixed;bottom:0;left:0;right:0;z-index:9500;transform:translateY(100%);transition:transform .5s cubic-bezier(.22,1,.36,1);pointer-events:none;}
+/* SOUNDCLOUD RIGHT-TAB PLAYER */
+.sc-player{position:fixed;bottom:max(80px,calc(env(safe-area-inset-bottom)+60px));right:0;z-index:9400;width:300px;transform:translateX(calc(100% + 10px));transition:transform .5s cubic-bezier(.22,1,.36,1);pointer-events:none;}
+.sc-player.show{transform:translateX(calc(100% - 44px));pointer-events:all;}
+.sc-player.show.open{transform:translateX(0);pointer-events:all;}
+.sc-player-bar{display:flex;flex-direction:row;align-items:stretch;}
+/* Tab strip on left edge */
+.sc-player-tab{flex-shrink:0;width:44px;background:rgba(12,15,26,.94);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(237,235,230,.08);border-right:none;border-radius:14px 0 0 14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;padding:12px 0;}
+.sc-player-tab-icon{width:20px;height:20px;}
+.sc-player-tab-icon svg{width:20px;height:20px;fill:var(--red);}
+.sc-player-tab-pulse{width:6px;height:6px;border-radius:50%;background:var(--red);opacity:0;}
+.sc-player.playing .sc-player-tab-pulse{opacity:1;animation:scPulse 1.5s ease-in-out infinite;}
+@keyframes scPulse{0%,100%{opacity:.4;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+.sc-player-tab-label{writing-mode:vertical-rl;font-size:7px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(237,235,230,.4);}
+/* Panel */
+.sc-player-panel{flex:1;background:rgba(12,15,26,.94);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(237,235,230,.08);border-left:none;border-radius:0;overflow:hidden;display:flex;flex-direction:column;}
+.sc-player-header{display:flex;align-items:center;padding:12px 14px;gap:10px;}
+.sc-player-text{min-width:0;flex:1;}
+.sc-player-title{font-family:Arial,"Arial Black",sans-serif;font-size:10px;font-weight:700;letter-spacing:.03em;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sc-player-sub{font-size:7px;font-weight:300;letter-spacing:.18em;text-transform:uppercase;color:rgba(237,235,230,.4);margin-top:1px;}
+.sc-player-close{background:none;border:none;color:rgba(237,235,230,.3);font-size:14px;cursor:pointer;padding:4px;line-height:1;flex-shrink:0;}
+.sc-player-embed{flex:1;overflow:hidden;}
+.sc-player-embed iframe{display:block;width:100%;height:120px;}
 .pwa-banner.show{transform:translateY(0);pointer-events:all;}
 .pwa-banner-inner{margin:0 12px max(12px,env(safe-area-inset-bottom));background:rgba(12,15,26,.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(237,235,230,.08);padding:16px 20px;display:flex;align-items:center;gap:16px;}
 .pwa-icon-wrap{flex-shrink:0;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(232,16,10,.3);background:rgba(232,16,10,.06);}
@@ -567,6 +661,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 /* ZINE ANIMATIONS */
 .zine-anim { opacity:0; transform:translateY(24px); transition:opacity .6s cubic-bezier(.22,1,.36,1), transform .6s cubic-bezier(.22,1,.36,1); }
 .zine-anim.in { opacity:1; transform:translateY(0); }
+
 /* ═══ UNLOCK PASS OVERLAY ═══ */
 .unlock-pass-overlay { z-index:8950; }
 .unlock-inner { width:100%; max-width:520px; margin:0 auto; padding:max(80px,calc(env(safe-area-inset-top)+64px)) 28px max(100px,calc(env(safe-area-inset-bottom)+80px)); }
@@ -603,12 +698,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 /* UNSEEN CITY poster card */
 .unlock-poster-card { border:1px solid rgba(237,235,230,.08); background:#050505; overflow:hidden; margin-bottom:14px; }
 .unlock-poster-visual { position:relative; aspect-ratio:3/4; background:#040408; overflow:hidden; }
-
-/* Poster image */
-.unlock-poster-img {
-  position:absolute; inset:0; width:100%; height:100%;
-  object-fit:cover;
-}
+.unlock-poster-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 .unlock-poster-limited { position:absolute; top:16px; right:16px; z-index:10; font-size:8px; letter-spacing:.38em; text-transform:uppercase; color:var(--red); border:1px solid rgba(232,16,10,.5); padding:4px 10px; font-weight:600; background:rgba(12,15,26,.6); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); }
 .unlock-poster-body { padding:20px 20px 22px; border-top:1px solid rgba(237,235,230,.06); }
 .unlock-poster-title-ja { font-family:Arial,"Arial Black",sans-serif; font-size:20px; font-weight:900; letter-spacing:.02em; color:var(--white); line-height:1; margin-bottom:4px; }
@@ -697,6 +787,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
       <a href="https://www.instagram.com/allmustdancetokyo/" target="_blank" class="menu-social">Instagram</a>
       <a href="https://www.youtube.com/@allmustdancetokyo" target="_blank" class="menu-social">YouTube</a>
       <a href="https://allmustdance.com/privacy-policy/" class="menu-social">Privacy Policy</a>
+      <a href="https://allmustdance.com/tokushoho/" class="menu-social">特定商取引法</a>
     </div>
   </div>
 </div>
@@ -777,80 +868,153 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
     </div>
   </div>
 
-  <!-- CHAPTER: ZINE (magazine-style section) -->
-  <div class="chapter chapter-auto" id="cZine" style="height:auto;min-height:100vh;scroll-snap-align:start;">
-    <div style="background:var(--black);min-height:100vh;position:relative;">
-      <div style="padding:max(110px,calc(env(safe-area-inset-top)+90px)) 28px 0;position:relative;z-index:2;">
-        <!-- Masthead -->
-        <div class="zine-anim" style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;">
-          <div>
-            <div style="font-family:Arial,'Arial Black',sans-serif;font-size:clamp(48px,12vw,72px);font-weight:900;color:var(--white);line-height:.85;letter-spacing:-.03em;">ZINE</div>
-            <div style="font-size:8px;letter-spacing:.5em;text-transform:uppercase;color:rgba(237,235,230,.25);margin-top:6px;">ALL MUST DANCE™ · Issue Archive</div>
-          </div>
-          <div style="text-align:right;">
-            <div style="font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:var(--red);font-weight:500;">Latest</div>
-            <div style="font-family:Arial,'Arial Black',sans-serif;font-size:32px;font-weight:900;color:rgba(237,235,230,.08);line-height:1;">07</div>
-          </div>
-        </div>
-        <div class="zine-anim" style="height:1px;background:linear-gradient(to right,var(--red),rgba(237,235,230,.08) 60%,transparent);margin-bottom:28px;"></div>
+  <!-- CHAPTER: ZINE (magazine card stack) -->
+  <div class="chapter chapter-auto" id="cZine" style="height:auto;scroll-snap-align:start;">
+    <div style="background:var(--black);position:relative;">
 
-        <!-- Featured grid -->
-        <div class="zine-anim" style="display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:2px;">
-          <a href="https://allmustdance.com/zine-ep07/" style="display:block;aspect-ratio:3/4;background:linear-gradient(160deg,#111428,#0C0F1A);position:relative;overflow:hidden;border:1px solid rgba(237,235,230,.06);text-decoration:none;">
-            <img loading="lazy" src="<?= get_stylesheet_directory_uri() ?>/logos/amd2026asia.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.7;">
-            <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(12,15,26,.95) 0%,transparent 60%);"></div>
-            <div style="position:absolute;bottom:0;left:0;right:0;padding:16px;">
-              <div style="font-size:7px;letter-spacing:.4em;text-transform:uppercase;color:var(--red);margin-bottom:4px;">EP.07</div>
-              <div style="font-family:Arial,'Arial Black',sans-serif;font-size:18px;font-weight:900;color:var(--white);line-height:1.1;">HOME<br>COMING</div>
-              <div style="font-size:8px;letter-spacing:.2em;color:rgba(237,235,230,.4);margin-top:6px;">2026.05.04</div>
-            </div>
-          </a>
-          <div style="display:flex;flex-direction:column;gap:2px;">
-            <a href="https://allmustdance.com/zine-ep06/" style="flex:1;display:flex;flex-direction:column;justify-content:center;background:#09090c;position:relative;overflow:hidden;border:1px solid rgba(237,235,230,.06);padding:16px;text-decoration:none;color:var(--white);">
-              <div style="font-size:7px;letter-spacing:.4em;text-transform:uppercase;color:var(--red);margin-bottom:6px;">EP.06</div>
-              <div style="font-family:Arial,'Arial Black',sans-serif;font-size:14px;font-weight:900;color:var(--white);line-height:1.15;">CHEEKY<br>SESSION</div>
-              <div style="font-size:8px;letter-spacing:.15em;color:rgba(237,235,230,.35);margin-top:8px;">Experimental night</div>
-            </a>
-            <a href="https://allmustdance.com/zine-ep05/" style="flex:1;display:flex;flex-direction:column;justify-content:center;background:#09090c;position:relative;overflow:hidden;border:1px solid rgba(237,235,230,.06);padding:16px;text-decoration:none;color:var(--white);">
-              <div style="font-size:7px;letter-spacing:.4em;text-transform:uppercase;color:var(--red);margin-bottom:6px;">EP.05</div>
-              <div style="font-family:Arial,'Arial Black',sans-serif;font-size:14px;font-weight:900;color:var(--white);line-height:1.15;">ROOFTOP<br>PARCO</div>
-              <div style="font-size:8px;letter-spacing:.15em;color:rgba(237,235,230,.35);margin-top:8px;">Shibuya skyline</div>
-            </a>
-          </div>
+      <!-- ZINE section header (replaces site header) -->
+      <div class="zine-section-header">
+        <div>
+          <div style="font-family:Arial,'Arial Black',sans-serif;font-size:clamp(22px,5vw,32px);font-weight:900;color:var(--white);line-height:.9;letter-spacing:-.02em;">ZINE</div>
+          <div style="font-size:7px;letter-spacing:.4em;text-transform:uppercase;color:rgba(237,235,230,.3);margin-top:3px;">ALL MUST DANCE™ · Archive</div>
         </div>
-
-        <!-- Archive list -->
-        <div style="border-top:1px solid rgba(237,235,230,.06);margin-top:24px;">
-          <?php
-          $zine_links = [
-            ['url'=>'https://allmustdance.com/zine-ep07/','num'=>'04','title'=>'CLUB ASIA','date'=>'2024.07.14'],
-            ['url'=>'https://allmustdance.com/zine-ep05/','num'=>'03','title'=>'ORIGINS','date'=>'2024.03'],
-            ['url'=>'https://allmustdance.com/zine-ep02/','num'=>'02','title'=>'FIRST STEP','date'=>'2023'],
-            ['url'=>'#','num'=>'01','title'=>'GENESIS','date'=>'2023'],
-          ];
-          foreach($zine_links as $zl): ?>
-          <a class="zine-anim" href="<?= esc_url($zl['url']) ?>" style="display:flex;align-items:center;padding:14px 0;border-bottom:1px solid rgba(237,235,230,.06);color:var(--white);gap:16px;text-decoration:none;transition:padding-left .2s;">
-            <span style="font-family:Arial,'Arial Black',sans-serif;font-size:28px;font-weight:900;color:rgba(237,235,230,.06);min-width:48px;text-align:right;"><?= $zl['num'] ?></span>
-            <span style="flex:1;">
-              <span style="display:block;font-family:Arial,'Arial Black',sans-serif;font-size:15px;font-weight:900;letter-spacing:.02em;"><?= esc_html($zl['title']) ?></span>
-              <span style="display:block;font-size:9px;letter-spacing:.15em;color:rgba(237,235,230,.35);margin-top:2px;"><?= esc_html($zl['date']) ?></span>
-            </span>
-            <span style="font-size:12px;color:var(--red);">→</span>
-          </a>
-          <?php endforeach; ?>
-        </div>
-        <!-- Art + View all -->
-        <div class="zine-anim" style="margin-top:20px;border-top:1px solid rgba(237,235,230,.06);padding-top:20px;">
-          <a href="https://allmustdance.com/zine-art01/" style="display:flex;align-items:center;gap:16px;text-decoration:none;color:var(--white);padding:10px 0;">
-            <span style="font-size:7px;letter-spacing:.4em;text-transform:uppercase;color:var(--red);">ARTWORK</span>
-            <span style="font-family:Arial,'Arial Black',sans-serif;font-size:14px;font-weight:900;">MOZYSKEY × NOBBY</span>
-            <span style="font-size:12px;color:var(--red);margin-left:auto;">→</span>
-          </a>
-        </div>
-        <div class="zine-anim" style="text-align:center;padding:28px 0 max(40px,calc(env(safe-area-inset-bottom)+24px));">
-          <a href="<?= home_url('/zine-index/') ?>" style="font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:rgba(237,235,230,.35);text-decoration:none;border-bottom:1px solid rgba(237,235,230,.12);padding-bottom:3px;">View All Issues →</a>
-        </div>
+        <div style="font-size:10px;letter-spacing:.2em;color:rgba(237,235,230,.35);font-weight:300;">2026.05</div>
       </div>
+
+      <!-- Card stack feed -->
+      <div class="zine-feed" id="zineFeed" style="padding:0 12px;">
+
+        <!-- HERO: EP.07 — HOME COMING (multi-page book flip) -->
+        <div class="zine-book" id="zineBook07" data-zine-card data-page="0" onclick="flipZineBook(event)">
+          <div class="zine-book-inner">
+
+            <!-- Page 11 (deepest): NEXT FRIDAY back — original red/white -->
+            <div class="zine-page-back zine-page-layer" data-layer="11" style="background:#0C0F1A;">
+              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;">
+                <div style="font-size:8px;letter-spacing:.6em;text-transform:uppercase;color:var(--red);margin-bottom:20px;">COMING SOON</div>
+                <div style="font-family:Arial,'Arial Black',sans-serif;font-size:clamp(32px,8vw,52px);font-weight:900;color:var(--white);line-height:.9;letter-spacing:-.02em;">NEXT<br>FRIDAY</div>
+                <div style="font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:rgba(237,235,230,.35);margin-top:16px;">UPDATE</div>
+                <div style="width:40px;height:1px;background:var(--red);margin:24px 0;"></div>
+                <div style="font-size:10px;letter-spacing:.2em;color:rgba(237,235,230,.3);">ALL MUST DANCE™ ZINE</div>
+              </div>
+            </div>
+
+            <!-- Page 10: 20260323 GIF (new, image only) -->
+            <div class="zine-page-flip zine-page-layer" data-layer="10">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/03/20260323_152503.gif" alt="">
+            </div>
+
+            <!-- Page 9: g455 (new, image only) -->
+            <div class="zine-page-flip zine-page-layer" data-layer="9">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/g455-scaled.jpg" alt="">
+            </div>
+
+            <!-- Page 8: EP.02 — AKAKI NAMPEI (original) -->
+            <div class="zine-page-flip zine-page-layer" data-layer="8">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/g1.jpg" alt="AMD EP02">
+              <div class="zine-card-vig"></div>
+              <div class="zine-card-body">
+                <div class="zine-card-cat">AMD™ EP.02</div>
+                <div class="zine-card-title" style="font-size:clamp(22px,6vw,36px);">ALL MUST<br>DANCE™</div>
+                <div class="zine-card-meta">EP.02</div>
+                <div class="zine-page-back-credit">Photo — AKAKI NAMPEI<br>Shadow Dancer — Yasumin &amp; MIMI<br>Location — clubasia</div>
+              </div>
+            </div>
+
+            <!-- Page 7: IMG_6247 — AKAKI NAMPEI · Berlin 2024 -->
+            <div class="zine-page-flip zine-page-layer" data-layer="7">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/IMG_6247-scaled-e1769346260398.jpeg" alt="AMD Berlin 2024">
+              <div class="zine-card-vig"></div>
+              <div class="zine-card-body">
+                <div class="zine-page-back-credit">Artist — AKAKI NAMPEI<br>Location — Berlin, Germany 2024</div>
+              </div>
+            </div>
+
+            <!-- Page 6: EP.03 Teaser — AKAKI NAMPEI (original) -->
+            <div class="zine-page-flip zine-page-layer" data-layer="6">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88-2024-07-02-20.13.45.png" alt="AMD EP03 Teaser">
+              <div class="zine-card-vig"></div>
+              <div class="zine-card-body">
+                <div class="zine-card-cat">TEASER · AMD™ EP.03</div>
+                <div class="zine-card-title" style="font-size:clamp(22px,6vw,36px);">ALL MUST<br>DANCE™</div>
+                <div class="zine-card-meta">EP.03 · Amsterdam</div>
+                <div class="zine-page-back-credit">Photo — NOBBY<br>Location — Amsterdam in Friend Room</div>
+              </div>
+            </div>
+
+            <!-- Page 5: 92C071F3 (new, image only) -->
+            <div class="zine-page-flip zine-page-layer" data-layer="5">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/92C071F3-F3C8-4D57-B12A-92FBAE7E0EC4.jpg" alt="">
+            </div>
+
+            <!-- Page 4: EP.03 — GREEN TECK (original) -->
+            <div class="zine-page-flip zine-page-layer" data-layer="4">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/g15.jpg" alt="AMD EP03">
+              <div class="zine-card-vig"></div>
+              <div class="zine-card-body">
+                <div class="zine-card-cat">AMD™ EP.03</div>
+                <div class="zine-card-title" style="font-size:clamp(22px,6vw,36px);">ALL MUST<br>DANCE™</div>
+                <div class="zine-card-meta">EP.03 · Tokyo</div>
+                <div class="zine-page-back-credit">Photo — NOBBY<br>Dancer — GREEN TECK<br>Wear Support — Dickies<br>Location — TOKYO</div>
+              </div>
+            </div>
+
+            <!-- Page 3: g1111 (new, image only) -->
+            <div class="zine-page-flip zine-page-layer" data-layer="3">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/g1111.jpg" alt="">
+            </div>
+
+            <!-- Page 2: EP.01 — MOZYSKEY (original) -->
+            <div class="zine-page-flip zine-page-layer" data-layer="2">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/g00-scaled.jpg" alt="AMD EP01">
+              <div class="zine-card-vig"></div>
+              <div class="zine-card-body">
+                <div class="zine-card-cat">AMD™ EP.01 · VISUAL POSTER</div>
+                <div class="zine-card-title" style="font-size:clamp(22px,6vw,36px);">ALL MUST<br>DANCE™</div>
+                <div class="zine-card-meta">EP.01 · The Beginning</div>
+                <div class="zine-page-back-credit">Photo — NOBBY<br>Art Support — MOZYSKEY</div>
+              </div>
+            </div>
+
+            <!-- Page 1: g0000 (new, image only) -->
+            <div class="zine-page-flip zine-page-layer" data-layer="1">
+              <img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2025/12/g0000-scaled.jpg" alt="">
+            </div>
+
+            <!-- Cover (top): EP.07 HOME COMING (original) -->
+            <div class="zine-page-flip zine-page-layer" data-layer="0">
+              <img loading="lazy" src="<?= get_stylesheet_directory_uri() ?>/logos/amd2026asia.jpg" alt="EP.07">
+              <div class="zine-card-vig"></div>
+              <div class="zine-card-num">007</div>
+              <div class="zine-card-body">
+                <div class="zine-card-cat">PARTY · FEATURED</div>
+                <div class="zine-card-title">HOME<br>COMING</div>
+                <div class="zine-card-meta">clubasia · Shibuya · 2026.05.04</div>
+              </div>
+            </div>
+
+            <!-- Close + hint -->
+            <button class="zine-book-close" id="zineBookClose07">×</button>
+            <div class="zine-tap-hint">TAP TO OPEN ▸</div>
+
+          </div>
+        </div>
+
+      </div><!-- /zine-feed -->
+
+      <!-- View all -->
+      <div class="zine-view-all">
+        <a href="<?= home_url('/amd-zine/') ?>">View All Issues →</a>
+      </div>
+
+    </div>
+
+    <!-- Center-right TAP pulse guide (fixed to viewport while this chapter is visible) -->
+    <div class="zine-tap-pulse" id="zineTapPulse" aria-hidden="true">
+      <span class="ztp-ring"></span>
+      <span class="ztp-ring"></span>
+      <span class="ztp-dot"></span>
+      <span class="ztp-label">TAP</span>
     </div>
   </div>
 
@@ -861,7 +1025,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         <div class="panel-bg"><img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/03/theater.gif" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;"></div>
         <div class="vig"></div>
         <div class="panel-content">
-          <div class="rv rv-left hero-icon-row"><img src="<?= get_stylesheet_directory_uri() ?>/logos/video.png" alt="VIDEO" class="hero-section-icon"></div>
+          <div class="rv rv-up hero-icon-row"><img src="<?= get_stylesheet_directory_uri() ?>/logos/video.png" alt="VIDEO" class="hero-section-icon"></div>
           <div class="rv rv-up meta-line" style="margin-bottom:8px;"><a href="https://www.youtube.com/@allmustdancetokyo" target="_blank" style="color:rgba(237,235,230,0.6);text-decoration:none;font-size:11px;letter-spacing:0.22em;">@allmustdancetokyo</a></div>
           <div class="rv rv-up cta-row">
             <span class="btn-fill" onclick="openVideoOverlay()">▶ PLAY</span>
@@ -879,11 +1043,13 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         <div class="panel-bg"><img loading="lazy" src="https://allmustdance.com/wp-content/uploads/2026/01/DSC5571.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;"></div>
         <div class="panel-bg" style="background:none;"><img loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="<?= get_stylesheet_directory_uri() ?>/artwear/gg.png" class="lazy-img" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0.15;mix-blend-mode:screen;"></div>
         <div class="vig"></div>
+        <!-- Product showcase (1 item at a time) -->
+        <div id="ggShowcase" style="position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;pointer-events:none;overflow:hidden;"></div>
         <div class="panel-content">
-          <div class="rv rv-left hero-icon-row"><img src="<?= get_stylesheet_directory_uri() ?>/logos/gg.png" alt="GOOD GOODS" class="hero-section-icon"></div>
+          <div class="rv rv-up hero-icon-row"><img src="<?= get_stylesheet_directory_uri() ?>/logos/gg.png" alt="GOOD GOODS" class="hero-section-icon"></div>
           <div class="rv rv-up meta-line" style="margin-bottom:8px;"><a href="https://zzazz-za.stores.jp/" target="_blank" style="color:rgba(237,235,230,0.6);text-decoration:none;font-size:11px;letter-spacing:0.22em;">zzazz-za.stores.jp</a></div>
           <div class="rv rv-up cta-row">
-            <span class="btn-fill" onclick="openGoodsOverlay()">SHOP</span>
+            <span class="btn-fill" id="ggCheckBtn" style="cursor:pointer;">CHECK</span>
             <a href="https://zzazz-za.stores.jp/" target="_blank" class="btn-ghost">STORE ALL</a>
           </div>
         </div>
@@ -900,17 +1066,17 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         <div class="panel-content" style="padding-top:max(80px,calc(env(safe-area-inset-top)+64px));overflow-y:auto;overscroll-behavior-y:contain;height:100%;box-sizing:border-box;">
           <div class="connect-grid">
             <div class="rv">
-              <img src="<?= get_stylesheet_directory_uri() ?>/logos/getin.png" alt="GET IN TOUCH" class="section-icon-heading anim-left" style="max-height:80px;margin-top:80px;transition-delay:0s;">
+              <img src="<?= get_stylesheet_directory_uri() ?>/logos/getin.png" alt="GET IN TOUCH" class="section-icon-heading anim-up" style="max-height:80px;margin-top:80px;transition-delay:0s;">
               <p class="connect-body anim-up" style="transition-delay:0.1s;">For collaborations, media inquiries, and sponsorships aligned with our cultural and social mission.</p>
               <a href="mailto:niko@allmustdance.com" class="connect-mail anim-up" style="transition-delay:0.2s;">niko@allmustdance.com</a>
             </div>
             <div class="rv">
               <ul class="connect-list">
-                <li class="cl anim-right" style="transition-delay:0.1s;"><a href="https://www.instagram.com/allmustdancetokyo/" target="_blank">Instagram</a><span class="cl-type">Social</span></li>
-                <li class="cl anim-right" style="transition-delay:0.15s;"><a href="https://www.youtube.com/@allmustdancetokyo" target="_blank">YouTube</a><span class="cl-type">Video</span></li>
-                <li class="cl anim-right" style="transition-delay:0.2s;"><a href="<?= home_url('/zine-index/') ?>">Zine</a><span class="cl-type">Archive</span></li>
-                <li class="cl anim-right" style="transition-delay:0.25s;"><a href="https://zzazz-za.stores.jp/" target="_blank">Store</a><span class="cl-type">Shop</span></li>
-                <li class="cl anim-right" style="transition-delay:0.3s;"><a href="mailto:niko@allmustdance.com">Contact</a><span class="cl-type">Mail</span></li>
+                <li class="cl anim-up" style="transition-delay:0.1s;"><a href="https://www.instagram.com/allmustdancetokyo/" target="_blank">Instagram</a><span class="cl-type">Social</span></li>
+                <li class="cl anim-up" style="transition-delay:0.15s;"><a href="https://www.youtube.com/@allmustdancetokyo" target="_blank">YouTube</a><span class="cl-type">Video</span></li>
+                <li class="cl anim-up" style="transition-delay:0.2s;"><a href="<?= home_url('/amd-zine/') ?>">Zine</a><span class="cl-type">Archive</span></li>
+                <li class="cl anim-up" style="transition-delay:0.25s;"><a href="https://zzazz-za.stores.jp/" target="_blank">Store</a><span class="cl-type">Shop</span></li>
+                <li class="cl anim-up" style="transition-delay:0.3s;"><a href="mailto:niko@allmustdance.com">Contact</a><span class="cl-type">Mail</span></li>
               </ul>
               <div class="partner-logos rv">
                 <div class="partner-logos-label">Partners &amp; Venue</div>
@@ -923,6 +1089,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
               <div class="connect-footer">
                 <span class="copyright">© ALL MUST DANCE™ · Tokyo · 2026</span>
                 <a href="https://allmustdance.com/privacy-policy/" class="privacy-link">Privacy Policy</a>
+                <a href="https://allmustdance.com/tokushoho/" class="privacy-link">特定商取引法に基づく表記</a>
               </div>
               <div class="space-cooking-credit">
                 <span class="sc-credit-label">Site Design &amp; Development</span>
@@ -976,12 +1143,12 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
   <?php endif; ?>
   <div class="vig-artist"></div>
   <div style="position:relative;z-index:2;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;display:flex;flex-direction:column;justify-content:flex-end;">
-    <div style="padding:max(80px,calc(env(safe-area-inset-top)+60px)) 28px 28px;">
+    <div style="padding:max(80px,calc(env(safe-area-inset-top)+60px)) 32px max(32px,calc(env(safe-area-inset-bottom)+24px));max-width:560px;">
       <div class="eyebrow"><?= esc_html($wa_role) ?></div>
       <div class="af-genre"><?= esc_html($wa_genre) ?></div>
       <div class="af-name"><?= esc_html($wa->post_title) ?></div>
-      <?php if($wa_bio): ?><p class="af-desc"><?= esc_html($wa_bio) ?></p><?php endif; ?>
-      <?php if($wa_bio_en): ?><p class="af-desc-en"><?= esc_html($wa_bio_en) ?></p><?php endif; ?>
+      <?php if($wa_bio): ?><p class="af-desc"><?= nl2br(esc_html($wa_bio)) ?></p><?php endif; ?>
+      <?php if($wa_bio_en): ?><p class="af-desc-en"><?= nl2br(esc_html($wa_bio_en)) ?></p><?php endif; ?>
       <div style="margin-top:24px;text-align:right;"><button class="amd-ticket-close" onclick="closeWsArtistOverlay()" style="position:static;display:inline-flex;">×</button></div>
     </div>
   </div>
@@ -989,7 +1156,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
   <div class="panel-bg" style="background:#000;"></div>
   <div class="vig-artist"></div>
   <div style="position:relative;z-index:2;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;display:flex;flex-direction:column;justify-content:flex-end;">
-    <div style="padding:max(80px,calc(env(safe-area-inset-top)+60px)) 28px 28px;">
+    <div style="padding:max(80px,calc(env(safe-area-inset-top)+60px)) 32px max(32px,calc(env(safe-area-inset-bottom)+24px));max-width:560px;">
       <div class="eyebrow">Workshop Artist</div>
       <div class="af-genre">Dance · Movement · Expression</div>
       <div class="af-name">ARTIST<br>NAME TBA</div>
@@ -1017,7 +1184,13 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
         <div class="info-table">
           <div class="info-row"><span class="ik">Date</span><span class="iv"><?= $ws_date ? esc_html($ws_date) : 'TBA' ?></span></div>
           <div class="info-row"><span class="ik">Time</span><span class="iv"><?= $ws_time ? esc_html($ws_time) : 'TBA' ?></span></div>
-          <div class="info-row"><span class="ik">Venue</span><span class="iv"><?= $ws_venue ? esc_html($ws_venue) : 'TBA' ?></span></div>
+          <div class="info-row"><span class="ik">Venue</span><span class="iv"><a href="https://maps.app.goo.gl/ZBW9WSkge4jezHSP7" target="_blank" style="color:var(--white);text-decoration:none;border-bottom:1px solid rgba(237,235,230,.25);"><?= $ws_venue ? esc_html($ws_venue) : 'TBA' ?></a></span></div>
+        </div>
+        <div class="ticket-section">
+          <div class="ticket-head"><span class="ticket-head-lbl">Tickets</span><span class="ticket-head-note lang-switchable" data-jp="STORES 決済" data-en="via STORES">STORES 決済</span></div>
+          <a class="trow" href="https://zzazz-za.stores.jp/items/69d70ba4fad3bf67ecb79c58" target="_blank"><div class="trow-left"><span class="trow-type">1 Class</span><span class="trow-price">¥5,500</span></div><div class="trow-right"><span style="font-size:9px;letter-spacing:.2em;color:rgba(237,235,230,.6);">Roche Apinsa</span><span class="trow-arr">→</span></div></a>
+          <a class="trow" href="https://zzazz-za.stores.jp/items/69d70c26b45246652704b2f9" target="_blank"><div class="trow-left"><span class="trow-type">1 Class</span><span class="trow-price">¥5,500</span></div><div class="trow-right"><span style="font-size:9px;letter-spacing:.2em;color:rgba(237,235,230,.6);">Ruben Chi</span></div><div class="trow-right"><span class="trow-arr">→</span></div></a>
+          <a class="trow" href="<?= esc_url($ws_ticket) ?>" target="_blank"><div class="trow-left"><span class="trow-type">2 Class</span><span class="trow-price"><?= $ws_1w_price ? esc_html($ws_1w_price) : '¥10,000' ?></span></div><div class="trow-right"><span class="trow-arr">→</span></div></a>
         </div>
       </div>
     </div>
@@ -1028,7 +1201,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
 <div class="amd-ticket-overlay" id="videoOverlay" style="background:#000;padding-top:max(16px,calc(env(safe-area-inset-top) + 8px));">
   <button class="amd-ticket-close" onclick="closeVideoOverlay()">×</button>
   <div style="flex-shrink:0;">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 20px 12px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 24px 12px;">
       <img src="<?= get_stylesheet_directory_uri() ?>/logos/video.png" alt="VIDEO" style="max-height:28px;">
       <a href="https://www.youtube.com/@allmustdancetokyo" target="_blank" style="font-size:10px;letter-spacing:0.2em;color:rgba(237,235,230,0.55);text-decoration:none;">CHANNEL →</a>
     </div>
@@ -1043,7 +1216,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
     </a>
   </div>
   <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;">
-    <div style="font-size:9px;font-weight:500;letter-spacing:0.42em;text-transform:uppercase;color:rgba(237,235,230,0.3);padding:16px 20px 8px;">ARCHIVE</div>
+    <div style="font-size:9px;font-weight:500;letter-spacing:0.42em;text-transform:uppercase;color:rgba(237,235,230,0.3);padding:16px 24px 8px;">ARCHIVE</div>
     <?php
     $vd_items = [
       ['id'=>'ya50ucLzGj0','title'=>'ALL MUST DANCE™ — ep04','meta'=>'club asia · Archive'],
@@ -1054,7 +1227,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
       ['id'=>'CM0JmwaVGaU','title'=>'Short Film','meta'=>'ALL MUST DANCE™'],
     ];
     foreach($vd_items as $vd): ?>
-    <a href="https://www.youtube.com/watch?v=<?= esc_attr($vd['id']) ?>" target="_blank" style="display:flex;align-items:center;gap:14px;padding:10px 20px;border-top:1px solid rgba(237,235,230,0.07);text-decoration:none;color:var(--white);">
+    <a href="https://www.youtube.com/watch?v=<?= esc_attr($vd['id']) ?>" target="_blank" style="display:flex;align-items:center;gap:14px;padding:10px 24px;border-top:1px solid rgba(237,235,230,0.07);text-decoration:none;color:var(--white);">
       <div style="flex-shrink:0;width:80px;height:50px;background:#111;position:relative;overflow:hidden;">
         <img src="https://img.youtube.com/vi/<?= esc_attr($vd['id']) ?>/default.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.8;">
         <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;"><div style="width:0;height:0;border-style:solid;border-width:6px 0 6px 11px;border-color:transparent transparent transparent rgba(255,255,255,0.7);"></div></div>
@@ -1065,7 +1238,7 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
       </div>
     </a>
     <?php endforeach; ?>
-    <div style="padding:16px 20px 80px;text-align:center;"><a href="https://www.youtube.com/@allmustdancetokyo" target="_blank" style="font-size:10px;letter-spacing:0.2em;color:rgba(237,235,230,0.4);text-decoration:none;">↗ YouTube Channel</a></div>
+    <div style="padding:16px 24px 80px;text-align:center;"><a href="https://www.youtube.com/@allmustdancetokyo" target="_blank" style="font-size:10px;letter-spacing:0.2em;color:rgba(237,235,230,0.4);text-decoration:none;">↗ YouTube Channel</a></div>
   </div>
 </div>
 
@@ -1077,13 +1250,13 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
   <!-- GIF banner at very top (above header) -->
   <div style="flex-shrink:0;width:100%;"><img src="<?= get_stylesheet_directory_uri() ?>/artwear/zzazzcm.GIF" alt="ZZAZZ" loading="lazy" style="width:100%;display:block;"></div>
   <!-- Header row: icon + STORE ALL -->
-  <div style="flex-shrink:0;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;">
+  <div style="flex-shrink:0;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;">
     <img src="<?= get_stylesheet_directory_uri() ?>/logos/gg.png" alt="GOOD GOODS" style="max-height:28px;">
     <a href="https://zzazz-za.stores.jp/" target="_blank" class="a-subtle" style="font-size:11px;">Store All →</a>
   </div>
   <!-- Products grid -->
   <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;">
-    <div class="store-grid" style="padding:4px 0 100px;">
+    <div class="store-grid" style="padding:4px 8px 100px;">
       <a class="sc" href="https://zzazz-za.stores.jp/items/6991f608580447c3fea658e0" target="_blank"><div class="sc-vis"><img src="<?= get_stylesheet_directory_uri() ?>/artwear/amd01minny.PNG" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div><div class="sc-info"><div class="sc-cat">Artwork Wear</div><div class="sc-name">AMD MN</div></div></a>
       <a class="sc" href="https://zzazz-za.stores.jp/items/69c00f86ccd49a7f3aa0df6e" target="_blank"><div class="sc-vis"><img src="<?= get_stylesheet_directory_uri() ?>/artwear/amd02jkt.PNG" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div><div class="sc-info"><div class="sc-cat">Artwork Wear</div><div class="sc-name">AMD JKT</div></div></a>
       <a class="sc" href="https://zzazz-za.stores.jp/items/6991f4d9580447c3fea6584c" target="_blank"><div class="sc-vis"><img src="<?= get_stylesheet_directory_uri() ?>/artwear/amd03best.PNG" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div><div class="sc-info"><div class="sc-cat">Artwork Wear</div><div class="sc-name">AMD Vest</div></div></a>
@@ -1199,16 +1372,17 @@ body.overlay-open #amd-header { opacity:0; pointer-events:none; transition:opaci
     <div class="amd-ap-title">Select a floor</div>
     <div class="amd-ap-groups">
       <?php
-      // FDOOR fixed member list (overrides role-based categorization)
-      $fdoor_members = ['YACHEEMI','NINA','BUNGO','AYANA','ALI'];
-      $fdoor_members_upper = array_map('strtoupper', $fdoor_members);
-
       $party_artists_list2 = $party_artists ?? [];
       $grouped2 = ['dj'=>[], 'bar'=>[], 'dresser'=>[]];
+      $fdoor_needles = ['yacheemi','nina yamada','bungo','ali','ayana','彩菜'];
       foreach($party_artists_list2 as $pa2){
         $role2 = strtolower(get_field('role',$pa2->ID) ?? '');
-        $name_upper = strtoupper(trim($pa2->post_title));
-        if(in_array($name_upper, $fdoor_members_upper, true)){
+        $name2 = strtolower(trim($pa2->post_title));
+        $is_fdoor = false;
+        foreach($fdoor_needles as $needle){
+          if($needle !== '' && str_contains($name2, $needle)){ $is_fdoor = true; break; }
+        }
+        if($is_fdoor){
           $grouped2['bar'][] = $pa2;
         } elseif(str_contains($role2,'dresser')||str_contains($role2,'dancer')||str_contains($role2,'dance')||str_contains($role2,'style')){
           $grouped2['dresser'][] = $pa2;
@@ -1255,12 +1429,15 @@ var _amdThemeUrl = '<?= get_stylesheet_directory_uri() ?>';
 var _amdArtists = <?php
 $out = ['dj'=>[], 'bar'=>[], 'dresser'=>[]];
 $party_artists_all = $party_artists ?? [];
-// Reuse FDOOR fixed member list from above
-$fdoor_members_js = isset($fdoor_members_upper) ? $fdoor_members_upper : ['YACHEEMI','NINA','BUNGO','AYANA','ALI'];
+$fdoor_needles_all = ['yacheemi','nina yamada','bungo','ali','ayana','彩菜'];
 foreach($party_artists_all as $pa_all){
   $role_all = strtolower(get_field('role',$pa_all->ID) ?? '');
-  $name_all_upper = strtoupper(trim($pa_all->post_title));
-  if(in_array($name_all_upper, $fdoor_members_js, true)){
+  $name_all = strtolower(trim($pa_all->post_title));
+  $is_fdoor_all = false;
+  foreach($fdoor_needles_all as $needle_all){
+    if($needle_all !== '' && str_contains($name_all, $needle_all)){ $is_fdoor_all = true; break; }
+  }
+  if($is_fdoor_all){
     $group_all = 'bar';
   } elseif(str_contains($role_all,'dresser') || str_contains($role_all,'dancer') || str_contains($role_all,'dance') || str_contains($role_all,'style')){
     $group_all = 'dresser';
@@ -1292,6 +1469,7 @@ echo json_encode($out, JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_QUOT);
    ALL MUST DANCE — Main Script
    CHAPTERS: c0=PARTY c1=WORKSHOP c2=VIDEO c3=STORE c4=CONNECT
 ════════════════════════════════════════ */
+if(typeof gsap!=='undefined'&&typeof ScrollTrigger!=='undefined') gsap.registerPlugin(ScrollTrigger);
 const isPWA = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
 if(isPWA){ document.documentElement.classList.add('pwa-mode'); }
 function getScrollEl(){ return isPWA ? document.getElementById('deck') : document.documentElement; }
@@ -1335,12 +1513,12 @@ function updateUI(){
 function showRv(ci){
   if(!chapEls[ci]) return;
   if(typeof gsap === 'undefined'){
-    const rvEls = chapEls[ci].querySelectorAll('.rv,.rv-left,.rv-right,.rv-up,.rv-scale');
+    const rvEls = chapEls[ci].querySelectorAll('.rv,.rv-up,.rv-scale');
     rvEls.forEach(el => el.classList.remove('visible'));
     rvEls.forEach((el,i) => setTimeout(()=>el.classList.add('visible'), 120+i*80));
     return;
   }
-  const rvEls = [...chapEls[ci].querySelectorAll('.rv,.rv-left,.rv-right,.rv-up,.rv-scale')];
+  const rvEls = [...chapEls[ci].querySelectorAll('.rv,.rv-up,.rv-scale')];
   if(!rvEls.length) return;
   gsap.set(rvEls, {opacity:0, y:20, clearProps:'none'});
   gsap.to(rvEls, { opacity:1, y:0, duration:0.65, stagger:0.07, ease:'power3.out', delay:0.1, onStart(){ rvEls.forEach(el=>el.classList.add('visible')); } });
@@ -1522,7 +1700,7 @@ document.querySelectorAll('.chapter[data-lazy]').forEach(ch=>lazyIO.observe(ch))
 
 /* SCROLL ANIMATIONS */
 const ioAnim=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');ioAnim.unobserve(e.target);}});},{threshold:0.12});
-document.querySelectorAll('.rv,.rv-left,.rv-right,.rv-up,.rv-scale').forEach((el,i)=>{
+document.querySelectorAll('.rv,.rv-up,.rv-scale').forEach((el,i)=>{
   if(el.closest('#c0')||el.closest('#c1')) return;
   const parent=el.parentElement;
   const siblings=parent?[...parent.querySelectorAll(':scope > .rv,:scope > .rv-left,:scope > .rv-right,:scope > .rv-up,:scope > .rv-scale')]:[];
@@ -1612,10 +1790,12 @@ function amdSetLang(lang){
     const el=document.getElementById('amc-'+_apCurIdx);
     if(el){
       el.querySelectorAll('.af-desc,.af-desc-en').forEach(p=>{p.dataset.wrapped='';p.querySelectorAll('.amd-word').forEach(w=>w.replaceWith(w.textContent));});
+      /* Re-fit font-size for the newly-active language bio */
+      if(typeof _amdFitBioFontSize==='function') _amdFitBioFontSize(el);
       if(typeof _amdWrapWords==='function'){
         el.querySelectorAll('.af-desc,.af-desc-en').forEach(_amdWrapWords);
         const words=el.querySelectorAll('.amd-word');
-        if(words.length&&typeof gsap!=='undefined'){gsap.set(words,{x:'80vw',opacity:0});gsap.to(words,{x:0,opacity:1,duration:0.55,stagger:0.014,ease:'power4.out'});}
+        if(words.length&&typeof gsap!=='undefined'){words.forEach(function(w,i){gsap.set(w,{y:40+(i%3)*15,opacity:0,rotationX:20});});gsap.to(words,{y:0,opacity:1,rotationX:0,duration:0.6,stagger:0.02,ease:'power4.out'});}
       }
     }
   }
@@ -1649,7 +1829,89 @@ function amdRedFlash(onComplete){
 /* OVERLAY FUNCTIONS */
 function openGoodsOverlay(){document.body.classList.add('overlay-open');document.getElementById('goodsOverlay').classList.add('open');lockBodyScroll();}
 function closeGoodsOverlay(){document.body.classList.remove('overlay-open');document.getElementById('goodsOverlay').classList.remove('open');unlockBodyScroll();}
-function openWsArtistOverlay(){document.body.classList.add('overlay-open');document.getElementById('p1-1').classList.add('open');lockBodyScroll();}
+
+/* GOOD GOODS — CHECK button product showcase */
+(function(){
+  var _ggItems = [
+    {img:'<?= get_stylesheet_directory_uri() ?>/artwear/amd01minny.PNG',name:'AMD MN',cat:'Artwork Wear',url:'https://zzazz-za.stores.jp/items/6991f608580447c3fea658e0'},
+    {img:'<?= get_stylesheet_directory_uri() ?>/artwear/amd02jkt.PNG',name:'AMD JKT',cat:'Artwork Wear',url:'https://zzazz-za.stores.jp/items/69c00f86ccd49a7f3aa0df6e'},
+    {img:'<?= get_stylesheet_directory_uri() ?>/artwear/amd03best.PNG',name:'AMD Vest',cat:'Artwork Wear',url:'https://zzazz-za.stores.jp/items/6991f4d9580447c3fea6584c'},
+    {img:'<?= get_stylesheet_directory_uri() ?>/artwear/mozyskeylamp.png',name:'Lamp (Hand Drawing)',cat:'Artist : Mozyskey',url:'https://zzazz-za.stores.jp/items/69564870a6f4f8fadfb809f8'},
+    {img:'<?= get_stylesheet_directory_uri() ?>/artwear/giphy%2015.GIF',name:'ZZAZZ-ZA™',cat:'GOOD GOODS · Collection',url:'https://zzazz-za.stores.jp/',gif:true},
+    {img:'<?= get_stylesheet_directory_uri() ?>/artwear/amd10ufotee.png',name:'AMD UFO Tee',cat:'Artwork Wear',url:'https://zzazz-za.stores.jp/items/69c04acbe126f8ad4fcb6b57'},
+    {img:'<?= get_stylesheet_directory_uri() ?>/artwear/amd08grtee.png',name:'AMD GR Tee',cat:'Artwork Wear',url:'https://zzazz-za.stores.jp/items/69c04a31d9171133f7e5e2e1'},
+    {img:'<?= get_stylesheet_directory_uri() ?>/artwear/amd09kidtee.png',name:'AMD Kid Tee',cat:'Artwork Wear',url:'https://zzazz-za.stores.jp/items/69c04b67e126f8b4d7cb6b58'},
+    {img:'<?= get_stylesheet_directory_uri() ?>/artwear/amd09bl.png',name:'AMD BL',cat:'Artwork Wear',url:'https://zzazz-za.stores.jp/items/69c04bdbd917113bede5e2fb'},
+    {img:'<?= get_stylesheet_directory_uri() ?>/artwear/amd08blpk.png',name:'AMD BL PK',cat:'Artwork Wear',url:'https://zzazz-za.stores.jp/items/69c04c3bd9171143c6e5e2d0'},
+    {img:'<?= get_stylesheet_directory_uri() ?>/artwear/amd07jktufo_1.PNG',name:'AMD JKT UFO',cat:'Artwork Wear',url:'https://zzazz-za.stores.jp/items/69c04cb6e126f8b4d7cb6b71'}
+  ];
+  var _ggIdx = -1;
+  var _ggCur = null;
+  var _ggIconHidden = false;
+  var showcase = document.getElementById('ggShowcase');
+  var btn = document.getElementById('ggCheckBtn');
+  if(!btn || !showcase) return;
+
+  /* GG icon/meta elements to hide on CHECK */
+  var ggPanel = btn.closest('.panel-content');
+  var ggHideEls = ggPanel ? ggPanel.querySelectorAll('.hero-icon-row, .meta-line') : [];
+
+  btn.addEventListener('click', function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    /* Hide GOOD GOODS icon + meta on first CHECK */
+    if(!_ggIconHidden && typeof gsap!=='undefined'){
+      _ggIconHidden = true;
+      gsap.to(ggHideEls, {y:-40, opacity:0, duration:0.35, ease:'power2.in', stagger:0.05});
+    }
+    _ggIdx++;
+    if(_ggIdx >= _ggItems.length) _ggIdx = 0;
+    showGGItem(_ggIdx);
+  });
+
+  function showGGItem(idx){
+    var item = _ggItems[idx];
+    /* Slide out current */
+    if(_ggCur && typeof gsap!=='undefined'){
+      var old = _ggCur;
+      gsap.to(old, {y:'-100%', opacity:0, duration:0.4, ease:'power2.in', onComplete:function(){ if(old.parentNode) old.parentNode.removeChild(old); }});
+    }
+    /* Create new item */
+    var el = document.createElement('a');
+    el.className = 'gg-item';
+    el.href = item.url;
+    el.target = '_blank';
+    el.innerHTML = '<img src="'+item.img+'" alt="'+item.name+'" loading="lazy"><div class="gg-item-info"><div class="gg-item-name">'+item.name+'</div><div class="gg-item-cat">'+item.cat+'</div></div>';
+    showcase.appendChild(el);
+    _ggCur = el;
+    /* Animate in from behind (scale up from small + fade) */
+    if(typeof gsap!=='undefined'){
+      gsap.fromTo(el, {scale:0.5, opacity:0, y:40}, {scale:1, opacity:1, y:0, duration:0.55, ease:'back.out(1.4)'});
+    }
+  }
+})();
+function openWsArtistOverlay(){
+  document.body.classList.add('overlay-open');
+  var panel=document.getElementById('p1-1');
+  panel.classList.add('open');
+  lockBodyScroll();
+  /* Animate text elements */
+  if(typeof gsap!=='undefined'){
+    var els=panel.querySelectorAll('.eyebrow,.af-genre,.af-name,.af-desc,.af-desc-en,.amd-ticket-close');
+    gsap.set(els,{opacity:0,y:30});
+    gsap.to(els,{opacity:1,y:0,duration:0.6,stagger:0.08,ease:'power3.out',delay:0.35});
+    /* Word animation on bio text */
+    panel.querySelectorAll('.af-desc,.af-desc-en').forEach(function(el){
+      if(el.dataset.wrapped) return;
+      var html=el.innerHTML.replace(/<br\s*\/?>/gi,' [[BR]] ').replace(/<[^>]+>/g,'');
+      el.innerHTML=html.split(/\s+/).filter(Boolean).map(function(w){return w==='[[BR]]'?'<br>':'<span class="amd-word">'+w+'</span>';}).join(' ').replace(/ <br> /g,'<br>').replace(/ <br>/g,'<br>').replace(/<br> /g,'<br>');
+      el.dataset.wrapped='1';
+      var words=el.querySelectorAll('.amd-word');
+      words.forEach(function(w,i){gsap.set(w,{y:40+(i%3)*15,opacity:0,rotationX:20});});
+      gsap.to(words,{y:0,opacity:1,rotationX:0,duration:0.6,stagger:0.02,ease:'power4.out',delay:0.55});
+    });
+  }
+}
 function closeWsArtistOverlay(){document.body.classList.remove('overlay-open');document.getElementById('p1-1').classList.remove('open');unlockBodyScroll();}
 function openWsTicketOverlay(){var d=document.getElementById('deck'),s=d?d.scrollTop:0;document.body.classList.add('overlay-open');document.getElementById('p1-2').classList.add('open');lockBodyScroll();if(d)d.scrollTop=s;}
 function closeWsTicketOverlay(){var d=document.getElementById('deck'),s=d?d.scrollTop:0;document.body.classList.remove('overlay-open');document.getElementById('p1-2').classList.remove('open');unlockBodyScroll();if(d)d.scrollTop=s;}
@@ -1680,9 +1942,15 @@ function closeCardStack(){document.body.classList.remove('overlay-open');documen
 
 function _amdWrapWords(el){
   if(!el||el.dataset.wrapped) return;
-  el.innerHTML=el.textContent.split(' ').map(w=>`<span class="amd-word">${w}</span>`).join(' ');
+  var h=el.innerHTML.replace(/<br\s*\/?>/gi,' [[BR]] ').replace(/<[^>]+>/g,'');
+  el.innerHTML=h.split(/\s+/).filter(Boolean).map(function(w){return w==='[[BR]]'?'<br>':'<span class="amd-word">'+w+'</span>';}).join(' ').replace(/ <br> /g,'<br>').replace(/ <br>/g,'<br>').replace(/<br> /g,'<br>');
   el.dataset.wrapped='1';
 }
+
+/* No-op in the new two-pane layout — the .amd-card-bio scroll container
+   handles overflow naturally. Kept as a function stub so call sites in
+   _showCard / amdSetLang don't break if they still reference it. */
+function _amdFitBioFontSize(cardEl){ /* intentionally empty — see .amd-card-bio */ }
 
 function _buildCardStack(stage,artists){
   stage.innerHTML='';
@@ -1694,7 +1962,7 @@ function _buildCardStack(stage,artists){
     const photoHtml=a.photo?`<img src="${a.photo}" alt="${a.name}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;">`:'';
     const scHtml=a.sc?`<a href="${a.sc}" target="_blank" class="af-link"><img src="${_amdThemeUrl}/logos/sc.png" style="width:28px;height:28px;object-fit:contain;opacity:0.82;"></a>`:'';
     const igHtml=a.ig?`<a href="${a.ig}" target="_blank" class="af-link"><img src="${_amdThemeUrl}/logos/insta.png" style="width:28px;height:28px;object-fit:contain;opacity:0.82;"></a>`:'';
-    card.innerHTML=`<div style="position:absolute;inset:0;">${photoHtml}</div><div class="vig-artist"></div><div class="amd-card-content"><div class="af-genre">${a.genre||''}</div><div class="af-name">${a.name}</div><div class="af-links" style="margin-bottom:14px;">${scHtml}${igHtml}</div><p class="af-desc">${a.bio_ja||''}</p><p class="af-desc-en">${a.bio_en||''}</p><div class="amd-card-num">${String(i+1).padStart(2,'0')} / ${String(artists.length).padStart(2,'0')}</div></div>`;
+    card.innerHTML=`<div class="amd-card-photo">${photoHtml}</div><div class="amd-card-num">${String(i+1).padStart(2,'0')} / ${String(artists.length).padStart(2,'0')}</div><div class="amd-card-info"><div class="amd-card-header"><div class="af-genre">${a.genre||''}</div><div class="af-name">${a.name}</div><div class="af-links">${scHtml}${igHtml}</div></div><div class="amd-card-bio"><p class="af-desc">${(a.bio_ja||'').replace(/\n/g,'<br>')}</p><p class="af-desc-en">${(a.bio_en||'').replace(/\n/g,'<br>')}</p></div></div>`;
     stage.appendChild(card);
   });
   const overlay=document.getElementById('cardStackOverlay');
@@ -1708,19 +1976,26 @@ function _buildCardStack(stage,artists){
 function _showCard(idx,animate){
   _apArtists.forEach((_,i)=>{
     const el=document.getElementById('amc-'+i); if(!el) return;
-    if(i<idx) gsap.set(el,{rotationX:40,rotationZ:(i%2===0?5:-5),scale:0.72,opacity:0,transformPerspective:800,transformOrigin:'50% 10%'});
+    /* Only the active card is interactive AND z-index-topped. Inactive
+       cards (opacity:0 but still in the DOM) must not intercept clicks. */
+    el.classList.toggle('amd-card-active', i === idx);
+    if(i<idx) gsap.set(el,{rotationX:40,rotationZ:0,scale:0.72,opacity:0,transformPerspective:800,transformOrigin:'50% 10%'});
     else if(i===idx){
+      /* Auto-fit bio font-size BEFORE word-wrap so measurement is accurate */
+      _amdFitBioFontSize(el);
       if(animate){
         gsap.fromTo(el,{rotationX:-10,rotationZ:0,y:40,opacity:0,scale:0.96,transformPerspective:800,transformOrigin:'50% 10%'},{rotationX:0,rotationZ:0,y:0,opacity:1,scale:1,duration:0.52,ease:'power3.out'});
         el.querySelectorAll('.af-desc,.af-desc-en').forEach(_amdWrapWords);
         const words=el.querySelectorAll('.amd-word');
-        if(words.length){gsap.set(words,{x:'80vw',opacity:0});gsap.to(words,{x:0,opacity:1,duration:0.65,stagger:0.016,ease:'power4.out',delay:0.3});}
+        if(words.length){words.forEach(function(w,i){gsap.set(w,{y:40+(i%3)*15,opacity:0,rotationX:20});});gsap.to(words,{y:0,opacity:1,rotationX:0,duration:0.65,stagger:0.02,ease:'power4.out',delay:0.3});}
       } else {
         gsap.set(el,{rotationX:0,rotationZ:0,y:0,opacity:1,scale:1,transformPerspective:800,transformOrigin:'50% 10%'});
         el.querySelectorAll('.af-desc,.af-desc-en').forEach(_amdWrapWords);
         const words=el.querySelectorAll('.amd-word');
-        if(words.length){gsap.set(words,{x:'80vw',opacity:0});gsap.to(words,{x:0,opacity:1,duration:0.65,stagger:0.016,ease:'power4.out',delay:0.45});}
+        if(words.length){words.forEach(function(w,i){gsap.set(w,{y:40+(i%3)*15,opacity:0,rotationX:20});});gsap.to(words,{y:0,opacity:1,rotationX:0,duration:0.65,stagger:0.02,ease:'power4.out',delay:0.45});}
       }
+      /* Re-fit after word-wrap in case span box layout changes height slightly */
+      requestAnimationFrame(function(){ _amdFitBioFontSize(el); });
     } else gsap.set(el,{rotationX:0,y:0,opacity:0,scale:1,transformPerspective:800,transformOrigin:'50% 10%'});
   });
   const overlayEl=document.getElementById('cardStackOverlay');
@@ -1735,12 +2010,12 @@ function amdCardNav(dir){
   if(next<0) return;
   if(next>=_apArtists.length){
     const el=document.getElementById('amc-'+_apCurIdx);
-    if(el) gsap.to(el,{rotationX:40,rotationZ:(_apCurIdx%2===0?5:-5),scale:0.72,opacity:0,duration:0.42,ease:'power2.in',transformPerspective:800,transformOrigin:'50% 10%',onComplete:closeCardStack});
+    if(el) gsap.to(el,{rotationX:40,rotationZ:0,scale:0.72,opacity:0,duration:0.42,ease:'power2.in',transformPerspective:800,transformOrigin:'50% 10%',onComplete:closeCardStack});
     else closeCardStack();
     return;
   }
   const cur=document.getElementById('amc-'+_apCurIdx);
-  if(cur) gsap.to(cur,{rotationX:40,rotationZ:(_apCurIdx%2===0?5:-5),scale:0.72,opacity:0,duration:0.45,ease:'power2.in',transformPerspective:800,transformOrigin:'50% 10%'});
+  if(cur) gsap.to(cur,{rotationX:40,rotationZ:0,scale:0.72,opacity:0,duration:0.45,ease:'power2.in',transformPerspective:800,transformOrigin:'50% 10%'});
   _apCurIdx=next; _showCard(_apCurIdx,true);
 }
 </script>
@@ -1761,12 +2036,12 @@ document.body.classList.add('gsap-ready');
 
 if(typeof gsap==='undefined') return;
 
-/* 3D exit animation on deck scroll */
-var defs=[{id:'c1',rz:-5},{id:'cZine',rz:3},{id:'c2',rz:4},{id:'c3',rz:-4}];
+/* 3D exit animation on deck scroll — vertical only, no lateral rotation */
+var defs=[{id:'c1'},{id:'cZine'},{id:'c2'},{id:'c3'}];
 var targets={};
 defs.forEach(function(d){
   var tgt=document.getElementById(d.id+'-track');
-  if(tgt){tgt.style.transformOrigin='50% 10%';tgt.style.willChange='transform,opacity';targets[d.id]={el:tgt,rz:d.rz};}
+  if(tgt){tgt.style.transformOrigin='50% 10%';tgt.style.willChange='transform,opacity';targets[d.id]={el:tgt};}
 });
 var _raf=null, _vh=window.innerHeight;
 
@@ -1779,11 +2054,11 @@ function onDeckScroll(){
       var ch=document.getElementById(d.id); var info=targets[d.id];
       if(!ch||!info) return;
       var chTop=ch.offsetTop; var offset=scrollTop-chTop; var ratio=offset/_vh;
-      if(ratio<=0) gsap.set(info.el,{rotationX:0,rotationZ:0,scale:1,opacity:1,transformPerspective:900});
+      if(ratio<=0) gsap.set(info.el,{rotationX:0,scale:1,opacity:1,transformPerspective:900});
       else if(ratio<1){
         var p=Math.max(0,(ratio-0.45)/0.55); p=Math.min(1,p);
-        gsap.set(info.el,{rotationX:32*p,rotationZ:d.rz*p,scale:1-0.26*p,opacity:1-p,transformPerspective:900});
-      } else gsap.set(info.el,{rotationX:32,rotationZ:d.rz,scale:0.74,opacity:0,transformPerspective:900});
+        gsap.set(info.el,{rotationX:32*p,scale:1-0.26*p,opacity:1-p,transformPerspective:900});
+      } else gsap.set(info.el,{rotationX:32,scale:0.74,opacity:0,transformPerspective:900});
     });
   });
 }
@@ -1799,20 +2074,230 @@ function checkReveal(){
     var ch=document.getElementById(d.id); if(!ch) return;
     if(scrollTop>=ch.offsetTop-_vh*0.3){
       _revealed[d.id]=true;
-      gsap.to(ch.querySelectorAll('.rv,.rv-left,.rv-right,.rv-up,.rv-scale'),{opacity:1,y:0,duration:0.6,stagger:0.07,ease:'power2.out',delay:0.1});
+      gsap.to(ch.querySelectorAll('.rv,.rv-up,.rv-scale'),{opacity:1,y:0,duration:0.6,stagger:0.07,ease:'power2.out',delay:0.1});
     }
   });
   var c4=document.getElementById('c4');
   if(c4&&!_revealed['c4']){
     if(scrollTop>=c4.offsetTop-_vh*0.3){
       _revealed['c4']=true;
-      gsap.fromTo(c4.querySelectorAll('.rv,.rv-left,.rv-right,.rv-up,.rv-scale,.connect-body,.connect-mail,.cl'),{opacity:0,y:20},{opacity:1,y:0,duration:0.6,stagger:0.06,ease:'power2.out',delay:0.15});
+      gsap.fromTo(c4.querySelectorAll('.rv,.rv-up,.rv-scale,.connect-body,.connect-mail,.cl'),{opacity:0,y:20},{opacity:1,y:0,duration:0.6,stagger:0.06,ease:'power2.out',delay:0.15});
     }
   }
 }
 (_pwa2?document.getElementById('deck'):window).addEventListener('scroll',checkReveal,{passive:true});
 
 setTimeout(function(){ _revealed['c0']=true; },300);
+
+/* ================================================
+   ZINE Book — HOME COMING multi-page flip
+   page 0 = cover, 1 = EP03, 2 = EP02 (last, no flip)
+   ================================================ */
+/* ×ボタン — タッチ＆クリック両対応 */
+(function(){
+  var closeBtn = document.getElementById('zineBookClose07');
+  if(!closeBtn) return;
+  function handleClose(e){
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    window.closeZineBook();
+  }
+  closeBtn.addEventListener('touchend', handleClose, {passive:false});
+  closeBtn.addEventListener('click', handleClose);
+})();
+
+window.flipZineBook = function(e){
+  if(e.target.closest('.zine-book-close')) return;
+  var book = document.getElementById('zineBook07');
+  if(!book) return;
+  var cur = parseInt(book.getAttribute('data-page')||'0',10);
+  var pages = book.querySelectorAll('.zine-page-flip');
+  var total = pages.length; /* flippable pages count */
+
+  if(cur < total){
+    /* Flip current page */
+    pages[total - 1 - cur].classList.add('flipped');
+    cur++;
+    book.setAttribute('data-page', cur);
+    if(cur >= 1) book.classList.add('open');
+    /* Lock scroll */
+    document.body.style.overflow='hidden';
+    var deck=document.getElementById('deck');
+    if(deck) deck.style.overflow='hidden';
+  } else {
+    /* All pages flipped — return to cover */
+    window.closeZineBook();
+  }
+};
+window.closeZineBook = function(){
+  var book = document.getElementById('zineBook07');
+  if(!book) return;
+  /* Unflip all pages */
+  book.querySelectorAll('.zine-page-flip.flipped').forEach(function(p){ p.classList.remove('flipped'); });
+  book.setAttribute('data-page','0');
+  book.classList.remove('open');
+  document.body.style.overflow='';
+  var deck=document.getElementById('deck');
+  if(deck) deck.style.overflow='';
+};
+
+/* ZINE section TAP pulse — shows while the ZINE chapter is in viewport.
+   Hidden while the book is open so it doesn't overlap the flipping book. */
+(function(){
+  var pulse = document.getElementById('zineTapPulse');
+  var zine  = document.getElementById('cZine');
+  var book  = document.getElementById('zineBook07');
+  if(!pulse || !zine) return;
+  var inView = false, bookOpen = false;
+  function apply(){
+    if(inView && !bookOpen) pulse.classList.add('visible');
+    else pulse.classList.remove('visible');
+  }
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ inView = e.isIntersecting && e.intersectionRatio > 0.25; apply(); });
+    }, {threshold:[0,0.25,0.5]}).observe(zine);
+  } else {
+    inView = true; apply();
+  }
+  if(book && 'MutationObserver' in window){
+    new MutationObserver(function(){
+      bookOpen = book.classList.contains('open');
+      apply();
+    }).observe(book, {attributes:true, attributeFilter:['class']});
+  }
+})();
+
+/* Generic book flip for other ZINE cards (2-page: cover → inner → navigate) */
+window.flipZineCard = function(book, e){
+  if(e && e.target && e.target.closest('.zine-book-close')) return;
+  var cur = parseInt(book.getAttribute('data-page')||'0',10);
+  var pages = book.querySelectorAll('.zine-page-flip');
+  var total = pages.length;
+
+  if(cur < total){
+    pages[total - 1 - cur].classList.add('flipped');
+    cur++;
+    book.setAttribute('data-page', cur);
+    book.classList.add('open');
+  } else {
+    var href = book.getAttribute('data-href');
+    if(href) window.location.href = href;
+  }
+};
+
+/* Register touch events on all zine-book cards */
+(function(){
+  var books = document.querySelectorAll('.zine-book[data-href]');
+  var _flipLock = false;
+  books.forEach(function(book){
+    var moved = false;
+    book.addEventListener('touchstart', function(){ moved = false; }, {passive:true});
+    book.addEventListener('touchmove', function(){ moved = true; }, {passive:true});
+    book.addEventListener('touchend', function(e){
+      if(moved || _flipLock) return;
+      if(e.target.closest('.zine-book-close')) return;
+      e.preventDefault();
+      e.stopPropagation();
+      _flipLock = true;
+      window.flipZineCard(book, e);
+      setTimeout(function(){ _flipLock = false; }, 600);
+    }, {passive:false});
+    /* Block click to prevent double-fire */
+    book.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+    });
+  });
+})();
+
+/* ================================================
+   GSAP 031 — ZINE Card Stack Effect
+   Scroll-based rotation without pin (CSS sticky handles positioning)
+   ================================================ */
+(function initZineStack(){
+  var feed = document.getElementById('zineFeed');
+  if(!feed || typeof gsap === 'undefined') return;
+  var cards = feed.querySelectorAll('[data-zine-card]');
+  if(!cards.length) return;
+
+  /* Use scroll position directly — no ScrollTrigger pin */
+  function getScroll(){ return typeof getScrollTop==='function' ? getScrollTop() : (window.scrollY||0); }
+  var _zRaf = null;
+
+  function updateZineCards(){
+    _zRaf = null;
+    var scrollTop = getScroll();
+    var vh = window.innerHeight;
+
+    cards.forEach(function(card, i){
+      if(i >= cards.length - 1) return;
+      var rect = card.getBoundingClientRect();
+      var top = rect.top;
+
+      /* Card is below viewport — reset */
+      if(top > 0){
+        gsap.set(card, { rotationX:0, scale:1, opacity:1, transformPerspective:1200 });
+        return;
+      }
+
+      /* How far the card has scrolled past top (0→cardHeight) */
+      var gone = Math.abs(top);
+      var h = card.offsetHeight || vh;
+      var progress = Math.min(1, gone / h);
+
+      /* Phase 1 (0–0.4): no effect */
+      if(progress <= 0.4){
+        gsap.set(card, { rotation:0, rotationX:0, scale:1, opacity:1, y:0, transformPerspective:1200 });
+        return;
+      }
+
+      /* Phase 2 (0.4–1.0): card spins and flies up */
+      var p = (progress - 0.4) / 0.6;
+      p = Math.min(1, Math.max(0, p));
+      gsap.set(card, {
+        rotation: p * 720,
+        rotationX: p * 15,
+        scale: 1 - (0.5 * p),
+        opacity: 1 - p,
+        y: -p * 120,
+        transformPerspective: 1200
+      });
+    });
+  }
+
+  function onScroll(){
+    if(!_zRaf) _zRaf = requestAnimationFrame(updateZineCards);
+  }
+
+  var scroller = (typeof isPWA!=='undefined'&&isPWA) ? document.getElementById('deck') : window;
+  (scroller||window).addEventListener('scroll', onScroll, {passive:true});
+  cards.forEach(function(c){ c.style.transformOrigin='50% 50%'; c.style.willChange='transform,opacity'; });
+})();
+
+/* Hide site header + JP/EN switch when ZINE section is in view */
+(function(){
+  var zSec = document.getElementById('cZine');
+  var hdr  = document.getElementById('amd-header');
+  var lang = document.querySelector('.lang-float');
+  if(!zSec) return;
+  var scroller = _pwa2 ? document.getElementById('deck') : window;
+  function hideUI(){ if(hdr){hdr.style.opacity='0';hdr.style.pointerEvents='none';} if(lang){lang.style.opacity='0';lang.style.pointerEvents='none';} }
+  function showUI(){ if(hdr){hdr.style.opacity='';hdr.style.pointerEvents='';} if(lang){lang.style.opacity='';lang.style.pointerEvents='';} }
+
+  ScrollTrigger.create({
+    trigger: zSec,
+    scroller: scroller,
+    start: 'top 80%',
+    end: 'bottom 20%',
+    onEnter: hideUI,
+    onLeave: showUI,
+    onEnterBack: hideUI,
+    onLeaveBack: showUI
+  });
+})();
+
 })();
 </script>
 
@@ -1832,22 +2317,56 @@ document.addEventListener('DOMContentLoaded', function(){
     }, {passive:false});
   });
 
-  /* Prevent scroll chaining from panels to body/deck */
+  /* Prevent scroll chaining from panels to body/deck.
+     Walk up from the touch target and allow native scroll when any
+     ancestor inside the panel is actually scrollable (works for both
+     inline-styled scrollers like .amd-ticket-overlay's inner div AND
+     class-styled scrollers like .amd-card-content / .amd-ap-inner).
+     Only preventDefault when no scrollable ancestor is found. */
   var panelSelectors = '.amd-ticket-overlay, .amd-artist-panel, .amd-card-stack, .menu-overlay, #videoOverlay, #goodsOverlay';
   document.querySelectorAll(panelSelectors).forEach(function(panel){
     panel.addEventListener('touchmove', function(e){
-      /* Only prevent if panel is open and scrollable content at boundary */
       if(!panel.classList.contains('open')) return;
-      var scrollable = panel.querySelector('[style*="overflow-y:auto"], [style*="overflow-y: auto"]') || panel;
-      var st = scrollable.scrollTop;
-      var sh = scrollable.scrollHeight;
-      var ch = scrollable.clientHeight;
-      /* At top and scrolling up, or at bottom and scrolling down → block */
-      if(sh <= ch) { e.preventDefault(); return; }
+      var el = e.target;
+      while(el && el !== panel.parentNode){
+        if(el.nodeType === 1){
+          var cs = window.getComputedStyle(el);
+          var oy = cs.overflowY;
+          if((oy === 'auto' || oy === 'scroll') && el.scrollHeight > el.clientHeight){
+            return; /* native scroll is possible on this ancestor — let it happen */
+          }
+        }
+        if(el === panel) break;
+        el = el.parentNode;
+      }
+      if(e.cancelable) e.preventDefault();
     }, {passive:false});
   });
 });
 </script>
+
+<!-- SOUNDCLOUD RIGHT-TAB PLAYER -->
+<div class="sc-player" id="scPlayer">
+  <div class="sc-player-bar">
+    <div class="sc-player-tab" id="scTab">
+      <div class="sc-player-tab-icon"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div>
+      <div class="sc-player-tab-pulse"></div>
+      <span class="sc-player-tab-label">DJ</span>
+    </div>
+    <div class="sc-player-panel">
+      <div class="sc-player-header">
+        <div class="sc-player-text">
+          <div class="sc-player-title">Somewhere_MST 2</div>
+          <div class="sc-player-sub">Elhast · AMD™ EP.07</div>
+        </div>
+        <button class="sc-player-close" id="scCloseBtn">×</button>
+      </div>
+      <div class="sc-player-embed" id="scEmbed">
+        <iframe id="scIframe" width="100%" height="120" scrolling="no" frameborder="no" allow="autoplay" src=""></iframe>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- PWA INSTALL BANNER -->
 <div class="pwa-banner" id="pwaBanner">
@@ -1903,6 +2422,55 @@ document.addEventListener('DOMContentLoaded', function(){
     if(b) b.classList.add('show');
   }, 4000);
 })();
+
+/* SoundCloud Mini Player */
+var _scPlaying = false;
+var _scLoaded = false;
+var _scDismissed = false;
+var _scSrc = 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A2261119859&color=%23E8100A&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false';
+
+function showScPlayer(){
+  if(_scDismissed) return;
+  var el = document.getElementById('scPlayer');
+  if(el) el.classList.add('show');
+}
+function toggleScTab(){
+  var el = document.getElementById('scPlayer');
+  if(!el) return;
+  var opening = !el.classList.contains('open');
+  el.classList.toggle('open');
+  if(opening && !_scLoaded){
+    _scLoaded = true;
+    var iframe = document.getElementById('scIframe');
+    if(iframe) iframe.src = _scSrc;
+    _scPlaying = true;
+    el.classList.add('playing');
+  }
+}
+function dismissScPlayer(){
+  _scDismissed = true;
+  var el = document.getElementById('scPlayer');
+  if(el){ el.classList.remove('show','open','playing'); }
+  var iframe = document.getElementById('scIframe');
+  if(iframe) iframe.src = '';
+  _scPlaying = false;
+}
+/* Touch events for Safari */
+(function(){
+  function addTap(id, fn){
+    var el = document.getElementById(id);
+    if(!el) return;
+    var moved = false;
+    el.addEventListener('touchstart', function(){ moved=false; }, {passive:true});
+    el.addEventListener('touchmove', function(){ moved=true; }, {passive:true});
+    el.addEventListener('touchend', function(e){ if(!moved){ e.preventDefault(); e.stopPropagation(); fn(); }}, {passive:false});
+    el.addEventListener('click', function(e){ e.stopPropagation(); fn(); });
+  }
+  addTap('scTab', toggleScTab);
+  addTap('scCloseBtn', dismissScPlayer);
+})();
+/* Show tab after 5 seconds */
+setTimeout(function(){ showScPlayer(); }, 5000);
 
 function openPwaGuide(){
   document.getElementById('pwaBanner').classList.remove('show');
