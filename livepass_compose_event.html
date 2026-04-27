@@ -797,6 +797,23 @@ document.querySelectorAll('#catRow .pill').forEach(p => {
 // ─────────────────────────────────────────────
 // Description format templates (3 patterns)
 // ─────────────────────────────────────────────
+/* ─────────────────────────────────────────────
+   Body templates — AI Concierge ready
+   ─────────────────────────────────────────────
+   These are scaffolds. Each section header (■ LABEL) is one of the
+   structured fields the EXPASS AI Concierge reads on /calendar to
+   answer fan questions. Leave a section blank if it doesn't apply
+   and the AI will simply skip it.
+     ■ LINEUP / ARTIST / ARTISTS  — 出演者
+     ■ MUSIC / GENRE             — 音楽ジャンル
+     ■ SCHEDULE / OPEN-START     — 当日のタイムテーブル
+     ■ ENTRANCE / TICKET         — 価格・前売情報
+     ■ DRESS CODE                — 服装ルール
+     ■ AGE RESTRICTION           — 年齢制限
+     ■ VENUE / ACCESS            — 会場・行き方
+     ■ NOTES                     — 注意事項
+     ■ HOSTS                     — 主催者メッセージ
+   ───────────────────────────────────────────── */
 const TEMPLATES = {
   club:
 `🎧 CLUB / DJ NIGHT
@@ -806,20 +823,32 @@ const TEMPLATES = {
 ・DJ 2
 ・DJ 3
 
-■ OPEN / START
-OPEN 22:00 / START 23:00
-
-■ ENTRANCE
-¥3,000 (1D付き)
-※ID必須 / 20歳未満入場不可
-
 ■ MUSIC
 HOUSE / TECHNO / DISCO
 
-■ VENUE
-会場名・アクセス
+■ SCHEDULE
+OPEN 22:00 / START 23:00 / CLOSE 5:00
 
-※当日は混雑が予想されます。お早めのご来場をおすすめします。`,
+■ ENTRANCE
+¥3,000 (1D付き) / 前売 ¥2,500
+
+■ DRESS CODE
+自由（踊れる靴推奨）
+
+■ AGE RESTRICTION
+20歳未満入場不可 / 写真ID必須
+
+■ VENUE
+会場名
+
+■ ACCESS
+最寄駅・徒歩◯分・地図リンク
+
+■ NOTES
+当日は混雑が予想されます。お早めのご来場を。撮影はDJブース側のみOK。
+
+■ HOSTS
+主催からのひとこと`,
 
   live:
 `🎤 LIVE PERFORMANCE
@@ -832,7 +861,7 @@ HOUSE / TECHNO / DISCO
 ・Support 2
 
 ■ SCHEDULE
-OPEN 18:00 / START 19:00
+OPEN 18:00 / START 19:00 / END 21:30
 
 ■ TICKET
 前売 ¥4,000 / 当日 ¥4,500
@@ -843,8 +872,23 @@ OPEN 18:00 / START 19:00
 - Track 2
 - Track 3
 
-■ 注意事項
-撮影・録音は禁止です。`,
+■ DRESS CODE
+特になし
+
+■ AGE RESTRICTION
+全年齢（小学生以下は保護者同伴）
+
+■ VENUE
+会場名
+
+■ ACCESS
+最寄駅・徒歩◯分
+
+■ NOTES
+撮影・録音は禁止。物販は終演後にロビーにて。
+
+■ HOSTS
+主催・出演者からのメッセージ`,
 
   exhibition:
 `🎨 EXHIBITION
@@ -864,13 +908,23 @@ OPEN 18:00 / START 19:00
 12:00 - 20:00 (最終入場 19:30)
 定休日: 月曜
 
-■ INPUT
+■ ENTRANCE
 入場無料 / オープニング招待制
+
+■ VENUE
+会場名
+
+■ ACCESS
+最寄駅・徒歩◯分
 
 ■ COLLABORATION
 コラボブランド・スポンサー
 
-お問い合わせは DM まで。`,
+■ NOTES
+作品撮影は可（フラッシュ・三脚不可）。在廊スケジュールはDMで案内。
+
+■ HOSTS
+キュレーター・出展者からのひとこと`,
 };
 
 const bodyInput = document.getElementById('bodyInput');
