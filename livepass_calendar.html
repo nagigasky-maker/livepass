@@ -2545,9 +2545,24 @@ function compressCalCoverToBlob(file, maxW = 1600, quality = 0.82) {
   }
 
   function gather(){
-    const e  = read('livepass_events').map(x => Object.assign({ _type:'event' },      x));
-    const w  = read('livepass_workshops').map(x => Object.assign({ _type:'workshop' }, x));
-    const ex = read('livepass_exhibitions').map(x => Object.assign({ _type:'exhibition' }, x));
+    // CALENDAR is per-account: only show events / workshops /
+    // exhibitions authored by whoever is signed in right now. Other
+    // accounts saved on the same device (e.g. NOBBY's posts left
+    // over after switching to EXPASS) are filtered out by author /
+    // authorUid match.
+    const me    = (localStorage.getItem('livepass_account_name') || '').toUpperCase();
+    const myUid = localStorage.getItem('livepass_uid') || '';
+    const isMine = (it) => {
+      const a = (it.author || '').toUpperCase();
+      const u = it.authorUid || '';
+      if (myUid && u) return u === myUid;
+      if (!a) return !me;          // unattributed → only when I have no name
+      return a === me;
+    };
+
+    const e  = read('livepass_events').filter(isMine).map(x => Object.assign({ _type:'event' },      x));
+    const w  = read('livepass_workshops').filter(isMine).map(x => Object.assign({ _type:'workshop' }, x));
+    const ex = read('livepass_exhibitions').filter(isMine).map(x => Object.assign({ _type:'exhibition' }, x));
     const all = e.concat(w).concat(ex);
     // Sort by event date ascending; undated last.
     all.forEach(it => { it._dt = parseDate(it.date || it.time)?.getTime() || Infinity; });
