@@ -1196,6 +1196,10 @@ try { renderCoverPreview(localStorage.getItem(COVER_URL_KEY)); } catch(_){}
 // Refresh from Firestore once auth resolves (may be newer than local).
 window.addEventListener('fb-auth-ready', async ({ detail }) => {
   if (!detail.user || !window.FB) return;
+  // Guard: skip if the Firebase session belongs to a different account
+  // than the one currently active (multi-account switch scenario).
+  const localUid = localStorage.getItem('livepass_uid');
+  if (localUid && localUid !== detail.user.uid) return;
   try {
     const snap = await window.FB.getDoc(window.FB.doc(window.FB.db, 'users', detail.user.uid));
     if (!snap.exists()) return;

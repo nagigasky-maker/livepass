@@ -1511,6 +1511,7 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
   function openConcierge(artist){
     if (!overlay) return;
     const name = (artist && artist.name) || 'ARTIST';
+    const role = (artist && artist.role) || '';
     streamEl.classList.remove('active');
     streamEl.innerHTML = '';
     choicesEl.innerHTML = '';
@@ -1518,16 +1519,45 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
     overlay.setAttribute('aria-hidden','false');
     startTyping(promptEl, `${name}について教えますか`, 50);
 
-    [
-      { label:'活動と表現について', key:'activity' },
-      { label:'最近のイベント・MIX', key:'events'   },
-      { label:'自由に質問する',     key:'free'     },
-    ].forEach(c => {
+    function getFollowing(){
+      try { return JSON.parse(localStorage.getItem('livepass_following') || '[]'); } catch(_){ return []; }
+    }
+    const alreadyFollowing = getFollowing().some(u =>
+      (typeof u === 'string' ? u : u && u.name) === name
+    );
+
+    const choices = [
+      { label:'活動と表現について', run: () => answer(name, 'activity') },
+      { label:'最近のイベント・MIX', run: () => answer(name, 'events')  },
+      { label:'自由に質問する',      run: () => answer(name, 'free')    },
+    ];
+
+    if (!alreadyFollowing) {
+      choices.push({
+        label: 'フォローをする',
+        run: (btn) => {
+          const list = getFollowing();
+          list.unshift({ name, role });
+          try { localStorage.setItem('livepass_following', JSON.stringify(list)); } catch(_){}
+          btn.textContent = 'フォロー中 ✓';
+          btn.disabled = true;
+          btn.style.opacity = '.55';
+          if (navigator.vibrate) navigator.vibrate(10);
+        },
+        isFollow: true,
+      });
+    }
+    choices.push({
+      label: 'ページをみる →',
+      run: () => { location.href = '/profile?user=' + encodeURIComponent(name); },
+    });
+
+    choices.forEach(c => {
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'ai-choice';
       b.textContent = c.label;
-      b.addEventListener('click', () => answer(name, c.key));
+      b.addEventListener('click', () => c.run(b));
       choicesEl.appendChild(b);
     });
   }
