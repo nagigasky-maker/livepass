@@ -352,8 +352,13 @@ body.disc-followers .disc-followers{display:block}
    Each artist gets a full-width hero tile — cover art / video
    if they've posted, brand gradient + monogram otherwise.
    Designed to feel like a credits roll, not a contact list. */
-.account-results{padding:0 clamp(14px,4vw,20px) 24px;display:none}
+.account-results{padding:8px clamp(14px,4vw,20px) 24px;display:none}
 .account-results.open{display:block}
+/* Hide magazine layout while account results are shown */
+#sPanel-search.results-open .s-feat,
+#sPanel-search.results-open .s-sec,
+#sPanel-search.results-open .s-masonry,
+#sPanel-search.results-open .s-loader{display:none}
 #browseList{padding:0 clamp(14px,4vw,20px) 32px}
 
 .account-row{
@@ -1035,6 +1040,8 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
 
   <!-- ═══ SEARCH PANEL — magazine layout ═══ -->
   <section class="s-panel active" id="sPanel-search">
+    <!-- Account search results — populated by initAccountSearch() when sQuery has content -->
+    <div id="accountResults" class="account-results"></div>
     <!-- FEATURED #1 — hard-coded NOBBY for the May 4 demo -->
     <article class="s-feat" data-feat-size="hero" data-artist="NOBBY"
              data-feat-title="NOBBY" data-feat-meta="DANCER · ALL MUST DANCE™ · TOKYO">
@@ -1086,12 +1093,14 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
     </div>
   </section>
 
-  <!-- ═══ DISCOVERY PANEL — placeholder ═══ -->
+  <!-- ═══ DISCOVERY PANEL — all-accounts browse ═══ -->
   <section class="s-panel" id="sPanel-discovery">
-    <div class="s-mini-empty">
-      <div class="s-mini-empty-title">DISCOVERY</div>
-      <div class="s-mini-empty-sub">あなたの好みから新しいアーティストを提案します — 近日公開</div>
+    <div id="browseEmpty" style="padding:40px 20px;text-align:center;
+         font-family:Arial,'Noto Sans JP',sans-serif;font-size:11px;
+         color:rgba(10,10,10,.4);letter-spacing:.04em;line-height:1.8">
+      アカウントを読み込み中…
     </div>
+    <div id="browseList"></div>
   </section>
 
   <div class="content-bottom-padding"></div>
@@ -1610,7 +1619,8 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
    ACCOUNT SEARCH — find & follow other accounts
    ───────────────────────────────────────────── */
 (function initAccountSearch(){
-  const input = document.getElementById('accountSearchInput');
+  // Use the shared sQuery bar — no separate accountSearchInput needed.
+  const input = document.getElementById('sQuery');
   const results = document.getElementById('accountResults');
   if (!input || !results) return;
 
@@ -1882,9 +1892,17 @@ h1,h2,h3,.title,.heading{color:#0A0A0A !important}
     `;
   }
 
+  const searchPanel = document.getElementById('sPanel-search');
   function render(q){
     const query = (q || '').trim().toLowerCase();
-    if (!query) { results.classList.remove('open'); results.innerHTML = ''; renderBrowse(); return; }
+    if (!query) {
+      results.classList.remove('open');
+      results.innerHTML = '';
+      searchPanel && searchPanel.classList.remove('results-open');
+      renderBrowse();
+      return;
+    }
+    searchPanel && searchPanel.classList.add('results-open');
     const matches = DIRECTORY
       .filter(a => (a.name || '').toLowerCase().includes(query) || (a.role || '').toLowerCase().includes(query))
       .slice(0, 40);
